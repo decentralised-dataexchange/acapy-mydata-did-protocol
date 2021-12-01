@@ -33,7 +33,6 @@ from .messages.read_data_agreement_response import ReadDataAgreementResponse
 from .models.data_agreement_model import DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
 from .models.diddoc_model import MyDataDIDBody, MyDataDIDResponseBody, MyDataDIDDoc, MyDataDIDDocService, MyDataDIDDocVerificationMethod, MyDataDIDDocAuthentication
-from .models.mydata_did_records import MyDataDIDRecord
 from .models.read_data_agreement_response_model import ReadDataAgreementResponseBody
 from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord
 from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction

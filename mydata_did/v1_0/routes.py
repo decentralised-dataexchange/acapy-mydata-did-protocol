@@ -24,7 +24,6 @@ from .models.exchange_records.mydata_did_registry_didcomm_transaction_record imp
 from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction
 from .models.exchange_records.data_agreement_record import DataAgreementV1Record, DataAgreementV1RecordSchema
 from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecordSchema, DataAgreementPersonalDataRecord
-from .models.mydata_did_records import MyDataDIDRecord, MyDataDIDRecordSchema
 from .models.data_agreement_model import (
     DataAgreementPersonalData,
     DataAgreementPersonalDataSchema,

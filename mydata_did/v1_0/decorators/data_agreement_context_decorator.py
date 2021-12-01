@@ -55,7 +55,8 @@ class DataAgreementContextDecoratorSchema(BaseModelSchema):
     message_type = fields.Str(
         required=False,
         description="The type of the message.",
-        example="data_agreement_request",
+        example="protocol",
+        validate=validate.OneOf(["protocol", "non-protocol"]),
     )
     message = fields.Dict(
         required=False,

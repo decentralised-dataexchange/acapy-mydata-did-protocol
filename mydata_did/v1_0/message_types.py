@@ -28,9 +28,6 @@ READ_DATA_AGREEMENT = f"data-agreements/1.0/read-data-agreement"
 READ_DATA_AGREEMENT_RESPONSE = f"data-agreements/1.0/read-data-agreement-response"
 DATA_AGREEMENT_PROBLEM_REPORT = f"data-agreements/1.0/problem-report"
 
-# Patched message types (Existing message types from Aries RFC are patched to support ADA RFC(s))
-CONNECTION_REQUEST = f"connections/1.0/request"
-
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 
@@ -58,9 +55,6 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         MYDATA_DID_PROBLEM_REPORT: (
             f"{PROTOCOL_PACKAGE}.messages.problem_report.MyDataDIDProblemReportMessage"
         ),
-        # CONNECTION_REQUEST: (
-        #     f"{PROTOCOL_PACKAGE}.messages.connection_request.ConnectionRequest"
-        # ),
         READ_DATA_AGREEMENT: (
             f"{PROTOCOL_PACKAGE}.messages.read_data_agreement.ReadDataAgreement"
         ),
