@@ -37,7 +37,7 @@ Install this plugin into the virtual environment:
 $ pip install git+https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol.git@master
 ```
 
-**Note:** Depending on your version of `pip`, you may need to drop or the
+**Note:** Depending on your version of `pip`, you may need to drop or add 
 `#egg=mydata_did` to install the plugin with the above command.
 
 ### Plugin Loading
