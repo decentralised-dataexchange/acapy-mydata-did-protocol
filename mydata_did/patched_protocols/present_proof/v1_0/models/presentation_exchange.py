@@ -5,8 +5,8 @@ from typing import Any
 
 from marshmallow import fields, validate
 
-from .....messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
-from .....messaging.valid import UUIDFour
+from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.valid import UUIDFour
 
 unencrypted_tags = environ.get("EXCH_UNENCRYPTED_TAGS", "False").upper() == "TRUE"
 

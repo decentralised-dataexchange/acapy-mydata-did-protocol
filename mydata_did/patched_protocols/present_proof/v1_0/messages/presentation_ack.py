@@ -2,7 +2,7 @@
 
 from marshmallow import EXCLUDE
 
-from .....messaging.ack.message import Ack, AckSchema
+from aries_cloudagent.messaging.ack.message import Ack, AckSchema
 
 from ..message_types import PRESENTATION_ACK, PROTOCOL_PACKAGE
 

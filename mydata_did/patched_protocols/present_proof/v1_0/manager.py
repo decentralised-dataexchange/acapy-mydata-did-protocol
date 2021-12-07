@@ -4,14 +4,14 @@ import json
 import logging
 import time
 
-from ....revocation.models.revocation_registry import RevocationRegistry
-from ....config.injection_context import InjectionContext
-from ....core.error import BaseError
-from ....holder.base import BaseHolder, HolderError
-from ....ledger.base import BaseLedger
-from ....messaging.decorators.attach_decorator import AttachDecorator
-from ....messaging.responder import BaseResponder
-from ....verifier.base import BaseVerifier
+from aries_cloudagent.revocation.models.revocation_registry import RevocationRegistry
+from aries_cloudagent.config.injection_context import InjectionContext
+from aries_cloudagent.core.error import BaseError
+from aries_cloudagent.holder.base import BaseHolder, HolderError
+from aries_cloudagent.ledger.base import BaseLedger
+from aries_cloudagent.messaging.decorators.attach_decorator import AttachDecorator
+from aries_cloudagent.messaging.responder import BaseResponder
+from aries_cloudagent.verifier.base import BaseVerifier
 
 from .models.presentation_exchange import V10PresentationExchange
 from .messages.presentation_ack import PresentationAck

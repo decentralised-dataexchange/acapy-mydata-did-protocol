@@ -1,6 +1,6 @@
 """Presentation message handler."""
 
-from .....messaging.base_handler import (
+from aries_cloudagent.messaging.base_handler import (
     BaseHandler,
     BaseResponder,
     RequestContext,
@@ -9,7 +9,7 @@ from .....messaging.base_handler import (
 from ..manager import PresentationManager
 from ..messages.presentation import Presentation
 
-from .....utils.tracing import trace_event, get_timer
+from aries_cloudagent.utils.tracing import trace_event, get_timer
 
 
 class PresentationHandler(BaseHandler):

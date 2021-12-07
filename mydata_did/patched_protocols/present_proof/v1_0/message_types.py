@@ -1,6 +1,6 @@
 """Message and inner object type identifiers for Connections."""
 
-from ...didcomm_prefix import DIDCommPrefix
+from aries_cloudagent.protocols.didcomm_prefix import DIDCommPrefix
 
 SPEC_URI = (
     "https://github.com/hyperledger/aries-rfcs/tree/"

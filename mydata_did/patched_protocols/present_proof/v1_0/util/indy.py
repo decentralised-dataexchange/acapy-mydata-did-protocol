@@ -1,6 +1,6 @@
 """Utilities for dealing with indy conventions."""
 
-from .....holder.base import BaseHolder
+from aries_cloudagent.holder.base import BaseHolder
 
 from ..messages.inner.presentation_preview import PresentationPreview
 

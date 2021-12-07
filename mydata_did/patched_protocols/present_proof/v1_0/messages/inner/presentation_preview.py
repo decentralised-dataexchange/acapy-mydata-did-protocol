@@ -6,15 +6,15 @@ from typing import Mapping, Sequence
 
 from marshmallow import fields
 
-from ......ledger.indy import IndyLedger
-from ......messaging.models.base import BaseModel, BaseModelSchema
-from ......messaging.util import canon
-from ......messaging.valid import INDY_CRED_DEF_ID, INDY_PREDICATE
-from ......revocation.models.indy import NonRevocationInterval
-from ......wallet.util import b64_to_str
-from ......indy.util import generate_pr_nonce
+from aries_cloudagent.ledger.indy import IndyLedger
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from aries_cloudagent.messaging.util import canon
+from aries_cloudagent.messaging.valid import INDY_CRED_DEF_ID, INDY_PREDICATE
+from aries_cloudagent.revocation.models.indy import NonRevocationInterval
+from aries_cloudagent.wallet.util import b64_to_str
+from aries_cloudagent.indy.util import generate_pr_nonce
 
-from .....didcomm_prefix import DIDCommPrefix
+from aries_cloudagent.protocols.didcomm_prefix import DIDCommPrefix
 
 from ...message_types import PRESENTATION_PREVIEW
 from ...util.predicate import Predicate

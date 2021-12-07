@@ -6,8 +6,8 @@ from .....messaging.base_handler import (
     HandlerException,
     RequestContext,
 )
-from .....holder.base import BaseHolder
-from .....storage.error import StorageNotFoundError
+from aries_cloudagent.holder.base import BaseHolder
+from aries_cloudagent.storage.error import StorageNotFoundError
 
 from ..manager import PresentationManager
 from ..messages.presentation_proposal import PresentationProposal
@@ -15,7 +15,7 @@ from ..messages.presentation_request import PresentationRequest
 from ..models.presentation_exchange import V10PresentationExchange
 from ..util.indy import indy_proof_req_preview2indy_requested_creds
 
-from .....utils.tracing import trace_event, get_timer
+from aries_cloudagent.utils.tracing import trace_event, get_timer
 
 
 class PresentationRequestHandler(BaseHandler):

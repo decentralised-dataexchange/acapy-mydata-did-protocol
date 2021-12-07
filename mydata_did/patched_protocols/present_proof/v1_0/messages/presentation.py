@@ -4,8 +4,8 @@ from typing import Sequence
 
 from marshmallow import EXCLUDE, fields
 
-from .....messaging.agent_message import AgentMessage, AgentMessageSchema
-from .....messaging.decorators.attach_decorator import (
+from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
+from aries_cloudagent.messaging.decorators.attach_decorator import (
     AttachDecorator,
     AttachDecoratorSchema,
 )

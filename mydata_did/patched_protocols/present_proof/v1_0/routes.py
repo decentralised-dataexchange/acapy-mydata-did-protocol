@@ -13,14 +13,14 @@ from aiohttp_apispec import (
 from marshmallow import fields, validate, validates_schema
 from marshmallow.exceptions import ValidationError
 
-from ....connections.models.connection_record import ConnectionRecord
-from ....holder.base import BaseHolder, HolderError
-from ....indy.util import generate_pr_nonce
-from ....ledger.error import LedgerError
-from ....messaging.decorators.attach_decorator import AttachDecorator
-from ....messaging.models.base import BaseModelError
-from ....messaging.models.openapi import OpenAPISchema
-from ....messaging.valid import (
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+from aries_cloudagent.holder.base import BaseHolder, HolderError
+from aries_cloudagent.indy.util import generate_pr_nonce
+from aries_cloudagent.ledger.error import LedgerError
+from aries_cloudagent.messaging.decorators.attach_decorator import AttachDecorator
+from aries_cloudagent.messaging.models.base import BaseModelError
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
+from aries_cloudagent.messaging.valid import (
     INDY_CRED_DEF_ID,
     INDY_DID,
     INDY_EXTRA_WQL,
@@ -33,11 +33,11 @@ from ....messaging.valid import (
     UUID4,
     WHOLE_NUM,
 )
-from ....storage.error import StorageError, StorageNotFoundError
-from ....utils.tracing import trace_event, get_timer, AdminAPIMessageTracingSchema
-from ....wallet.error import WalletNotFoundError
+from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.utils.tracing import trace_event, get_timer, AdminAPIMessageTracingSchema
+from aries_cloudagent.wallet.error import WalletNotFoundError
 
-from ...problem_report.v1_0 import internal_error
+from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
 
 from .manager import PresentationManager
 from .message_types import ATTACH_DECO_IDS, PRESENTATION_REQUEST, SPEC_URI

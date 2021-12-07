@@ -1,6 +1,6 @@
 """Presentation ack message handler."""
 
-from .....messaging.base_handler import (
+from aries_cloudagent.messaging.base_handler import (
     BaseHandler,
     BaseResponder,
     HandlerException,
@@ -10,7 +10,7 @@ from .....messaging.base_handler import (
 from ..manager import PresentationManager
 from ..messages.presentation_ack import PresentationAck
 
-from .....utils.tracing import trace_event, get_timer
+from aries_cloudagent.utils.tracing import trace_event, get_timer
 
 
 class PresentationAckHandler(BaseHandler):
