@@ -4,6 +4,12 @@ import runpy
 from setuptools import setup, find_packages
 import importlib.util
 
+import subprocess
+import sys
+
+reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
+installed_packages = [r.decode().split('==')[0] for r in reqs.split()]
+
 PACKAGE_NAME = "acapy-mydata-did-protocol"
 version_meta = runpy.run_path("./version.py".format(PACKAGE_NAME))
 VERSION = version_meta["__version__"]
@@ -18,7 +24,7 @@ def parse_requirements(filename):
     for line in lineiter:
         if line and not line.startswith("#"):
             # check if already installed ?
-            if line.startswith("aries-cloudagent") and (spec := importlib.util.find_spec("aries-cloudagent")) is None:
+            if line.startswith("aries-cloudagent") and "aries-cloudagent" in installed_packages:
                 continue
 
             requirements_list.append(line)
