@@ -3,8 +3,13 @@
 import asyncio
 import json
 import logging
+import uuid
 
 from typing import Mapping, Tuple
+
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
 
 from .messages.credential_ack import CredentialAck
 from .messages.credential_issue import CredentialIssue
@@ -335,6 +340,7 @@ class CredentialManager:
         cred_ex_record.state = V10CredentialExchange.STATE_OFFER_RECEIVED
         cred_ex_record.schema_id = schema_id
         cred_ex_record.credential_definition_id = cred_def_id
+        cred_ex_record.auto_remove = False
 
         await cred_ex_record.save(self.context, reason="receive credential offer")
 

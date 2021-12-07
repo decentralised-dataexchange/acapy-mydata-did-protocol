@@ -27,7 +27,7 @@ class DeleteDIDHandler(BaseHandler):
         # Check if connection is ready.
         if not context.connection_ready:
             self._logger.info(
-                "Connection not active, skipping create-did handler: %s",
+                "Connection not active, skipping delete-did handler: %s",
                 context.message_receipt.sender_did,
             )
             return

@@ -5,10 +5,16 @@ import time
 import uuid
 import typing
 
+from asyncio import shield
+from aries_cloudagent.connections.models.connection_target import ConnectionTarget
+import semver
+import aiohttp
+
 from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.responder import BaseResponder
+from aries_cloudagent.messaging.credential_definitions.util import CRED_DEF_SENT_RECORD_TYPE
 from aries_cloudagent.core.dispatcher import DispatcherResponder
 from aries_cloudagent.transport.inbound.receipt import MessageReceipt
 from aries_cloudagent.core.error import BaseError
@@ -17,32 +23,59 @@ from aries_cloudagent.storage.indy import IndyStorage
 from aries_cloudagent.storage.error import StorageNotFoundError, StorageSearchError, StorageDuplicateError, StorageError
 from aries_cloudagent.wallet.indy import IndyWallet
 from aries_cloudagent.wallet.base import BaseWallet, DIDInfo
-from aries_cloudagent.wallet.error import WalletError, WalletNotFoundError
 from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager
+from aries_cloudagent.ledger.base import BaseLedger
+from aries_cloudagent.ledger.error import LedgerError
+from aries_cloudagent.issuer.base import BaseIssuer, IssuerError
+from aries_cloudagent.messaging.decorators.default import DecoratorSet
+from aries_cloudagent.transport.pack_format import PackWireFormat
+from aries_cloudagent.transport.wire_format import BaseWireFormat
+from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator, TransportDecoratorSchema
+from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager, ConnectionManagerError
 
 from .messages.create_did import CreateDIDMessage
 from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
-from .messages.read_did_response import ReadDIDResponseMessage
+from .messages.read_did_response import ReadDIDResponseMessage, ReadDIDResponseMessageSchema
 from .messages.delete_did import DeleteDIDMessage, DeleteDIDMessageBody
 from .messages.delete_did_response import DeleteDIDResponseMessage, DeleteDIDResponseMessageBody
 from .messages.create_did_response import CreateDIDResponseMessage
-from .messages.problem_report import MyDataDIDProblemReportMessage, MyDataDIDProblemReportMessageReason
+from .messages.problem_report import (
+    MyDataDIDProblemReportMessage, 
+    MyDataDIDProblemReportMessageReason,
+    DataAgreementNegotiationProblemReport
+)
 from .messages.read_data_agreement import ReadDataAgreement
 from .messages.read_data_agreement_response import ReadDataAgreementResponse
+from .messages.data_agreement_offer import DataAgreementNegotiationOfferMessage, DataAgreementNegotiationOfferMessageSchema
+from .messages.data_agreement_accept import DataAgreementNegotiationAcceptMessage, DataAgreementNegotiationAcceptMessageSchema
+from .messages.data_agreement_reject import DataAgreementNegotiationRejectMessage, DataAgreementNegotiationRejectMessageSchema
 
-from .models.data_agreement_model import DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
+from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
 from .models.diddoc_model import MyDataDIDBody, MyDataDIDResponseBody, MyDataDIDDoc, MyDataDIDDocService, MyDataDIDDocVerificationMethod, MyDataDIDDocAuthentication
 from .models.read_data_agreement_response_model import ReadDataAgreementResponseBody
 from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord
 from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction
 from .models.exchange_records.data_agreement_record import DataAgreementV1Record
-from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecord, DataAgreementPersonalDataRecordSchema
+from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecord
+from .models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementEvent, DataAgreementProof, DataAgreementProofSchema
+from .models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
+from .models.data_agreement_negotiation_accept_model import DataAgreementNegotiationAcceptBody, DataAgreementNegotiationAcceptBodySchema
+from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody, DataAgreementNegotiationRejectBodySchema
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
 from .utils.wallet.key_type import KeyType
 from .utils.verification_method import PublicKeyType
+from .utils.jsonld import ED25519_2018_CONTEXT_URL
+from .utils.jsonld.data_agreement import sign_data_agreement
+from .utils.util import current_datetime_in_iso8601
+
+from .decorators.data_agreement_context_decorator import DataAgreementContextDecoratorSchema, DataAgreementContextDecorator
+from .message_types import (
+    DATA_AGREEMENT_NEGOTIATION_OFFER,
+    DATA_AGREEMENT_NEGOTIATION_ACCEPT
+)
 
 
 class ADAManagerError(BaseError):
@@ -56,6 +89,9 @@ class ADAManager:
 
     # Record for indicating a MyData DID is registered in the DID registry (client)
     RECORD_TYPE_MYDATA_DID_REMOTE = "mydata_did_remote"
+
+    # Record for storing data agreement instance metadata (client)
+    RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA = "data_agreement_instance_metadata"
 
     # Record for keeping track of DIDs that are registered in the DID registry (MyData DID registry)
     RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO = "mydata_did_registry_did_info"
@@ -468,7 +504,7 @@ class ADAManager:
                 thid=read_did_message._id)
 
             if responder:
-                await responder.send_reply(mydata_did_problem_report, connection_id=self.context.connection_record.connection_id)
+                await responder.send_reply(mydata_did_problem_report)
 
             return
 
@@ -503,7 +539,7 @@ class ADAManager:
         await transaction_record.save(self.context)
 
         if responder:
-            await responder.send_reply(read_did_response_message, connection_id=self.context.connection_record.connection_id)
+            await responder.send_reply(read_did_response_message)
 
     async def process_read_did_response_message(self, read_did_response_message: ReadDIDResponseMessage, receipt: MessageReceipt):
         """
@@ -1009,7 +1045,7 @@ class ADAManager:
         data_agreement["personal_data"] = personal_data_new_list
 
         # Generate data agreement model class instance
-        data_agreement = DataAgreementV1Schema().load(data_agreement)
+        data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(data_agreement)
 
         # Set data agreement version
         data_agreement.data_agreement_template_version = 1
@@ -1025,6 +1061,69 @@ class ADAManager:
             data_agreement=data_agreement.serialize(),
             published_flag="True"
         )
+
+        if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+            # If method-of-use is "data-source", then create a schema and credential defintion
+
+            ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
+            if not ledger:
+                reason = "No ledger available"
+                if not self.context.settings.get_value("wallet.type"):
+                    reason += ": missing wallet-type?"
+
+                self._logger.error(
+                    f"Failed to create data agreement: {reason}")
+
+                return None
+
+            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+
+            async with ledger:
+                try:
+
+                    # Create schema
+
+                    schema_name = data_agreement.usage_purpose
+                    schema_version = str(semver.VersionInfo(
+                        str(data_agreement.data_agreement_template_version)))
+                    attributes = [
+                        personal_data.attribute_name
+                        for personal_data in data_agreement.personal_data
+                    ]
+
+                    schema_id, schema_def = await shield(
+                        ledger.create_and_send_schema(
+                            issuer, schema_name, schema_version, attributes
+                        )
+                    )
+
+                    # Create credential definition
+
+                    tag = "default"
+                    support_revocation = False
+
+                    (cred_def_id, cred_def, novel) = await shield(
+                        ledger.create_and_send_credential_definition(
+                            issuer,
+                            schema_id,
+                            signature_type=None,
+                            tag=tag,
+                            support_revocation=support_revocation,
+                        )
+                    )
+
+                    # Update the data agreement record with schema and credential definition
+                    data_agreement_v1_record.schema_id = schema_id
+                    data_agreement_v1_record.cred_def_id = cred_def_id
+
+                except (IssuerError, LedgerError) as err:
+                    self._logger.error(
+                        f"Failed to create data agreement: {err.roll_up}")
+                    return None
+        else:
+            # TODO : If method-of-use is "data-using-service", then create a data exchange template
+            # TODO: Check if igrantio-operator protocol is available
+            pass
 
         # Save the data agreement record
         await data_agreement_v1_record.save(self.context)
@@ -1140,6 +1239,69 @@ class ADAManager:
                 published_flag="True"
             )
 
+            if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+                # If method-of-use is "data-source", then create a schema and credential defintion
+
+                ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
+                if not ledger:
+                    reason = "No ledger available"
+                    if not self.context.settings.get_value("wallet.type"):
+                        reason += ": missing wallet-type?"
+
+                    self._logger.error(
+                        f"Failed to create data agreement: {reason}")
+
+                    return None
+
+                issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+
+                async with ledger:
+                    try:
+
+                        # Create schema
+
+                        schema_name = data_agreement.usage_purpose
+                        schema_version = str(
+                            data_agreement.data_agreement_template_version)
+                        attributes = [
+                            personal_data["attribute_name"]
+                            for personal_data in data_agreement["personal_data"]
+                        ]
+
+                        schema_id, schema_def = await shield(
+                            ledger.create_and_send_schema(
+                                issuer, schema_name, schema_version, attributes
+                            )
+                        )
+
+                        # Create credential definition
+
+                        tag = "default"
+                        support_revocation = False
+
+                        (cred_def_id, cred_def, novel) = await shield(
+                            ledger.create_and_send_credential_definition(
+                                issuer,
+                                schema_id,
+                                signature_type=None,
+                                tag=tag,
+                                support_revocation=support_revocation,
+                            )
+                        )
+
+                        # Update the data agreement record with schema and credential definition
+                        new_data_agreement_record.schema_id = schema_id
+                        new_data_agreement_record.cred_def_id = cred_def_id
+
+                    except (IssuerError, LedgerError) as err:
+                        self._logger.error(
+                            f"Failed to create data agreement: {err.roll_up}")
+                        return None
+            else:
+                # TODO : If method-of-use is "data-using-service", then create a data exchange template
+                # TODO: Check if igrantio-operator protocol is available
+                pass
+
             # Save the new data agreement record
             await new_data_agreement_record.save(self.context)
 
@@ -1188,6 +1350,26 @@ class ADAManager:
 
             # Update the delete_flag status for the old data agreement record
             old_data_agreement_record.delete_flag = "True"
+
+            if old_data_agreement_record.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+
+                # Delete credential definition if method-of-use is "data-source"
+
+                storage = await self.context.inject(BaseStorage)
+                cred_def_records = await storage.search_records(
+                    type_filter=CRED_DEF_SENT_RECORD_TYPE,
+                    tag_query={
+                        "cred_def_id": old_data_agreement_record.cred_def_id
+                    },
+                ).fetch_all()
+
+                if cred_def_records:
+                    for cred_def_record in cred_def_records:
+                        await storage.delete_record(cred_def_record)
+            else:
+                # TODO: Delete data exchange template if method-of-use is "data-using-service"
+                # TODO: Check if igrantio-operator protocol is available
+                pass
 
             # Update the old data agreement record
             await old_data_agreement_record.save(self.context)
@@ -1429,3 +1611,556 @@ class ADAManager:
         # Return MyData DID
         mydata_did: DIDMyData = DIDMyData.from_public_key_b58(public_key=did_info.verkey,
                                                               key_type=KeyType.ED25519)
+
+    async def construct_data_agreement_offer_message(self, connection_record: ConnectionRecord, data_agreement_template_record: DataAgreementV1Record) -> typing.Union[None, DataAgreementNegotiationOfferMessage]:
+        """Construct data agreement offer message."""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # From DID
+        remote_records: StorageRecord = await storage.search_records(
+            type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REMOTE,
+            tag_query={
+                "status": "active"
+            }
+        ).fetch_all()
+
+        if len(remote_records) < 1:
+            raise ADAManagerError(
+                f"Failed to construct data agreement offer; "
+                f"No active remote MyData DID found"
+            )
+        controller_mydata_did = DIDMyData.from_did(
+            remote_records[0].tags.get("did"))
+
+        # Principle DID from connection record
+        pairwise_remote_did_record = await storage.search_records(
+            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+            tag_query={"did": connection_record.their_did}
+        ).fetch_single()
+        principle_did = DIDMyData.from_public_key_b58(
+            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+
+        # Construct data agreement negotiation offer message
+
+        data_agreement_body: DataAgreementV1 = DataAgreementV1Schema().load(
+            data_agreement_template_record.data_agreement)
+
+        data_agreement_negotiation_offer_body = DataAgreementNegotiationOfferBody(
+            context=[
+                DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+                ED25519_2018_CONTEXT_URL
+            ],
+            data_agreement_id=str(uuid.uuid4()),
+            data_agreement_version=1,
+            data_agreement_template_id=data_agreement_body.data_agreement_template_id,
+            data_agreement_template_version=data_agreement_body.data_agreement_template_version,
+            pii_controller_name=data_agreement_body.pii_controller_name,
+            pii_controller_url=data_agreement_body.pii_controller_url,
+            usage_purpose=data_agreement_body.usage_purpose,
+            usage_purpose_description=data_agreement_body.usage_purpose_description,
+            legal_basis=data_agreement_body.legal_basis,
+            method_of_use=data_agreement_body.method_of_use,
+            principle_did=principle_did.did,
+            data_policy=data_agreement_body.data_policy,
+            personal_data=data_agreement_body.personal_data,
+            dpia=data_agreement_body.dpia,
+            event=[DataAgreementEvent(
+                event_id=f"{controller_mydata_did.did}#1",
+                time_stamp=current_datetime_in_iso8601(),
+                did=controller_mydata_did.did,
+                state=DataAgreementEvent.STATE_OFFER
+            )]
+        )
+
+        data_agreement_negotiation_offer_body_dict = data_agreement_negotiation_offer_body.serialize()
+
+        signature_options = {
+            "id": f"{controller_mydata_did.did}#1",
+            "type": "Ed25519Signature2018",
+            "created": current_datetime_in_iso8601(),
+            "verificationMethod": f"{controller_mydata_did.did}",
+            "proofPurpose": "contractAgreement",
+        }
+
+        # Generate proofs
+        document_with_proof: dict = await sign_data_agreement(
+            data_agreement_negotiation_offer_body_dict.copy(
+            ), signature_options, controller_mydata_did.public_key_b58, wallet
+        )
+
+        data_agreement_offer_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proof"))
+
+        # Update data agreement negotiation offer message with proof
+        data_agreement_negotiation_offer_body.proof = data_agreement_offer_proof
+
+        # Construct data agreement negotiation offer message
+        data_agreement_negotiation_offer_message = DataAgreementNegotiationOfferMessage(
+            from_did=controller_mydata_did.did,
+            to_did=principle_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            body=data_agreement_negotiation_offer_body
+        )
+
+        return data_agreement_negotiation_offer_message
+
+    async def store_data_agreement_instance_metadata(self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) -> None:
+        """Store data agreement instance metadata"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        data_instance_metadata_record = StorageRecord(
+            self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            data_agreement_id,
+            {
+                "data_agreement_id": data_agreement_id,
+                "data_agreement_template_id": data_agreement_template_id,
+                "method_of_use": method_of_use,
+                "data_exchange_record_id": data_exchange_record_id
+            }
+        )
+
+        await storage.add_record(data_instance_metadata_record)
+
+    async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -> None:
+        """Delete data agreement instance metadata"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        for storage_record in storage_records:
+            await storage.delete_record(storage_record)
+
+    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -> typing.List[dict]:
+        """Query data agreement instance metadata"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        return storage_records
+
+    async def process_data_agreement_context_decorator(self, *, decorator_set: DecoratorSet) -> typing.Union[None, DataAgreementNegotiationOfferMessage, DataAgreementNegotiationAcceptMessage]:
+        """Process data agreement context decorator"""
+
+        # Check if data agreement context decorator is present
+        if "data-agreement-context" not in decorator_set.keys():
+            self._logger.info("Data agreement context decorator is missing")
+            return None
+
+        # Deserialize data agreement context decorator
+        data_agreement_context_decorator: DataAgreementContextDecorator = DataAgreementContextDecoratorSchema(
+        ).load(decorator_set["data-agreement-context"])
+
+        # Check if data agreement context decorator message type is valid
+        if data_agreement_context_decorator.message_type not in ("protocol", "non-protocol"):
+            raise ADAManagerError(
+                f"Invalid data agreement context decorator message type: {data_agreement_context_decorator.message_type}")
+
+        if data_agreement_context_decorator.message_type == "protocol":
+
+            if DATA_AGREEMENT_NEGOTIATION_OFFER in data_agreement_context_decorator.message["@type"]:
+                data_agreement_negotiation_offer_message: DataAgreementNegotiationOfferMessage = DataAgreementNegotiationOfferMessageSchema(
+                ).load(data_agreement_context_decorator.message)
+
+                return data_agreement_negotiation_offer_message
+            elif DATA_AGREEMENT_NEGOTIATION_ACCEPT in data_agreement_context_decorator.message["@type"]:
+                data_agreement_negotiation_accept_message: DataAgreementNegotiationAcceptMessage = DataAgreementNegotiationAcceptMessageSchema(
+                ).load(data_agreement_context_decorator.message)
+
+                return data_agreement_negotiation_accept_message
+
+        if data_agreement_context_decorator.message_type == "non-protocol":
+            # TODO: Implement non-protocol data agreement context decorator
+            pass
+
+        return None
+
+    async def resolve_remote_mydata_did(self, *, mydata_did: str) -> MyDataDIDResponseBody:
+        """Resolve remote MyData DID"""
+
+        # Initialize DID MyData
+        mydata_did = DIDMyData.from_did(mydata_did)
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Get pack format from context
+        pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
+
+        # Fetch connection record marked as MyData DID registry
+        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+        if err:
+            raise ADAManagerError(
+                "Failed to fetch MyData DID registry connection record")
+
+        # Construct read-did message
+        # from_did
+        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+        from_did = DIDMyData.from_public_key_b58(
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+        # to_did
+        pairwise_remote_did_record = await storage.search_records(
+            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+            tag_query={"did": connection_record.their_did}
+        ).fetch_single()
+        to_did = DIDMyData.from_public_key_b58(
+            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+
+        # Create read-did message
+        read_did_message = ReadDIDMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            body=ReadDIDMessageBody(
+                did=mydata_did.did
+            )
+        )
+
+        # Add transport decorator
+        read_did_message._decorators["transport"] = TransportDecorator(
+            return_route="all"
+        )
+
+        # Initialise connection manager
+        connection_manager = ConnectionManager(self.context)
+
+        # Fetch connection targets
+        connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+
+        if len(connection_targets) == 0:
+            raise ADAManagerError("No connection targets found")
+
+        connection_target: ConnectionTarget = connection_targets[0]
+
+        # Pack message
+        packed_message = await pack_format.pack(
+            context=self.context,
+            message_json=read_did_message.serialize(as_string=True),
+            recipient_keys=connection_target.recipient_keys,
+            routing_keys=None,
+            sender_key=connection_target.sender_key,
+        )
+
+        headers = {
+            "Content-Type": "application/ssi-agent-wire"
+        }
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(connection_target.endpoint, data=packed_message) as response:
+                if response.status != 200:
+                    raise ADAManagerError(
+                        f"HTTP request failed with status code {response.status}")
+
+                message_body = await response.read()
+
+                unpacked = await wallet.unpack_message(message_body)
+
+                (
+                    message_json,
+                    sender_verkey,
+                    recipient_verkey,
+                ) = unpacked
+
+                message_json = json.loads(message_json)
+
+                if "problem-report" in message_json["@type"]:
+                    raise ADAManagerError(
+                        f"Problem report received with problem-code:{message_json['problem-code']} and reason: {message_json['explain']}")
+
+                if "read-did-response" in message_json["@type"]:
+                    read_did_response_message: ReadDIDResponseMessage = ReadDIDResponseMessageSchema().load(message_json)
+
+                    if read_did_response_message.body.status == "revoked":
+                        raise ADAManagerError(
+                            f"MyData DID {mydata_did.did} is revoked"
+                        )
+
+                    return read_did_response_message.body
+
+    async def construct_data_agreement_negotiation_accept_message(self, *, data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody, connection_record: ConnectionRecord) -> typing.Tuple[DataAgreementInstance, DataAgreementNegotiationAcceptMessage]:
+        """Construct data agreement negotiation accept message"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        try:
+            # from_did
+            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+            from_did = DIDMyData.from_public_key_b58(
+                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+            # to_did
+            pairwise_remote_did_record = await storage.search_records(
+                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+                tag_query={"did": connection_record.their_did}
+            ).fetch_single()
+            to_did = DIDMyData.from_public_key_b58(
+                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement negotiation accept message: {err}"
+            )
+
+        # Data agreement offer instance
+        data_agreement_offer_instance = data_agreement_negotiation_offer_body
+
+        # Update data agreement offer instance with accept event
+        data_agreement_accept_event = DataAgreementEvent(
+            event_id=f"{from_did.did}#2",
+            time_stamp=current_datetime_in_iso8601(),
+            did=from_did.did,
+            state=DataAgreementEvent.STATE_ACCEPT
+        )
+        data_agreement_offer_instance.event.append(
+            data_agreement_accept_event
+        )
+
+        # Sign data agreement offer instance
+        data_agreement_offer_instance_dict = data_agreement_offer_instance.serialize()
+
+        signature_options = {
+            "id": f"{from_did.did}#2",
+            "type": "Ed25519Signature2018",
+            "created": current_datetime_in_iso8601(),
+            "verificationMethod": f"{from_did.did}",
+            "proofPurpose": "contractAgreement",
+        }
+
+        # Generate proofs
+        document_with_proof: dict = await sign_data_agreement(
+            data_agreement_offer_instance_dict.copy(
+            ), signature_options, from_did.public_key_b58, wallet
+        )
+
+        # Data agreement offer proof
+        data_agreement_offer_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proofChain")[0])
+
+        # Data agreement accept proof
+        data_agreement_accept_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proofChain")[1])
+
+        # Construct data agreement instance
+        data_agreement_instance = DataAgreementInstance(
+            context=[
+                DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+                ED25519_2018_CONTEXT_URL
+            ],
+            data_agreement_id=data_agreement_offer_instance.data_agreement_id,
+            data_agreement_version=data_agreement_offer_instance.data_agreement_version,
+            data_agreement_template_id=data_agreement_offer_instance.data_agreement_template_id,
+            data_agreement_template_version=data_agreement_offer_instance.data_agreement_template_version,
+            pii_controller_name=data_agreement_offer_instance.pii_controller_name,
+            pii_controller_url=data_agreement_offer_instance.pii_controller_url,
+            usage_purpose=data_agreement_offer_instance.usage_purpose,
+            usage_purpose_description=data_agreement_offer_instance.usage_purpose_description,
+            legal_basis=data_agreement_offer_instance.legal_basis,
+            method_of_use=data_agreement_offer_instance.method_of_use,
+            principle_did=data_agreement_offer_instance.principle_did,
+            data_policy=data_agreement_offer_instance.data_policy,
+            personal_data=data_agreement_offer_instance.personal_data,
+            dpia=data_agreement_offer_instance.dpia,
+            event=[
+                data_agreement_offer_instance.event[0],
+                data_agreement_accept_event
+            ],
+            proof_chain=[
+                data_agreement_offer_proof,
+                data_agreement_accept_proof
+            ]
+        )
+
+        # Construct data agreement accept message
+        data_agreement_accept_message = DataAgreementNegotiationAcceptMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            body=DataAgreementNegotiationAcceptBody(
+                data_agreement_id=data_agreement_offer_instance.data_agreement_id,
+                event=data_agreement_instance.event[1],
+                proof=data_agreement_accept_proof
+            )
+        )
+
+        return (data_agreement_instance, data_agreement_accept_message)
+
+    async def construct_data_agreement_negotiation_reject_message(self,  *, data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody, connection_record: ConnectionRecord) -> typing.Tuple[DataAgreementInstance, DataAgreementNegotiationRejectMessage]:
+        """Construct data agreement negotiation reject message"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        try:
+            # from_did
+            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+            from_did = DIDMyData.from_public_key_b58(
+                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+            # to_did
+            pairwise_remote_did_record = await storage.search_records(
+                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+                tag_query={"did": connection_record.their_did}
+            ).fetch_single()
+            to_did = DIDMyData.from_public_key_b58(
+                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement negotiation accept message: {err}"
+            )
+
+        # Data agreement offer instance
+        data_agreement_offer_instance = data_agreement_negotiation_offer_body
+
+        # Update data agreement offer instance with reject event
+        data_agreement_reject_event = DataAgreementEvent(
+            event_id=f"{from_did.did}#2",
+            time_stamp=current_datetime_in_iso8601(),
+            did=from_did.did,
+            state=DataAgreementEvent.STATE_REJECT
+        )
+
+        data_agreement_offer_instance.event.append(
+            data_agreement_reject_event
+        )
+
+        # Sign data agreement offer instance
+        data_agreement_offer_instance_dict = data_agreement_offer_instance.serialize()
+
+        signature_options = {
+            "id": f"{from_did.did}#2",
+            "type": "Ed25519Signature2018",
+            "created": current_datetime_in_iso8601(),
+            "verificationMethod": f"{from_did.did}",
+            "proofPurpose": "contractAgreement",
+        }
+
+        # Generate proofs
+        document_with_proof: dict = await sign_data_agreement(
+            data_agreement_offer_instance_dict.copy(
+            ), signature_options, from_did.public_key_b58, wallet
+        )
+
+        # Data agreement offer proof
+        data_agreement_offer_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proofChain")[0])
+
+        # Data agreement accept proof
+        data_agreement_reject_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proofChain")[1])
+
+        # Construct data agreement instance
+        data_agreement_instance = DataAgreementInstance(
+            context=[
+                DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+                ED25519_2018_CONTEXT_URL
+            ],
+            data_agreement_id=data_agreement_offer_instance.data_agreement_id,
+            data_agreement_version=data_agreement_offer_instance.data_agreement_version,
+            data_agreement_template_id=data_agreement_offer_instance.data_agreement_template_id,
+            data_agreement_template_version=data_agreement_offer_instance.data_agreement_template_version,
+            pii_controller_name=data_agreement_offer_instance.pii_controller_name,
+            pii_controller_url=data_agreement_offer_instance.pii_controller_url,
+            usage_purpose=data_agreement_offer_instance.usage_purpose,
+            usage_purpose_description=data_agreement_offer_instance.usage_purpose_description,
+            legal_basis=data_agreement_offer_instance.legal_basis,
+            method_of_use=data_agreement_offer_instance.method_of_use,
+            principle_did=data_agreement_offer_instance.principle_did,
+            data_policy=data_agreement_offer_instance.data_policy,
+            personal_data=data_agreement_offer_instance.personal_data,
+            dpia=data_agreement_offer_instance.dpia,
+            event=[
+                data_agreement_offer_instance.event[0],
+                data_agreement_reject_event
+            ],
+            proof_chain=[
+                data_agreement_offer_proof,
+                data_agreement_reject_proof
+            ]
+        )
+
+        # Construct data agreement reject message
+
+        data_agreement_reject_message = DataAgreementNegotiationRejectMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            body=DataAgreementNegotiationRejectBody(
+                data_agreement_id=data_agreement_offer_instance.data_agreement_id,
+                event=data_agreement_instance.event[1],
+                proof=data_agreement_reject_proof
+            )
+        )
+
+        return (data_agreement_instance, data_agreement_reject_message)
+
+    async def construct_data_agreement_negotiation_problem_report_message(self, *, connection_record: ConnectionRecord = None, data_agreement_id: str = None, problem_code: str = None, explain: str = None) -> DataAgreementNegotiationProblemReport:
+        """Construct data agreement negotiation problem report message"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        try:
+            # from_did
+            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+            from_did = DIDMyData.from_public_key_b58(
+                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+            # to_did
+            pairwise_remote_did_record = await storage.search_records(
+                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+                tag_query={"did": connection_record.their_did}
+            ).fetch_single()
+            to_did = DIDMyData.from_public_key_b58(
+                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement negotiation problem-report message: {err}"
+            )
+        
+        # Construct data agreement problem report message
+        data_agreement_negotiation_problem_report = DataAgreementNegotiationProblemReport(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            problem_code=problem_code,
+            explain=explain,
+            data_agreement_id=data_agreement_id
+        )
+
+        return data_agreement_negotiation_problem_report
+    
+    async def send_data_agreement_negotiation_problem_report_message(self, *, connection_record: ConnectionRecord, data_agreement_negotiation_problem_report_message: DataAgreementNegotiationProblemReport) -> None:
+        """Send data agreement negotiation problem report message"""
+
+        responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
+
+        if responder:
+            await responder.send(data_agreement_negotiation_problem_report_message, connection_id=connection_record.connection_id)

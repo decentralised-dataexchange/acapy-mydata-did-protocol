@@ -24,14 +24,6 @@ class ReadDIDHandler(BaseHandler):
             json.dumps(context.message.serialize(), indent=4)
         )
 
-        # Check if connection is ready.
-        if not context.connection_ready:
-            self._logger.info(
-                "Connection not active, skipping read-did handler: %s",
-                context.message_receipt.sender_did,
-            )
-            return
-
         # Initialize ADA manager
         mgr = ADAManager(context)
 

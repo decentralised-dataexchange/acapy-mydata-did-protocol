@@ -1,5 +1,6 @@
 import json
 import typing
+from aiohttp.web_response import json_response
 
 from aiohttp_apispec.decorators import request
 import validators
@@ -16,6 +17,8 @@ from aries_cloudagent.messaging.valid import INDY_DID, UUIDFour, UUID4, INDY_RAW
 from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
 from aries_cloudagent.storage.base import BaseStorage
 from aries_cloudagent.storage.indy import IndyStorage
+from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.wallet.indy import IndyWallet
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord, ConnectionRecordSchema
 from aries_cloudagent.storage.record import StorageRecord
 
@@ -36,6 +39,7 @@ from .models.data_agreement_model import (
 from .models.diddoc_model import MyDataDIDDocSchema
 
 from .utils.regex import MYDATA_DID
+from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
 
 
 class SendCreateDIDMessageMatchInfoSchema(OpenAPISchema):
@@ -81,6 +85,11 @@ class MyDataDIDRegistryDIDCommTransactionRecordsDeleteByIdMatchInfoSchema(OpenAP
         description="MyData DID registry didcomm transaction identifier", required=True, **UUID4
     )
 
+class DummyDIDResolveRouteHandlerQueryStringSchema(OpenAPISchema):
+    """
+    Dummy DID resolve route handler query string schema.
+    """
+    did = fields.Str(description="did:mydata identifier")
 
 class MyDataDIDRegistryDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
     """
@@ -495,6 +504,22 @@ class ListDAPersonalDataCategoryFromWalletResponseSchema(OpenAPISchema):
     )
 
 
+class CreateOrUpdateDataAgreementPersonalDataRestrictionSchema(OpenAPISchema):
+    """
+    Schema for the create or update data agreement personal data restriction
+    """
+
+    schema_id = fields.Str(
+        description="Schema identifier",
+        example="WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+    )
+
+    cred_def_id = fields.Str(
+        description="Credential definition identifier",
+        example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+    )
+
+
 class CreateOrUpdateDataAgreementPersonalDataRequestSchema(OpenAPISchema):
     """
     Schema for the create or update data agreement personal data request
@@ -506,27 +531,23 @@ class CreateOrUpdateDataAgreementPersonalDataRequestSchema(OpenAPISchema):
         required=False,
     )
 
+    restrictions = fields.List(
+        fields.Nested(
+            CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description="List of restrictions",
+        required=False,
+    )
+
 
 class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
     """
     Schema for the create or update data agreement in wallet request
     """
 
-    @validates("context")
-    def validate_context(self, value):
-        """
-        Validate data agreement schema context
-        """
-        if value != DATA_AGREEMENT_V1_SCHEMA_CONTEXT:
-            raise ValidationError(
-                f"Provided data agreement context is either not supported or invalid. "
-                f"Only supported context is {DATA_AGREEMENT_V1_SCHEMA_CONTEXT}."
-            )
-
     # Data agreement schema context i.e. which schema is used
     context = fields.Str(
         data_key="@context",
-        example="https://schema.igrant.io/data-agreements/v1",
+        example="https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld",
         description="Context of the schema",
         required=True
     )
@@ -1151,8 +1172,13 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
         context=context
     )
 
-    # Create and store data agreement in wallet
-    data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement)
+    try:
+
+        # Create and store data agreement in wallet
+        data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement)
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(data_agreement_v1_record.serialize(), status=201)
 
@@ -1550,6 +1576,141 @@ async def unmark_current_connection_marked_as_mydata_did_registry(request: web.B
     return web.Response(status=204)
 
 
+@docs(
+    tags=["ADA - MyData DID CRUD Operations"],
+    summary="Dummy route"
+)
+async def dummy_route_handler(request: web.BaseRequest):
+
+    # Request context
+    context = request.app["request_context"]
+
+    # Wallet instance from request context
+    wallet: IndyWallet = await context.inject(BaseWallet)
+
+    doc = {
+        "credential": {
+            "@context": [
+                "https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld",
+                "https://w3id.org/security/v2"
+            ],
+            "id": "d7216cb1-aedb-471e-96f7-7fef51dedb76",
+            "version": "v1.0",
+            "template_id": "91be609a-4acd-468f-b37a-0f379893b65c",
+            "template_version": "v1.0",
+            "data_controller_name": "Happy Shopping AB",
+            "data_controller_url": "www.happyshopping.com",
+            "data_policy": {
+                "policy_URL": "https://happyshoping.com/privacy-policy/",
+                "jurisdiction": "Sweden",
+                "industry_sector": "Retail",
+                "data_retention_period": "30",
+                "geographic_restriction": "Europe",
+                "storage_location": "Europe"
+            },
+            "purpose": "Customized shopping experience",
+            "purpose_description": "Collecting user data for offering custom tailored shopping experience",
+            "lawful_basis": "<consent/legal_obligation/contract/vital_interest/public_task/legitimate_interest>",
+            "method_of_use": "<null/data-source/data-using-service>",
+            "personal_data": [
+                {
+                    "attribute_id": "f216cb1-aedb-571e-46f7-2fef51dedb54",
+                    "attribute_name": "Name",
+                    "attribute_sensitive": "True",
+                    "attribute_category": "Name"
+                },
+                {
+                    "attribute_id": "f216cb1-aedb-571e-46f7-2fef51dedb54",
+                    "attribute_name": "Age",
+                    "attribute_sensitive": "True",
+                    "attribute_category": "Age"
+                }
+            ],
+            "dpia": {
+                "dpia_date": "2021-05-08T08:41:59+0000",
+                "dpia_summary_url": "https://org.com/dpia_results.html"
+            },
+            "event": [
+                {
+                    "id": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp#1",
+                    "time-stamp": "2021-05-08T08:41:59+0000",
+                    "did": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
+                    "state": "<Definition/Prepration/Capture>"
+                },
+                {
+                    "id": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP#2",
+                    "time-stamp": "2021-05-08T08:41:59+0000",
+                    "did": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP",
+                    "state": "<Definition/Prepration/Capture>"
+                }
+            ]
+        },
+        "options": {
+            "type": "Ed25519Signature2018",
+            "created": "2020-04-10T21:35:35Z",
+            "verificationMethod": (
+                "did:key:"
+                "z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd#"
+                "z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd"
+            ),
+            "proofPurpose": "assertionMethod",
+        },
+    }
+
+    credential : dict = doc["credential"]
+    signature_options : dict = doc["options"]
+
+    verkeys = ["GwpifqCAYcDqh4uduBftkgbF7XfkhwWNPraZPKRW6U1i", "4P85Ho2c974ANiCUe4x588Nb5tpx4JZWZWfkosgei8yW"]
+
+    document_with_proof : dict = await sign_data_agreement(
+        credential.copy(), signature_options, verkeys[0], wallet
+    )
+
+    document_with_proof_chain : dict = await sign_data_agreement(
+        document_with_proof.copy(), signature_options, verkeys[1], wallet
+    )
+
+    valid = await verify_data_agreement_with_proof_chain(document_with_proof_chain.copy(), verkeys, wallet)
+
+    return json_response({
+        "status": "OK" if valid else "NOT OK",
+        "document": document_with_proof_chain,
+    })
+
+
+@docs(
+    tags=["ADA - MyData DID CRUD Operations"],
+    summary="Dummy MyData DID resolve route"
+)
+@querystring_schema(DummyDIDResolveRouteHandlerQueryStringSchema())
+async def dummy_did_resolve_route_handler(request: web.BaseRequest):
+
+    # Request context
+    context = request.app["request_context"]
+
+    # Query string parameters
+
+    # MyData DID
+    mydata_did = None
+    if "did" in request.query and request.query["did"] != "":
+        mydata_did = request.query["did"]
+
+    # Initialise MyData DID Manager
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+
+        await mydata_did_manager.resolve_remote_mydata_did(mydata_did=mydata_did)
+    
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    
+    return web.Response(status=204) 
+
+
+
 async def register(app: web.Application):
     app.add_routes(
         [
@@ -1646,6 +1807,16 @@ async def register(app: web.Application):
             web.delete(
                 "/mydata-did/unset-did-registry-connection",
                 unmark_current_connection_marked_as_mydata_did_registry,
+            ),
+            web.get(
+                "/dummy-route",
+                dummy_route_handler,
+                allow_head=False
+            ),
+            web.get(
+                "/dummy-did-resolve-route",
+                dummy_did_resolve_route_handler,
+                allow_head=False
             ),
         ]
     )

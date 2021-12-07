@@ -10,7 +10,7 @@ from typing import List
 
 from ..utils.regex import MYDATA_DID
 
-DATA_AGREEMENT_V1_SCHEMA_CONTEXT = "https://schema.igrant.io/data-agreements/v1"
+DATA_AGREEMENT_V1_SCHEMA_CONTEXT = "https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld"
 
 
 class DataAgreementDataPolicy(BaseModel):
@@ -282,15 +282,23 @@ class DataAgreementEvent(BaseModel):
         # Unknown fields are excluded
         unknown = EXCLUDE
 
-    def __init__(self, *, time_stamp: str, principle_did: str, state: str, authenticity: str, **kwargs):
+    def __init__(
+        self, 
+        *, 
+        event_id: str = None, 
+        time_stamp: str = None, 
+        principle_did: str = None, 
+        state: str = None, 
+        **kwargs
+    ):
         # Call parent constructor
         super().__init__(**kwargs)
 
         # Set attributes
+        self.event_id = event_id
         self.time_stamp = time_stamp
         self.principle_did = principle_did
         self.state = state
-        self.authenticity = authenticity
 
 
 class DataAgreementEventSchema(BaseModelSchema):
@@ -300,6 +308,12 @@ class DataAgreementEventSchema(BaseModelSchema):
     class Meta:
         # Model class
         model_class = DataAgreementEvent
+    
+    event_id = fields.Str(
+        data_key="id",
+        example="did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
+        description="Data agreement event identifier",
+    )
 
     @validates("time_stamp")
     def validate_time_stamp(self, time_stamp):
@@ -335,13 +349,6 @@ class DataAgreementEventSchema(BaseModelSchema):
     state = fields.Str(
         description="State of the event",
         example="capture",
-        dump_only=True
-    )
-
-    # Authenticity
-    authenticity = fields.Str(
-        description="Signature",
-        example="<signature>",
         dump_only=True
     )
 
@@ -402,21 +409,10 @@ class DataAgreementV1Schema(BaseModelSchema):
         # Unknown fields are excluded
         unknown = EXCLUDE
 
-    @validates("context")
-    def validate_context(self, value):
-        """
-        Validate data agreement schema context
-        """
-        if value != DATA_AGREEMENT_V1_SCHEMA_CONTEXT:
-            raise ValidationError(
-                f"Provided data agreement context is either not supported or invalid. "
-                f"Only supported context is {DATA_AGREEMENT_V1_SCHEMA_CONTEXT}."
-            )
-
     # Data agreement schema context i.e. which schema is used
     context = fields.Str(
         data_key="@context",
-        example="https://schema.igrant.io/data-agreements/v1",
+        example="https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld",
         description="Context of the schema",
         required=True
     )
@@ -447,8 +443,7 @@ class DataAgreementV1Schema(BaseModelSchema):
     data_agreement_template_id = fields.Str(
         data_key="template_id",
         example=UUIDFour.EXAMPLE,
-        description="Data agreement template identifier",
-        dump_only=True
+        description="Data agreement template identifier"
     )
 
     # Data agreement template version
@@ -456,8 +451,7 @@ class DataAgreementV1Schema(BaseModelSchema):
     data_agreement_template_version = fields.Int(
         data_key="template_version",
         example=1,
-        description="Data agreement template version",
-        dump_only=True
+        description="Data agreement template version"
     )
 
     @validates("pii_controller_name")

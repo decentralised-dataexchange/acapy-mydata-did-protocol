@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 
 from urllib.parse import urlparse
 from multibase import decode
@@ -127,6 +128,13 @@ def ok_did(token: str) -> bool:
         return len(decode(token)) == 34 if token else False
     except ValueError:
         return False
+
+
+def current_datetime_in_iso8601() -> str:
+    """
+    Return current datetime in ISO8601 format.
+    """
+    return str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
 
 if __name__ == "__main__":

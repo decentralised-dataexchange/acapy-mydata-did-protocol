@@ -9,7 +9,8 @@ from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
 from aries_cloudagent.messaging.valid import INDY_CRED_DEF_ID, INDY_SCHEMA_ID, UUIDFour
 
-unencrypted_tags = environ.get("EXCH_UNENCRYPTED_TAGS", "False").upper() == "TRUE"
+unencrypted_tags = environ.get(
+    "EXCH_UNENCRYPTED_TAGS", "False").upper() == "TRUE"
 
 
 class V10CredentialExchange(BaseExchangeRecord):
@@ -40,6 +41,12 @@ class V10CredentialExchange(BaseExchangeRecord):
     STATE_CREDENTIAL_RECEIVED = "credential_received"
     STATE_ACKED = "credential_acked"
 
+    DATA_AGREEMENT_OFFER = "offer"
+    DATA_AGREEMENT_ACCEPT = "accept"
+    DATA_AGREEMENT_REJECT = "reject"
+    DATA_AGREEMENT_TERMINATE = "terminate"
+    DATA_AGREEMENT_PROBLEM_REPORT = "problem-report"
+
     def __init__(
         self,
         *,
@@ -52,7 +59,8 @@ class V10CredentialExchange(BaseExchangeRecord):
         state: str = None,
         credential_definition_id: str = None,
         schema_id: str = None,
-        credential_proposal_dict: dict = None,  # serialized credential proposal message
+        # serialized credential proposal message
+        credential_proposal_dict: dict = None,
         credential_offer_dict: dict = None,  # serialized credential offer message
         credential_offer: dict = None,  # indy credential offer
         credential_request: dict = None,  # indy credential request
@@ -67,6 +75,11 @@ class V10CredentialExchange(BaseExchangeRecord):
         auto_remove: bool = True,
         error_msg: str = None,
         trace: bool = False,
+        data_agreement: dict = None,
+        data_agreement_id: str = None,
+        data_agreement_template_id: str = None,
+        data_agreement_status: str = None,
+        data_agreement_problem_report: dict = None,
         **kwargs,
     ):
         """Initialize a new V10CredentialExchange."""
@@ -95,6 +108,13 @@ class V10CredentialExchange(BaseExchangeRecord):
         self.auto_remove = auto_remove
         self.error_msg = error_msg
         self.trace = trace
+
+        # Data agreement associated with the credential exchange
+        self.data_agreement = data_agreement
+        self.data_agreement_id = data_agreement_id
+        self.data_agreement_template_id = data_agreement_template_id
+        self.data_agreement_status = data_agreement_status
+        self.data_agreement_problem_report = data_agreement_problem_report
 
     @property
     def credential_exchange_id(self) -> str:
@@ -129,6 +149,11 @@ class V10CredentialExchange(BaseExchangeRecord):
                 "role",
                 "state",
                 "trace",
+                "data_agreement",
+                "data_agreement_id",
+                "data_agreement_template_id",
+                "data_agreement_status",
+                "data_agreement_problem_report",
             )
         }
 
@@ -224,7 +249,8 @@ class V10CredentialExchangeSchema(BaseExchangeSchema):
         required=False,
         description="Credential as received, prior to storage in holder wallet",
     )
-    credential = fields.Dict(required=False, description="Credential as stored")
+    credential = fields.Dict(
+        required=False, description="Credential as stored")
     auto_offer = fields.Bool(
         required=False,
         description="Holder choice to accept offer in this credential exchange",
@@ -253,4 +279,37 @@ class V10CredentialExchangeSchema(BaseExchangeSchema):
     )
     revocation_id = fields.Str(
         required=False, description="Credential identifier within revocation registry"
+    )
+
+    # Data Agreement
+    data_agreement = fields.Dict(
+        required=False,
+        description="Data agreement associated with the credential exchange",
+    )
+
+    # Data Agreement identifier
+    data_agreement_id = fields.Str(
+        required=False,
+        description="Data agreement identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Data Agreement template identifier
+    data_agreement_template_id = fields.Str(
+        required=False,
+        description="Data agreement template identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Data Agreement status
+    data_agreement_status = fields.Str(
+        required=False,
+        description="Data agreement status",
+        example="offer",
+    )
+
+    # Data Agreement problem report
+    data_agreement_problem_report = fields.Dict(
+        required=False,
+        description="Data agreement problem report",
     )

@@ -1,12 +1,9 @@
-from os import environ
 from typing import Any
 
 from marshmallow import fields, validate
 
 from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..data_agreement_model import DataAgreementV1, DataAgreementV1Schema
 
 class DataAgreementV1Record(BaseExchangeRecord):
     """
@@ -29,7 +26,14 @@ class DataAgreementV1Record(BaseExchangeRecord):
     # Wallet record tags used for filtering
     # Note: These are not tags for the ledger, but rather tags for the wallet
     #      to group records.
-    TAG_NAMES = {"~method_of_use", "~data_agreement_id", "~published_flag", "~delete_flag"}
+    TAG_NAMES = {
+        "~method_of_use", 
+        "~data_agreement_id", 
+        "~published_flag", 
+        "~delete_flag",
+        "~schema_id",
+        "~cred_def_id",
+    }
 
     # State of the data agreement.
     # Only one possible value at this stage of the DA - preparation
@@ -48,6 +52,8 @@ class DataAgreementV1Record(BaseExchangeRecord):
         data_agreement: dict = None,
         published_flag: str = "False",
         delete_flag: str = "False",
+        schema_id: str = None,
+        cred_def_id: str = None,
         **kwargs
     ):
         """
@@ -67,6 +73,8 @@ class DataAgreementV1Record(BaseExchangeRecord):
         self.data_agreement_id = data_agreement_id
         self.published_flag = published_flag
         self.delete_flag = delete_flag
+        self.schema_id = schema_id
+        self.cred_def_id = cred_def_id
 
     @property
     def data_agreement_record_id(self) -> str:
@@ -84,7 +92,9 @@ class DataAgreementV1Record(BaseExchangeRecord):
                 "data_agreement",
                 "data_agreement_id",
                 "published_flag",
-                "delete_flag"
+                "delete_flag",
+                "schema_id",
+                "cred_def_id",
             )
         }
 
@@ -170,5 +180,19 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
                 "False",
             ]
         )
+    )
+
+    # Schema identifier
+    schema_id = fields.Str(
+        required=True,
+        description="The schema identifier.",
+        example="WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0"
+    )
+
+    # Credential definition identifier
+    cred_def_id = fields.Str(
+        required=True,
+        description="The credential definition identifier.",
+        example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
     )
 

@@ -10,6 +10,7 @@ from aiohttp_apispec import (
 )
 from json.decoder import JSONDecodeError
 from marshmallow import fields, validate
+import uuid
 
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.issuer.base import IssuerError
@@ -27,7 +28,7 @@ from aries_cloudagent.messaging.valid import (
     UUIDFour,
     UUID4,
 )
-from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.storage.error import StorageDuplicateError, StorageError, StorageNotFoundError
 from aries_cloudagent.wallet.base import BaseWallet
 from aries_cloudagent.wallet.error import WalletError
 from aries_cloudagent.utils.outofband import serialize_outofband
@@ -50,6 +51,10 @@ from .models.credential_exchange import (
 )
 
 from ....v1_0.decorators.data_agreement_context_decorator import DataAgreementContextDecorator
+from ....v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
+from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
+from ....v1_0.manager import ADAManager, ADAManagerError
+from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
 
 
 class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
@@ -86,6 +91,20 @@ class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
                 if m.startswith("STATE_")
             ]
         ),
+    )
+
+    # Data Agreement identifier
+    data_agreement_id = fields.Str(
+        required=False,
+        description="Data agreement identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Data Agreement template identifier
+    data_agreement_template_id = fields.Str(
+        required=False,
+        description="Data agreement template identifier",
+        example=UUIDFour.EXAMPLE,
     )
 
 
@@ -193,7 +212,8 @@ class V10CredentialProposalRequestSchemaBase(AdminAPIMessageTracingSchema):
 class V10CredentialProposalRequestOptSchema(V10CredentialProposalRequestSchemaBase):
     """Request schema for sending credential proposal on optional proposal preview."""
 
-    credential_proposal = fields.Nested(CredentialPreviewSchema, required=False)
+    credential_proposal = fields.Nested(
+        CredentialPreviewSchema, required=False)
 
 
 class V10CredentialProposalRequestMandSchema(V10CredentialProposalRequestSchemaBase):
@@ -240,6 +260,11 @@ class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
         example=False,
     )
 
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=False
+    )
+
 
 class V10CredentialIssueRequestSchema(OpenAPISchema):
     """Request schema for sending credential issue admin message."""
@@ -260,7 +285,8 @@ class V10PublishRevocationsSchema(OpenAPISchema):
 
     rrid2crid = fields.Dict(
         required=False,
-        keys=fields.Str(example=INDY_REV_REG_ID["example"]),  # marshmallow 3.0 ignores
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID["example"]),
         values=fields.List(
             fields.Str(
                 description="Credential revocation identifier", **INDY_CRED_REV_ID
@@ -275,7 +301,8 @@ class V10ClearPendingRevocationsRequestSchema(OpenAPISchema):
 
     purge = fields.Dict(
         required=False,
-        keys=fields.Str(example=INDY_REV_REG_ID["example"]),  # marshmallow 3.0 ignores
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID["example"]),
         values=fields.List(
             fields.Str(
                 description="Credential revocation identifier", **INDY_CRED_REV_ID
@@ -326,6 +353,32 @@ class CredExIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class CredentialExchangeSendBoundOfferRequestSchema(AdminAPIMessageTracingSchema):
+    """Request schema for sending bound offer."""
+
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=False
+    )
+
+
+class DataAgreementBoundCredentialOfferMatchInfoSchema(OpenAPISchema):
+    """Path parameters and validators for request taking data agreement bound credential offer id."""
+
+    connection_id = fields.UUID(
+        description="Connection identifier",
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        required=True,
+        description="The unique identifier for the data agreement.",
+        example=UUIDFour.EXAMPLE
+    )
+
+
 @docs(tags=["issue-credential"], summary="Fetch all credential exchange records")
 @querystring_schema(V10CredentialExchangeListQueryStringSchema)
 @response_schema(V10CredentialExchangeListResultSchema(), 200)
@@ -346,7 +399,7 @@ async def credential_exchange_list(request: web.BaseRequest):
         tag_filter["thread_id"] = request.query["thread_id"]
     post_filter = {
         k: request.query[k]
-        for k in ("connection_id", "role", "state")
+        for k in ("connection_id", "role", "state", "data_agreement_id", "data_agreement_template_id")
         if request.query.get(k, "") != ""
     }
 
@@ -511,7 +564,8 @@ async def credential_exchange_send(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_proposal = CredentialProposal(
             comment=comment,
@@ -591,12 +645,14 @@ async def credential_exchange_send_proposal(request: web.BaseRequest):
     connection_record = None
     cred_ex_record = None
     try:
-        preview = CredentialPreview.deserialize(preview_spec) if preview_spec else None
+        preview = CredentialPreview.deserialize(
+            preview_spec) if preview_spec else None
         connection_record = await ConnectionRecord.retrieve_by_id(
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_manager = CredentialManager(context)
         cred_ex_record = await credential_manager.create_proposal(
@@ -711,7 +767,8 @@ async def credential_exchange_create_free_offer(request: web.BaseRequest):
         raise web.HTTPBadRequest(reason="cred_def_id is required")
 
     auto_issue = body.get(
-        "auto_issue", context.settings.get("debug.auto_respond_credential_request")
+        "auto_issue", context.settings.get(
+            "debug.auto_respond_credential_request")
     )
     auto_remove = body.get("auto_remove")
     comment = body.get("comment")
@@ -734,7 +791,8 @@ async def credential_exchange_create_free_offer(request: web.BaseRequest):
     else:
         conn_did = await wallet.get_public_did()
         if not conn_did:
-            raise web.HTTPBadRequest(reason=f"Wallet '{wallet.name}' has no public DID")
+            raise web.HTTPBadRequest(
+                reason=f"Wallet '{wallet.name}' has no public DID")
         connection_id = None
 
     did_info = await wallet.get_public_did()
@@ -742,7 +800,8 @@ async def credential_exchange_create_free_offer(request: web.BaseRequest):
         "endpoint", context.settings.get("default_endpoint")
     )
     if not endpoint:
-        raise web.HTTPBadRequest(reason="An endpoint for the public DID is required")
+        raise web.HTTPBadRequest(
+            reason="An endpoint for the public DID is required")
 
     cred_ex_record = None
     try:
@@ -764,7 +823,8 @@ async def credential_exchange_create_free_offer(request: web.BaseRequest):
             perf_counter=r_time,
         )
 
-        oob_url = serialize_outofband(credential_offer_message, conn_did, endpoint)
+        oob_url = serialize_outofband(
+            credential_offer_message, conn_did, endpoint)
         result = cred_ex_record.serialize()
     except (BaseModelError, CredentialManagerError, LedgerError) as err:
         await internal_error(
@@ -814,7 +874,8 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
         raise web.HTTPBadRequest(reason="cred_def_id is required")
 
     auto_issue = body.get(
-        "auto_issue", context.settings.get("debug.auto_respond_credential_request")
+        "auto_issue", context.settings.get(
+            "debug.auto_respond_credential_request")
     )
 
     auto_remove = body.get("auto_remove")
@@ -831,7 +892,8 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         (cred_ex_record, credential_offer_message,) = await _create_free_offer(
             context,
@@ -856,16 +918,62 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
             cred_ex_record or connection_record,
             outbound_handler,
         )
-    
-    print("Patched decorator set : ", credential_offer_message._decorators)
 
-    # Add data agreement context decorator
-    credential_offer_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
-        message_type="non-protocol",
-        message={
-            "data_agreement_id": "12345678-1234-1234-1234"
+    # Add data agreement context decorator if data agreement identifier is present
+    if "data_agreement_id" in body:
+
+        # Fetch data agreement record
+        data_agreement_id = body.get("data_agreement_id")
+
+        # Tag filter
+        tag_filter = {
+            "data_agreement_id": data_agreement_id,
+            "published_flag": "True",
+            "delete_flag": "False",
         }
-    )
+
+        try:
+
+            # Query for the old data agreement record by id
+            old_data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
+                context,
+                tag_filter=tag_filter
+            )
+
+            # Initialize ADA manager
+            ada_manager = ADAManager(context)
+
+            # Construct data agreement offer message.
+            data_agreement_offer_message = await ada_manager.construct_data_agreement_offer_message(
+                connection_record=connection_record,
+                data_agreement_template_record=old_data_agreement_record,
+            )
+
+            # Add data agreement context decorator
+            credential_offer_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+                message_type="protocol",
+                message=data_agreement_offer_message.serialize()
+            )
+
+            cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+            cred_ex_record.data_agreement = data_agreement_offer_message.body.serialize()
+            cred_ex_record.data_agreement_id = data_agreement_offer_message.body.data_agreement_id
+            cred_ex_record.data_agreement_template_id = data_agreement_offer_message.body.data_agreement_template_id
+            cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_OFFER
+            await cred_ex_record.save(context)
+
+            # Save data agreement instance metadata
+            await ada_manager.store_data_agreement_instance_metadata(
+                data_agreement_id=data_agreement_offer_message.body.data_agreement_id,
+                data_agreement_template_id=data_agreement_offer_message.body.data_agreement_template_id,
+                data_exchange_record_id=cred_ex_record.credential_exchange_id,
+                method_of_use=data_agreement_offer_message.body.method_of_use
+            )
+
+            result = cred_ex_record.serialize()
+
+        except (StorageNotFoundError, StorageDuplicateError) as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     await outbound_handler(credential_offer_message, connection_id=connection_id)
 
@@ -884,6 +992,7 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
     summary="Send holder a credential offer in reference to a proposal with preview",
 )
 @match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(CredentialExchangeSendBoundOfferRequestSchema())
 @response_schema(V10CredentialExchangeSchema(), 200)
 async def credential_exchange_send_bound_offer(request: web.BaseRequest):
     """
@@ -903,6 +1012,12 @@ async def credential_exchange_send_bound_offer(request: web.BaseRequest):
 
     context = request.app["request_context"]
     outbound_handler = request.app["outbound_message_router"]
+
+    # Request body
+    body = await request.json()
+
+    # Data agreement identifier from request body
+    data_agreement_id = body.get("data_agreement_id", None)
 
     credential_exchange_id = request.match_info["cred_ex_id"]
     try:
@@ -928,13 +1043,64 @@ async def credential_exchange_send_bound_offer(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_manager = CredentialManager(context)
         (
             cred_ex_record,
             credential_offer_message,
         ) = await credential_manager.create_offer(cred_ex_record, comment=None)
+
+        if data_agreement_id:
+
+            # Tag filter
+            tag_filter = {
+                "data_agreement_id": data_agreement_id,
+                "published_flag": "True",
+                "delete_flag": "False",
+            }
+
+            try:
+
+                # Query for the old data agreement record by id
+                old_data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
+                    context,
+                    tag_filter=tag_filter
+                )
+
+                # Initialize ADA manager
+                ada_manager = ADAManager(context)
+
+                # Construct data agreement offer message.
+                data_agreement_offer_message = await ada_manager.construct_data_agreement_offer_message(
+                    connection_record=connection_record,
+                    data_agreement_template_record=old_data_agreement_record,
+                )
+
+                # Add data agreement context decorator
+                credential_offer_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+                    message_type="protocol",
+                    message=data_agreement_offer_message.serialize()
+                )
+
+                cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+                cred_ex_record.data_agreement = data_agreement_offer_message.body.serialize()
+                cred_ex_record.data_agreement_id = data_agreement_offer_message.body.data_agreement_id
+                cred_ex_record.data_agreement_template_id = data_agreement_offer_message.body.data_agreement_template_id
+                cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_OFFER
+                await cred_ex_record.save(context)
+
+                # Save data agreement instance metadata
+                await ada_manager.store_data_agreement_instance_metadata(
+                    data_agreement_id=data_agreement_offer_message.body.data_agreement_id,
+                    data_agreement_template_id=data_agreement_offer_message.body.data_agreement_template_id,
+                    data_exchange_record_id=cred_ex_record.credential_exchange_id,
+                    method_of_use=data_agreement_offer_message.body.method_of_use
+                )
+
+            except (StorageNotFoundError, StorageDuplicateError, ADAManagerError) as err:
+                raise web.HTTPBadRequest(reason=err.roll_up) from err
 
         result = cred_ex_record.serialize()
     except (StorageError, BaseModelError, CredentialManagerError, LedgerError) as err:
@@ -991,7 +1157,8 @@ async def credential_exchange_send_request(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_manager = CredentialManager(context)
         (
@@ -1000,6 +1167,44 @@ async def credential_exchange_send_request(request: web.BaseRequest):
         ) = await credential_manager.create_request(
             cred_ex_record, connection_record.my_did
         )
+
+        # Initialize ADA manager
+        ada_manager = ADAManager(context)
+
+        try:
+            if cred_ex_record.data_agreement:
+
+                if cred_ex_record.data_agreement_status == V10CredentialExchange.DATA_AGREEMENT_OFFER:
+                    # Check if data agreement is present in credential exchange record and it is in offer state
+                    # If so, then accept the data agreement and attach it to the credential request
+
+                    # Load data agreement offer
+                    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+                        cred_ex_record.data_agreement
+                    )
+
+                    (data_agreement_instance, data_agreement_negotiation_accept_message) = await ada_manager.construct_data_agreement_negotiation_accept_message(
+                        data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
+                        connection_record=connection_record,
+                    )
+
+                    # Update credential request message with data agreement context decorator
+                    credential_request_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+                        message_type="protocol",
+                        message=data_agreement_negotiation_accept_message.serialize()
+                    )
+
+                    # Update credential exchange record with data agreement
+                    cred_ex_record.data_agreement = data_agreement_instance.serialize()
+                    cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_ACCEPT
+
+                    await cred_ex_record.save(context)
+                else:
+                    raise web.HTTPBadRequest(
+                        reason="Data agreement is not in offer state.")
+
+        except ADAManagerError as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
 
         result = cred_ex_record.serialize()
     except (StorageError, CredentialManagerError, BaseModelError) as err:
@@ -1060,7 +1265,8 @@ async def credential_exchange_issue(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_manager = CredentialManager(context)
         (
@@ -1130,7 +1336,8 @@ async def credential_exchange_store(request: web.BaseRequest):
             context, connection_id
         )
         if not connection_record.is_ready:
-            raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
 
         credential_manager = CredentialManager(context)
         (
@@ -1180,7 +1387,19 @@ async def credential_exchange_remove(request: web.BaseRequest):
         cred_ex_record = await V10CredentialExchange.retrieve_by_id(
             context, credential_exchange_id
         )
+
         await cred_ex_record.delete_record(context)
+
+        # Initialize ADA manager
+        ada_manager = ADAManager(context)
+
+        # Delete data agreement instance metadata
+        await ada_manager.delete_data_agreement_instance_metadata(
+            tag_query={
+                "data_exchange_record_id": credential_exchange_id
+            }
+        )
+
     except StorageNotFoundError as err:
         await internal_error(err, web.HTTPNotFound, cred_ex_record, outbound_handler)
     except StorageError as err:
@@ -1232,6 +1451,157 @@ async def credential_exchange_problem_report(request: web.BaseRequest):
     return web.json_response({})
 
 
+@docs(
+    tags=["issue-credential"], summary="Send data agreement reject message for a credential offer"
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def send_data_agreement_reject_message_for_credential_offer(request: web.BaseRequest):
+    """
+    Request handler for sending data agreement reject message for credential offer
+
+    Args:
+        request: aiohttp request object
+
+    """
+
+    # Initialize request context
+    context = request.app["request_context"]
+
+    # Initialize outbound handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Path parameters
+    credential_exchange_id = request.match_info["cred_ex_id"]
+
+    cred_ex_record = None
+    try:
+        # Fetch credential exchange record
+        cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    if not cred_ex_record.state == V10CredentialExchange.STATE_OFFER_RECEIVED:
+        raise web.HTTPBadRequest(
+            reason=f"Credential exchange must be in {V10CredentialExchange.STATE_OFFER_RECEIVED} state in order to reject the offer.")
+
+    if not cred_ex_record.data_agreement:
+        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
+
+    if not cred_ex_record.data_agreement_status == V10CredentialExchange.DATA_AGREEMENT_OFFER:
+        raise web.HTTPBadRequest(
+            reason=f"Data agreement must be in offer state to reject it."
+        )
+
+    # Send data agreement reject message
+
+    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+        cred_ex_record.data_agreement
+    )
+
+    # Initialize ADA manager
+    ada_manager = ADAManager(context)
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+
+        (data_agreement_instance, data_agreement_negotiation_reject_message) = await ada_manager.construct_data_agreement_negotiation_reject_message(
+            data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
+            connection_record=connection_record,
+        )
+
+        # Update credential exchange record with data agreement
+        cred_ex_record.data_agreement = data_agreement_instance.serialize()
+        cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_REJECT
+
+        await cred_ex_record.save(context)
+
+        await outbound_handler(data_agreement_negotiation_reject_message, connection_id=cred_ex_record.connection_id)
+
+    except (ADAManagerError,StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(cred_ex_record.serialize())
+
+@docs(
+    tags=["issue-credential"], summary="Send data agreement negotiation problem report message"
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+async def send_data_agreement_negotiation_problem_report(request: web.BaseRequest):
+    """
+    Request handler for sending data agreement negotiation problem report message
+
+    Args:
+        request: aiohttp request object
+    """
+
+    # Initialize request context
+    context = request.app["request_context"]
+
+    # Initialize outbound handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Path parameters
+    credential_exchange_id = request.match_info["cred_ex_id"]
+
+    cred_ex_record = None
+    try:
+        # Fetch credential exchange record
+        cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    
+
+    if not cred_ex_record.data_agreement:
+        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
+    
+
+    # Initialize ADA manager
+    ada_manager = ADAManager(context)
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+        
+
+        data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
+            connection_record=connection_record,
+            data_agreement_id=cred_ex_record.data_agreement_id,
+            problem_code=None,
+            explain="Problem report message",
+        )
+
+        await ada_manager.send_data_agreement_negotiation_problem_report_message(
+            connection_record=connection_record,
+            data_agreement_negotiation_problem_report_message=data_agreement_negotiation_problem_report,
+        )
+
+    except (ADAManagerError,StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({})
+
+
+    pass
+
+
 async def register(app: web.Application):
     """Register routes."""
 
@@ -1277,6 +1647,16 @@ async def register(app: web.Application):
                 "/issue-credential/records/{cred_ex_id}",
                 credential_exchange_remove,
             ),
+            web.post(
+                "/issue-credential/records/{cred_ex_id}/data-agreement-negotiation/reject",
+                send_data_agreement_reject_message_for_credential_offer,
+            ),
+
+            web.post(
+                "/issue-credential/records/{cred_ex_id}/data-agreement-negotiation/problem-report",
+                send_data_agreement_negotiation_problem_report,
+            ),
+
         ]
     )
 

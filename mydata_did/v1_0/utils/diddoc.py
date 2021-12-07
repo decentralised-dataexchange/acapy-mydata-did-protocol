@@ -401,7 +401,6 @@ if __name__ == "__main__":
     }
     diddoc_str = json.dumps(diddoc_json)
     diddoc = DIDDoc.from_json(diddoc_str)
-    print(json.dumps(diddoc.serialize(), indent=4))
     if diddoc.validate():
         print("\nValidation checks passed...")
     else:

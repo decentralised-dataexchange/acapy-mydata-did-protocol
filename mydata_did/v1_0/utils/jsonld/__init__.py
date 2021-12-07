@@ -1,0 +1,1 @@
+ED25519_2018_CONTEXT_URL = "https://w3id.org/security/v2"
