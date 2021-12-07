@@ -16,7 +16,7 @@ you are using (with the highest value for `J`).
 
 Requirements:
 - Python 3.6 or higher
-- ACA-Py
+- ACA-Py 0.5.6
 
 ### Setup Aries Cloud Agent - Python
 
@@ -26,23 +26,15 @@ noting that this is not the only way to setup an ACA-Py instance. For more setup
 configurations, see the [Aries Cloud Agent - Python
 repository](https://github.com/hyperledger/aries-cloudagent-python).
 
-First, clone
-[ACA-Py](https://github.com/hyperledger/aries-cloudagent-python) and prepare a
-virtual environment:
+First, prepare a virtual environment:
 ```sh
-$ git clone https://github.com/hyperledger/aries-cloudagent-python
-$ cd aries-cloudagent-python
 $ python3 -m venv env
 $ source env/bin/activate
 ```
 
-Install ACA-Py into the virtual environment:
+Install ACA-Py 0.5.6 into the virtual environment:
 ```sh
-$ pip install -e .
-```
-**Or** include the `indy` feature if you want to use Indy ledgers or wallets:
-```sh
-$ pip install -e .[indy]
+$ pip install aries-cloudagent==0.5.6
 ```
 
 ### Plugin Installation
@@ -50,18 +42,34 @@ $ pip install -e .[indy]
 Install this plugin into the virtual environment:
 
 ```sh
-$ pip install git+https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol.git@master#egg=mydata_did
+$ pip install git+https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol.git@master
 ```
 
-**Note:** Depending on your version of `pip`, you may need to drop the
-`#egg=...` to install the plugin with the above command.
+**Note:** Depending on your version of `pip`, you may need to drop or the
+`#egg=mydata_did` to install the plugin with the above command.
 
 ### Plugin Loading
 Start up ACA-Py with the plugin parameter:
 ```sh
 $ aca-py start \
-    -it http localhost 3000 -it ws localhost 3001 \
+    -it http 0.0.0.0 8002 \
     -ot http \
-    -e http://localhost:3000 ws://localhost:3001 \
+    -e "http://localhost:8002/" \
+    --label "Agent" \
+    --admin 0.0.0.0 8001 \
+    --admin-insecure-mode \
+    --auto-accept-requests \
+    --auto-ping-connection \
+    --auto-respond-credential-offer \
+    --auto-respond-credential-request \
+    --auto-store-credential \
+    --auto-respond-presentation-proposal \
+    --auto-respond-presentation-request \
+    --auto-verify-presentation \
+    --genesis-url https://indy.igrant.io/genesis \
+    --wallet-type indy \
+    --wallet-name "agent_wallet" \
+    --log-level info \
+    --wallet-key "wallet@123" \
     --plugin "mydata_did"
 ```
