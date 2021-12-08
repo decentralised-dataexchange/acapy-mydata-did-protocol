@@ -1163,6 +1163,10 @@ class ADAManager:
                     )
                 )
 
+                read_data_agreement_response_message.assign_thread_id(
+                    thid=read_data_agreement_message._thread_id
+                )
+
                 # Update data agreement crud diddcomm transaction record with response message
                 data_agreement_crud_didcomm_transaction_record.messages_list.append(
                     read_data_agreement_response_message.serialize()
