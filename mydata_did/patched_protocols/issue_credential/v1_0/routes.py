@@ -37,6 +37,8 @@ from aries_cloudagent.utils.tracing import trace_event, get_timer, AdminAPIMessa
 from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
 from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
 
+from mydata_did.v1_0.messages.problem_report import DataAgreementNegotiationProblemReportReason
+
 from .manager import CredentialManager, CredentialManagerError
 from .message_types import SPEC_URI
 from .messages.credential_proposal import CredentialProposal
@@ -262,7 +264,7 @@ class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
 
     # Data agreement identifier
     data_agreement_id = fields.Str(
-        description="Data agreement identifier", required=False
+        description="Data agreement identifier", required=False, example=UUIDFour.EXAMPLE
     )
 
 
@@ -377,6 +379,12 @@ class DataAgreementBoundCredentialOfferMatchInfoSchema(OpenAPISchema):
         description="The unique identifier for the data agreement.",
         example=UUIDFour.EXAMPLE
     )
+
+class SendDataAgreementNegotiationProblemReportRequestSchema(OpenAPISchema):
+    """Request schema for sending problem report."""
+
+    explain = fields.Str(description="Describe the problem", required=True, example="Data agreement context decorator not found in the didcomm message.")
+    problem_code = fields.Str(description="Problem code", required=True, example=DataAgreementNegotiationProblemReportReason.DATA_AGREEMENT_CONTEXT_INVALID.value)
 
 
 @docs(tags=["issue-credential"], summary="Fetch all credential exchange records")
@@ -1536,6 +1544,7 @@ async def send_data_agreement_reject_message_for_credential_offer(request: web.B
     tags=["issue-credential"], summary="Send data agreement negotiation problem report message"
 )
 @match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(SendDataAgreementNegotiationProblemReportRequestSchema())
 async def send_data_agreement_negotiation_problem_report(request: web.BaseRequest):
     """
     Request handler for sending data agreement negotiation problem report message
@@ -1552,6 +1561,11 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
 
     # Path parameters
     credential_exchange_id = request.match_info["cred_ex_id"]
+
+    # Request payload
+    body = await request.json()
+    explain = body.get("explain", "")
+    problem_code = body.get("problem_code", "")
 
     cred_ex_record = None
     try:
@@ -1584,8 +1598,8 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
             connection_record=connection_record,
             data_agreement_id=cred_ex_record.data_agreement_id,
-            problem_code=None,
-            explain="Problem report message",
+            problem_code=problem_code,
+            explain=explain,
         )
 
         await ada_manager.send_data_agreement_negotiation_problem_report_message(
@@ -1597,9 +1611,6 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({})
-
-
-    pass
 
 
 async def register(app: web.Application):

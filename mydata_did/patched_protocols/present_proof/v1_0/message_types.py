@@ -13,7 +13,7 @@ PRESENTATION_REQUEST = f"present-proof/1.0/request-presentation"
 PRESENTATION = f"present-proof/1.0/presentation"
 PRESENTATION_ACK = f"present-proof/1.0/ack"
 
-PROTOCOL_PACKAGE = "aries_cloudagent.protocols.present_proof.v1_0"
+PROTOCOL_PACKAGE = "mydata_did.patched_protocols.present_proof.v1_0"
 
 MESSAGE_TYPES = DIDCommPrefix.qualify_all(
     {

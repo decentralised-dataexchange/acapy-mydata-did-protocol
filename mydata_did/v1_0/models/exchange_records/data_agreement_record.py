@@ -54,6 +54,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         delete_flag: str = "False",
         schema_id: str = None,
         cred_def_id: str = None,
+        data_agreement_proof_presentation_request: dict = None,
         **kwargs
     ):
         """
@@ -75,6 +76,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         self.delete_flag = delete_flag
         self.schema_id = schema_id
         self.cred_def_id = cred_def_id
+        self.data_agreement_proof_presentation_request = data_agreement_proof_presentation_request
 
     @property
     def data_agreement_record_id(self) -> str:
@@ -95,6 +97,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
                 "delete_flag",
                 "schema_id",
                 "cred_def_id",
+                "data_agreement_proof_presentation_request",
             )
         }
 
@@ -196,3 +199,8 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
         example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
     )
 
+    # Data agreement proof presentation request
+    data_agreement_proof_presentation_request = fields.Dict(
+        required=True,
+        description="The data agreement proof presentation request.",
+    )

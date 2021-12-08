@@ -40,7 +40,7 @@ from .messages.delete_did import DeleteDIDMessage, DeleteDIDMessageBody
 from .messages.delete_did_response import DeleteDIDResponseMessage, DeleteDIDResponseMessageBody
 from .messages.create_did_response import CreateDIDResponseMessage
 from .messages.problem_report import (
-    MyDataDIDProblemReportMessage, 
+    MyDataDIDProblemReportMessage,
     MyDataDIDProblemReportMessageReason,
     DataAgreementNegotiationProblemReport
 )
@@ -1016,6 +1016,7 @@ class ADAManager:
         personal_data_list = data_agreement.get("personal_data", [])
 
         personal_data_new_list = []
+        personal_data_new_list_for_proof_request = []
 
         try:
 
@@ -1026,15 +1027,18 @@ class ADAManager:
 
                 if personal_data_record:
 
-                    temp_personal_data = {
+                    personal_data_new_list.append({
                         "attribute_id": personal_data_record.data_agreement_personal_data_record_id,
                         "attribute_name": personal_data_record.attribute_name,
                         "attribute_category": personal_data_record.attribute_category,
                         "attribute_sensitive": personal_data_record.attribute_sensitive,
                         "attribute_description": personal_data_record.attribute_description,
-                    }
+                    })
 
-                    personal_data_new_list.append(temp_personal_data)
+                    personal_data_new_list_for_proof_request.append({
+                        "attribute_name": personal_data_record.attribute_name,
+                        "restrictions": personal_data.get("restrictions", [])
+                    })
 
         except (StorageNotFoundError, StorageError) as e:
             raise ADAManagerError(
@@ -1121,9 +1125,19 @@ class ADAManager:
                         f"Failed to create data agreement: {err.roll_up}")
                     return None
         else:
-            # TODO : If method-of-use is "data-using-service", then create a data exchange template
-            # TODO: Check if igrantio-operator protocol is available
-            pass
+            # If method-of-use is "data-using-service"
+
+            # Update data agreement with proof presentation request
+            proof_request_dict = await self.construct_proof_presentation_request_dict_from_data_agreement_personal_data(
+                personal_data=personal_data_new_list_for_proof_request,
+                usage_purpose=data_agreement.usage_purpose,
+                usage_purpose_description=data_agreement.usage_purpose_description,
+                data_agreement_template_version=str(semver.VersionInfo(
+                    str(data_agreement.data_agreement_template_version)))
+
+            )
+
+            data_agreement_v1_record.data_agreement_proof_presentation_request = proof_request_dict
 
         # Save the data agreement record
         await data_agreement_v1_record.save(self.context)
@@ -1180,6 +1194,7 @@ class ADAManager:
         personal_data_list = data_agreement.get("personal_data", [])
 
         personal_data_new_list = []
+        personal_data_new_list_for_proof_request = []
 
         try:
 
@@ -1190,21 +1205,24 @@ class ADAManager:
 
                 if personal_data_record:
 
-                    temp_personal_data = {
+                    personal_data_new_list.append({
                         "attribute_id": personal_data_record.data_agreement_personal_data_record_id,
                         "attribute_name": personal_data_record.attribute_name,
                         "attribute_category": personal_data_record.attribute_category,
                         "attribute_sensitive": personal_data_record.attribute_sensitive,
                         "attribute_description": personal_data_record.attribute_description,
-                    }
+                    })
 
-                    personal_data_new_list.append(temp_personal_data)
+                    personal_data_new_list_for_proof_request.append({
+                        "attribute_name": personal_data_record.attribute_name,
+                        "restrictions": personal_data.get("restrictions", [])
+                    })
 
             # Replace the personal data list with the new list
             data_agreement["personal_data"] = personal_data_new_list
 
             # Generate data agreement model class instance
-            data_agreement = DataAgreementV1Schema().load(data_agreement)
+            data_agreement : DataAgreementV1 = DataAgreementV1Schema().load(data_agreement)
 
             # Tag filter
             tag_filter = {
@@ -1261,8 +1279,8 @@ class ADAManager:
                         # Create schema
 
                         schema_name = data_agreement.usage_purpose
-                        schema_version = str(
-                            data_agreement.data_agreement_template_version)
+                        schema_version = str(semver.VersionInfo(
+                            str(data_agreement.data_agreement_template_version)))
                         attributes = [
                             personal_data["attribute_name"]
                             for personal_data in data_agreement["personal_data"]
@@ -1298,9 +1316,18 @@ class ADAManager:
                             f"Failed to create data agreement: {err.roll_up}")
                         return None
             else:
-                # TODO : If method-of-use is "data-using-service", then create a data exchange template
-                # TODO: Check if igrantio-operator protocol is available
-                pass
+                # If method-of-use is "data-using-service"
+
+                # Update data agreement with proof presentation request
+                proof_request_dict = await self.construct_proof_presentation_request_dict_from_data_agreement_personal_data(
+                    personal_data=personal_data_new_list_for_proof_request,
+                    usage_purpose=data_agreement.usage_purpose,
+                    usage_purpose_description=data_agreement.usage_purpose_description,
+                    data_agreement_template_version=str(semver.VersionInfo(
+                        str(data_agreement.data_agreement_template_version)))
+                )
+
+                new_data_agreement_record.data_agreement_proof_presentation_request = proof_request_dict
 
             # Save the new data agreement record
             await new_data_agreement_record.save(self.context)
@@ -1367,8 +1394,7 @@ class ADAManager:
                     for cred_def_record in cred_def_records:
                         await storage.delete_record(cred_def_record)
             else:
-                # TODO: Delete data exchange template if method-of-use is "data-using-service"
-                # TODO: Check if igrantio-operator protocol is available
+                # nothing to perform
                 pass
 
             # Update the old data agreement record
@@ -2144,7 +2170,7 @@ class ADAManager:
             raise ADAManagerError(
                 f"Failed to construct data agreement negotiation problem-report message: {err}"
             )
-        
+
         # Construct data agreement problem report message
         data_agreement_negotiation_problem_report = DataAgreementNegotiationProblemReport(
             from_did=from_did.did,
@@ -2156,7 +2182,7 @@ class ADAManager:
         )
 
         return data_agreement_negotiation_problem_report
-    
+
     async def send_data_agreement_negotiation_problem_report_message(self, *, connection_record: ConnectionRecord, data_agreement_negotiation_problem_report_message: DataAgreementNegotiationProblemReport) -> None:
         """Send data agreement negotiation problem report message"""
 
@@ -2164,3 +2190,26 @@ class ADAManager:
 
         if responder:
             await responder.send(data_agreement_negotiation_problem_report_message, connection_id=connection_record.connection_id)
+
+    async def construct_proof_presentation_request_dict_from_data_agreement_personal_data(self, *, personal_data: typing.List[dict], usage_purpose: str, usage_purpose_description: str, data_agreement_template_version: str) -> dict:
+        """Construct proof presentation request dict from data agreement personal data"""
+
+        proof_presentation_request_dict: dict = {
+            "name": usage_purpose,
+            "comment": usage_purpose_description,
+            "version": data_agreement_template_version,
+            "requested_attributes": {},
+            "requested_predicates": {}
+        }
+
+        index = 1
+        for personal_data_item in personal_data:
+            requested_attribute = {
+                "name": personal_data_item.get("attribute_name"),
+                "restrictions": personal_data_item.get("restrictions")
+            }
+            proof_presentation_request_dict["requested_attributes"]["additionalProp" + str(
+                index)] = requested_attribute
+            index += 1
+
+        return proof_presentation_request_dict

@@ -16,6 +16,10 @@ from ...patched_protocols.issue_credential.v1_0.models.credential_exchange impor
     V10CredentialExchange
 )
 
+from ...patched_protocols.present_proof.v1_0.models.presentation_exchange import (
+    V10PresentationExchange
+)
+
 import json
 
 
@@ -177,5 +181,101 @@ class DataAgreementNegotiationRejectMessageHandler(BaseHandler):
             await cred_ex_record.save(context)
 
         if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
-            # TODO: Implement data-agreement-negotiation/1.0/reject message handler for data-using-service method-of-use
-            pass
+            # Implement data-agreement-negotiation/1.0/reject message handler for data-using-service method-of-use
+            # Fetch exchange record (presentation exchange if method of use is "data-using-service")
+            tag_filter = {}
+            post_filter = {
+                "data_agreement_id": data_agreement_negotiation_reject_message_body.data_agreement_id
+            }
+            records = await V10PresentationExchange.query(context, tag_filter, post_filter)
+
+            if not records:
+                self._logger.info(
+                    "Presentation exchange record not found; Failed to handle data agreement reject message for data agreement: %s",
+                    data_agreement_negotiation_reject_message_body.data_agreement_id,
+                )
+                return
+            
+            if len(records) > 1:
+                self._logger.info(
+                    "Duplicate presentation exchange records found; Failed to handle data agreement reject message for data agreement: %s",
+                    data_agreement_negotiation_reject_message_body.data_agreement_id,
+                )
+                return
+            
+            pres_ex_record: V10PresentationExchange = records[0]
+
+            # Check if the presentation exchange record is in the "request_sent" state
+            if pres_ex_record.state != V10PresentationExchange.STATE_REQUEST_SENT:
+                self._logger.info(
+                    "Presentation exchange record not in request sent state; Failed to handle data agreement reject message for data agreement: %s",
+                    data_agreement_negotiation_reject_message_body.data_agreement_id,
+                )
+                return
+
+            # Reconstruct the data agreement with the reject event and proof
+
+            # Deserialise data agreement
+            data_agreement_offer: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+                pres_ex_record.data_agreement
+            )
+
+            # Construct data agreement with proof chain
+            data_agreement_with_proof_chain = DataAgreementInstance(
+                context=data_agreement_offer.context,
+                data_agreement_id=data_agreement_offer.data_agreement_id,
+                data_agreement_version=data_agreement_offer.data_agreement_version,
+                data_agreement_template_id=data_agreement_offer.data_agreement_template_id,
+                data_agreement_template_version=data_agreement_offer.data_agreement_template_version,
+                pii_controller_name=data_agreement_offer.pii_controller_name,
+                pii_controller_url=data_agreement_offer.pii_controller_url,
+                usage_purpose=data_agreement_offer.usage_purpose,
+                usage_purpose_description=data_agreement_offer.usage_purpose_description,
+                legal_basis=data_agreement_offer.legal_basis,
+                method_of_use=data_agreement_offer.method_of_use,
+                data_policy=data_agreement_offer.data_policy,
+                personal_data=data_agreement_offer.personal_data,
+                dpia=data_agreement_offer.dpia,
+                event=[
+                    data_agreement_offer.event[0],
+                    data_agreement_negotiation_reject_message_body.event
+                ],
+                proof_chain=[
+                    data_agreement_offer.proof,
+                    data_agreement_negotiation_reject_message_body.proof
+                ],
+                principle_did=data_agreement_offer.principle_did
+            )
+
+            # Principle MyData DID (Data Subject)
+            principle_did = DIDMyData.from_did(
+                data_agreement_negotiation_reject_message_body.proof.verification_method)
+
+            # Controler MyData DID (Data Controller - Organisation)
+            controller_did = DIDMyData.from_did(
+                data_agreement_offer.proof.verification_method)
+
+            # Verify signatures on data agreement
+            valid = await verify_data_agreement_with_proof_chain(
+                data_agreement_with_proof_chain.serialize(),
+                [
+                    controller_did.public_key_b58,
+                    principle_did.public_key_b58
+                ],
+                wallet
+            )
+
+            if not valid:
+                self._logger.error(
+                    "Data agreement accept verification failed"
+                )
+
+                raise HandlerException(
+                    "Data agreement accept signature verification failed"
+                )
+
+            # Update presentation exchange record with data agreement metadata
+            pres_ex_record.data_agreement = data_agreement_with_proof_chain.serialize()
+            pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_REJECT
+
+            await pres_ex_record.save(context)

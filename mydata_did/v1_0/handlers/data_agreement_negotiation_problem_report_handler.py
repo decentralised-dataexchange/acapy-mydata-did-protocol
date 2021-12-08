@@ -11,6 +11,10 @@ from ...patched_protocols.issue_credential.v1_0.models.credential_exchange impor
     V10CredentialExchange
 )
 
+from ...patched_protocols.present_proof.v1_0.models.presentation_exchange import (
+    V10PresentationExchange
+)
+
 import json
 
 
@@ -78,7 +82,7 @@ class DataAgreementNegotiationProblemReportHandler(BaseHandler):
         if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
             # Check method of use and fetch appropriate exchange record
 
-            # Fetch exchante record (credential exchange if method of use is "data-source")
+            # Fetch exchange record (credential exchange if method of use is "data-source")
             tag_filter = {}
             post_filter = {
                 "data_agreement_id": data_agreement_negotiation_problem_report.data_agreement_id
@@ -111,8 +115,41 @@ class DataAgreementNegotiationProblemReportHandler(BaseHandler):
             await cred_ex_record.save(context)
 
         if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
-            # TODO: Implement data agreement negotiation problem report handler for data using service
-            pass
+            # Implement data agreement negotiation problem report handler for data using service
+
+            # Check method of use and fetch appropriate exchange record
+
+            # Fetch exchange record (presentation exchange if method of use is "data-using-service")
+            tag_filter = {}
+            post_filter = {
+                "data_agreement_id": data_agreement_negotiation_problem_report.data_agreement_id
+            }
+            records = await V10PresentationExchange.query(context, tag_filter, post_filter)
+
+            if not records:
+                self._logger.info(
+                    "Presentation exchange record not found; Failed to handle negotiation problem report for data agreement: %s",
+                    data_agreement_negotiation_problem_report.data_agreement_id,
+                )
+                return
+            
+            if len(records) > 1:
+                self._logger.info(
+                    "Duplicate presentation exchange records found; Failed to handle negotiation problem report for data agreement: %s",
+                    data_agreement_negotiation_problem_report.data_agreement_id,
+                )
+                return
+            
+            pres_ex_record: V10PresentationExchange = records[0]
+
+            # Update exchange record data agreement status
+            pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_PROBLEM_REPORT
+
+            # Add problem report to presentation exchange record
+            pres_ex_record.data_agreement_problem_report = data_agreement_negotiation_problem_report.serialize()
+
+            # Save the presentation exchange record
+            await pres_ex_record.save(context)
 
 
         

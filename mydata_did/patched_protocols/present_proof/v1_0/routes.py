@@ -52,6 +52,12 @@ from .models.presentation_exchange import (
     V10PresentationExchangeSchema,
 )
 
+from ....v1_0.decorators.data_agreement_context_decorator import DataAgreementContextDecorator
+from ....v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
+from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
+from ....v1_0.manager import ADAManager, ADAManagerError
+from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
+from ....patched_protocols.issue_credential.v1_0.routes import SendDataAgreementNegotiationProblemReportRequestSchema
 
 class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
     """Parameters and validators for presentation exchange list query."""
@@ -89,6 +95,20 @@ class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
         ),
     )
 
+    # Data Agreement identifier
+    data_agreement_id = fields.Str(
+        required=False,
+        description="Data agreement identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Data Agreement template identifier
+    data_agreement_template_id = fields.Str(
+        required=False,
+        description="Data agreement template identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
 
 class V10PresentationExchangeListSchema(OpenAPISchema):
     """Result schema for an Aries RFC 37 v1.0 presentation exchange query."""
@@ -108,7 +128,8 @@ class V10PresentationProposalRequestSchema(AdminAPIMessageTracingSchema):
     comment = fields.Str(
         description="Human-readable comment", required=False, allow_none=True
     )
-    presentation_proposal = fields.Nested(PresentationPreviewSchema(), required=True)
+    presentation_proposal = fields.Nested(
+        PresentationPreviewSchema(), required=True)
     auto_present = fields.Boolean(
         description=(
             "Whether to respond automatically to presentation requests, building "
@@ -178,7 +199,8 @@ class IndyProofReqNonRevokedSchema(OpenAPISchema):
         """
         if not (data.get("from") or data.get("to")):
             raise ValidationError(
-                "Non-revocation interval must have at least one end", ("fro", "to")
+                "Non-revocation interval must have at least one end", ("fro",
+                                                                       "to")
             )
 
 
@@ -248,7 +270,8 @@ class IndyProofReqAttrSpecSchema(OpenAPISchema):
 class IndyProofReqPredSpecSchema(OpenAPISchema):
     """Schema for predicate specification in indy proof request."""
 
-    name = fields.String(example="index", description="Attribute name", required=True)
+    name = fields.String(
+        example="index", description="Attribute name", required=True)
     p_type = fields.String(
         description="Predicate type ('<', '<=', '>=', or '>')",
         required=True,
@@ -266,7 +289,8 @@ class IndyProofReqPredSpecSchema(OpenAPISchema):
 class IndyProofRequestSchema(OpenAPISchema):
     """Schema for indy proof request."""
 
-    nonce = fields.String(description="Nonce", required=False, example="1234567890")
+    nonce = fields.String(description="Nonce",
+                          required=False, example="1234567890")
     name = fields.String(
         description="Proof request name",
         required=False,
@@ -282,13 +306,15 @@ class IndyProofRequestSchema(OpenAPISchema):
     requested_attributes = fields.Dict(
         description=("Requested attribute specifications of proof request"),
         required=True,
-        keys=fields.Str(example="0_attr_uuid"),  # marshmallow/apispec v3.0 ignores
+        # marshmallow/apispec v3.0 ignores
+        keys=fields.Str(example="0_attr_uuid"),
         values=fields.Nested(IndyProofReqAttrSpecSchema()),
     )
     requested_predicates = fields.Dict(
         description=("Requested predicate specifications of proof request"),
         required=True,
-        keys=fields.Str(example="0_age_GE_uuid"),  # marshmallow/apispec v3.0 ignores
+        # marshmallow/apispec v3.0 ignores
+        keys=fields.Str(example="0_age_GE_uuid"),
         values=fields.Nested(IndyProofReqPredSpecSchema()),
     )
     non_revoked = fields.Nested(IndyProofReqNonRevokedSchema(), required=False)
@@ -359,7 +385,8 @@ class V10PresentationRequestSchema(AdminAPIMessageTracingSchema):
     self_attested_attributes = fields.Dict(
         description=("Self-attested attributes to build into proof"),
         required=True,
-        keys=fields.Str(example="attr_name"),  # marshmallow/apispec v3.0 ignores
+        # marshmallow/apispec v3.0 ignores
+        keys=fields.Str(example="attr_name"),
         values=fields.Str(
             example="self_attested_value",
             description=(
@@ -374,7 +401,8 @@ class V10PresentationRequestSchema(AdminAPIMessageTracingSchema):
             "requested-attribute specifiers"
         ),
         required=True,
-        keys=fields.Str(example="attr_referent"),  # marshmallow/apispec v3.0 ignores
+        # marshmallow/apispec v3.0 ignores
+        keys=fields.Str(example="attr_referent"),
         values=fields.Nested(IndyRequestedCredsRequestedAttrSchema()),
     )
     requested_predicates = fields.Dict(
@@ -383,7 +411,8 @@ class V10PresentationRequestSchema(AdminAPIMessageTracingSchema):
             "requested-predicate specifiers"
         ),
         required=True,
-        keys=fields.Str(example="pred_referent"),  # marshmallow/apispec v3.0 ignores
+        # marshmallow/apispec v3.0 ignores
+        keys=fields.Str(example="pred_referent"),
         values=fields.Nested(IndyRequestedCredsRequestedPredSchema()),
     )
     trace = fields.Bool(
@@ -420,6 +449,19 @@ class PresExIdMatchInfoSchema(OpenAPISchema):
     )
 
 
+class SendPresentationRequestForDataAgreementRequestSchema(OpenAPISchema):
+    """Request schema for sending a presentation request for a data agreement."""
+
+    connection_id = fields.UUID(
+        description="Connection identifier", required=True, example=UUIDFour.EXAMPLE
+    )
+
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=True, **UUID4
+    )
+
+
 @docs(tags=["present-proof"], summary="Fetch all present-proof exchange records")
 @querystring_schema(V10PresentationExchangeListQueryStringSchema)
 @response_schema(V10PresentationExchangeListSchema(), 200)
@@ -440,7 +482,7 @@ async def presentation_exchange_list(request: web.BaseRequest):
         tag_filter["thread_id"] = request.query["thread_id"]
     post_filter = {
         k: request.query[k]
-        for k in ("connection_id", "role", "state")
+        for k in ("connection_id", "role", "state", "data_agreement_id", "data_agreement_template_id")
         if request.query.get(k, "") != ""
     }
 
@@ -587,7 +629,8 @@ async def presentation_exchange_send_proposal(request: web.BaseRequest):
         )
         presentation_proposal_message = PresentationProposal(
             comment=comment,
-            presentation_proposal=PresentationPreview.deserialize(presentation_preview),
+            presentation_proposal=PresentationPreview.deserialize(
+                presentation_preview),
         )
     except (BaseModelError, StorageError) as err:
         await internal_error(
@@ -603,7 +646,8 @@ async def presentation_exchange_send_proposal(request: web.BaseRequest):
         trace_msg,
     )
     auto_present = body.get(
-        "auto_present", context.settings.get("debug.auto_respond_presentation_request")
+        "auto_present", context.settings.get(
+            "debug.auto_respond_presentation_request")
     )
 
     presentation_manager = PresentationManager(context)
@@ -929,6 +973,47 @@ async def presentation_exchange_send_presentation(request: web.BaseRequest):
             },
             comment=body.get("comment"),
         )
+
+
+        # Initialize ADA manager
+        ada_manager = ADAManager(context)
+
+        try:
+            if pres_ex_record.data_agreement:
+
+                if pres_ex_record.data_agreement_status == V10PresentationExchange.DATA_AGREEMENT_OFFER:
+                    # Check if data agreement is present in presentation exchange record and it is in offer state
+                    # If so, then accept the data agreement and attach it to the presentation message
+
+                    # Load data agreement offer
+                    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+                        pres_ex_record.data_agreement
+                    )
+
+                    (data_agreement_instance, data_agreement_negotiation_accept_message) = await ada_manager.construct_data_agreement_negotiation_accept_message(
+                        data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
+                        connection_record=connection_record,
+                    )
+
+                    # Update presentation message with data agreement context decorator
+                    presentation_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+                        message_type="protocol",
+                        message=data_agreement_negotiation_accept_message.serialize()
+                    )
+
+                    # Update credential exchange record with data agreement
+                    pres_ex_record.data_agreement = data_agreement_instance.serialize()
+                    pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_ACCEPT
+
+                    await pres_ex_record.save(context)
+                else:
+                    raise web.HTTPBadRequest(
+                        reason="Data agreement is not in offer state.")
+
+        except ADAManagerError as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+
         result = pres_ex_record.serialize()
     except (
         BaseModelError,
@@ -1039,10 +1124,21 @@ async def presentation_exchange_remove(request: web.BaseRequest):
     presentation_exchange_id = request.match_info["pres_ex_id"]
     pres_ex_record = None
     try:
-        pres_ex_record = await V10PresentationExchange.retrieve_by_id(
+        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
             context, presentation_exchange_id
         )
         await pres_ex_record.delete_record(context)
+
+        # Initialize ADA manager
+        ada_manager = ADAManager(context)
+
+        # Delete data agreement instance metadata
+        await ada_manager.delete_data_agreement_instance_metadata(
+            tag_query={
+                "data_exchange_record_id": presentation_exchange_id
+            }
+        )
+
     except StorageNotFoundError as err:
         await internal_error(err, web.HTTPNotFound, pres_ex_record, outbound_handler)
     except StorageError as err:
@@ -1050,6 +1146,296 @@ async def presentation_exchange_remove(request: web.BaseRequest):
 
     return web.json_response({})
 
+
+@docs(tags=["present-proof"], summary="Send a presentation request in reference to a data agreement")
+@request_schema(SendPresentationRequestForDataAgreementRequestSchema())
+async def send_presentation_request_for_data_agreement(request: web.BaseRequest):
+    """
+    Request handler to sent a presentation request in reference to a data agreement.
+
+    Args:
+        request: aiohttp request object
+    """
+
+    # Retrieve context
+    context = request.app["request_context"]
+
+    # Outbound message handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Request payload
+    body = await request.json()
+    data_agreement_id = body.get("data_agreement_id")
+    connection_id = body.get("connection_id")
+
+    # Fetch the connection record
+
+    connection_record = None
+    try:
+        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+    except (
+        StorageNotFoundError,
+        BaseModelError,
+    ) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    # Fetch data agreement
+
+    # Tag filter
+    tag_filter = {
+        "data_agreement_id": data_agreement_id,
+        "published_flag": "True",
+        "delete_flag": "False",
+    }
+
+    try:
+
+        # Query for the old data agreement record by id
+        old_data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
+            context,
+            tag_filter=tag_filter
+        )
+
+        # Check if data agreement method-of-use is data-using-service
+        if old_data_agreement_record.method_of_use != DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
+            raise web.HTTPBadRequest(
+                reason=f"Data agreement method-of-use must be {DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE}"
+            )
+
+        # Construct presentation request message.
+
+        indy_proof_request = old_data_agreement_record.data_agreement_proof_presentation_request
+        comment = indy_proof_request.pop("comment")
+
+        if not indy_proof_request.get("nonce"):
+            indy_proof_request["nonce"] = await generate_pr_nonce()
+
+        presentation_request_message = PresentationRequest(
+            comment=comment,
+            request_presentations_attach=[
+                AttachDecorator.from_indy_dict(
+                    indy_dict=indy_proof_request,
+                    ident=ATTACH_DECO_IDS[PRESENTATION_REQUEST],
+                )
+            ],
+        )
+
+        # Construct presentation exchange record
+
+        presentation_manager = PresentationManager(context)
+        pres_ex_record = None
+        try:
+            (pres_ex_record) = await presentation_manager.create_exchange_for_request(
+                connection_id=connection_id,
+                presentation_request_message=presentation_request_message,
+            )
+            result = pres_ex_record.serialize()
+        except (BaseModelError, StorageError) as err:
+            await internal_error(
+                err,
+                web.HTTPBadRequest,
+                pres_ex_record or connection_record,
+                outbound_handler,
+            )
+
+        # Initialize ADA manager
+        ada_manager = ADAManager(context)
+
+        # Construct data agreement offer message.
+        data_agreement_offer_message = await ada_manager.construct_data_agreement_offer_message(
+            connection_record=connection_record,
+            data_agreement_template_record=old_data_agreement_record,
+        )
+
+        # Add data agreement context decorator
+        presentation_request_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+            message_type="protocol",
+            message=data_agreement_offer_message.serialize()
+        )
+
+        pres_ex_record.presentation_request_dict = presentation_request_message.serialize()
+        pres_ex_record.data_agreement = data_agreement_offer_message.body.serialize()
+        pres_ex_record.data_agreement_id = data_agreement_offer_message.body.data_agreement_id
+        pres_ex_record.data_agreement_template_id = data_agreement_offer_message.body.data_agreement_template_id
+        pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_OFFER
+        await pres_ex_record.save(context)
+
+        # Save data agreement instance metadata
+        await ada_manager.store_data_agreement_instance_metadata(
+            data_agreement_id=data_agreement_offer_message.body.data_agreement_id,
+            data_agreement_template_id=data_agreement_offer_message.body.data_agreement_template_id,
+            data_exchange_record_id=pres_ex_record.presentation_exchange_id,
+            method_of_use=data_agreement_offer_message.body.method_of_use
+        )
+
+        result = pres_ex_record.serialize()
+
+    except StorageError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    await outbound_handler(presentation_request_message, connection_id=connection_id)
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=["present-proof"], summary="Send data agreement reject message for a presentation request"
+)
+@match_info_schema(PresExIdMatchInfoSchema())
+@response_schema(V10PresentationExchangeSchema(), 200)
+async def send_data_agreement_reject_message_for_presentation_request(request: web.BaseRequest):
+    """
+    Request handler for sending data agreement reject message for presentation request
+
+    Args:
+        request: aiohttp request object
+
+    """
+
+    # Initialize request context
+    context = request.app["request_context"]
+
+    # Initialize outbound handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Path parameters
+    presentation_exchange_id = request.match_info["pres_ex_id"]
+
+    pres_ex_record = None
+    try:
+        # Fetch presentation exchange record
+        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
+            context, presentation_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    if not pres_ex_record.state == V10PresentationExchange.STATE_REQUEST_RECEIVED:
+        raise web.HTTPBadRequest(
+            reason=f"Presentation exchange must be in {V10PresentationExchange.STATE_REQUEST_RECEIVED} state in order to reject the offer.")
+
+    if not pres_ex_record.data_agreement:
+        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
+
+    if not pres_ex_record.data_agreement_status == V10PresentationExchange.DATA_AGREEMENT_OFFER:
+        raise web.HTTPBadRequest(
+            reason=f"Data agreement must be in offer state to reject it."
+        )
+
+    # Send data agreement reject message
+
+    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+        pres_ex_record.data_agreement
+    )
+
+    # Initialize ADA manager
+    ada_manager = ADAManager(context)
+
+    connection_record = None
+    connection_id = pres_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+
+        (data_agreement_instance, data_agreement_negotiation_reject_message) = await ada_manager.construct_data_agreement_negotiation_reject_message(
+            data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
+            connection_record=connection_record,
+        )
+
+        # Update presentation exchange record with data agreement
+        pres_ex_record.data_agreement = data_agreement_instance.serialize()
+        pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_REJECT
+
+        await pres_ex_record.save(context)
+
+        await outbound_handler(data_agreement_negotiation_reject_message, connection_id=pres_ex_record.connection_id)
+
+    except (ADAManagerError,StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(pres_ex_record.serialize())
+
+
+@docs(
+    tags=["present-proof"], summary="Send data agreement negotiation problem report message"
+)
+@match_info_schema(PresExIdMatchInfoSchema())
+@request_schema(SendDataAgreementNegotiationProblemReportRequestSchema())
+async def send_data_agreement_negotiation_problem_report(request: web.BaseRequest):
+    """
+    Request handler for sending data agreement negotiation problem report message
+
+    Args:
+        request: aiohttp request object
+    """
+
+    # Initialize request context
+    context = request.app["request_context"]
+
+    # Initialize outbound handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Path parameters
+    presentation_exchange_id = request.match_info["pres_ex_id"]
+
+    # Request payload
+    body = await request.json()
+    explain = body.get("explain", "")
+    problem_code = body.get("problem_code", "")
+
+    pres_ex_record = None
+    try:
+        # Fetch presentation exchange record
+        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
+            context, presentation_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    
+
+    if not pres_ex_record.data_agreement:
+        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
+    
+
+    # Initialize ADA manager
+    ada_manager = ADAManager(context)
+
+    connection_record = None
+    connection_id = pres_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+        
+
+        data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
+            connection_record=connection_record,
+            data_agreement_id=pres_ex_record.data_agreement_id,
+            problem_code=problem_code,
+            explain=explain,
+        )
+
+        await ada_manager.send_data_agreement_negotiation_problem_report_message(
+            connection_record=connection_record,
+            data_agreement_negotiation_problem_report_message=data_agreement_negotiation_problem_report,
+        )
+
+    except (ADAManagerError,StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({})
 
 async def register(app: web.Application):
     """Register routes."""
@@ -1096,6 +1482,18 @@ async def register(app: web.Application):
             web.delete(
                 "/present-proof/records/{pres_ex_id}",
                 presentation_exchange_remove,
+            ),
+            web.post(
+                "/present-proof/data-agreement-negotiation/offer",
+                send_presentation_request_for_data_agreement,
+            ),
+            web.post(
+                "/present-proof/records/{pres_ex_id}/data-agreement-negotiation/reject",
+                send_data_agreement_reject_message_for_presentation_request,
+            ),
+            web.post(
+                "/present-proof/records/{pres_ex_id}/data-agreement-negotiation/problem-report",
+                send_data_agreement_negotiation_problem_report,
             ),
         ]
     )
