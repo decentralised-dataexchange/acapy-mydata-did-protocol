@@ -24,7 +24,7 @@ from aries_cloudagent.storage.record import StorageRecord
 
 from .manager import ADAManager, ADAManagerError
 from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord, MyDataDIDRegistryDIDCommTransactionRecordSchema
-from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction
+from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction, DataAgreementCRUDDIDCommTransactionSchema
 from .models.exchange_records.data_agreement_record import DataAgreementV1Record, DataAgreementV1RecordSchema
 from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecordSchema, DataAgreementPersonalDataRecord
 from .models.data_agreement_model import (
@@ -85,11 +85,21 @@ class MyDataDIDRegistryDIDCommTransactionRecordsDeleteByIdMatchInfoSchema(OpenAP
         description="MyData DID registry didcomm transaction identifier", required=True, **UUID4
     )
 
+
+class DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema(OpenAPISchema):
+    """Delete a transaction record by its identifier."""
+
+    da_crud_didcomm_tx_id = fields.Str(
+        description="Data agreement CRUD didcomm transaction identifier", required=True, **UUID4
+    )
+
+
 class DummyDIDResolveRouteHandlerQueryStringSchema(OpenAPISchema):
     """
     Dummy DID resolve route handler query string schema.
     """
     did = fields.Str(description="did:mydata identifier")
+
 
 class MyDataDIDRegistryDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
     """
@@ -118,6 +128,39 @@ class MyDataDIDRegistryDIDCommTransactionRecordListQueryStringSchema(OpenAPISche
             [
                 getattr(MyDataDIDRegistryDIDCommTransactionRecord, m)
                 for m in vars(MyDataDIDRegistryDIDCommTransactionRecord)
+                if m.startswith("MESSAGE_TYPE_")
+            ]
+        ),
+    )
+
+
+class DACRUDDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    """
+    Query string schema for listing data agreement CRUD DIDComm transaction records.
+    """
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description="Connection identifier",
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description="Thread identifier",
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        description="Message type",
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DataAgreementCRUDDIDCommTransaction, m)
+                for m in vars(DataAgreementCRUDDIDCommTransaction)
                 if m.startswith("MESSAGE_TYPE_")
             ]
         ),
@@ -268,9 +311,10 @@ class MyDataDIDRegistryMyDataDIDListResponseSchema(OpenAPISchema):
     )
 
 
-class ReadDataAgreementMatchInfoSchema(OpenAPISchema):
+class ReadDataAgreementRequestSchema(OpenAPISchema):
     data_agreement_id = fields.Str(
-        description="Data agreement identifier", required=True
+        description="Data agreement identifier", required=True,
+        example=UUIDFour.EXAMPLE,
     )
     connection_id = fields.UUID(
         description="Connection identifier",
@@ -684,6 +728,47 @@ class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
     dpia = fields.Nested(DataAgreementDPIASchema, required=False)
 
 
+class DataAgreementCRUDDIDCommTransactionResponseSchema(OpenAPISchema):
+    """
+    Schema for the data agreement CRUD DID comm transaction response
+    """
+
+    # Transaction identifier
+    da_crud_didcomm_tx_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description="Data agreement CRUD DIDComm transaction identifier",
+        required=False,
+    )
+
+    # Thread identifier
+    thread_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description="Thread identifier",
+        required=False,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        example="read-data-agreement",
+        description="Message type",
+        required=False,
+    )
+
+    # Message list
+    messages_list = fields.List(
+        fields.Str(),
+        description="List of messages",
+        required=False,
+    )
+
+    # Connection identifier
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description="Connection identifier",
+        required=False,
+    )
+
+
 class MarkExistingConnectionAsMyDataDIDRegistryMatchInfoSchema(OpenAPISchema):
     """
     Schema for the mark existing connection as my data DID registry match info
@@ -1055,8 +1140,9 @@ async def mydata_did_remote_records_list(request: web.BaseRequest):
     return web.json_response(results)
 
 
-@docs(tags=["ADA - Data Agreement Functions"], summary="Read data agreement")
-@match_info_schema(ReadDataAgreementMatchInfoSchema())
+@docs(tags=["ADA - Data Agreement Functions"], summary="Send read data agreement message to Data Controller (remote agent)")
+@request_schema(ReadDataAgreementRequestSchema())
+@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(), 200)
 async def send_read_data_agreement(request: web.BaseRequest):
     """
     Send read-data-agreement message to the connection
@@ -1065,11 +1151,13 @@ async def send_read_data_agreement(request: web.BaseRequest):
     # Request context
     context = request.app["request_context"]
 
-    # Fetch URL path parameters
+    # Request payload
+    body = await request.json()
+
     # Data agreement ID
-    data_agreement_id = request.match_info["data_agreement_id"]
+    data_agreement_id = body.get("data_agreement_id")
     # Connection ID
-    connection_id = request.match_info["connection_id"]
+    connection_id = body.get("connection_id")
 
     # Check if data agreement ID is provided
     if not data_agreement_id:
@@ -1093,11 +1181,15 @@ async def send_read_data_agreement(request: web.BaseRequest):
         # Initialise MyData DID Manager
         mydata_did_manager = ADAManager(context=context)
         # Send read-data-agreement message
-        transaction_record: DataAgreementCRUDDIDCommTransaction = await mydata_did_manager.send_read_data_agreement_message(connection=connection_record, data_agreement_id=data_agreement_id)
-        if transaction_record:
-            result = {
-                "read_data_agreement_tx_id": transaction_record.thread_id
-            }
+        transaction_record: DataAgreementCRUDDIDCommTransaction = await mydata_did_manager.send_read_data_agreement_message(connection_record=connection_record, data_agreement_id=data_agreement_id)
+
+        result = {
+            "da_crud_didcomm_tx_id": transaction_record.da_crud_didcomm_tx_id,
+            "thread_id": transaction_record.thread_id,
+            "message_type": transaction_record.message_type,
+            "messages_list": [json.loads(message) if isinstance(message, str) else message for message in transaction_record.messages_list],
+            "connection_id": transaction_record.connection_id,
+        }
 
     except StorageNotFoundError as err:
         raise web.HTTPNotFound(reason=err.roll_up) from err
@@ -1107,6 +1199,8 @@ async def send_read_data_agreement(request: web.BaseRequest):
 
 # List data agreement crud didcomm transactions from the wallet
 @docs(tags=["ADA - Data Agreement Functions"], summary="List data agreements crud didcomm transactions from the wallet")
+@querystring_schema(DACRUDDIDCommTransactionRecordListQueryStringSchema())
+@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(many=True), 200)
 async def list_data_agreements_crud_didcomm_transactions(request: web.BaseRequest):
     """
     List data agreements crud didcomm transactions from the wallet
@@ -1114,16 +1208,30 @@ async def list_data_agreements_crud_didcomm_transactions(request: web.BaseReques
     # Request context
     context = request.app["request_context"]
 
+    # Get query string parameters
+    tag_filter = {}
+
+    # Thread ID
+    if "thread_id" in request.query and request.query["thread_id"] != "":
+        tag_filter["thread_id"] = request.query["thread_id"]
+
+    # Connection ID
+    if "connection_id" in request.query and request.query["connection_id"] != "":
+        tag_filter["connection_id"] = request.query["connection_id"]
+
+    # Message type
+    if "message_type" in request.query and request.query["message_type"] != "":
+        tag_filter["message_type"] = request.query["message_type"]
+
     # Transactions list to be returned
     transactions = []
     try:
-        # Initialise MyData DID Manager
-        mydata_did_manager: ADAManager = ADAManager(
-            context=context
-        )
 
         # Fetch data agreements crud didcomm transactions from the wallet
-        transactions = await mydata_did_manager.fetch_data_agreement_crud_didcomm_transactions_from_wallet()
+        transactions: typing.List[DataAgreementCRUDDIDCommTransaction] = await DataAgreementCRUDDIDCommTransaction.query(
+            context,
+            tag_filter
+        )
 
         # Serialize transactions
         transactions = [
@@ -1131,14 +1239,52 @@ async def list_data_agreements_crud_didcomm_transactions(request: web.BaseReques
                 "da_crud_didcomm_tx_id": transaction.da_crud_didcomm_tx_id,
                 "thread_id": transaction.thread_id,
                 "message_type": transaction.message_type,
-                "messages_list": [json.loads(message) for message in transaction.messages_list]
+                "messages_list": [json.loads(message) if isinstance(message, str) else message for message in transaction.messages_list],
+                "connection_id": transaction.connection_id,
             }
             for transaction in transactions
         ]
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({"results": transactions})
+    return web.json_response(transactions)
+
+
+@docs(
+    tags=["ADA - Data Agreement Functions"],
+    summary="Remove data agreement CRUD DIDComm transaction record by ID",
+    responses={
+        204: {
+            "description": "Data agreement CRUD DIDComm transaction record removed"
+        }
+    }
+)
+@match_info_schema(DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema())
+async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: web.BaseRequest):
+    """
+    Request handler for removing data agreement CRUD DIDComm transaction record by ID
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Get path parameters
+    da_crud_didcomm_tx_id = request.match_info[
+        "da_crud_didcomm_tx_id"]
+
+    try:
+        # Get the DIDComm transaction record
+        transaction_record = await DataAgreementCRUDDIDCommTransaction.retrieve_by_id(
+            context=context,
+            record_id=da_crud_didcomm_tx_id
+        )
+
+        # Delete the DIDComm transaction record
+        await transaction_record.delete_record(context)
+    except StorageError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(None, status=204)
 
 
 @docs(
@@ -1657,16 +1803,17 @@ async def dummy_route_handler(request: web.BaseRequest):
         },
     }
 
-    credential : dict = doc["credential"]
-    signature_options : dict = doc["options"]
+    credential: dict = doc["credential"]
+    signature_options: dict = doc["options"]
 
-    verkeys = ["GwpifqCAYcDqh4uduBftkgbF7XfkhwWNPraZPKRW6U1i", "4P85Ho2c974ANiCUe4x588Nb5tpx4JZWZWfkosgei8yW"]
+    verkeys = ["GwpifqCAYcDqh4uduBftkgbF7XfkhwWNPraZPKRW6U1i",
+               "4P85Ho2c974ANiCUe4x588Nb5tpx4JZWZWfkosgei8yW"]
 
-    document_with_proof : dict = await sign_data_agreement(
+    document_with_proof: dict = await sign_data_agreement(
         credential.copy(), signature_options, verkeys[0], wallet
     )
 
-    document_with_proof_chain : dict = await sign_data_agreement(
+    document_with_proof_chain: dict = await sign_data_agreement(
         document_with_proof.copy(), signature_options, verkeys[1], wallet
     )
 
@@ -1703,12 +1850,11 @@ async def dummy_did_resolve_route_handler(request: web.BaseRequest):
     try:
 
         await mydata_did_manager.resolve_remote_mydata_did(mydata_did=mydata_did)
-    
+
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
-    
-    return web.Response(status=204) 
 
+    return web.Response(status=204)
 
 
 async def register(app: web.Application):
@@ -1751,13 +1897,17 @@ async def register(app: web.Application):
                 allow_head=False
             ),
             web.post(
-                "/data-agreements/didcomm/{connection_id}/read-data-agreement/{data_agreement_id}",
+                "/data-agreements/didcomm/read-data-agreement",
                 send_read_data_agreement
             ),
             web.get(
                 "/data-agreements/didcomm/transactions",
                 list_data_agreements_crud_didcomm_transactions,
                 allow_head=False
+            ),
+            web.delete(
+                "/data-agreements/didcomm/transactions/{da_crud_didcomm_tx_id}",
+                data_agreement_crud_didcomm_transaction_records_delete_by_id,
             ),
             web.post(
                 "/data-agreements",

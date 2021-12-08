@@ -1,5 +1,6 @@
 from os import environ
 from typing import Any
+import typing
 
 from marshmallow import fields, validate
 
@@ -29,7 +30,7 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
     RECORD_TYPE = "data_agreement_crud_didcomm_transaction"
     RECORD_ID_NAME = "da_crud_didcomm_tx_id"
     WEBHOOK_TOPIC = None
-    TAG_NAMES = {"~thread_id", "~message_type"}
+    TAG_NAMES = {"~thread_id", "~message_type", "~connection_id"}
 
     # Message family for the transaction record
     # Create Data Agreement message family
@@ -47,13 +48,15 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
         da_crud_didcomm_tx_id: str = None,
         thread_id: str = None,
         message_type: str = None,
-        messages_list: dict = None,
+        messages_list: typing.List[dict] = None,
+        connection_id: str = None,
         **kwargs
     ):
         super().__init__(da_crud_didcomm_tx_id, **kwargs)
         self.thread_id = thread_id
         self.message_type = message_type
         self.messages_list = messages_list
+        self.connection_id = connection_id
 
     @property
     def da_crud_didcomm_tx_id(self) -> str:
@@ -71,6 +74,7 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
                 "thread_id",
                 "message_type",
                 "messages_list",
+                "connection_id",
             )
         }
 
@@ -106,3 +110,10 @@ class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
     )
     # List of messages in the transaction record
     messages_list = fields.List(fields.Dict(), required=False, description="Messages list")
+
+    # Connection identifier
+    connection_id = fields.Str(
+        required=False,
+        description="Connection identifier",
+        example=UUIDFour.EXAMPLE,
+    )

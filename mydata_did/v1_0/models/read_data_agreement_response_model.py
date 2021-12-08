@@ -7,7 +7,7 @@ from marshmallow.exceptions import ValidationError
 from typing import List
 
 from ..utils.regex import MYDATA_DID
-from .data_agreement_model import DataAgreementV1, DataAgreementV1Schema
+from .data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
 class ReadDataAgreementResponseBody(BaseModel):
     """ReadDataAgreementResponseBody model class"""
@@ -19,7 +19,7 @@ class ReadDataAgreementResponseBody(BaseModel):
     def __init__(
         self,
         *,
-        data_agreement :DataAgreementV1 = None,
+        data_agreement :DataAgreementInstance = None,
         **kwargs,
     ):
         """
@@ -40,4 +40,4 @@ class ReadDataAgreementResponseBodySchema(BaseModelSchema):
         model_class = ReadDataAgreementResponseBody
         unknown = EXCLUDE
 
-    data_agreement = fields.Nested(DataAgreementV1Schema())
+    data_agreement = fields.Nested(DataAgreementInstanceSchema())

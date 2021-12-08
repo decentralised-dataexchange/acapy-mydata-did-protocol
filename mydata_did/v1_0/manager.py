@@ -7,6 +7,7 @@ import typing
 
 from asyncio import shield
 from aries_cloudagent.connections.models.connection_target import ConnectionTarget
+from c14n.Canonicalize import serialize
 import semver
 import aiohttp
 
@@ -42,7 +43,9 @@ from .messages.create_did_response import CreateDIDResponseMessage
 from .messages.problem_report import (
     MyDataDIDProblemReportMessage,
     MyDataDIDProblemReportMessageReason,
-    DataAgreementNegotiationProblemReport
+    DataAgreementNegotiationProblemReport,
+    DataAgreementProblemReport,
+    DataAgreementProblemReportReason
 )
 from .messages.read_data_agreement import ReadDataAgreement
 from .messages.read_data_agreement_response import ReadDataAgreementResponse
@@ -74,7 +77,15 @@ from .utils.util import current_datetime_in_iso8601
 from .decorators.data_agreement_context_decorator import DataAgreementContextDecoratorSchema, DataAgreementContextDecorator
 from .message_types import (
     DATA_AGREEMENT_NEGOTIATION_OFFER,
-    DATA_AGREEMENT_NEGOTIATION_ACCEPT
+    DATA_AGREEMENT_NEGOTIATION_ACCEPT,
+    READ_DATA_AGREEMENT
+)
+
+from ..patched_protocols.issue_credential.v1_0.models.credential_exchange import (
+    V10CredentialExchange
+)
+from ..patched_protocols.present_proof.v1_0.models.presentation_exchange import (
+    V10PresentationExchange
 )
 
 
@@ -887,7 +898,7 @@ class ADAManager:
 
         return transaction_record
 
-    async def send_read_data_agreement_message(self, connection: ConnectionRecord, data_agreement_id: str) -> DataAgreementCRUDDIDCommTransaction:
+    async def send_read_data_agreement_message(self, connection_record: ConnectionRecord, data_agreement_id: str) -> DataAgreementCRUDDIDCommTransaction:
         """
         Send a read-data-agreement message to the remote agent.
         """
@@ -898,38 +909,29 @@ class ADAManager:
         # Fetch the storage instance from the context
         storage: BaseStorage = await self.context.inject(BaseStorage)
 
-        # My DID and Their DID from the connection object
-        connection_from_did = connection.my_did
-        connection_to_did = connection.their_did
+        try:
+            # from_did
+            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+            from_did = DIDMyData.from_public_key_b58(
+                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
-        # Convert My DID to MyData DID equivalent
-        # Query My DID from the wallet
-        connection_from_did_info = await wallet.get_local_did(connection_from_did)
-        # Fetch the verkey from the wallet
-        connection_from_did_verkey = connection_from_did_info.verkey
-        # Convert the verkey to MyData DID equivalent
-        mydata_from_did = DIDMyData.from_public_key_b58(public_key=connection_from_did_verkey,
-                                                        key_type=KeyType.ED25519)
-
-        # Convert Their DID to MyData DID equivalent
-        # Query Their DID from the wallet
-        connection_to_did_record = await storage.search_records(
-            ConnectionManager.RECORD_TYPE_DID_KEY,
-            {"did": connection_to_did}
-        ).fetch_single()
-        # Fetch the verkey from the wallet
-        connection_to_did_verkey = connection_to_did_record.value
-        # Convert the verkey to MyData DID equivalent
-        mydata_to_did = DIDMyData.from_public_key_b58(
-            public_key=connection_to_did_verkey,
-            key_type=KeyType.ED25519
-        )
+            # to_did
+            pairwise_remote_did_record = await storage.search_records(
+                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+                tag_query={"did": connection_record.their_did}
+            ).fetch_single()
+            to_did = DIDMyData.from_public_key_b58(
+                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to send read-data-agreement message: {err}"
+            )
 
         # Create the read-data-agreement message
         data_agreement_message = ReadDataAgreement(
-            from_did=mydata_from_did.did,
-            to_did=mydata_to_did.did,
-            created_time=str(int(time.time())),
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
             body=ReadDataAgreementBody(
                 data_agreement_id=data_agreement_id,
             )
@@ -939,7 +941,8 @@ class ADAManager:
         transaction_record = DataAgreementCRUDDIDCommTransaction(
             thread_id=data_agreement_message._id,
             message_type=DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT,
-            messages_list=[data_agreement_message.to_json()]
+            messages_list=[data_agreement_message.serialize()],
+            connection_id=connection_record.connection_id,
         )
         # Add the transaction record to the storage
         await transaction_record.save(self.context)
@@ -947,41 +950,359 @@ class ADAManager:
         responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
 
         if responder:
-            await responder.send(data_agreement_message, connection_id=connection.connection_id)
+            await responder.send(data_agreement_message, connection_id=connection_record.connection_id)
 
         return transaction_record
 
-    async def process_read_data_agreement_message(self, read_data_agreement_message: ReadDataAgreement, receipt: MessageReceipt):
+    async def process_data_agreement_problem_report_message(self, *, data_agreement_problem_report_message: DataAgreementProblemReport, receipt: MessageReceipt):
+        """Process data agreement problem report message"""
+
+        thread_id = data_agreement_problem_report_message._thread_id
+
+        # Fetch data agreement didcomm crud transaction record
+        transaction_records = await DataAgreementCRUDDIDCommTransaction.query(
+            context=self.context,
+            tag_filter={"thread_id": thread_id},
+        )
+
+        if len(transaction_records) == 1:
+            transaction_record: DataAgreementCRUDDIDCommTransaction = transaction_records[0]
+
+            # Update transaction record with problem report
+            transaction_record.messages_list.append(
+                data_agreement_problem_report_message.serialize()
+            )
+
+            await transaction_record.save(self.context)
+
+    async def process_read_data_agreement_message(self, *, read_data_agreement_message: ReadDataAgreement, receipt: MessageReceipt):
 
         storage: IndyStorage = await self.context.inject(BaseStorage)
         responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
 
         # fetch the data agreement record from the wallet
-        try:
-            data_agreement_record = await storage.search_records(
-                ADAManager.DATA_AGREEMENT_RECORD_TYPE, {
-                    "data_agreement_id": read_data_agreement_message.body.data_agreement_id}
-            ).fetch_single()
+        # create data agreement didcomm crud transaction record
+        # save request and response messages
+        # send the response message.
 
-            if data_agreement_record:
-                # send the data agreement to the requester
+        # Create data agreement didcomm crud transaction record
+        data_agreement_crud_didcomm_transaction_record = DataAgreementCRUDDIDCommTransaction(
+            thread_id=read_data_agreement_message._thread_id,
+            message_type=DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT,
+            messages_list=[read_data_agreement_message.serialize()],
+            connection_id=self.context.connection_record.connection_id,
+        )
+
+        await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+        try:
+
+            # Fetch the data agreement instance metadata
+            data_agreement_instance_metadata_records = await self.query_data_agreement_instance_metadata(
+                tag_query={
+                    'data_agreement_id': read_data_agreement_message.body.data_agreement_id,
+                }
+            )
+
+            # Check if there is a data agreement instance metadata record
+            if not data_agreement_instance_metadata_records:
+                self._logger.info(
+                    "Data agreement not found; Failed to process read-data-agreement message data agreement: %s",
+                    read_data_agreement_message.body.data_agreement_id,
+                )
+
+                # send problem report
+                problem_report = DataAgreementProblemReport(
+                    from_did=read_data_agreement_message.to_did,
+                    to_did=read_data_agreement_message.from_did,
+                    created_time=str(
+                        int(datetime.datetime.utcnow().timestamp())),
+                    problem_code=DataAgreementProblemReportReason.DATA_AGREEMENT_NOT_FOUND.value,
+                    explain=f"Data agreement not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                )
+
+                problem_report.assign_thread_id(
+                    thid=read_data_agreement_message._thread_id
+                )
+
+                # Update data agreement crud diddcomm transaction record with response message
+                data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                    problem_report.serialize()
+                )
+                await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                if responder:
+                    await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                return None
+
+            if len(data_agreement_instance_metadata_records) > 1:
+                self._logger.info(
+                    "Duplicate data agreement records found; Failed to process read-data-agreement message data agreement: %s",
+                    read_data_agreement_message.body.data_agreement_id,
+                )
+
+                # send problem report
+                problem_report = DataAgreementProblemReport(
+                    from_did=read_data_agreement_message.to_did,
+                    to_did=read_data_agreement_message.from_did,
+                    created_time=str(
+                        int(datetime.datetime.utcnow().timestamp())),
+                    problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                    explain=f"Duplicate data agreement records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                )
+
+                problem_report.assign_thread_id(
+                    thid=read_data_agreement_message._thread_id
+                )
+
+                # Update data agreement crud diddcomm transaction record with response message
+                data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                    problem_report.serialize()
+                )
+                await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                if responder:
+                    await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                return None
+
+            data_agreement_instance_metadata_record: StorageRecord = data_agreement_instance_metadata_records[
+                0]
+
+            # Identify the method of use
+
+            if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+
+                # If method of use is data-source
+
+                # Fetch exchante record (credential exchange if method of use is "data-source")
+                tag_filter = {}
+                post_filter = {
+                    "data_agreement_id": read_data_agreement_message.body.data_agreement_id
+                }
+                records = await V10CredentialExchange.query(self.context, tag_filter, post_filter)
+
+                if not records:
+                    self._logger.info(
+                        "Credential exchange record not found; Failed to process read-data-agreement message data agreement: %s",
+                        read_data_agreement_message.body.data_agreement_id,
+                    )
+
+                    # send problem report
+                    problem_report = DataAgreementProblemReport(
+                        from_did=read_data_agreement_message.to_did,
+                        to_did=read_data_agreement_message.from_did,
+                        created_time=str(
+                            int(datetime.datetime.utcnow().timestamp())),
+                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                        explain=f"Credential exchange record not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                    )
+
+                    problem_report.assign_thread_id(
+                        thid=read_data_agreement_message._thread_id
+                    )
+
+                    # Update data agreement crud diddcomm transaction record with response message
+                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                        problem_report.serialize()
+                    )
+                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                    if responder:
+                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                    return None
+
+                if len(records) > 1:
+                    self._logger.info(
+                        "Duplicate credential exchange records found; Failed to process read-data-agreement message data agreement: %s",
+                        read_data_agreement_message.body.data_agreement_id,
+                    )
+
+                    # send problem report
+                    problem_report = DataAgreementProblemReport(
+                        from_did=read_data_agreement_message.to_did,
+                        to_did=read_data_agreement_message.from_did,
+                        created_time=str(
+                            int(datetime.datetime.utcnow().timestamp())),
+                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                        explain=f"Duplicate credential exchange records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                    )
+
+                    problem_report.assign_thread_id(
+                        thid=read_data_agreement_message._thread_id
+                    )
+
+                    # Update data agreement crud diddcomm transaction record with response message
+                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                        problem_report.serialize()
+                    )
+                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                    if responder:
+                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                    return None
+
+                cred_ex_record: V10CredentialExchange = records[0]
+
+                # Construct data agreement instance
+
+                data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema(
+                ).load(cred_ex_record.data_agreement)
+
+                # Construct response message
                 read_data_agreement_response_message = ReadDataAgreementResponse(
                     from_did=read_data_agreement_message.to_did,
                     to_did=read_data_agreement_message.from_did,
-                    created_time=read_data_agreement_message.created_time,
+                    created_time=str(
+                        int(datetime.datetime.utcnow().timestamp())),
                     body=ReadDataAgreementResponseBody(
-                        data_agreement=DataAgreementV1.from_json(
-                            data_agreement_record.value)
+                        data_agreement=data_agreement_instance
                     )
                 )
-                read_data_agreement_response_message.assign_thread_id(
-                    thid=read_data_agreement_message._id)
+
+                # Update data agreement crud diddcomm transaction record with response message
+                data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                    read_data_agreement_response_message.serialize()
+                )
+                await data_agreement_crud_didcomm_transaction_record.save(self.context)
 
                 if responder:
                     await responder.send_reply(read_data_agreement_response_message, connection_id=receipt.connection_id)
-        except StorageNotFoundError:
+
+                return None
+
+            if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
+
+                # If method of use is data-using-service
+
+                # Fetch exchange record (presentation exchange if method of use is "data-using-service")
+                tag_filter = {}
+                post_filter = {
+                    "data_agreement_id": read_data_agreement_message.body.data_agreement_id
+                }
+                records = await V10PresentationExchange.query(self.context, tag_filter, post_filter)
+
+                if not records:
+                    self._logger.info(
+                        "Presentation exchange record not found; Failed to process read-data-agreement message data agreement: %s",
+                        read_data_agreement_message.body.data_agreement_id,
+                    )
+
+                    # send problem report
+                    problem_report = DataAgreementProblemReport(
+                        from_did=read_data_agreement_message.to_did,
+                        to_did=read_data_agreement_message.from_did,
+                        created_time=str(
+                            int(datetime.datetime.utcnow().timestamp())),
+                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                        explain=f"Presentation exchange record not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                    )
+
+                    problem_report.assign_thread_id(
+                        thid=read_data_agreement_message._thread_id
+                    )
+
+                    # Update data agreement crud diddcomm transaction record with response message
+                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                        problem_report.serialize()
+                    )
+                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                    if responder:
+                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                    return None
+
+                if len(records) > 1:
+                    self._logger.info(
+                        "Duplicate presentation exchange records found; Failed to process read-data-agreement message data agreement: %s",
+                        read_data_agreement_message.body.data_agreement_id,
+                    )
+
+                    # send problem report
+                    problem_report = DataAgreementProblemReport(
+                        from_did=read_data_agreement_message.to_did,
+                        to_did=read_data_agreement_message.from_did,
+                        created_time=str(
+                            int(datetime.datetime.utcnow().timestamp())),
+                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                        explain=f"Duplicate presentation exchange records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
+                    )
+
+                    problem_report.assign_thread_id(
+                        thid=read_data_agreement_message._thread_id
+                    )
+
+                    # Update data agreement crud diddcomm transaction record with response message
+                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                        problem_report.serialize()
+                    )
+                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                    if responder:
+                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
+
+                    return None
+
+                pres_ex_record: V10PresentationExchange = records[0]
+
+                # Construct data agreement instance
+
+                data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema(
+                ).load(pres_ex_record.data_agreement)
+
+                # Construct response message
+                read_data_agreement_response_message = ReadDataAgreementResponse(
+                    from_did=read_data_agreement_message.to_did,
+                    to_did=read_data_agreement_message.from_did,
+                    created_time=str(
+                        int(datetime.datetime.utcnow().timestamp())),
+                    body=ReadDataAgreementResponseBody(
+                        data_agreement=data_agreement_instance
+                    )
+                )
+
+                read_data_agreement_response_message.assign_thread_id(
+                    thid=read_data_agreement_message._thread_id
+                )
+
+                # Update data agreement crud diddcomm transaction record with response message
+                data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                    read_data_agreement_response_message.serialize()
+                )
+                await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+                if responder:
+                    await responder.send_reply(read_data_agreement_response_message, connection_id=receipt.connection_id)
+
+                return None
+
+        except (ADAManagerError, StorageError) as e:
             # send problem report
-            pass
+            problem_report = DataAgreementProblemReport(
+                from_did=read_data_agreement_message.to_did,
+                to_did=read_data_agreement_message.from_did,
+                created_time=str(
+                    int(datetime.datetime.utcnow().timestamp())),
+                problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
+                explain=str(e)
+            )
+
+            problem_report.assign_thread_id(
+                thid=read_data_agreement_message._thread_id
+            )
+
+            # Update data agreement crud diddcomm transaction record with response message
+            data_agreement_crud_didcomm_transaction_record.messages_list.append(
+                problem_report.serialize()
+            )
+            await data_agreement_crud_didcomm_transaction_record.save(self.context)
+
+            if responder:
+                await responder.send_reply(problem_report, connection_id=receipt.connection_id)
 
     async def fetch_data_agreement_crud_didcomm_transactions_from_wallet(self):
         try:
@@ -1222,7 +1543,7 @@ class ADAManager:
             data_agreement["personal_data"] = personal_data_new_list
 
             # Generate data agreement model class instance
-            data_agreement : DataAgreementV1 = DataAgreementV1Schema().load(data_agreement)
+            data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(data_agreement)
 
             # Tag filter
             tag_filter = {

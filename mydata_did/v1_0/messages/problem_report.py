@@ -132,29 +132,11 @@ DATA_AGREEMENT_PROBLEM_REPORT_HANDLER_CLASS = (
 class DataAgreementProblemReportReason(str, Enum):
     """Supported reason codes."""
 
-    # Triggered when creation of data agreement failed.
-    FAILED_TO_CREATE_DATA_AGREEMENT = "failed_to_create_data_agreement"
-
-    # Triggered when failed to read data agreement.
-    FAILED_TO_READ_DATA_AGREEMENT = "failed_to_read_data_agreement"
-
-    # Triggered when failed to update data agreeement.
-    FAILED_TO_UPDATE_DATA_AGREEMENT = "failed_to_update_data_agreement"
-
-    # Triggered when failed to delete data agreement.
-    FAILED_TO_DELETE_DATA_AGREEMENT = "failed_to_delete_data_agreement"
-
     # Triggered when data agreement was not found.
     DATA_AGREEMENT_NOT_FOUND = "data_agreement_not_found"
 
-    # Triggered when data agreement is already revoked.
-    DATA_AGREEMENT_REVOKED = "data_agreement_revoked"
-
-    # Triggered when data agreement is invalid.
-    DATA_AGREEMENT_INVALID = "invalid_data_agreement"
-
-    # Triggered when data agreement is expired.
-    DATA_AGREEMENT_EXPIRED = "data_agreement_expired"
+    # Triggered when read-data-agreement failed due to processing error.
+    READ_DATA_AGREEMENT_FAILED = "read_data_agreement_failed"
 
 
 class DataAgreementProblemReport(AgentMessage):
@@ -172,17 +154,13 @@ class DataAgreementProblemReport(AgentMessage):
         *,
         problem_code: str = None,
         explain: str = None,
-        from_did,
-        to_did,
-        created_time,
+        from_did: str = None,
+        to_did: str = None,
+        created_time: str = None,
         **kwargs
     ):
         """
         Initialize a DataAgreementProblemReport message instance.
-
-        Args:
-            explain: The localized error explanation
-            problem_code: The standard error identifier
         """
         super().__init__(**kwargs)
         self.explain = explain
@@ -216,7 +194,7 @@ class DataAgreementProblemReportSchema(AgentMessageSchema):
             choices=[dapr.value for dapr in DataAgreementProblemReportReason],
             error="Value {input} must be one of {choices}.",
         ),
-        example=DataAgreementProblemReportReason.FAILED_TO_CREATE_DATA_AGREEMENT.value,
+        example=DataAgreementProblemReportReason.DATA_AGREEMENT_NOT_FOUND.value,
     )
 
 

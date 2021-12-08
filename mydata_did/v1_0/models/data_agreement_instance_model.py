@@ -54,6 +54,7 @@ class DataAgreementInstance(BaseModel):
         event: typing.List[DataAgreementEvent] = None,
         proof_chain: typing.List[DataAgreementProof] = None,
         principle_did: str = None,
+        proof:  DataAgreementProof = None,
         **kwargs
     ):
         """Data Agreement instance init"""
@@ -78,6 +79,7 @@ class DataAgreementInstance(BaseModel):
         self.proof_chain = proof_chain
         self.principle_did = principle_did
         self.event = event
+        self.proof = proof
 
 
 class DataAgreementInstanceSchema(BaseModelSchema):
@@ -227,3 +229,6 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         example="did:mydata:123456789abcdefghi",
         description="Principle did"
     )
+
+    # Data agreement proof
+    proof = fields.Nested(DataAgreementProofSchema, required=False)

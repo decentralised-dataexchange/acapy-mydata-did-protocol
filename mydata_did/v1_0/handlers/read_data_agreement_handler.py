@@ -19,4 +19,4 @@ class ReadDataAgreementHandler(BaseHandler):
         self._logger.info("Received read data agreement message: %s", json.dumps(context.message.serialize(), indent=4))
 
         mgr : ADAManager= ADAManager(context)
-        await mgr.process_read_data_agreement_message(context.message, context.message_receipt)
+        await mgr.process_read_data_agreement_message(read_data_agreement_message=context.message, receipt=context.message_receipt)
