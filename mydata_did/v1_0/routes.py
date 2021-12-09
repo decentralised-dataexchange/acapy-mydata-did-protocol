@@ -1,6 +1,7 @@
 import json
 import typing
 from aiohttp.web_response import json_response
+import uuid
 
 from aiohttp_apispec.decorators import request
 import validators
@@ -21,6 +22,7 @@ from aries_cloudagent.wallet.base import BaseWallet
 from aries_cloudagent.wallet.indy import IndyWallet
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord, ConnectionRecordSchema
 from aries_cloudagent.storage.record import StorageRecord
+from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager, ConnectionManagerError
 
 from .manager import ADAManager, ADAManagerError
 from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord, MyDataDIDRegistryDIDCommTransactionRecordSchema
@@ -2295,6 +2297,41 @@ async def auditor_send_data_agreement_verify_request(request: web.BaseRequest):
 
     return web.json_response(result)
 
+@docs(
+    tags=["connection"],
+    summary="Well-known endpoint for connection",
+)
+async def wellknown_connection_handler(request: web.BaseRequest):
+    """Handler for well-known connection for the agent."""
+    context = request.app["request_context"]
+    auto_accept = True
+    alias = ""
+    public = False
+    multi_use = False
+
+    connection_mgr = ConnectionManager(context)
+    try:
+        (connection, invitation) = await connection_mgr.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            "ServiceEndpoint": invitation.serialize()["serviceEndpoint"],
+            "RoutingKey": "",
+            "Invitation": {
+                "label": invitation.label,
+                "serviceEndpoint": invitation.serialize()["serviceEndpoint"],
+                "routingKeys": [],
+                "recipientKeys": invitation.serialize()["recipientKeys"],
+                "@id": str(uuid.uuid4()),
+                "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation"
+            }
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
 
 async def register(app: web.Application):
     app.add_routes(
@@ -2442,6 +2479,11 @@ async def register(app: web.Application):
             web.post(
                 "/auditor/didcomm/verify-request/{data_agreement_id}",
                 auditor_send_data_agreement_verify_request
+            ),
+            web.get(
+                "/.well-known/did-configuration.json",
+                wellknown_connection_handler,
+                allow_head=False
             )
         ]
     )
