@@ -97,6 +97,9 @@ class ADAManagerError(BaseError):
 
 class ADAManager:
 
+    # Record for indication a connection is labelled as Auditor (client)
+    RECORD_TYPE_AUDITOR_CONNECTION = "auditor_connection"
+
     # Record for indicating a connection is labelled as MyData DID registry (client)
     RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION = "mydata_did_registry_connection"
 
@@ -357,6 +360,33 @@ class ADAManager:
 
             # Fetch connection record from storage
             connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(self.context, mydata_did_registry_connection_id)
+
+            return connection_record, None
+
+        except (StorageError, StorageNotFoundError, StorageDuplicateError) as e:
+            return None, e
+
+    async def fetch_auditor_connection_record(self) -> typing.Tuple[typing.Union[ConnectionRecord, None], typing.Union[None, Exception]]:
+        # Wallet instance from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Storage instance from context
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        auditor_connection_record = None
+
+        try:
+
+            # Search for existing connection_id marked as Auditor
+            auditor_connection_record: StorageRecord = await storage.search_records(
+                self.RECORD_TYPE_AUDITOR_CONNECTION,
+            ).fetch_single()
+
+            # Auditor connection identifier
+            auditor_connection_id = auditor_connection_record.value
+
+            # Fetch connection record from storage
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(self.context, auditor_connection_id)
 
             return connection_record, None
 
@@ -1828,6 +1858,126 @@ class ADAManager:
                 f"Failed to fetch all data agreements from wallet: {e}"
             )
 
+    async def mark_connection_id_as_auditor(self, connection_record: ConnectionRecord):
+        """Associate the connection with Auditor"""
+
+        assert connection_record.connection_id, "Connection ID is required"
+
+        try:
+
+            # Fetch storage from context
+            storage: IndyStorage = await self.context.inject(BaseStorage)
+
+            # Search for existing connection_id marked as Auditor
+            connection_record_list = await storage.search_records(
+                self.RECORD_TYPE_AUDITOR_CONNECTION,
+                {"connection_id": connection_record.connection_id},
+            ).fetch_all()
+
+            # If no record found, create a new one
+            if not connection_record_list:
+                record = StorageRecord(
+                    self.RECORD_TYPE_AUDITOR_CONNECTION,
+                    connection_record.connection_id,
+                    {"connection_id": connection_record.connection_id},
+                )
+
+                await storage.add_record(record)
+            else:
+                # Update the existing record with the new connection_id
+                record = connection_record_list[0]
+
+                await storage.update_record_value(record=record, value=connection_record.connection_id)
+                await storage.update_record_tags(record=record, tags={"connection_id": connection_record.connection_id})
+
+        except StorageError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to mark connection as Auditor: {e}"
+            )
+        except StorageDuplicateError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to mark connection as Auditor: {e}"
+            )
+
+    async def fetch_current_auditor_connection_id(self) -> typing.Union[None, str]:
+        """
+        Fetch current Auditor connection id.
+        """
+
+        try:
+
+            # Fetch storage from context
+            storage: IndyStorage = await self.context.inject(BaseStorage)
+
+            # Search for existing connection_id marked as Auditor
+            connection_record_list = await storage.search_records(
+                self.RECORD_TYPE_AUDITOR_CONNECTION,
+            ).fetch_all()
+
+            if len(connection_record_list) > 1:
+                # Raise an error
+                raise ADAManagerError(
+                    f"More than one connection marked as Auditor"
+                )
+
+            if not connection_record_list:
+                # if no record found
+                return None
+            else:
+                # if record found
+                record = connection_record_list[0]
+
+                return record.value
+        except StorageError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to fetch current Auditor connection id: {e}"
+            )
+        except StorageDuplicateError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to fetch current Auditor connection id: {e}"
+            )
+
+    async def unmark_connection_id_as_auditor(self) -> bool:
+        """
+        Disassociate the connection with Auditor.
+        """
+
+        try:
+
+            # Fetch storage from context
+            storage: IndyStorage = await self.context.inject(BaseStorage)
+
+            # Search for existing connection_id marked as Auditor
+            connection_record_list = await storage.search_records(
+                self.RECORD_TYPE_AUDITOR_CONNECTION,
+            ).fetch_all()
+
+            if not connection_record_list:
+                # if no record found
+                return False
+            else:
+                # if record found
+                record = connection_record_list[0]
+
+                await storage.delete_record(record)
+
+                return True
+
+        except StorageError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to unmark connection as Auditor: {e}"
+            )
+        except StorageDuplicateError as e:
+            # Raise an error
+            raise ADAManagerError(
+                f"Failed to unmark connection as Auditor: {e}"
+            )
+
     async def mark_connection_id_as_mydata_did_registry(self, connection_record: ConnectionRecord):
         """
         Associate the connection with MyData DID registry.
@@ -2095,7 +2245,7 @@ class ADAManager:
         for storage_record in storage_records:
             await storage.delete_record(storage_record)
 
-    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -> typing.List[dict]:
+    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -> typing.List[StorageRecord]:
         """Query data agreement instance metadata"""
 
         # Fetch storage from context
@@ -2619,3 +2769,67 @@ class ADAManager:
         )
 
         return (updated_data_agreement_instance, data_agreement_terminate_message)
+
+    async def query_data_agreement_instances(self, tag_query: dict = None) -> typing.List[dict]:
+        """Query data agreement instances"""
+
+        da_instance_metadata_records = await self.query_data_agreement_instance_metadata(
+            tag_query=tag_query
+        )
+
+        data_agreement_instances = []
+
+        for da_instance_metadata_record in da_instance_metadata_records:
+
+            # Identify the method of use
+
+            if da_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+
+                try:
+                    # Fetch credential exchange record
+                    cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+                        self.context,
+                        da_instance_metadata_record.tags.get(
+                            "data_exchange_record_id")
+                    )
+
+                    if cred_ex_record.data_agreement:
+                        # Load the data agreement to DataAgreementInstance
+                        data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
+                            cred_ex_record.data_agreement
+                        )
+
+                        # Append the data agreement instance to data_agreement_instances
+                        data_agreement_instances.append({
+                            "data_exchange_record_id": da_instance_metadata_record.tags.get("data_exchange_record_id"),
+                            "data_agreement": data_agreement_instance.serialize()
+                        })
+
+                except StorageError:
+                    pass
+
+            if da_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
+                try:
+                    # Fetch presentation exchange record
+                    pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
+                        self.context,
+                        da_instance_metadata_record.tags.get(
+                            "data_exchange_record_id")
+                    )
+
+                    if pres_ex_record.data_agreement:
+                        # Load the data agreement to DataAgreementInstance
+                        data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
+                            pres_ex_record.data_agreement
+                        )
+
+                        # Append the data agreement instance to data_agreement_instances
+                        data_agreement_instances.append({
+                            "data_exchange_record_id": da_instance_metadata_record.tags.get("data_exchange_record_id"),
+                            "data_agreement": data_agreement_instance.serialize()
+                        })
+
+                except StorageError:
+                    pass
+
+        return data_agreement_instances

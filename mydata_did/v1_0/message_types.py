@@ -39,6 +39,11 @@ DATA_AGREEMENT_TERMINATION_TERMINATE = f"data-agreement-termination/1.0/terminat
 DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = f"data-agreement-termination/1.0/terminate-ack"
 DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = f"data-agreement-termination/1.0/problem-report"
 
+# Message types for ADA RFC 0004 - Data Agreement Proofs Protocol 1.0
+DATA_AGREEMENT_PROOFS_VERIFY = f"data-agreement-proofs/1.0/verify"
+DATA_AGREEMENT_PROOFS_VERIFIED = f"data-agreement-proofs/1.0/verified"
+DATA_AGREEMENT_PROOFS_UNVERIFIED = f"data-agreement-proofs/1.0/unverified"
+
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 

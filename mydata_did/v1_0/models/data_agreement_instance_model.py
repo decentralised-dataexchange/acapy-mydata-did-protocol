@@ -219,8 +219,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
     proof_chain = fields.List(
         fields.Nested(DataAgreementProofSchema),
         description="Data agreement proof chain",
-        data_key="proofChain",
-        required=True
+        data_key="proofChain"
     )
 
     # Data agreement principle did

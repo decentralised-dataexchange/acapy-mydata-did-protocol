@@ -37,6 +37,7 @@ from .models.data_agreement_model import (
     DataAgreementDPIASchema
 )
 from .models.diddoc_model import MyDataDIDDocSchema
+from .models.data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
@@ -778,6 +779,53 @@ class MarkExistingConnectionAsMyDataDIDRegistryMatchInfoSchema(OpenAPISchema):
         example=UUIDFour.EXAMPLE,
         description="Connection identifier",
         required=True
+    )
+
+
+class MarkExistingConnectionAsAuditorMatchInfoSchema(OpenAPISchema):
+    """
+    Schema for the mark existing connection as auditor match info
+    """
+
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description="Connection identifier",
+        required=True
+    )
+
+
+class QueryDataAgreementInstanceQueryStringSchema(OpenAPISchema):
+    """
+    Schema for the query data agreement instance query string
+    """
+
+    data_agreement_template_id = fields.Str(
+        description="Data agreement template identifier", required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    method_of_use = fields.Str(
+        data_key="method_of_use",
+        example="data-using-service",
+        description="Method of use (or data exchange mode)",
+        required=False,
+        validate=validate.OneOf(
+            [
+                "data-source",
+                "data-using-service",
+
+            ]
+        )
+    )
+
+    data_exchange_record_id = fields.Str(
+        description="Data exchange record identifier", required=False,
+        example=UUIDFour.EXAMPLE,
     )
 
 
@@ -1857,6 +1905,182 @@ async def dummy_did_resolve_route_handler(request: web.BaseRequest):
     return web.Response(status=204)
 
 
+@docs(
+    tags=["ADA - Auditor Functions"],
+    summary="Mark a connection as Auditor.",
+    responses={
+        204: {
+            "description": "Connection marked as Auditor."
+        },
+        400: {
+            "description": "Bad Request"
+        }
+    }
+)
+@match_info_schema(MarkExistingConnectionAsAuditorMatchInfoSchema())
+async def mark_existing_connection_as_auditor(request: web.BaseRequest):
+    """
+    Mark a connection as Auditor.
+    """
+
+    # Request context
+    context = request.app["request_context"]
+
+    # URL params
+    connection_id = request.match_info["connection_id"]
+
+    # Initialise MyData DID Manager
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+        # Fetch connection
+        connection: ConnectionRecord = await ConnectionRecord.retrieve_by_id(context, connection_id)
+
+        # Check if connection is ready
+        if not connection.is_ready:
+            raise web.HTTPBadRequest(reason="Connection is not ready")
+
+        # Mark connection as Auditor
+        await mydata_did_manager.mark_connection_id_as_auditor(connection_record=connection)
+    except (ADAManagerError, StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.Response(status=204)
+
+
+@docs(
+    tags=["ADA - Auditor Functions"],
+    summary="Fetch current connection marked as Auditor",
+    responses={
+        400: {
+            "description": "Bad Request"
+        }
+    }
+)
+@response_schema(ConnectionRecordSchema(), 200)
+async def fetch_current_connection_marked_as_auditor(request: web.BaseRequest):
+    """
+    Fetch current connection marked as Auditor.
+    """
+
+    # Request context
+    context = request.app["request_context"]
+
+    # Initialise MyData DID Manager
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+        # Fetch current connection marked as Auditor
+        connection_id: str = await mydata_did_manager.fetch_current_auditor_connection_id()
+
+        if not connection_id:
+            raise web.HTTPBadRequest(
+                reason="No connection marked as Auditor")
+
+        # Fetch connection
+        connection: ConnectionRecord = await ConnectionRecord.retrieve_by_id(context, connection_id)
+
+    except (ADAManagerError, StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(connection.serialize())
+
+
+@docs(
+    tags=["ADA - Auditor Functions"],
+    summary="Unmark current connection marked as Auditor",
+    responses={
+        204: {
+            "description": "Connection unmarked as Auditor."
+        },
+        400: {
+            "description": "Bad Request"
+        }
+    }
+)
+async def unmark_current_connection_marked_as_auditor(request: web.BaseRequest):
+    """
+    Unmark current connection marked as Auditor.
+    """
+
+    # Request context
+    context = request.app["request_context"]
+
+    # Initialise MyData DID Manager
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+        # Unmark connection as Auditor
+        unmarked = await mydata_did_manager.unmark_connection_id_as_auditor()
+
+        if not unmarked:
+            raise web.HTTPBadRequest(
+                reason="Connection is not marked as Auditor")
+
+    except (ADAManagerError, StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.Response(status=204)
+
+
+@docs(
+    tags=["ADA - Data Agreement Functions"],
+    summary="Query data agreement instances"
+)
+@querystring_schema(QueryDataAgreementInstanceQueryStringSchema())
+@response_schema(DataAgreementInstanceSchema(many=True), 200)
+async def query_data_agreement_instances(request: web.BaseRequest):
+    """
+    Request handler for querying data agreement instances.
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Get query string parameters
+    tag_filter = {}
+
+    # Thread ID
+    if "data_agreement_id" in request.query and request.query["data_agreement_id"] != "":
+        tag_filter["data_agreement_id"] = request.query["data_agreement_id"]
+
+    # Connection ID
+    if "data_agreement_template_id" in request.query and request.query["data_agreement_template_id"] != "":
+        tag_filter["data_agreement_template_id"] = request.query["data_agreement_template_id"]
+
+    # Message type
+    if "method_of_use" in request.query and request.query["method_of_use"] != "":
+        tag_filter["method_of_use"] = request.query["method_of_use"]
+
+    if "data_exchange_record_id" in request.query and request.query["data_exchange_record_id"] != "":
+        tag_filter["data_exchange_record_id"] = request.query["data_exchange_record_id"]
+
+    results = []
+
+    try:
+
+        # Initialise MyData DID Manager
+        mydata_did_manager: ADAManager = ADAManager(
+            context=context
+        )
+
+        # Get the list of DIDComm transaction records
+        results = await mydata_did_manager.query_data_agreement_instances(
+            tag_query=tag_filter
+        )
+
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({"results": results})
+
+
 async def register(app: web.Application):
     app.add_routes(
         [
@@ -1968,6 +2192,24 @@ async def register(app: web.Application):
                 dummy_did_resolve_route_handler,
                 allow_head=False
             ),
+            web.post(
+                "/auditor/set-auditor-connection/{connection_id}",
+                mark_existing_connection_as_auditor,
+            ),
+            web.get(
+                "/auditor/get-auditor-connection",
+                fetch_current_connection_marked_as_auditor,
+                allow_head=False
+            ),
+            web.delete(
+                "/auditor/unset-auditor-connection",
+                unmark_current_connection_marked_as_auditor,
+            ),
+            web.get(
+                "/data-agreement-instances",
+                query_data_agreement_instances,
+                allow_head=False
+            ),
         ]
     )
 
@@ -1998,6 +2240,14 @@ def post_process_routes(app: web.Application):
         {
             "name": "ADA - Data Agreement Functions",
             "description": "Data Agreement Protocol 1.0 (ADA RFC 0002)",
+            "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
+        }
+    )
+
+    app._state["swagger_dict"]["tags"].append(
+        {
+            "name": "ADA - Auditor Functions",
+            "description": "Data Agreement Proofs Protocol 1.0 (ADA RFC 0004)",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
         }
     )
