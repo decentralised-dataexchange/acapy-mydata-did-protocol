@@ -27,6 +27,7 @@ from .models.exchange_records.mydata_did_registry_didcomm_transaction_record imp
 from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction, DataAgreementCRUDDIDCommTransactionSchema
 from .models.exchange_records.data_agreement_record import DataAgreementV1Record, DataAgreementV1RecordSchema
 from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecordSchema, DataAgreementPersonalDataRecord
+from .models.exchange_records.auditor_didcomm_transaction_record import AuditorDIDCommTransactionRecord, AuditorDIDCommTransactionRecordSchema
 from .models.data_agreement_model import (
     DataAgreementPersonalData,
     DataAgreementPersonalDataSchema,
@@ -74,6 +75,26 @@ class MyDataDIDRegistryDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema(Open
 
     mydata_did_registry_didcomm_transaction_record_id = fields.Str(
         description="MyData DID registry didcomm transaction identifier", required=True, **UUID4
+    )
+
+
+class AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema(OpenAPISchema):
+    """
+    Retrieve a transaction record by its identifier.
+    """
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description="Auditor didcomm transaction identifier", required=True, **UUID4
+    )
+
+
+class AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema(OpenAPISchema):
+    """
+    Delete a transaction record by its identifier.
+    """
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description="Auditor didcomm transaction identifier", required=True, **UUID4
     )
 
 
@@ -132,6 +153,26 @@ class MyDataDIDRegistryDIDCommTransactionRecordListQueryStringSchema(OpenAPISche
                 if m.startswith("MESSAGE_TYPE_")
             ]
         ),
+    )
+
+
+class AuditorDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    """
+    Query string schema for listing Auditor DIDComm transaction records.
+    """
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description="Connection identifier",
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description="Thread identifier",
+        required=False,
+        example=UUIDFour.EXAMPLE,
     )
 
 
@@ -825,6 +866,17 @@ class QueryDataAgreementInstanceQueryStringSchema(OpenAPISchema):
 
     data_exchange_record_id = fields.Str(
         description="Data exchange record identifier", required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class AuditorSendDataAgreementVerifyRequestMatchInfoSchema(OpenAPISchema):
+    """
+    Schema to send data agreement verify request to the auditor 
+    """
+
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=True,
         example=UUIDFour.EXAMPLE,
     )
 
@@ -2081,6 +2133,169 @@ async def query_data_agreement_instances(request: web.BaseRequest):
     return web.json_response({"results": results})
 
 
+@docs(tags=["ADA - Auditor Functions"], summary="Fetch Auditor DIDComm transaction records")
+@querystring_schema(AuditorDIDCommTransactionRecordListQueryStringSchema())
+@response_schema(AuditorDIDCommTransactionRecordSchema(many=True), 200)
+async def auditor_didcomm_transaction_records_list(request: web.BaseRequest):
+    """
+    Request handler for fetching Auditor transaction records
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Get query string parameters
+    tag_filter = {}
+
+    # Thread ID
+    if "thread_id" in request.query and request.query["thread_id"] != "":
+        tag_filter["thread_id"] = request.query["thread_id"]
+
+    # Connection ID
+    if "connection_id" in request.query and request.query["connection_id"] != "":
+        tag_filter["connection_id"] = request.query["connection_id"]
+
+    results = []
+
+    try:
+        # Get the list of DIDComm transaction records
+        results = await AuditorDIDCommTransactionRecord.query(context, tag_filter)
+
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response([result.serialize() for result in results])
+
+
+@docs(tags=["ADA - Auditor Functions"], summary="Fetch Auditor DIDComm transaction record by ID")
+@match_info_schema(AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema())
+@response_schema(AuditorDIDCommTransactionRecordSchema(), 200)
+async def auditor_didcomm_transaction_records_retreive_by_id(request: web.BaseRequest):
+    """
+    Request handler for fetching Auditor DIDComm transaction record by ID
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Get path parameters
+    auditor_didcomm_transaction_record_id = request.match_info[
+        "auditor_didcomm_transaction_record_id"]
+
+    result = {}
+    try:
+        # Get the DIDComm transaction record
+        auditor_didcomm_transaction_record = await AuditorDIDCommTransactionRecord.retrieve_by_id(
+            context=context,
+            record_id=auditor_didcomm_transaction_record_id
+        )
+
+        result = auditor_didcomm_transaction_record.serialize()
+
+    except StorageError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=["ADA - Auditor Functions"],
+    summary="Remove Auditor DIDComm transaction record by ID",
+    responses={
+        204: {
+            "description": "Auditor DIDComm transaction record removed"
+        }
+    }
+)
+@match_info_schema(AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema())
+async def auditor_didcomm_transaction_records_delete_by_id(request: web.BaseRequest):
+    """
+    Request handler for removing Auditor DIDComm transaction record by ID
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Get path parameters
+    auditor_didcomm_transaction_record_id = request.match_info[
+        "auditor_didcomm_transaction_record_id"]
+
+    try:
+        # Get the DIDComm transaction record
+        auditor_didcomm_transaction_record = await AuditorDIDCommTransactionRecord.retrieve_by_id(
+            context=context,
+            record_id=auditor_didcomm_transaction_record_id
+        )
+
+        # Delete the DIDComm transaction record
+        await auditor_didcomm_transaction_record.delete_record(context)
+    except StorageError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(None, status=204)
+
+
+@docs(
+    tags=["ADA - Auditor Functions"],
+    summary="Send data agreement verify request to the auditor"
+)
+@match_info_schema(AuditorSendDataAgreementVerifyRequestMatchInfoSchema())
+@response_schema(AuditorDIDCommTransactionRecordSchema(), 200)
+async def auditor_send_data_agreement_verify_request(request: web.BaseRequest):
+    """
+    Request handler to send data agreement verify request to the auditor
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Get path parameters
+    data_agreement_id = request.match_info["data_agreement_id"]
+
+    result = {}
+    try:
+
+        # Initialise MyData DID Manager
+        mydata_did_manager: ADAManager = ADAManager(
+            context=context
+        )
+
+        try:
+
+            # construct the data agreement verify request
+            data_agreement_verify_request = await mydata_did_manager.construct_data_agreement_verify_request(
+                data_agreement_id=data_agreement_id
+            )
+
+            auditor_connection_record, err = await mydata_did_manager.fetch_auditor_connection_record()
+
+            # create auditor DIDComm transaction record
+            auditor_didcomm_transaction_record = AuditorDIDCommTransactionRecord(
+                thread_id=data_agreement_verify_request._id,
+                messages_list=[data_agreement_verify_request.serialize()],
+                connection_id=auditor_connection_record.connection_id,
+            )
+
+            await auditor_didcomm_transaction_record.save(context)
+
+            result = auditor_didcomm_transaction_record.serialize()
+
+            # Send the data agreement verify request to the auditor
+            await outbound_handler(
+                data_agreement_verify_request, connection_id=auditor_connection_record.connection_id
+            )
+
+        except ADAManagerError as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    except StorageError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
+
 async def register(app: web.Application):
     app.add_routes(
         [
@@ -2210,6 +2425,24 @@ async def register(app: web.Application):
                 query_data_agreement_instances,
                 allow_head=False
             ),
+            web.get(
+                "/auditor/didcomm/transaction-records",
+                auditor_didcomm_transaction_records_list,
+                allow_head=False
+            ),
+            web.get(
+                "/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
+                auditor_didcomm_transaction_records_retreive_by_id,
+                allow_head=False,
+            ),
+            web.delete(
+                "/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
+                auditor_didcomm_transaction_records_delete_by_id,
+            ),
+            web.post(
+                "/auditor/didcomm/verify-request/{data_agreement_id}",
+                auditor_send_data_agreement_verify_request
+            )
         ]
     )
 
