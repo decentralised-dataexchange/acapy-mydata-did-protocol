@@ -34,6 +34,11 @@ DATA_AGREEMENT_NEGOTIATION_REJECT = f"data-agreement-negotiation/1.0/reject"
 DATA_AGREEMENT_NEGOTIATION_ACCEPT = f"data-agreement-negotiation/1.0/accept"
 DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = f"data-agreement-negotiation/1.0/problem-report"
 
+# Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
+DATA_AGREEMENT_TERMINATION_TERMINATE = f"data-agreement-termination/1.0/terminate"
+DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = f"data-agreement-termination/1.0/terminate-ack"
+DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = f"data-agreement-termination/1.0/problem-report"
+
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 
@@ -75,6 +80,15 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT: (
             f"{PROTOCOL_PACKAGE}.messages.problem_report.DataAgreementNegotiationProblemReport"
+        ),
+        DATA_AGREEMENT_TERMINATION_TERMINATE: (
+            f"{PROTOCOL_PACKAGE}.messages.data_agreement_terminate.DataAgreementTerminationTerminateMessage"
+        ),
+        DATA_AGREEMENT_TERMINATION_TERMINATE_ACK: (
+            f"{PROTOCOL_PACKAGE}.messages.data_agreement_terminate_ack.DataAgreementTerminationAck"
+        ),
+        DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT: (
+            f"{PROTOCOL_PACKAGE}.messages.problem_report.DataAgreementTerminationProblemReport"
         )
     },
 )

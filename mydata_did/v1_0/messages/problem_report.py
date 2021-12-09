@@ -8,7 +8,8 @@ from ..message_types import (
     DATA_AGREEMENT_PROBLEM_REPORT,
     MYDATA_DID_PROBLEM_REPORT,
     PROTOCOL_PACKAGE,
-    DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT
+    DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT,
+    DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT
 )
 from ..utils.regex import MYDATA_DID
 
@@ -290,6 +291,104 @@ class DataAgreementNegotiationProblemReportSchema(AgentMessageSchema):
             error="Value {input} must be one of {choices}.",
         ),
         example=DataAgreementNegotiationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,
+    )
+    data_agreement_id = fields.Str(
+        data_key="data-agreement-id",
+        required=False,
+        description="The data agreement identifier",
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+# Handler class path for Data Agreement Termination Problem Report (data-agreement-termination/1.0/problem-report) message
+DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT_HANDLER_CLASS = (
+    f"{PROTOCOL_PACKAGE}.handlers"
+    ".data_agreement_termination_problem_report_handler.DataAgreementTerminationProblemReportHandler"
+)
+
+
+class DataAgreementTerminationProblemReportReason(str, Enum):
+    """Supported reason codes."""
+
+    # Trigger when data agreement signature verification fails.
+    SIGNATURE_VERIFICATION_FAILED = "signature_verification_failed"
+
+    # Trigger when data agreement is not found.
+    DATA_AGREEMENT_NOT_FOUND = "data_agreement_not_found"
+
+    # Trigger when principle (Data Subject) DID is invalid.
+    PRINCIPLE_DID_INVALID = "principle_did_invalid"
+
+
+class DataAgreementTerminationProblemReport(AgentMessage):
+    """Base class representing a data agreement termination problem report message."""
+
+    class Meta:
+        """Data agreement termination problem report metadata."""
+
+        handler_class = DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT_HANDLER_CLASS
+        message_type = DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT
+        schema_class = "DataAgreementTerminationProblemReportSchema"
+
+    def __init__(
+        self,
+        *,
+        problem_code: str = None,
+        explain: str = None,
+        from_did: str = None,
+        to_did: str = None,
+        created_time: str = None,
+        data_agreement_id: str = None,
+        **kwargs
+    ):
+        """
+        Initialize a DataAgreementTerminationProblemReport message instance.
+
+        Args:
+            explain: The localized error explanation
+            problem_code: The standard error identifier
+            from_did: Sender DID
+            to_did: Receipient DID
+            created_time: The timestamp of the message
+            data_agreement_id: The data agreement identifier
+        """
+        super().__init__(**kwargs)
+        self.explain = explain
+        self.problem_code = problem_code
+        self.from_did = from_did
+        self.to_did = to_did
+        self.created_time = created_time
+        self.data_agreement_id = data_agreement_id
+
+
+class DataAgreementTerminationProblemReportSchema(AgentMessageSchema):
+    """
+    Data agreement termination problem report schema.
+    """
+    class Meta:
+        """Metadata for data agreement termination problem report schema."""
+
+        model_class = DataAgreementTerminationProblemReport
+        unknown = EXCLUDE
+
+    from_did = fields.Str(data_key="from", **MYDATA_DID)
+    to_did = fields.Str(data_key="to", **MYDATA_DID)
+    created_time = fields.Str(data_key="created_time")
+    explain = fields.Str(
+        required=False,
+        description="Localized error explanation",
+        example="Invitation not accepted",
+    )
+    problem_code = fields.Str(
+        data_key="problem-code",
+        required=False,
+        description="Standard error identifier",
+        validate=validate.OneOf(
+            choices=[
+                dapr.value for dapr in DataAgreementTerminationProblemReportReason],
+            error="Value {input} must be one of {choices}.",
+        ),
+        example=DataAgreementTerminationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,
     )
     data_agreement_id = fields.Str(
         data_key="data-agreement-id",

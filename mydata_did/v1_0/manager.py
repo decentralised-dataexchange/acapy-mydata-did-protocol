@@ -52,6 +52,7 @@ from .messages.read_data_agreement_response import ReadDataAgreementResponse
 from .messages.data_agreement_offer import DataAgreementNegotiationOfferMessage, DataAgreementNegotiationOfferMessageSchema
 from .messages.data_agreement_accept import DataAgreementNegotiationAcceptMessage, DataAgreementNegotiationAcceptMessageSchema
 from .messages.data_agreement_reject import DataAgreementNegotiationRejectMessage, DataAgreementNegotiationRejectMessageSchema
+from .messages.data_agreement_terminate import DataAgreementTerminationTerminateMessage, DataAgreementTerminationTerminateMessageSchema
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -65,6 +66,7 @@ from .models.data_agreement_negotiation_offer_model import DataAgreementNegotiat
 from .models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
 from .models.data_agreement_negotiation_accept_model import DataAgreementNegotiationAcceptBody, DataAgreementNegotiationAcceptBodySchema
 from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody, DataAgreementNegotiationRejectBodySchema
+from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody, DataAgreementTerminationTerminateBodySchema
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
@@ -2538,3 +2540,82 @@ class ADAManager:
             index += 1
 
         return proof_presentation_request_dict
+
+    async def construct_data_agreement_termination_terminate_message(self,  *, data_agreement_instance: DataAgreementInstance, connection_record: ConnectionRecord) -> typing.Tuple[DataAgreementInstance, DataAgreementTerminationTerminateMessage]:
+        """Construct data agreement termination terminate message"""
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        try:
+            # from_did
+            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+            from_did = DIDMyData.from_public_key_b58(
+                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+            # to_did
+            pairwise_remote_did_record = await storage.search_records(
+                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
+                tag_query={"did": connection_record.their_did}
+            ).fetch_single()
+            to_did = DIDMyData.from_public_key_b58(
+                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement termination terminate message: {err}"
+            )
+
+        # Update data agreement instance with terminate event
+        data_agreement_terminate_event = DataAgreementEvent(
+            event_id=f"{from_did.did}#3",
+            time_stamp=current_datetime_in_iso8601(),
+            did=from_did.did,
+            state=DataAgreementEvent.STATE_TERMINATE
+        )
+
+        data_agreement_instance.event.append(
+            data_agreement_terminate_event
+        )
+
+        # Sign data agreement terminate instance
+        data_agreement_terminate_instance_dict = data_agreement_instance.serialize()
+
+        signature_options = {
+            "id": f"{from_did.did}#3",
+            "type": "Ed25519Signature2018",
+            "created": current_datetime_in_iso8601(),
+            "verificationMethod": f"{from_did.did}",
+            "proofPurpose": "contractAgreement",
+        }
+
+        # Generate proofs
+        document_with_proof: dict = await sign_data_agreement(
+            data_agreement_terminate_instance_dict.copy(
+            ), signature_options, from_did.public_key_b58, wallet
+        )
+
+        # Data agreement terminate proof
+        data_agreement_terminate_proof: DataAgreementProof = DataAgreementProofSchema().load(
+            document_with_proof.get("proofChain")[-1])
+
+        updated_data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
+            document_with_proof
+        )
+
+        # Construct data agreement reject message
+
+        data_agreement_terminate_message = DataAgreementTerminationTerminateMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            body=DataAgreementTerminationTerminateBody(
+                data_agreement_id=updated_data_agreement_instance.data_agreement_id,
+                event=data_agreement_terminate_event,
+                proof=data_agreement_terminate_proof
+            )
+        )
+
+        return (updated_data_agreement_instance, data_agreement_terminate_message)

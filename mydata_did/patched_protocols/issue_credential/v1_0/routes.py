@@ -33,6 +33,8 @@ from aries_cloudagent.wallet.base import BaseWallet
 from aries_cloudagent.wallet.error import WalletError
 from aries_cloudagent.utils.outofband import serialize_outofband
 from aries_cloudagent.utils.tracing import trace_event, get_timer, AdminAPIMessageTracingSchema
+from aries_cloudagent.wallet.indy import IndyWallet
+from aries_cloudagent.wallet.base import BaseWallet
 
 from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
 from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
@@ -57,7 +59,9 @@ from ....v1_0.models.exchange_records.data_agreement_record import DataAgreement
 from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
 from ....v1_0.manager import ADAManager, ADAManagerError
 from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
-
+from ....v1_0.models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
+from ....v1_0.utils.did.mydata_did import DIDMyData
+from ....v1_0.utils.wallet.key_type import KeyType
 
 class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
     """Parameters and validators for credential exchange list query."""
@@ -1613,6 +1617,96 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
     return web.json_response({})
 
 
+@docs(
+    tags=["issue-credential"], summary="Send data agreement termination message."
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def send_data_agreement_termination_message(request: web.BaseRequest):
+    """
+    Request handler for sending data agreement termination message.
+
+    Args:
+        request: aiohttp request object
+
+    """
+
+    # Initialize request context
+    context = request.app["request_context"]
+
+    # Initialize outbound handler
+    outbound_handler = request.app["outbound_message_router"]
+
+    # Path parameters
+    credential_exchange_id = request.match_info["cred_ex_id"]
+
+    cred_ex_record = None
+    try:
+        # Fetch credential exchange record
+        cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    if not cred_ex_record.data_agreement:
+        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
+
+    if not cred_ex_record.data_agreement_status == V10CredentialExchange.DATA_AGREEMENT_ACCEPT:
+        raise web.HTTPBadRequest(
+            reason=f"Data agreement must be in accept state to terminate it."
+        )
+
+    # Send data agreement terminate message
+
+    data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
+        cred_ex_record.data_agreement
+    )
+
+    # Initialize ADA manager
+    ada_manager = ADAManager(context)
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f"Connection {connection_id} not ready")
+        
+        # Fetch wallet from context
+        wallet: IndyWallet = await context.inject(BaseWallet)
+        
+        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+        principle_did = DIDMyData.from_public_key_b58(
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+        
+        if data_agreement_instance.principle_did != principle_did.did:
+            raise web.HTTPBadRequest(
+                reason=f"Only the principle can terminate the data agreement."
+            )
+        
+
+        (data_agreement_instance, data_agreement_terminate_message) = await ada_manager.construct_data_agreement_termination_terminate_message(
+            data_agreement_instance=data_agreement_instance,
+            connection_record=connection_record,
+        )
+
+        # Update credential exchange record with data agreement
+        cred_ex_record.data_agreement = data_agreement_instance.serialize()
+        cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_TERMINATE
+
+        await cred_ex_record.save(context)
+
+        await outbound_handler(data_agreement_terminate_message, connection_id=cred_ex_record.connection_id)
+
+    except (ADAManagerError,StorageError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(cred_ex_record.serialize())
+
 async def register(app: web.Application):
     """Register routes."""
 
@@ -1666,6 +1760,11 @@ async def register(app: web.Application):
             web.post(
                 "/issue-credential/records/{cred_ex_id}/data-agreement-negotiation/problem-report",
                 send_data_agreement_negotiation_problem_report,
+            ),
+
+            web.post(
+                "/issue-credential/records/{cred_ex_id}/data-agreement-termination/terminate",
+                send_data_agreement_termination_message,
             ),
 
         ]

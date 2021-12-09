@@ -103,7 +103,9 @@ async def sign_data_agreement(data_agreement, signature_options, verkey, wallet)
     if (
         "proof" in data_agreement
     ):
-        # Detected the document is being signed more than once, therefore it is a proof chain.
+        # Detected the document is being signed more than once, 
+        # therefore expected output is a proof chain of 2 elements.
+
         proof_chain = True
 
     framed, verify_data_hex_string = create_verify_data(data_agreement, signature_options, proof_chain)
@@ -112,17 +114,30 @@ async def sign_data_agreement(data_agreement, signature_options, verkey, wallet)
 
     jws = await jws_sign(verify_data_bytes, verkey, wallet)
 
-    if not proof_chain:
-        document_with_proof = {**data_agreement, "proof": {**signature_options, "proofValue": jws}}
+    if "proofChain" not in data_agreement:
+        if not proof_chain:
+            # For single proof
+
+            document_with_proof = {**data_agreement, "proof": {**signature_options, "proofValue": jws}}
+        else:
+            # For proof chain with 2 elements
+
+            old_proof = data_agreement.pop("proof", None)
+            new_proof = {**signature_options, "proofValue": jws}
+            document_with_proof = {**data_agreement, "proofChain": [old_proof, new_proof]}
     else:
-        old_proof = data_agreement.pop("proof", None)
-        new_proof = {**signature_options, "proofValue": jws}
-        document_with_proof = {**data_agreement, "proofChain": [old_proof, new_proof]}
+
+        # For proof chain with more than 2 elements
+
+        document_with_proof = {**data_agreement}
+        document_with_proof["proofChain"].append({
+            **signature_options, "proofValue": jws
+        })
 
     return document_with_proof
 
 
-async def verify_data_agreement(doc, verkey, wallet):
+async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain:bool = True):
     """Verify data agreement."""
 
     proof_chain = False
@@ -134,12 +149,21 @@ async def verify_data_agreement(doc, verkey, wallet):
         # Detected the document is being signed more than once, therefore it is a proof chain.
         proof_chain = True
 
-        old_proof = doc["proofChain"][0]
-        new_proof = doc["proofChain"][1]
+        if drop_proof_chain:
+            # For proof chain with 2 elements
 
-        doc.pop("proofChain", None)
-        
-        doc["proof"] = old_proof
+            old_proof = doc["proofChain"][0]
+            new_proof = doc["proofChain"][1]
+
+            doc.pop("proofChain", None)
+            
+            doc["proof"] = old_proof
+        else:
+            # For proof chain with more than 2 elements
+
+            new_proof = doc["proofChain"][-1]
+
+            doc["proofChain"] = doc["proofChain"][:-1]
 
     framed, verify_data_hex_string = create_verify_data(doc, doc["proof"] if not proof_chain else new_proof, proof_chain)
 
