@@ -883,7 +883,7 @@ class AuditorSendDataAgreementVerifyRequestMatchInfoSchema(OpenAPISchema):
     )
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Fetch MyData DID registry transaction records")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Fetch MyData DID registry transaction records")
 @querystring_schema(MyDataDIDRegistryDIDCommTransactionRecordListQueryStringSchema())
 @response_schema(MyDataDIDRegistryDIDCommTransactionRecordListResponseSchema(), 200)
 async def mydata_did_registry_didcomm_transaction_records_list(request: web.BaseRequest):
@@ -935,7 +935,7 @@ async def mydata_did_registry_didcomm_transaction_records_list(request: web.Base
     return web.json_response({"results": results})
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Fetch MyData DID registry DIDComm transaction record by ID")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Fetch MyData DID registry DIDComm transaction record by ID")
 @match_info_schema(MyDataDIDRegistryDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema())
 @response_schema(MyDataDIDRegistryDIDCommTransactionRecordSchema(), 200)
 async def mydata_did_registry_didcomm_transaction_records_retreive_by_id(request: web.BaseRequest):
@@ -977,7 +977,7 @@ async def mydata_did_registry_didcomm_transaction_records_retreive_by_id(request
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Remove MyData DID registry DIDComm transaction record by ID",
     responses={
         204: {
@@ -1013,7 +1013,7 @@ async def mydata_did_registry_didcomm_transaction_records_delete_by_id(request: 
     return web.json_response(None, status=204)
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Send create-did didcomm message to MyData DID registry")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Send create-did didcomm message to MyData DID registry")
 @match_info_schema(SendCreateDIDMessageMatchInfoSchema())
 async def send_create_did_message_to_mydata_did_registry(request: web.BaseRequest):
     """
@@ -1057,7 +1057,7 @@ async def send_create_did_message_to_mydata_did_registry(request: web.BaseReques
     return web.json_response(result)
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Send read-did didcomm message to MyData DID registry")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Send read-did didcomm message to MyData DID registry")
 @match_info_schema(SendReadDIDMessageMatchInfoSchema())
 async def send_read_did_message_to_mydata_did_registry(request: web.BaseRequest):
     """
@@ -1102,7 +1102,7 @@ async def send_read_did_message_to_mydata_did_registry(request: web.BaseRequest)
     return web.json_response(result)
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Send delete-did message")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Send delete-did message")
 @match_info_schema(SendDeleteDIDMessageMatchInfoSchema())
 async def send_delete_did_message_to_mydata_did_registry(request: web.BaseRequest):
     """
@@ -1145,7 +1145,7 @@ async def send_delete_did_message_to_mydata_did_registry(request: web.BaseReques
     return web.json_response(result)
 
 
-@docs(tags=["ADA - MyData DID Registry Administrative Functions"], summary="Fetch all registered MyData DIDs")
+@docs(tags=["Data Agreement - MyData DID Registry Admin Functions"], summary="Fetch all registered MyData DIDs")
 @querystring_schema(MyDataDIDRegistryMyDataDIDListQueryStringSchema())
 @response_schema(MyDataDIDRegistryMyDataDIDListResponseSchema(many=True), 200)
 async def mydata_did_registry_mydata_did_list(request: web.BaseRequest):
@@ -1194,7 +1194,7 @@ async def mydata_did_registry_mydata_did_list(request: web.BaseRequest):
     return web.json_response(results)
 
 
-@docs(tags=["ADA - MyData DID CRUD Operations"], summary="Fetch MyData DID remote records.")
+@docs(tags=["Data Agreement - MyData DID Operations"], summary="Fetch MyData DID remote records.")
 @querystring_schema(MyDataDIDRemoteRecordsQueryStringSchema())
 @response_schema(MyDataDIDRemoteRecordResponseSchema(many=True), 200)
 async def mydata_did_remote_records_list(request: web.BaseRequest):
@@ -1242,7 +1242,7 @@ async def mydata_did_remote_records_list(request: web.BaseRequest):
     return web.json_response(results)
 
 
-@docs(tags=["ADA - Data Agreement Functions"], summary="Send read data agreement message to Data Controller (remote agent)")
+@docs(tags=["Data Agreement - Core Functions"], summary="Send read data agreement message to Data Controller (remote agent)")
 @request_schema(ReadDataAgreementRequestSchema())
 @response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(), 200)
 async def send_read_data_agreement(request: web.BaseRequest):
@@ -1300,7 +1300,7 @@ async def send_read_data_agreement(request: web.BaseRequest):
 
 
 # List data agreement crud didcomm transactions from the wallet
-@docs(tags=["ADA - Data Agreement Functions"], summary="List data agreements crud didcomm transactions from the wallet")
+@docs(tags=["Data Agreement - Core Functions"], summary="List data agreements crud didcomm transactions from the wallet")
 @querystring_schema(DACRUDDIDCommTransactionRecordListQueryStringSchema())
 @response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(many=True), 200)
 async def list_data_agreements_crud_didcomm_transactions(request: web.BaseRequest):
@@ -1353,7 +1353,7 @@ async def list_data_agreements_crud_didcomm_transactions(request: web.BaseReques
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Remove data agreement CRUD DIDComm transaction record by ID",
     responses={
         204: {
@@ -1390,7 +1390,7 @@ async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: 
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Create and store data agreement in wallet",
     responses={
         422: {
@@ -1432,7 +1432,7 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Query data agreements in the wallet",
 )
 @querystring_schema(DataAgreementQueryStringSchema())
@@ -1475,7 +1475,7 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Update data agreement in the wallet",
     responses={
         400: {
@@ -1516,7 +1516,7 @@ async def update_data_agreement_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Delete data agreement in the wallet",
     responses={
         204: {
@@ -1555,7 +1555,7 @@ async def delete_data_agreement_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Query version history of a data agreement",
     responses={
         400: {
@@ -1592,7 +1592,7 @@ async def query_data_agreement_version_history(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Create and store data agreement personal data in wallet",
     responses={
         422: {
@@ -1633,7 +1633,7 @@ async def create_and_store_da_personal_data_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Query data agreement personal data in wallet",
 )
 @querystring_schema(QueryDAPersonalDataInWalletQueryStringSchema())
@@ -1669,7 +1669,7 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="List data agreement personal data category from wallet"
 )
 @response_schema(ListDAPersonalDataCategoryFromWalletResponseSchema(), 200)
@@ -1701,7 +1701,7 @@ async def list_da_personal_data_category_from_wallet(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Mark a connection as MyData DID registry.",
     responses={
         204: {
@@ -1746,7 +1746,7 @@ async def mark_existing_connection_as_mydata_did_registry(request: web.BaseReque
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Fetch current connection marked as MyData DID registry",
     responses={
         400: {
@@ -1786,7 +1786,7 @@ async def fetch_current_connection_marked_as_mydata_did_registry(request: web.Ba
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Unmark current connection marked as MyData DID registry",
     responses={
         204: {
@@ -1825,7 +1825,7 @@ async def unmark_current_connection_marked_as_mydata_did_registry(request: web.B
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Dummy route"
 )
 async def dummy_route_handler(request: web.BaseRequest):
@@ -1928,7 +1928,7 @@ async def dummy_route_handler(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - MyData DID CRUD Operations"],
+    tags=["Data Agreement - MyData DID Operations"],
     summary="Dummy MyData DID resolve route"
 )
 @querystring_schema(DummyDIDResolveRouteHandlerQueryStringSchema())
@@ -1960,7 +1960,7 @@ async def dummy_did_resolve_route_handler(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Auditor Functions"],
+    tags=["Data Agreement - Auditor Functions"],
     summary="Mark a connection as Auditor.",
     responses={
         204: {
@@ -2005,7 +2005,7 @@ async def mark_existing_connection_as_auditor(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Auditor Functions"],
+    tags=["Data Agreement - Auditor Functions"],
     summary="Fetch current connection marked as Auditor",
     responses={
         400: {
@@ -2045,7 +2045,7 @@ async def fetch_current_connection_marked_as_auditor(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Auditor Functions"],
+    tags=["Data Agreement - Auditor Functions"],
     summary="Unmark current connection marked as Auditor",
     responses={
         204: {
@@ -2084,7 +2084,7 @@ async def unmark_current_connection_marked_as_auditor(request: web.BaseRequest):
 
 
 @docs(
-    tags=["ADA - Data Agreement Functions"],
+    tags=["Data Agreement - Core Functions"],
     summary="Query data agreement instances"
 )
 @querystring_schema(QueryDataAgreementInstanceQueryStringSchema())
@@ -2135,7 +2135,7 @@ async def query_data_agreement_instances(request: web.BaseRequest):
     return web.json_response({"results": results})
 
 
-@docs(tags=["ADA - Auditor Functions"], summary="Fetch Auditor DIDComm transaction records")
+@docs(tags=["Data Agreement - Auditor Functions"], summary="Fetch Auditor DIDComm transaction records")
 @querystring_schema(AuditorDIDCommTransactionRecordListQueryStringSchema())
 @response_schema(AuditorDIDCommTransactionRecordSchema(many=True), 200)
 async def auditor_didcomm_transaction_records_list(request: web.BaseRequest):
@@ -2169,7 +2169,7 @@ async def auditor_didcomm_transaction_records_list(request: web.BaseRequest):
     return web.json_response([result.serialize() for result in results])
 
 
-@docs(tags=["ADA - Auditor Functions"], summary="Fetch Auditor DIDComm transaction record by ID")
+@docs(tags=["Data Agreement - Auditor Functions"], summary="Fetch Auditor DIDComm transaction record by ID")
 @match_info_schema(AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema())
 @response_schema(AuditorDIDCommTransactionRecordSchema(), 200)
 async def auditor_didcomm_transaction_records_retreive_by_id(request: web.BaseRequest):
@@ -2201,7 +2201,7 @@ async def auditor_didcomm_transaction_records_retreive_by_id(request: web.BaseRe
 
 
 @docs(
-    tags=["ADA - Auditor Functions"],
+    tags=["Data Agreement - Auditor Functions"],
     summary="Remove Auditor DIDComm transaction record by ID",
     responses={
         204: {
@@ -2238,7 +2238,7 @@ async def auditor_didcomm_transaction_records_delete_by_id(request: web.BaseRequ
 
 
 @docs(
-    tags=["ADA - Auditor Functions"],
+    tags=["Data Agreement - Auditor Functions"],
     summary="Send data agreement verify request to the auditor"
 )
 @match_info_schema(AuditorSendDataAgreementVerifyRequestMatchInfoSchema())
@@ -2497,7 +2497,7 @@ def post_process_routes(app: web.Application):
         app._state["swagger_dict"]["tags"] = []
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": "ADA - MyData DID CRUD Operations",
+            "name": "Data Agreement - MyData DID Operations",
             "description": "MyData DID Protocol 1.0 (ADA RFC 0001)",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
         }
@@ -2505,7 +2505,7 @@ def post_process_routes(app: web.Application):
 
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": "ADA - MyData DID Registry Administrative Functions",
+            "name": "Data Agreement - MyData DID Registry Admin Functions",
             "description": "MyData DID registry administrative functions",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
         }
@@ -2513,7 +2513,7 @@ def post_process_routes(app: web.Application):
 
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": "ADA - Data Agreement Functions",
+            "name": "Data Agreement - Core Functions",
             "description": "Data Agreement Protocol 1.0 (ADA RFC 0002)",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
         }
@@ -2521,7 +2521,7 @@ def post_process_routes(app: web.Application):
 
     app._state["swagger_dict"]["tags"].append(
         {
-            "name": "ADA - Auditor Functions",
+            "name": "Data Agreement - Auditor Functions",
             "description": "Data Agreement Proofs Protocol 1.0 (ADA RFC 0004)",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
         }
