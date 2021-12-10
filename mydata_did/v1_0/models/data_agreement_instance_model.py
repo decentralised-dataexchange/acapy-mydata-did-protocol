@@ -224,7 +224,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
 
     # Data agreement principle did
     principle_did = fields.Str(
-        data_key="principle-did",
+        data_key="data-subject-did",
         example="did:mydata:123456789abcdefghi",
         description="Principle did"
     )
