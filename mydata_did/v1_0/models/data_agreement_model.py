@@ -339,7 +339,7 @@ class DataAgreementEventSchema(BaseModelSchema):
 
     # Principle DID
     principle_did = fields.Str(
-        data_key="data-subject-did",
+        data_key="data_subject_did",
         description="MyData decentralised identifier",
         dump_only=True,
         **MYDATA_DID
