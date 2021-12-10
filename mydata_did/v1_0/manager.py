@@ -244,7 +244,7 @@ class ADAManager:
 
             # Send problem-report message.
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.DID_EXISTS,
+                problem_code=MyDataDIDProblemReportMessageReason.DID_EXISTS.value,
                 explain="DID already registered in the DID registry",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
@@ -277,7 +277,7 @@ class ADAManager:
 
             # Send problem-report message.
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED,
+                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED.value,
                 explain="DID document signature verification failed",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
@@ -537,7 +537,7 @@ class ADAManager:
             # Send problem-report message.
 
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND,
+                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
                 explain="DID not found.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
@@ -717,7 +717,7 @@ class ADAManager:
             # Send problem-report message.
 
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND,
+                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
                 explain="DID not found.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
@@ -746,7 +746,7 @@ class ADAManager:
             # Send problem-report message.
 
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED,
+                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED.value,
                 explain="Invalid signature.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
