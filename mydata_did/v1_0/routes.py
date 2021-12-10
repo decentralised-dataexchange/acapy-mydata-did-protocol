@@ -1881,13 +1881,13 @@ async def dummy_route_handler(request: web.BaseRequest):
             "event": [
                 {
                     "id": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp#1",
-                    "time-stamp": "2021-05-08T08:41:59+0000",
+                    "time_stamp": "2021-05-08T08:41:59+0000",
                     "did": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
                     "state": "<Definition/Prepration/Capture>"
                 },
                 {
                     "id": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP#2",
-                    "time-stamp": "2021-05-08T08:41:59+0000",
+                    "time_stamp": "2021-05-08T08:41:59+0000",
                     "did": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP",
                     "state": "<Definition/Prepration/Capture>"
                 }

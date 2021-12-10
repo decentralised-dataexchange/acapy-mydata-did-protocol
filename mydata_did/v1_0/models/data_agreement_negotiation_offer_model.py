@@ -204,7 +204,7 @@ class DataAgreementEventSchema(BaseModelSchema):
 
     # Time stamp
     time_stamp = fields.Str(
-        data_key="time-stamp",
+        data_key="time_stamp",
         example=str(datetime.datetime.utcnow().replace(
             tzinfo=datetime.timezone.utc).isoformat()),
         description="Data agreement event timestamp in ISO 8601 UTC date time format"
