@@ -1425,6 +1425,9 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
         # Create and store data agreement in wallet
         data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement)
 
+        if not data_agreement_v1_record:
+            raise web.HTTPBadRequest(reason="Data agreement not created")
+
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
