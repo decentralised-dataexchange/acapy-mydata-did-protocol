@@ -150,7 +150,7 @@ class V10PresentationProposalRequestSchema(AdminAPIMessageTracingSchema):
     )
 
 
-class IndyProofReqPredSpecRestrictionsSchema(OpenAPISchema):
+class DAIndyProofReqPredSpecRestrictionsSchema(OpenAPISchema):
     """Schema for restrictions in attr or pred specifier indy proof request."""
 
     schema_id = fields.String(
@@ -175,7 +175,7 @@ class IndyProofReqPredSpecRestrictionsSchema(OpenAPISchema):
     )
 
 
-class IndyProofReqNonRevokedSchema(OpenAPISchema):
+class DAIndyProofReqNonRevokedSchema(OpenAPISchema):
     """Non-revocation times specification in indy proof request."""
 
     fro = fields.Int(
@@ -209,7 +209,7 @@ class IndyProofReqNonRevokedSchema(OpenAPISchema):
             )
 
 
-class IndyProofReqAttrSpecSchema(OpenAPISchema):
+class DAIndyProofReqAttrSpecSchema(OpenAPISchema):
     """Schema for attribute specification in indy proof request."""
 
     name = fields.String(
@@ -244,7 +244,7 @@ class IndyProofReqAttrSpecSchema(OpenAPISchema):
         ),
         required=False,
     )
-    non_revoked = fields.Nested(IndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
 
     @validates_schema
     def validate_fields(self, data, **kwargs):
@@ -272,7 +272,7 @@ class IndyProofReqAttrSpecSchema(OpenAPISchema):
             )
 
 
-class IndyProofReqPredSpecSchema(OpenAPISchema):
+class DAIndyProofReqPredSpecSchema(OpenAPISchema):
     """Schema for predicate specification in indy proof request."""
 
     name = fields.String(
@@ -284,14 +284,14 @@ class IndyProofReqPredSpecSchema(OpenAPISchema):
     )
     p_value = fields.Integer(description="Threshold value", required=True)
     restrictions = fields.List(
-        fields.Nested(IndyProofReqPredSpecRestrictionsSchema()),
+        fields.Nested(DAIndyProofReqPredSpecRestrictionsSchema()),
         description="If present, credential must satisfy one of given restrictions",
         required=False,
     )
-    non_revoked = fields.Nested(IndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
 
 
-class IndyProofRequestSchema(OpenAPISchema):
+class DAIndyProofRequestSchema(OpenAPISchema):
     """Schema for indy proof request."""
 
     nonce = fields.String(description="Nonce",
@@ -313,22 +313,22 @@ class IndyProofRequestSchema(OpenAPISchema):
         required=True,
         # marshmallow/apispec v3.0 ignores
         keys=fields.Str(example="0_attr_uuid"),
-        values=fields.Nested(IndyProofReqAttrSpecSchema()),
+        values=fields.Nested(DAIndyProofReqAttrSpecSchema()),
     )
     requested_predicates = fields.Dict(
         description=("Requested predicate specifications of proof request"),
         required=True,
         # marshmallow/apispec v3.0 ignores
         keys=fields.Str(example="0_age_GE_uuid"),
-        values=fields.Nested(IndyProofReqPredSpecSchema()),
+        values=fields.Nested(DAIndyProofReqPredSpecSchema()),
     )
-    non_revoked = fields.Nested(IndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
 
 
 class V10PresentationCreateRequestRequestSchema(AdminAPIMessageTracingSchema):
     """Request schema for creating a proof request free of any connection."""
 
-    proof_request = fields.Nested(IndyProofRequestSchema(), required=True)
+    proof_request = fields.Nested(DAIndyProofRequestSchema(), required=True)
     comment = fields.Str(required=False, allow_none=True)
     trace = fields.Bool(
         description="Whether to trace event (default false)",
