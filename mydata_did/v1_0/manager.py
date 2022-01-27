@@ -1,6 +1,9 @@
+import base64
 import datetime
 import logging
 import json
+import os
+from re import A
 import time
 import uuid
 import typing
@@ -8,6 +11,7 @@ import typing
 from asyncio import shield
 from aries_cloudagent.connections.models.connection_target import ConnectionTarget
 from c14n.Canonicalize import serialize
+from pydid import DID
 import semver
 import aiohttp
 
@@ -33,6 +37,9 @@ from aries_cloudagent.transport.pack_format import PackWireFormat
 from aries_cloudagent.transport.wire_format import BaseWireFormat
 from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator, TransportDecoratorSchema
 from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager, ConnectionManagerError
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import ConnectionInvitation
+from aries_cloudagent.indy.util import generate_pr_nonce
+from aries_cloudagent.messaging.decorators.attach_decorator import AttachDecorator
 
 from .messages.create_did import CreateDIDMessage
 from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
@@ -54,6 +61,8 @@ from .messages.data_agreement_accept import DataAgreementNegotiationAcceptMessag
 from .messages.data_agreement_reject import DataAgreementNegotiationRejectMessage, DataAgreementNegotiationRejectMessageSchema
 from .messages.data_agreement_terminate import DataAgreementTerminationTerminateMessage, DataAgreementTerminationTerminateMessageSchema
 from .messages.data_agreement_verify import DataAgreementVerify
+from .messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
+from .messages.data_agreement_qr_code_problem_report import DataAgreementQrCodeProblemReport, DataAgreementQrCodeProblemReportReason
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -69,6 +78,7 @@ from .models.data_agreement_negotiation_accept_model import DataAgreementNegotia
 from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody, DataAgreementNegotiationRejectBodySchema
 from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody, DataAgreementTerminationTerminateBodySchema
 from .models.data_agreement_verify_model import DataAgreementVerifyBody, DataAgreementVerifyBodySchema
+from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeInitiateBody
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
@@ -91,6 +101,9 @@ from ..patched_protocols.issue_credential.v1_0.models.credential_exchange import
 from ..patched_protocols.present_proof.v1_0.models.presentation_exchange import (
     V10PresentationExchange
 )
+from ..patched_protocols.present_proof.v1_0.messages.presentation_request import PresentationRequest
+from ..patched_protocols.present_proof.v1_0.message_types import ATTACH_DECO_IDS, PRESENTATION_REQUEST
+from ..patched_protocols.present_proof.v1_0.manager import PresentationManager
 
 
 class ADAManagerError(BaseError):
@@ -113,6 +126,9 @@ class ADAManager:
 
     # Record for keeping track of DIDs that are registered in the DID registry (MyData DID registry)
     RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO = "mydata_did_registry_did_info"
+
+    # Record for keeping metadata about data agreement QR codes (client)
+    RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = "data_agreement_qr_code_metadata"
 
     DATA_AGREEMENT_RECORD_TYPE = "dataagreement_record"
 
@@ -248,7 +264,7 @@ class ADAManager:
                 explain="DID already registered in the DID registry",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=str(int(datetime.datetime.utcnow().timestamp()))
+                created_time=round(time.time() * 1000)
             )
 
             # Assign thread id
@@ -281,7 +297,7 @@ class ADAManager:
                 explain="DID document signature verification failed",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=str(int(datetime.datetime.utcnow().timestamp()))
+                created_time=round(time.time() * 1000)
             )
 
             # Assign thread id
@@ -313,7 +329,7 @@ class ADAManager:
         create_did_response_message = CreateDIDResponseMessage(
             from_did=response_message_from_did.did,
             to_did=response_message_to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=MyDataDIDResponseBody(
                 did_doc=create_did_message.body,
                 version=mydata_did_registry_did_info_record_tags.get(
@@ -475,7 +491,7 @@ class ADAManager:
         create_did_message = CreateDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=did_doc
         )
 
@@ -541,7 +557,7 @@ class ADAManager:
                 explain="DID not found.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=str(int(datetime.datetime.utcnow().timestamp()))
+                created_time=round(time.time() * 1000)
             )
 
             # Assign thread id
@@ -557,7 +573,7 @@ class ADAManager:
         read_did_response_message = ReadDIDResponseMessage(
             from_did=response_message_from_did.did,
             to_did=response_message_to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=MyDataDIDResponseBody(
                 did_doc=MyDataDIDDoc.from_json(
                     mydata_did_registry_did_info_record.value),
@@ -656,7 +672,7 @@ class ADAManager:
         read_did_message = ReadDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=ReadDIDMessageBody(
                 did=did
             )
@@ -721,7 +737,7 @@ class ADAManager:
                 explain="DID not found.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=str(int(datetime.datetime.utcnow().timestamp()))
+                created_time=round(time.time() * 1000)
             )
 
             # Assign thread id
@@ -750,7 +766,7 @@ class ADAManager:
                 explain="Invalid signature.",
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=str(int(datetime.datetime.utcnow().timestamp()))
+                created_time=round(time.time() * 1000)
             )
 
             # Assign thread id
@@ -773,7 +789,7 @@ class ADAManager:
         delete_did_response_message = DeleteDIDResponseMessage(
             from_did=response_message_from_did.did,
             to_did=response_message_to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DeleteDIDResponseMessageBody(
                 did=mydata_did_registry_did_info_record.tags.get("did"),
                 status=mydata_did_registry_did_info_record.tags.get("status"),
@@ -900,7 +916,7 @@ class ADAManager:
         delete_did_message = DeleteDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DeleteDIDMessageBody(
                 did=did
             )
@@ -965,7 +981,7 @@ class ADAManager:
         data_agreement_message = ReadDataAgreement(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=ReadDataAgreementBody(
                 data_agreement_id=data_agreement_id,
             )
@@ -1396,7 +1412,7 @@ class ADAManager:
 
                     personal_data_new_list_for_proof_request.append({
                         "attribute_name": personal_data_record.attribute_name,
-                        "restrictions": personal_data.get("restrictions", [])
+                        "restrictions": personal_data.get("restrictions", []),
                     })
 
         except (StorageNotFoundError, StorageError) as e:
@@ -1574,7 +1590,7 @@ class ADAManager:
 
                     personal_data_new_list_for_proof_request.append({
                         "attribute_name": personal_data_record.attribute_name,
-                        "restrictions": personal_data.get("restrictions", [])
+                        "restrictions": personal_data.get("restrictions", []),
                     })
 
             # Replace the personal data list with the new list
@@ -2208,7 +2224,7 @@ class ADAManager:
         data_agreement_negotiation_offer_message = DataAgreementNegotiationOfferMessage(
             from_did=controller_mydata_did.did,
             to_did=principle_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=data_agreement_negotiation_offer_body
         )
 
@@ -2335,7 +2351,7 @@ class ADAManager:
         read_did_message = ReadDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=ReadDIDMessageBody(
                 did=mydata_did.did
             )
@@ -2501,7 +2517,7 @@ class ADAManager:
         data_agreement_accept_message = DataAgreementNegotiationAcceptMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DataAgreementNegotiationAcceptBody(
                 data_agreement_id=data_agreement_offer_instance.data_agreement_id,
                 event=data_agreement_instance.event[1],
@@ -2613,7 +2629,7 @@ class ADAManager:
         data_agreement_reject_message = DataAgreementNegotiationRejectMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DataAgreementNegotiationRejectBody(
                 data_agreement_id=data_agreement_offer_instance.data_agreement_id,
                 event=data_agreement_instance.event[1],
@@ -2654,7 +2670,7 @@ class ADAManager:
         data_agreement_negotiation_problem_report = DataAgreementNegotiationProblemReport(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             problem_code=problem_code,
             explain=explain,
             data_agreement_id=data_agreement_id
@@ -2762,7 +2778,7 @@ class ADAManager:
         data_agreement_terminate_message = DataAgreementTerminationTerminateMessage(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DataAgreementTerminationTerminateBody(
                 data_agreement_id=updated_data_agreement_instance.data_agreement_id,
                 event=data_agreement_terminate_event,
@@ -2851,7 +2867,7 @@ class ADAManager:
             raise ADAManagerError(
                 f"Failed to construct data agreement verify request message: {err}"
             )
-        
+
         # from_did
         pairwise_local_did_record = await wallet.get_local_did(auditor_connection_record.my_did)
         from_did = DIDMyData.from_public_key_b58(
@@ -2877,7 +2893,7 @@ class ADAManager:
                 f"Failed to construct data agreement verify request message: "
                 f"{len(data_agreement_instances)} data agreement instances found for data agreement id: {data_agreement_id}"
             )
-        
+
         data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
             data_agreement_instances[0].get("data_agreement")
         )
@@ -2887,10 +2903,591 @@ class ADAManager:
         data_agreement_verify = DataAgreementVerify(
             from_did=from_did.did,
             to_did=to_did.did,
-            created_time=str(int(datetime.datetime.utcnow().timestamp())),
+            created_time=round(time.time() * 1000),
             body=DataAgreementVerifyBody(
                 data_agreement=data_agreement_instance
             )
         )
 
         return data_agreement_verify
+
+    async def construct_data_agreement_qr_code_payload(self,
+                                                       *,
+                                                       data_agreement_id: str,
+                                                       mult_use: bool = False
+                                                       ) -> dict:
+        """
+        Construct data agreement QR code payload
+
+        What is multi use ?
+
+        Same QR code should be used for multiple time to share data.
+        When scanned multi use QR code, it will create a single QR code record to keep track of progress.
+
+        What is single use ?
+
+        QR code cannot be used more than once.
+
+        :param data_agreement_id: data agreement id
+        :param mult_use: whether the QR code is for multiple use
+        :return: data agreement QR code payload
+        """
+
+        # Wallet instance from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Storage instance from context
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        # Fetch data agreement
+
+        # Tag filter
+        tag_filter = {
+            "data_agreement_id": data_agreement_id,
+            "published_flag": "True",
+            "delete_flag": "False",
+        }
+
+        try:
+
+            # Query for the data agreement record by id
+            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
+                self.context,
+                tag_filter=tag_filter
+            )
+
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement qr code payload: {err}"
+            )
+
+        # Check method of use
+
+        if data_agreement_record.method_of_use != DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
+            raise ADAManagerError(
+                f"Failed to construct data agreement qr code payload: "
+                f"data agreement record method-of-use is not data using service"
+            )
+
+        # QR code identifier in uuid4
+        qr_code_identifier = str(uuid.uuid1())
+
+        # Create a connection invitation
+
+        connection_mgr = ConnectionManager(self.context)
+        try:
+            (connection, invitation) = await connection_mgr.create_invitation(
+                auto_accept=True, public=False, multi_use=True, alias="DA_" + data_agreement_id + "_QR_" + qr_code_identifier
+            )
+
+        except (ConnectionManagerError, BaseModelError) as err:
+            raise ADAManagerError(
+                f"Failed to construct data agreement qr code payload: {err}"
+            )
+
+        # Create qr code metddata
+
+        qr_code_metadata_record = StorageRecord(
+            self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+            qr_code_identifier,
+            {
+                "data_agreement_id": data_agreement_id,
+                "connection_id": connection.connection_id,
+                "qr_id": qr_code_identifier,
+                "multi_use": str(mult_use),
+                "is_scanned": str(False)
+            }
+        )
+
+        await storage.add_record(qr_code_metadata_record)
+
+        result = {
+            "qr_id": qr_code_identifier,
+            "invitation": {
+                "service_endpoint": invitation.endpoint,
+                "recipient_keys": invitation.recipient_keys,
+            }
+        }
+
+        return result
+
+    async def query_data_agreement_qr_metadata_records(self, *, query_string: dict) -> typing.Union[typing.List[dict], None]:
+        """
+        Query data agreement QR code metadata records
+
+        :param query_string: query string
+
+        {
+            "qr_id" -> qr code identifier (optional)
+        }
+
+        if query string is empty, all records will be returned.
+
+        :return: data agreement QR code metdata records
+        """
+
+        # Storage instance from context
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        # Fetch qr code metadata records.
+        qr_code_metadata_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+            tag_query=query_string
+        ).fetch_all()
+
+        results = []
+        if qr_code_metadata_records:
+            for qr_code_metadata_record in qr_code_metadata_records:
+                results.append({
+                    "qr_id": qr_code_metadata_record.tags.get("qr_id"),
+                    "connection_id": qr_code_metadata_record.tags.get("connection_id"),
+                    "data_agreement_id": qr_code_metadata_record.tags.get("data_agreement_id"),
+                    "multi_use": eval(qr_code_metadata_record.tags.get("multi_use")),
+                    "is_scanned": eval(qr_code_metadata_record.tags.get("is_scanned"))
+                })
+
+        return results
+
+    async def delete_data_agreement_qr_metadata_record(self, *, data_agreement_id: str, qr_id: str) -> None:
+        """Delete data agreement QR code metadata record"""
+
+        # Storage instance from context
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        tag_query = {
+            "data_agreement_id": data_agreement_id,
+            "qr_id": qr_id
+        }
+
+        # Fetch qr code metadata records.
+        qr_code_metadata_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        # Delete qr code metadata records.
+        for qr_code_metadata_record in qr_code_metadata_records:
+            await storage.delete_record(qr_code_metadata_record)
+
+    async def base64_encode_data_agreement_qr_code_payload(self, *, data_agreement_id: str, qr_id: str) -> str:
+        """Base64 encode data agreement QR code payload"""
+
+        # Storage instance from context
+
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        tag_query = {
+            "data_agreement_id": data_agreement_id,
+            "qr_id": qr_id
+        }
+
+        try:
+
+            # Fetch qr code metadata record.
+            qr_code_metadata_record = await storage.search_records(
+                type_filter=self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+                tag_query=tag_query
+            ).fetch_single()
+
+            # Fetch connection record by connection id
+
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                qr_code_metadata_record.tags.get("connection_id")
+            )
+
+            # Fetch connection invitation
+
+            connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(
+                self.context
+            )
+
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to base64 encode data agreement qr code payload: {err}"
+            )
+
+        qr_payload = {
+            "qr_id": qr_id,
+            "invitation": {
+                "service_endpoint": connection_invitation.endpoint,
+                "recipient_keys": connection_invitation.recipient_keys,
+            }
+        }
+
+        # Encode payload to base64
+
+        qr_payload_base64 = base64.b64encode(
+            json.dumps(qr_payload).encode('UTF-8'))
+
+        return qr_payload_base64.decode('UTF-8')
+
+    async def process_data_agreement_qr_code_initiate_message(self, data_agreement_qr_code_initiate_message: DataAgreementQrCodeInitiateMessage, receipt: MessageReceipt) -> None:
+        """
+        Process data agreement qr code initiate message.
+        """
+
+        # Storage instance from context
+
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To DIDs for the response messages
+        response_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+        response_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+
+        # Query qr code metadata records by qr_id
+
+        try:
+            qr_code_metadata_record = await storage.search_records(
+                type_filter=self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+                tag_query={
+                    "qr_id": data_agreement_qr_code_initiate_message.body.qr_id}
+            ).fetch_single()
+        except StorageError as err:
+            # if not found send problem-report
+            problem_report = DataAgreementQrCodeProblemReport(
+                problem_code=DataAgreementQrCodeProblemReportReason.INVALID_QR_ID.value,
+                explain=f"Failed to query data agreement qr code metadata records: {err}",
+                from_did=response_message_from_did.did,
+                to_did=response_message_to_did.did,
+                created_time=round(time.time() * 1000),
+                qr_id=data_agreement_qr_code_initiate_message.body.qr_id,
+            )
+
+            if responder:
+                await responder.send_reply(problem_report, connection_id=self.context.connection_record.connection_id)
+
+            raise ADAManagerError(
+                f"Failed to query data agreement qr code metadata records: {err}"
+            )
+
+        # multi_use flag
+        multi_use = eval(qr_code_metadata_record.tags.get("multi_use"))
+
+        # is_scanned flag
+        is_scanned = eval(qr_code_metadata_record.tags.get("is_scanned"))
+
+        if multi_use:
+            # Create a copy of qr code metadata record, with new record identifier and then continue processing
+
+            # QR code identifier in uuid4
+            qr_code_identifier = str(uuid.uuid1())
+
+            qr_code_metadata_record = StorageRecord(
+                self.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA,
+                qr_code_identifier,
+                {
+                    "data_agreement_id": qr_code_metadata_record.tags.get("data_agreement_id"),
+                    "connection_id": self.context.connection_record.connection_id,
+                    "qr_id": qr_code_identifier,
+                    "multi_use": str(qr_code_metadata_record.tags.get("multi_use")),
+                    "is_scanned": str(True)
+                }
+            )
+
+            await storage.add_record(qr_code_metadata_record)
+        else:
+            if is_scanned:
+                # if is_multi_use is False and is_scanned is True,
+                # send problem-report (QR code already scanned)
+
+                problem_report = DataAgreementQrCodeProblemReport(
+                    problem_code=DataAgreementQrCodeProblemReportReason.QR_CODE_SCANNED_ONCE.value,
+                    explain=f"QR code cannot be scanned more than once.",
+                    from_did=response_message_from_did.did,
+                    to_did=response_message_to_did.did,
+                    created_time=round(time.time() * 1000),
+                    qr_id=data_agreement_qr_code_initiate_message.body.qr_id,
+                )
+
+                if responder:
+                    await responder.send_reply(problem_report, connection_id=self.context.connection_record.connection_id)
+
+                raise ADAManagerError(
+                    f"QR code already scanned"
+                )
+
+        # If found, fetch the corresponding data agreement record
+        # Check if method-of-use is data-using-service else send problem-report
+
+        # Fetch data agreement
+
+        # Tag filter
+        tag_filter = {
+            "data_agreement_id": qr_code_metadata_record.tags.get("data_agreement_id"),
+            "published_flag": "True",
+            "delete_flag": "False",
+        }
+
+        try:
+
+            # Query for the old data agreement record by id
+            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
+                self.context,
+                tag_filter=tag_filter
+            )
+
+            # Check if data agreement method-of-use is data-using-service
+            if data_agreement_record.method_of_use != DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
+
+                problem_report = DataAgreementQrCodeProblemReport(
+                    problem_code=DataAgreementQrCodeProblemReportReason.FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE.value,
+                    explain=f"Data agreement method-of-use is not data-using-service.",
+                    from_did=response_message_from_did.did,
+                    to_did=response_message_to_did.did,
+                    created_time=round(time.time() * 1000),
+                    qr_id=data_agreement_qr_code_initiate_message.body.qr_id,
+                )
+
+                if responder:
+                    await responder.send_reply(problem_report, connection_id=self.context.connection_record.connection_id)
+
+                raise ADAManagerError(
+                    f"Data agreement method-of-use must be {DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE}"
+                )
+
+            # Create presentation-request message from the stored presentation request dict
+
+            # Update qr code metadata record with
+            #   is_scanned = True,
+            #   data_exchange_record identifier,
+            #   update connection_id
+
+            # Construct presentation request message.
+
+            indy_proof_request = data_agreement_record.data_agreement_proof_presentation_request
+            comment = indy_proof_request.pop("comment")
+
+            if not indy_proof_request.get("nonce"):
+                indy_proof_request["nonce"] = await generate_pr_nonce()
+
+            presentation_request_message = PresentationRequest(
+                comment=comment,
+                request_presentations_attach=[
+                    AttachDecorator.from_indy_dict(
+                        indy_dict=indy_proof_request,
+                        ident=ATTACH_DECO_IDS[PRESENTATION_REQUEST],
+                    )
+                ],
+            )
+
+            # Construct presentation exchange record
+
+            presentation_manager = PresentationManager(self.context)
+            pres_ex_record = None
+            try:
+                (pres_ex_record) = await presentation_manager.create_exchange_for_request(
+                    connection_id=self.context.connection_record.connection_id,
+                    presentation_request_message=presentation_request_message,
+                )
+                result = pres_ex_record.serialize()
+            except (BaseModelError, StorageError) as err:
+                raise ADAManagerError(
+                    f"Failed to create presentation exchange record: {err}"
+                )
+
+            # Construct data agreement offer message.
+            data_agreement_offer_message = await self.construct_data_agreement_offer_message(
+                connection_record=self.context.connection_record,
+                data_agreement_template_record=data_agreement_record,
+            )
+
+            # Add data agreement context decorator
+            presentation_request_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
+                message_type="protocol",
+                message=data_agreement_offer_message.serialize()
+            )
+
+            pres_ex_record.presentation_request_dict = presentation_request_message.serialize()
+            pres_ex_record.data_agreement = data_agreement_offer_message.body.serialize()
+            pres_ex_record.data_agreement_id = data_agreement_offer_message.body.data_agreement_id
+            pres_ex_record.data_agreement_template_id = data_agreement_offer_message.body.data_agreement_template_id
+            pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_OFFER
+            await pres_ex_record.save(self.context)
+
+            # Save data agreement instance metadata
+            await self.store_data_agreement_instance_metadata(
+                data_agreement_id=data_agreement_offer_message.body.data_agreement_id,
+                data_agreement_template_id=data_agreement_offer_message.body.data_agreement_template_id,
+                data_exchange_record_id=pres_ex_record.presentation_exchange_id,
+                method_of_use=data_agreement_offer_message.body.method_of_use
+            )
+
+            result = pres_ex_record.serialize()
+
+            # Send presentation request message to connection
+
+            if responder:
+                await responder.send_reply(presentation_request_message, connection_id=self.context.connection_record.connection_id)
+
+            # Update qr code metadata record with new tags
+            qr_code_metadata_record_tags = qr_code_metadata_record.tags
+            qr_code_metadata_record_tags["is_scanned"] = str(True)
+            qr_code_metadata_record_tags["connection_id"] = self.context.connection_record.connection_id
+            qr_code_metadata_record_tags["data_exchange_record_id"] = pres_ex_record.presentation_exchange_id
+            await storage.update_record_tags(qr_code_metadata_record, qr_code_metadata_record_tags)
+
+        except StorageError as err:
+            problem_report = DataAgreementQrCodeProblemReport(
+                problem_code=DataAgreementQrCodeProblemReportReason.FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE.value,
+                explain=f"Failed to process Data Agreement Qr code initiate message: {err}",
+                from_did=response_message_from_did.did,
+                to_did=response_message_to_did.did,
+                created_time=round(time.time() * 1000),
+                qr_id=data_agreement_qr_code_initiate_message.body.qr_id,
+            )
+
+            if responder:
+                await responder.send_reply(problem_report, connection_id=self.context.connection_record.connection_id)
+
+            raise ADAManagerError(
+                f"Failed to process Data Agreement Qr code initiate message: {err}"
+            )
+
+    async def send_data_agreement_qr_code_workflow_initiate_message(self, *, qr_id: str, connection_id: str) -> None:
+        # Storage instance from context
+
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                connection_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f"Failed to retrieve connection record: {err}"
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Construct Data Agreement Qr Code Workflow Initiate Message
+
+        data_agreement_qr_code_workflow_initiate_message = DataAgreementQrCodeInitiateMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=DataAgreementQrCodeInitiateBody(
+                qr_id=qr_id,
+            )
+        )
+
+        # Send Data Agreement Qr Code Workflow Initiate Message to connection
+        if responder:
+            await responder.send(data_agreement_qr_code_workflow_initiate_message, connection_id=connection_record.connection_id)
+
+    async def fetch_igrantio_config_from_os_environ(self) -> typing.Dict:
+        # Retrieve config from os environ
+        firebase_web_api_key = os.environ.get("FIREBASE_WEB_API_KEY")
+        firebase_domain_uri_prefix = os.environ.get(
+            "FIREBASE_DOMAIN_URI_PREFIX")
+        firebase_android_android_package_name = os.environ.get(
+            "FIREBASE_ANDROID_ANDROID_PACKAGE_NAME")
+        firebase_ios_bundle_id = os.environ.get("FIREBASE_IOS_BUNDLE_ID")
+        firebase_ios_appstore_id = os.environ.get("FIREBASE_IOS_APPSTORE_ID")
+        igrantio_org_id = os.environ.get("IGRANTIO_ORG_ID")
+        igrantio_org_api_key = os.environ.get("IGRANTIO_ORG_API_KEY")
+
+        if not firebase_web_api_key:
+            raise ADAManagerError(
+                "Failed to retrieve firebase web api key from os environ")
+
+        if not igrantio_org_id:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio org id from os environ")
+
+        if not igrantio_org_api_key:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio org api key from os environ")
+
+        if not firebase_domain_uri_prefix:
+            raise ADAManagerError(
+                "Failed to retrieve firebase domain uri prefix from os environ")
+
+        if not firebase_android_android_package_name:
+            raise ADAManagerError(
+                "Failed to retrieve firebase android android package name from os environ")
+
+        if not firebase_ios_bundle_id:
+            raise ADAManagerError(
+                "Failed to retrieve firebase ios bundle id from os environ")
+
+        if not firebase_ios_appstore_id:
+            raise ADAManagerError(
+                "Failed to retrieve firebase ios appstore id from os environ")
+
+        return {
+            "firebase_web_api_key": firebase_web_api_key,
+            "firebase_domain_uri_prefix": firebase_domain_uri_prefix,
+            "firebase_android_android_package_name": firebase_android_android_package_name,
+            "firebase_ios_bundle_id": firebase_ios_bundle_id,
+            "firebase_ios_appstore_id": firebase_ios_appstore_id,
+            "igrantio_org_id": igrantio_org_id,
+            "igrantio_org_api_key": igrantio_org_api_key,
+        }
+
+    async def generate_firebase_dynamic_link_for_data_agreement_qr_payload(self, *, data_agreement_id: str, qr_id: str) -> str:
+        """Fn to generate firebase dynamic link for data agreement qr payload"""
+
+        # Fetch config from os environ
+        config = await self.fetch_igrantio_config_from_os_environ()
+
+        # Obtain base64 encoded qr code payload
+        base64_qr_payload = await self.base64_encode_data_agreement_qr_code_payload(
+            data_agreement_id=data_agreement_id,
+            qr_id=qr_id
+        )
+
+        # Generate firebase dynamic link
+        payload_link = self.context.settings.get(
+            "default_endpoint") + "?qr_payload=" + base64_qr_payload
+        
+        # Construct firebase payload
+        payload = {
+            "dynamicLinkInfo": {
+                "domainUriPrefix": config["firebase_domain_uri_prefix"],
+                "link": payload_link,
+                "androidInfo": {
+                    "androidPackageName": config["firebase_android_android_package_name"],
+                },
+                "iosInfo": {
+                    "iosBundleId": config["firebase_ios_bundle_id"],
+                    "iosAppStoreId": config["firebase_ios_appstore_id"],
+                }
+            },
+            "suffix": {
+                "option": "UNGUESSABLE"
+            }
+        }
+
+        firebase_dynamic_link_endpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + config["firebase_web_api_key"]
+
+        jresp = {}
+        async with aiohttp.ClientSession() as session:
+            async with session.post(firebase_dynamic_link_endpoint, json=payload) as resp:
+                if resp.status == 200:
+                    jresp = await resp.json()
+                else:
+                    raise ADAManagerError(
+                        f"Failed to generate firebase dynamic link for data agreement qr payload: {resp.status} {await resp.text()}"
+                    )
+        
+        return jresp["shortLink"]

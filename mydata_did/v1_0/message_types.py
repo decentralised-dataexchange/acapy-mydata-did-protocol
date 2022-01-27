@@ -43,6 +43,11 @@ DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = f"data-agreement-termination/1.0/pro
 DATA_AGREEMENT_PROOFS_VERIFY = f"data-agreement-proofs/1.0/verify-request"
 DATA_AGREEMENT_PROOFS_VERIFY_RESPONSE = f"data-agreement-proofs/1.0/verify-response"
 
+# Message types for iGrant.io specific messages.
+# Data agreement QR code workflow initiate message.
+DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE = f"data-agreement-qr-code/1.0/initiate"
+DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = f"data-agreement-qr-code/1.0/problem-report"
+
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 
@@ -99,6 +104,12 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DATA_AGREEMENT_PROOFS_VERIFY_RESPONSE: (
             f"{PROTOCOL_PACKAGE}.messages.data_agreement_verify_response.DataAgreementVerifyResponse"
+        ),
+        DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE: (
+            f"{PROTOCOL_PACKAGE}.messages.data_agreement_qr_code_initiate.DataAgreementQrCodeInitiateMessage"
+        ),
+        DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT: (
+            f"{PROTOCOL_PACKAGE}.messages.data_agreement_qr_code_problem_report.DataAgreementQrCodeProblemReport"
         )
     },
 )

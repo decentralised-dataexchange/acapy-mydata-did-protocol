@@ -1,12 +1,14 @@
 import json
 import typing
-from aiohttp.web_response import json_response
 import uuid
+import logging
 
-from aiohttp_apispec.decorators import request
 import validators
 
 from aiohttp import web
+from aiohttp import frozenlist
+from aiohttp_apispec.decorators import request
+from aiohttp.web_response import json_response
 from aiohttp_apispec import docs, request_schema, querystring_schema, response_schema, match_info_schema, validation_middleware
 from marshmallow import fields, validate, validates
 from marshmallow.exceptions import ValidationError
@@ -44,6 +46,9 @@ from .models.data_agreement_instance_model import DataAgreementInstanceSchema, D
 
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SendCreateDIDMessageMatchInfoSchema(OpenAPISchema):
@@ -881,6 +886,37 @@ class AuditorSendDataAgreementVerifyRequestMatchInfoSchema(OpenAPISchema):
         description="Data agreement identifier", required=True,
         example=UUIDFour.EXAMPLE,
     )
+
+
+class DataAgreementQRCodeMatchInfoSchema(OpenAPISchema):
+    """
+    Schema for data agreement QR code match info
+    """
+
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class DataAgreementQRCodeInvitationSchema(OpenAPISchema):
+    """Schema for connection invitation details inside in data agreement qr code payload."""
+
+    service_endpoint = fields.Str(
+        description="Service endpoint", example="http://localhost:8080/")
+    recipient_key = fields.Str(
+        description="Recipient key", **INDY_RAW_PUBLIC_KEY)
+
+
+class GenerateDataAgreementQrCodePayloadResponseSchema(OpenAPISchema):
+    """
+    Schema for Data Agreement QR code payload
+    """
+
+    qr_id = fields.Str(description="QR code ID",  **UUID4)
+    connection_id = fields.Str(description="Connection ID", **UUID4)
+    invitation = fields.Nested(DataAgreementQRCodeInvitationSchema(
+    ), description="Connection invitation information")
 
 
 @docs(tags=["Data Agreement - MyData DID Operations"], summary="Fetch MyData DID registry transaction records")
@@ -2300,6 +2336,7 @@ async def auditor_send_data_agreement_verify_request(request: web.BaseRequest):
 
     return web.json_response(result)
 
+
 @docs(
     tags=["connection"],
     summary="Well-known endpoint for connection",
@@ -2335,8 +2372,321 @@ async def wellknown_connection_handler(request: web.BaseRequest):
 
     return web.json_response(result)
 
+class GenerateDataAgreementQrCodePayloadQueryStringSchema(OpenAPISchema):
+    """Schema for query string parameters to generate data agreement qr code payload"""
+
+    multi_use = fields.Bool()
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Generate Data Agreement QR code payload",
+    responses={
+        400: "Bad Request"
+    }
+)
+@querystring_schema(GenerateDataAgreementQrCodePayloadQueryStringSchema())
+@match_info_schema(DataAgreementQRCodeMatchInfoSchema())
+@response_schema(GenerateDataAgreementQrCodePayloadResponseSchema(), 201)
+async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
+    # Get path parameters.
+    data_agreement_id = request.match_info["data_agreement_id"]
+
+    # Context.
+    context = request.app["request_context"]
+
+    multi_use = False if "multi_use" not in request.query else request.query["multi_use"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+
+        # Call the function.
+
+        result = await mydata_did_manager.construct_data_agreement_qr_code_payload(
+            data_agreement_id=data_agreement_id,
+            multi_use=multi_use
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result, status=201)
+
+class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
+    """Schema to validate path parameters for query data agreement qr code metadata records."""
+
+    
+    data_agreement_id = fields.Str(description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=False)
+
+class QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema(OpenAPISchema):
+    """Schema for querying data agreement qr code metadata records"""
+
+    qr_id = fields.Str(description="QR code identifier", example=UUIDFour.EXAMPLE, required=False)
+
+
+class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
+    """Schema for querying data agreement qr code metadata records response"""
+
+    qr_id = fields.Str(description="QR code identifier",
+                       example=UUIDFour.EXAMPLE, required=False)
+
+    data_agreement_id = fields.Str(
+        description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=False)
+
+    connection_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=False)
+
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Query Data Agreement QR code metadata records",
+)
+@match_info_schema(QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema())
+@querystring_schema(QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema())
+@response_schema(QueryDataAgreementQRCodeMetadataRecordsResponseSchema(many=True))
+async def query_data_agreement_qr_code_metadata_records_handler(request: web.BaseRequest):
+    # Context.
+    context = request.app["request_context"]
+
+    tag_filter = {
+        "data_agreement_id": request.match_info["data_agreement_id"]
+    }
+
+    # qr id
+    if "qr_id" in request.query and request.query["qr_id"] != "":
+        tag_filter["qr_id"] = request.query["qr_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+
+        # Call the function.
+
+        result = await mydata_did_manager.query_data_agreement_qr_metadata_records(
+            query_string=tag_filter
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
+
+class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
+
+    data_agreement_id = fields.Str(
+        description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=True)
+
+    qr_id = fields.Str(description="QR code identifier",
+                       example=UUIDFour.EXAMPLE, required=True)
+
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Delete Data Agreement QR code record.",
+    responses={
+        204: "Success",
+    }
+)
+@match_info_schema(RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema())
+async def remove_data_agreement_qr_code_metadata_record_handler(request: web.BaseRequest):
+
+    # Context
+    context = request.app["request_context"]
+
+    # Fetch path parameters.
+    data_agreement_id = request.match_info["data_agreement_id"]
+    qr_id = request.match_info["qr_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+
+        # Call the function.
+
+        await mydata_did_manager.delete_data_agreement_qr_metadata_record(
+            data_agreement_id=data_agreement_id,
+            qr_id=qr_id
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=204)
+
+
+class Base64EncodeDataAgreementQrCodeMatchInfoSchema(OpenAPISchema):
+    """Match info (URL path params) schema for base64 encode data agreement QR code payload endpoint"""
+
+    # Data Agreement identifier.
+    data_agreement_id = fields.Str(
+        description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description="QR code identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Base64 encode data agreement qr code payload"
+)
+@match_info_schema(Base64EncodeDataAgreementQrCodeMatchInfoSchema())
+async def base64_encode_data_agreement_qr_code_payload_handler(request: web.BaseRequest):
+
+    # Context.
+    context = request.app["request_context"]
+
+    # Fetch path parameters.
+    data_agreement_id = request.match_info["data_agreement_id"]
+    qr_id = request.match_info["qr_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    result = {}
+    try:
+
+        # Call the function.
+
+        base64_string = await mydata_did_manager.base64_encode_data_agreement_qr_code_payload(
+            data_agreement_id=data_agreement_id,
+            qr_id=qr_id
+        )
+
+        result = {
+            "base64_string": base64_string
+        }
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
+
+class SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema(OpenAPISchema):
+    """Match info (URL path params) schema for send data agreement qr code workflow initiate endpoint"""
+
+    # Connection identifier.
+    connection_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description="QR code identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Send data agreement qr code workflow initiate message to remote agent",
+)
+@match_info_schema(SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema())
+async def send_data_agreements_qr_code_workflow_initiate_handler(request: web.BaseRequest):
+
+    # Context.
+    context = request.app["request_context"]
+
+    # Fetch path parameters.
+
+    connection_id = request.match_info["connection_id"]
+    qr_id = request.match_info["qr_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    try:
+
+        # Call the function.
+
+        await mydata_did_manager.send_data_agreement_qr_code_workflow_initiate_message(
+            connection_id=connection_id,
+            qr_id=qr_id
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=204)
+
+class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema(OpenAPISchema):
+    """Schema to match URL path parameters in generate firebase dynamic link for data agreement qr endpoint"""
+
+    # Data agreement identifier.
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description="QR code identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(OpenAPISchema):
+    """Response schema for generate firebase dynamic link for data agreement qr endpoint"""
+
+    # Firebase dynamic link
+    firebase_dynamic_link = fields.Str(
+        description="Firebase dynamic link", example="https://example.page.link/UVWXYZuvwxyz12345"
+    )
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Generate firebase dynamic link for data agreement qr code payload.",
+)
+@match_info_schema(GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema())
+@response_schema(GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(), 200)
+async def generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler(request: web.BaseRequest):
+    """Generate firebase dynamic link for data agreement qr code payload."""
+
+    # Context.
+    context = request.app["request_context"]
+
+    # Fetch path parameters.
+    data_agreement_id = request.match_info["data_agreement_id"]
+    qr_id = request.match_info["qr_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    result = {}
+    try:
+
+        # Call the function.
+
+        firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_data_agreement_qr_payload(
+            data_agreement_id=data_agreement_id,
+            qr_id=qr_id
+        )
+
+        result = {
+            "firebase_dynamic_link": firebase_dynamic_link
+        }
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
 
 async def register(app: web.Application):
+
+    # app._middlewares = frozenlist.FrozenList(app.middlewares[:] + [custom_debug_middleware])
+
+    # print(app.middlewares)
+
     app.add_routes(
         [
             web.get(
@@ -2487,6 +2837,32 @@ async def register(app: web.Application):
                 "/.well-known/did-configuration.json",
                 wellknown_connection_handler,
                 allow_head=False
+            ),
+            web.post(
+                "/data-agreements/{data_agreement_id}/qr",
+                generate_data_agreement_qr_code_payload,
+            ),
+            web.get(
+                "/data-agreements/{data_agreement_id}/qr/{qr_id}/base64",
+                base64_encode_data_agreement_qr_code_payload_handler,
+                allow_head=False
+            ),
+            web.post(
+                "/data-agreements/{data_agreement_id}/qr/{qr_id}/firebase",
+                generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler,
+            ),
+            web.get(
+                "/data-agreements/{data_agreement_id}/qr",
+                query_data_agreement_qr_code_metadata_records_handler,
+                allow_head=False
+            ),
+            web.delete(
+                "/data-agreements/{data_agreement_id}/qr/{qr_id}",
+                remove_data_agreement_qr_code_metadata_record_handler,
+            ),
+            web.post(
+                "/data-agreements/qr/{qr_id}/workflow-initiate/connections/{connection_id}",
+                send_data_agreements_qr_code_workflow_initiate_handler,
             )
         ]
     )
