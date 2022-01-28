@@ -2372,10 +2372,12 @@ async def wellknown_connection_handler(request: web.BaseRequest):
 
     return web.json_response(result)
 
+
 class GenerateDataAgreementQrCodePayloadQueryStringSchema(OpenAPISchema):
     """Schema for query string parameters to generate data agreement qr code payload"""
 
     multi_use = fields.Bool()
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -2415,16 +2417,19 @@ async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
 
     return web.json_response(result, status=201)
 
+
 class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
     """Schema to validate path parameters for query data agreement qr code metadata records."""
 
-    
-    data_agreement_id = fields.Str(description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=False)
+    data_agreement_id = fields.Str(
+        description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=False)
+
 
 class QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema(OpenAPISchema):
     """Schema for querying data agreement qr code metadata records"""
 
-    qr_id = fields.Str(description="QR code identifier", example=UUIDFour.EXAMPLE, required=False)
+    qr_id = fields.Str(description="QR code identifier",
+                       example=UUIDFour.EXAMPLE, required=False)
 
 
 class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
@@ -2621,6 +2626,7 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(request: web.Ba
 
     return web.json_response({}, status=204)
 
+
 class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema(OpenAPISchema):
     """Schema to match URL path parameters in generate firebase dynamic link for data agreement qr endpoint"""
 
@@ -2634,6 +2640,7 @@ class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema(Op
         description="QR code identifier", example=UUIDFour.EXAMPLE, required=True
     )
 
+
 class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(OpenAPISchema):
     """Response schema for generate firebase dynamic link for data agreement qr endpoint"""
 
@@ -2641,6 +2648,7 @@ class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(Ope
     firebase_dynamic_link = fields.Str(
         description="Firebase dynamic link", example="https://example.page.link/UVWXYZuvwxyz12345"
     )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -2679,6 +2687,60 @@ async def generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_hand
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(result)
+
+
+class SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema(OpenAPISchema):
+    data = fields.Dict()
+    signature_options = fields.Dict()
+    proof_chain = fields.Bool()
+
+
+class SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema(OpenAPISchema):
+
+    connection_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+@docs(
+    tags=["JSON-LD"],
+    summary="Send JSON-LD processed-data didcomm message to the remote agent.",
+    responses={
+        204: "Success",
+    }
+)
+@match_info_schema(SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema())
+@request_schema(SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema())
+async def send_json_ld_didcomm_processed_data_message_handler(request: web.BaseRequest):
+    """Send JSON-LD didcomm processed data message handler."""
+
+    # Context.
+    context = request.app["request_context"]
+
+    # Fetch path parameters.
+    connection_id = request.match_info["connection_id"]
+
+    # Fetch request body
+    body = await request.json()
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    try:
+
+        # Call the function.
+
+        await mydata_did_manager.send_json_ld_processed_message(
+            connection_id=connection_id,
+            data=body.get("data", {}),
+            signature_options=body.get("signature_options", {}),
+            proof_chain=body.get("proof_chain", False)
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=204)
 
 
 async def register(app: web.Application):
@@ -2863,6 +2925,10 @@ async def register(app: web.Application):
             web.post(
                 "/data-agreements/qr/{qr_id}/workflow-initiate/connections/{connection_id}",
                 send_data_agreements_qr_code_workflow_initiate_handler,
+            ),
+            web.post(
+                "/json-ld/didcomm/processed-data/connections/{connection_id}",
+                send_json_ld_didcomm_processed_data_message_handler,
             )
         ]
     )
@@ -2903,5 +2969,12 @@ def post_process_routes(app: web.Application):
             "name": "Data Agreement - Auditor Functions",
             "description": "Data Agreement Proofs Protocol 1.0 (ADA RFC 0004)",
             "externalDocs": {"description": "Specification", "url": "https://github.com/decentralised-dataexchange/automated-data-agreements/blob/main/docs/didcomm-protocol-spec.md"},
+        }
+    )
+
+    app._state["swagger_dict"]["tags"].append(
+        {
+            "name": "JSON-LD",
+            "description": "JSON-LD functions",
         }
     )

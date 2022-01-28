@@ -44,9 +44,15 @@ DATA_AGREEMENT_PROOFS_VERIFY = f"data-agreement-proofs/1.0/verify-request"
 DATA_AGREEMENT_PROOFS_VERIFY_RESPONSE = f"data-agreement-proofs/1.0/verify-response"
 
 # Message types for iGrant.io specific messages.
+
 # Data agreement QR code workflow initiate message.
 DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE = f"data-agreement-qr-code/1.0/initiate"
 DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = f"data-agreement-qr-code/1.0/problem-report"
+
+# JSON-LD functions protocol.
+JSON_LD_PROCESSED_DATA = f"json-ld/1.0/processed-data"
+JSON_LD_PROCESSED_RESPONSE_DATA = f"json-ld/1.0/processed-data-response"
+JSON_LD_PROBLEM_REPORT = f"json-ld/1.0/problem-report"
 
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
@@ -110,6 +116,15 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT: (
             f"{PROTOCOL_PACKAGE}.messages.data_agreement_qr_code_problem_report.DataAgreementQrCodeProblemReport"
-        )
+        ),
+        JSON_LD_PROCESSED_DATA: (
+            f"{PROTOCOL_PACKAGE}.messages.json_ld_processed.JSONLDProcessedMessage"
+        ),
+        JSON_LD_PROCESSED_RESPONSE_DATA: (
+            f"{PROTOCOL_PACKAGE}.messages.json_ld_processed_response.JSONLDProcessedResponseMessage"
+        ),
+        JSON_LD_PROBLEM_REPORT: (
+            f"{PROTOCOL_PACKAGE}.messages.json_ld_problem_report.JSONLDProblemReport"
+        ),
     },
 )

@@ -63,6 +63,9 @@ from .messages.data_agreement_terminate import DataAgreementTerminationTerminate
 from .messages.data_agreement_verify import DataAgreementVerify
 from .messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
 from .messages.data_agreement_qr_code_problem_report import DataAgreementQrCodeProblemReport, DataAgreementQrCodeProblemReportReason
+from .messages.json_ld_processed import JSONLDProcessedMessage
+from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
+from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -79,6 +82,8 @@ from .models.data_agreement_negotiation_reject_model import DataAgreementNegotia
 from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody, DataAgreementTerminationTerminateBodySchema
 from .models.data_agreement_verify_model import DataAgreementVerifyBody, DataAgreementVerifyBodySchema
 from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeInitiateBody
+from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
+from .models.json_ld_processed_model import JSONLDProcessedBody
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
@@ -87,6 +92,7 @@ from .utils.verification_method import PublicKeyType
 from .utils.jsonld import ED25519_2018_CONTEXT_URL
 from .utils.jsonld.data_agreement import sign_data_agreement
 from .utils.util import current_datetime_in_iso8601
+from .utils.jsonld.create_verify_data import create_verify_data
 
 from .decorators.data_agreement_context_decorator import DataAgreementContextDecoratorSchema, DataAgreementContextDecorator
 from .message_types import (
@@ -2208,6 +2214,9 @@ class ADAManager:
             "proofPurpose": "contractAgreement",
         }
 
+        print("[DEBUG_DATA_AGREEMENT_OFFER] data_agreement_negotiation_offer_body_dict: ", json.dumps(data_agreement_negotiation_offer_body_dict, indent=4))
+        print("[DEBUG_DATA_AGREEMENT_OFFER] signature_options: ", json.dumps(signature_options, indent=4))
+
         # Generate proofs
         document_with_proof: dict = await sign_data_agreement(
             data_agreement_negotiation_offer_body_dict.copy(
@@ -2914,7 +2923,7 @@ class ADAManager:
     async def construct_data_agreement_qr_code_payload(self,
                                                        *,
                                                        data_agreement_id: str,
-                                                       mult_use: bool = False
+                                                       multi_use: bool = False
                                                        ) -> dict:
         """
         Construct data agreement QR code payload
@@ -2994,7 +3003,7 @@ class ADAManager:
                 "data_agreement_id": data_agreement_id,
                 "connection_id": connection.connection_id,
                 "qr_id": qr_code_identifier,
-                "multi_use": str(mult_use),
+                "multi_use": str(multi_use),
                 "is_scanned": str(False)
             }
         )
@@ -3394,7 +3403,9 @@ class ADAManager:
         if responder:
             await responder.send(data_agreement_qr_code_workflow_initiate_message, connection_id=connection_record.connection_id)
 
-    async def fetch_igrantio_config_from_os_environ(self) -> typing.Dict:
+    async def fetch_firebase_config_from_os_environ(self) -> dict:
+        """Fetch firebase config from os environ"""
+
         # Retrieve config from os environ
         firebase_web_api_key = os.environ.get("FIREBASE_WEB_API_KEY")
         firebase_domain_uri_prefix = os.environ.get(
@@ -3403,20 +3414,10 @@ class ADAManager:
             "FIREBASE_ANDROID_ANDROID_PACKAGE_NAME")
         firebase_ios_bundle_id = os.environ.get("FIREBASE_IOS_BUNDLE_ID")
         firebase_ios_appstore_id = os.environ.get("FIREBASE_IOS_APPSTORE_ID")
-        igrantio_org_id = os.environ.get("IGRANTIO_ORG_ID")
-        igrantio_org_api_key = os.environ.get("IGRANTIO_ORG_API_KEY")
 
         if not firebase_web_api_key:
             raise ADAManagerError(
                 "Failed to retrieve firebase web api key from os environ")
-
-        if not igrantio_org_id:
-            raise ADAManagerError(
-                "Failed to retrieve igrantio org id from os environ")
-
-        if not igrantio_org_api_key:
-            raise ADAManagerError(
-                "Failed to retrieve igrantio org api key from os environ")
 
         if not firebase_domain_uri_prefix:
             raise ADAManagerError(
@@ -3440,6 +3441,24 @@ class ADAManager:
             "firebase_android_android_package_name": firebase_android_android_package_name,
             "firebase_ios_bundle_id": firebase_ios_bundle_id,
             "firebase_ios_appstore_id": firebase_ios_appstore_id,
+        }
+
+    async def fetch_igrantio_config_from_os_environ(self) -> dict:
+        """Fetch iGrant.io config from os environ"""
+
+        igrantio_org_id = os.environ.get("IGRANTIO_ORG_ID")
+
+        igrantio_org_api_key = os.environ.get("IGRANTIO_ORG_API_KEY")
+
+        if not igrantio_org_id:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio org id from os environ")
+
+        if not igrantio_org_api_key:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio org api key from os environ")
+
+        return{
             "igrantio_org_id": igrantio_org_id,
             "igrantio_org_api_key": igrantio_org_api_key,
         }
@@ -3448,7 +3467,7 @@ class ADAManager:
         """Fn to generate firebase dynamic link for data agreement qr payload"""
 
         # Fetch config from os environ
-        config = await self.fetch_igrantio_config_from_os_environ()
+        config = await self.fetch_firebase_config_from_os_environ()
 
         # Obtain base64 encoded qr code payload
         base64_qr_payload = await self.base64_encode_data_agreement_qr_code_payload(
@@ -3459,7 +3478,7 @@ class ADAManager:
         # Generate firebase dynamic link
         payload_link = self.context.settings.get(
             "default_endpoint") + "?qr_payload=" + base64_qr_payload
-        
+
         # Construct firebase payload
         payload = {
             "dynamicLinkInfo": {
@@ -3478,7 +3497,8 @@ class ADAManager:
             }
         }
 
-        firebase_dynamic_link_endpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + config["firebase_web_api_key"]
+        firebase_dynamic_link_endpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + \
+            config["firebase_web_api_key"]
 
         jresp = {}
         async with aiohttp.ClientSession() as session:
@@ -3489,5 +3509,128 @@ class ADAManager:
                     raise ADAManagerError(
                         f"Failed to generate firebase dynamic link for data agreement qr payload: {resp.status} {await resp.text()}"
                     )
-        
+
         return jresp["shortLink"]
+
+    async def process_json_ld_processed_message(self, json_ld_processed_message: JSONLDProcessedMessage, receipt: MessageReceipt) -> None:
+
+        # Storage instance
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Wallet instance
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To MyData DIDs
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        try:
+            # Base64 decode data_base64
+            data_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.data_base64)
+
+            # JSON load data_base64
+            data_json = json.loads(data_base64_decoded)
+
+            # Base64 decode signature_options_base64
+            signature_options_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.signature_options_base64)
+
+            # JSON load signature_options_base64
+            signature_options_json = json.loads(
+                signature_options_base64_decoded)
+
+            # verify_data function
+            framed, combine_hash = create_verify_data(
+                data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
+
+            # Base64 encode framed
+            framed_base64_encoded = base64.b64encode(json.dumps(framed).encode("utf-8")).decode("utf-8")
+
+            # Base64 encode combine_hash
+            combine_hash_base64_encoded = base64.b64encode(
+                combine_hash.encode("utf-8")).decode("utf-8")
+
+            # Construct JSONLD Processed Response Message
+            json_ld_processed_response_message = JSONLDProcessedResponseMessage(
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000),
+                body=JSONLDProcessedResponseBody(
+                    framed_base64=framed_base64_encoded,
+                    combined_hash_base64=combine_hash_base64_encoded
+                )
+            )
+
+            if responder:
+                await responder.send_reply(json_ld_processed_response_message, connection_id=self.context.connection_record.connection_id)
+
+        except Exception as err:
+            # Send problem report
+            json_ld_problem_report_message = JSONLDProblemReport(
+                problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
+                explain=str(err),
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000)
+            )
+
+            if responder:
+                await responder.send_reply(json_ld_problem_report_message, connection_id=self.context.connection_record.connection_id)
+
+    async def send_json_ld_processed_message(self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) -> None:
+        """Send JSON-LD Processed Message to remote agent."""
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                connection_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f"Failed to retrieve connection record: {err}"
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Base64 encode data
+        data_base64 = base64.b64encode(json.dumps(
+            data).encode("utf-8")).decode("utf-8")
+
+        # Base64 encode signature_options
+        signature_options_base64 = base64.b64encode(json.dumps(
+            signature_options).encode("utf-8")).decode("utf-8")
+
+        # Construct JSONLD Processed Message
+        json_ld_processed_message = JSONLDProcessedMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=JSONLDProcessedBody(
+                data_base64=data_base64,
+                signature_options_base64=signature_options_base64,
+                proof_chain=proof_chain
+            )
+        )
+
+        # Send JSONLD Processed Message
+        if responder:
+            await responder.send_reply(json_ld_processed_message, connection_id=connection_record.connection_id)
