@@ -1867,109 +1867,6 @@ async def unmark_current_connection_marked_as_mydata_did_registry(request: web.B
 
 @docs(
     tags=["Data Agreement - MyData DID Operations"],
-    summary="Dummy route"
-)
-async def dummy_route_handler(request: web.BaseRequest):
-
-    # Request context
-    context = request.app["request_context"]
-
-    # Wallet instance from request context
-    wallet: IndyWallet = await context.inject(BaseWallet)
-
-    doc = {
-        "credential": {
-            "@context": [
-                "https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld",
-                "https://w3id.org/security/v2"
-            ],
-            "id": "d7216cb1-aedb-471e-96f7-7fef51dedb76",
-            "version": "v1.0",
-            "template_id": "91be609a-4acd-468f-b37a-0f379893b65c",
-            "template_version": "v1.0",
-            "data_controller_name": "Happy Shopping AB",
-            "data_controller_url": "www.happyshopping.com",
-            "data_policy": {
-                "policy_URL": "https://happyshoping.com/privacy-policy/",
-                "jurisdiction": "Sweden",
-                "industry_sector": "Retail",
-                "data_retention_period": "30",
-                "geographic_restriction": "Europe",
-                "storage_location": "Europe"
-            },
-            "purpose": "Customized shopping experience",
-            "purpose_description": "Collecting user data for offering custom tailored shopping experience",
-            "lawful_basis": "<consent/legal_obligation/contract/vital_interest/public_task/legitimate_interest>",
-            "method_of_use": "<null/data-source/data-using-service>",
-            "personal_data": [
-                {
-                    "attribute_id": "f216cb1-aedb-571e-46f7-2fef51dedb54",
-                    "attribute_name": "Name",
-                    "attribute_sensitive": "True",
-                    "attribute_category": "Name"
-                },
-                {
-                    "attribute_id": "f216cb1-aedb-571e-46f7-2fef51dedb54",
-                    "attribute_name": "Age",
-                    "attribute_sensitive": "True",
-                    "attribute_category": "Age"
-                }
-            ],
-            "dpia": {
-                "dpia_date": "2021-05-08T08:41:59+0000",
-                "dpia_summary_url": "https://org.com/dpia_results.html"
-            },
-            "event": [
-                {
-                    "id": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp#1",
-                    "time_stamp": "2021-05-08T08:41:59+0000",
-                    "did": "did:mydata:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
-                    "state": "<Definition/Prepration/Capture>"
-                },
-                {
-                    "id": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP#2",
-                    "time_stamp": "2021-05-08T08:41:59+0000",
-                    "did": "did:mydata:z6MkGskxnGjLrk3gKS2mesDpuwRBokeWcmrgHxUXfnncxiZP",
-                    "state": "<Definition/Prepration/Capture>"
-                }
-            ]
-        },
-        "options": {
-            "type": "Ed25519Signature2018",
-            "created": "2020-04-10T21:35:35Z",
-            "verificationMethod": (
-                "did:key:"
-                "z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd#"
-                "z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd"
-            ),
-            "proofPurpose": "assertionMethod",
-        },
-    }
-
-    credential: dict = doc["credential"]
-    signature_options: dict = doc["options"]
-
-    verkeys = ["GwpifqCAYcDqh4uduBftkgbF7XfkhwWNPraZPKRW6U1i",
-               "4P85Ho2c974ANiCUe4x588Nb5tpx4JZWZWfkosgei8yW"]
-
-    document_with_proof: dict = await sign_data_agreement(
-        credential.copy(), signature_options, verkeys[0], wallet
-    )
-
-    document_with_proof_chain: dict = await sign_data_agreement(
-        document_with_proof.copy(), signature_options, verkeys[1], wallet
-    )
-
-    valid = await verify_data_agreement_with_proof_chain(document_with_proof_chain.copy(), verkeys, wallet)
-
-    return json_response({
-        "status": "OK" if valid else "NOT OK",
-        "document": document_with_proof_chain,
-    })
-
-
-@docs(
-    tags=["Data Agreement - MyData DID Operations"],
     summary="Dummy MyData DID resolve route"
 )
 @querystring_schema(DummyDIDResolveRouteHandlerQueryStringSchema())
@@ -2903,11 +2800,6 @@ async def register(app: web.Application):
             web.delete(
                 "/mydata-did/unset-did-registry-connection",
                 unmark_current_connection_marked_as_mydata_did_registry,
-            ),
-            web.get(
-                "/dummy-route",
-                dummy_route_handler,
-                allow_head=False
             ),
             web.get(
                 "/dummy-did-resolve-route",
