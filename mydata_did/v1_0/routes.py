@@ -1,7 +1,9 @@
 import json
+import sys
 import typing
 import uuid
 import logging
+import jwt
 
 import validators
 
@@ -2747,11 +2749,60 @@ async def send_json_ld_didcomm_processed_data_message_handler(request: web.BaseR
     return web.json_response({}, status=204)
 
 
+@web.middleware
+async def authentication_middleware(request: web.BaseRequest, handler: typing.Coroutine):
+    """
+    Authentication middleware.
+
+    Authenticate the request if the request headers contain Authorization header with value of ApiKey <api_key>.
+    """
+
+    # Context.
+    context = request.app["request_context"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    try:
+        # Fetch iGrant.io config from os environment.
+        config: dict = await mydata_did_manager.fetch_igrantio_config_from_os_environ()
+    except ADAManagerError as err:
+        # iGrant.io config is not available.
+        # Proceed without authentication.
+
+        return await handler(request)
+
+    # API Key secret
+    api_key_secret = config.get("igrantio_org_api_key_secret")
+
+    # Fetch authorization header.
+    authorization_header = request.headers.get("Authorization")
+
+    # Fetch api key from authorization header.
+    api_key = authorization_header.split(
+        "ApiKey ")[1] if authorization_header else None
+
+    if not api_key:
+        raise web.HTTPUnauthorized(reason="Missing Authorization header.")
+
+    # Authenticate the request.
+    try:
+        jwt.decode(api_key, api_key_secret, algorithms=["HS256"])
+    except jwt.exceptions.InvalidTokenError:
+        try:
+            jwt.decode(api_key, api_key_secret, algorithms=[
+                       "HS256"], audience="dataverifier")
+        except jwt.exceptions.InvalidTokenError:
+            raise web.HTTPUnauthorized(reason="Invalid API Key.")
+
+    # Call the handler.
+    return await handler(request)
+
+
 async def register(app: web.Application):
 
-    # app._middlewares = frozenlist.FrozenList(app.middlewares[:] + [custom_debug_middleware])
-
-    # print(app.middlewares)
+    app._middlewares = frozenlist.FrozenList(
+        app.middlewares[:] + [authentication_middleware])
 
     app.add_routes(
         [

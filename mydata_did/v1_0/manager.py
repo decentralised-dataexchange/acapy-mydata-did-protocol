@@ -3447,6 +3447,8 @@ class ADAManager:
 
         igrantio_org_api_key = os.environ.get("IGRANTIO_ORG_API_KEY")
 
+        igrantio_org_api_key_secret = os.environ.get("IGRANTIO_ORG_API_KEY_SECRET")
+
         if not igrantio_org_id:
             raise ADAManagerError(
                 "Failed to retrieve igrantio org id from os environ")
@@ -3454,10 +3456,15 @@ class ADAManager:
         if not igrantio_org_api_key:
             raise ADAManagerError(
                 "Failed to retrieve igrantio org api key from os environ")
+        
+        if not igrantio_org_api_key_secret:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio org api key secret from os environ")
 
         return{
             "igrantio_org_id": igrantio_org_id,
             "igrantio_org_api_key": igrantio_org_api_key,
+            "igrantio_org_api_key_secret": igrantio_org_api_key_secret,
         }
 
     async def generate_firebase_dynamic_link_for_data_agreement_qr_payload(self, *, data_agreement_id: str, qr_id: str) -> str:
