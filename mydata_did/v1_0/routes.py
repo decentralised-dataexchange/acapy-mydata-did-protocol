@@ -2496,7 +2496,9 @@ class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
     tags=["Data Agreement - Core Functions"],
     summary="Delete Data Agreement QR code record.",
     responses={
-        204: "Success",
+        204: {
+            "description": "Success"
+        },
     }
 )
 @match_info_schema(RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema())
@@ -2706,7 +2708,9 @@ class SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema(OpenAPISchema)
     tags=["JSON-LD"],
     summary="Send JSON-LD processed-data didcomm message to the remote agent.",
     responses={
-        204: "Success",
+        204: {
+            "description": "Success",
+        },
     }
 )
 @match_info_schema(SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema())
