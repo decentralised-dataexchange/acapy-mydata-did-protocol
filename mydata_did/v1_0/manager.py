@@ -2214,9 +2214,6 @@ class ADAManager:
             "proofPurpose": "contractAgreement",
         }
 
-        print("[DEBUG_DATA_AGREEMENT_OFFER] data_agreement_negotiation_offer_body_dict: ", json.dumps(data_agreement_negotiation_offer_body_dict, indent=4))
-        print("[DEBUG_DATA_AGREEMENT_OFFER] signature_options: ", json.dumps(signature_options, indent=4))
-
         # Generate proofs
         document_with_proof: dict = await sign_data_agreement(
             data_agreement_negotiation_offer_body_dict.copy(
@@ -3476,8 +3473,10 @@ class ADAManager:
         )
 
         # Generate firebase dynamic link
+        # qt stands for qr code type
+        # qp stands for qr code payload
         payload_link = self.context.settings.get(
-            "default_endpoint") + "?qr_payload=" + base64_qr_payload
+            "default_endpoint") + "?qt=2&qp=" + base64_qr_payload
 
         # Construct firebase payload
         payload = {
