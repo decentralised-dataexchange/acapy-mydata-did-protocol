@@ -28,6 +28,10 @@ READ_DATA_AGREEMENT = f"data-agreements/1.0/read-data-agreement"
 READ_DATA_AGREEMENT_RESPONSE = f"data-agreements/1.0/read-data-agreement-response"
 DATA_AGREEMENT_PROBLEM_REPORT = f"data-agreements/1.0/problem-report"
 
+# Message type for reading all data agreement templates available in an organisation.
+READ_ALL_DATA_AGREEMENT_TEMPLATE = f"data-agreements/1.0/read-all-template"
+READ_ALL_DATA_AGREEMENT_TEMPLATE_RESPONSE = f"data-agreements/1.0/read-all-template-response"
+
 # Message types for ADA RFC 0003 - Data Agreement Negotiation Protocol 1.0
 DATA_AGREEMENT_NEGOTIATION_OFFER = f"data-agreement-negotiation/1.0/offer"
 DATA_AGREEMENT_NEGOTIATION_REJECT = f"data-agreement-negotiation/1.0/reject"
@@ -125,6 +129,12 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         JSON_LD_PROBLEM_REPORT: (
             f"{PROTOCOL_PACKAGE}.messages.json_ld_problem_report.JSONLDProblemReport"
+        ),
+        READ_ALL_DATA_AGREEMENT_TEMPLATE: (
+            f"{PROTOCOL_PACKAGE}.messages.read_all_data_agreement_template.ReadAllDataAgreementTemplateMessage"
+        ),
+        READ_ALL_DATA_AGREEMENT_TEMPLATE_RESPONSE: (
+            f"{PROTOCOL_PACKAGE}.messages.read_all_data_agreement_template_response.ReadAllDataAgreementTemplateResponseMessage"
         ),
     },
 )

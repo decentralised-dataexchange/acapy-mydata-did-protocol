@@ -3,7 +3,6 @@ import datetime
 import logging
 import json
 import os
-from re import A
 import time
 import uuid
 import typing
@@ -66,6 +65,8 @@ from .messages.data_agreement_qr_code_problem_report import DataAgreementQrCodeP
 from .messages.json_ld_processed import JSONLDProcessedMessage
 from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
 from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
+from .messages.read_all_data_agreement_template import ReadAllDataAgreementTemplateMessage
+from .messages.read_all_data_agreement_template_response import ReadAllDataAgreementTemplateResponseMessage
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -3805,7 +3806,6 @@ class ADAManager:
         await connection.attach_invitation(self.context, invitation)
 
         return connection, invitation
-    
 
     async def generate_firebase_dynamic_link_for_connection_invitation(self, conn_id: str) -> str:
         """Generate a Firebase Dynamic Link for a connection invitation."""
@@ -3821,7 +3821,7 @@ class ADAManager:
                 self.context,
                 conn_id
             )
-        
+
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to fetch connection record: {err}"
@@ -3869,3 +3869,91 @@ class ADAManager:
                     )
 
         return jresp["shortLink"]
+
+    async def process_read_all_data_agreement_template_message(self, read_all_data_agreement_template_message: ReadAllDataAgreementTemplateMessage, receipt: MessageReceipt) -> None:
+        """
+        Process read all data agreement template message.
+
+        Respond with all the data agreement templates available for an organisation.
+        """
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To MyData DIDs
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        results = []
+
+        # Query all the data agreement templates.
+
+        tag_filter = {
+            "published_flag": "True",
+            "delete_flag": "False",
+        }
+        data_agreement_v1_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.query(
+            self.context,
+            tag_filter=tag_filter
+        )
+
+        if data_agreement_v1_records:
+            for data_agreement_v1_record in data_agreement_v1_records:
+                data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(
+                    data_agreement_v1_record.data_agreement)
+                results.append(data_agreement)
+
+        # Construct ReadAllDataAgreementTemplateResponse message
+
+        read_all_data_agreement_template_response: ReadAllDataAgreementTemplateResponseMessage = ReadAllDataAgreementTemplateResponseMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=results
+        )
+
+        # Send ReadAllDataAgreementTemplateResponse message to the requester.
+
+        if responder:
+            await responder.send_reply(read_all_data_agreement_template_response, connection_id=self.context.connection_record.connection_id)
+
+    async def send_read_all_data_agreement_template_message(self, conn_id: str) -> None:
+        """Send read all data agreement template message to the remote agent."""
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                conn_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f"Failed to retrieve connection record: {err}"
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Construct ReadAllDataAgreementTemplate Message
+        read_all_data_agreement_template_message = ReadAllDataAgreementTemplateMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000)
+        )
+
+        # Send JSONLD Processed Message
+        if responder:
+            await responder.send_reply(read_all_data_agreement_template_message, connection_id=connection_record.connection_id)

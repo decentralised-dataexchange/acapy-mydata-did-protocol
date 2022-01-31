@@ -2784,12 +2784,14 @@ async def v2_connections_create_invitation(request: web.BaseRequest):
 
     return web.json_response(result)
 
+
 class GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema(OpenAPISchema):
     """Schema for matching path parameters in generate firebase dynamic link for connection invitation handler"""
 
     conn_id = fields.Str(
         description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
     )
+
 
 class GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(OpenAPISchema):
     """Schema for response of generate firebase dynamic link for connection invitation handler"""
@@ -2798,6 +2800,7 @@ class GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(OpenAPISc
     firebase_dynamic_link = fields.Str(
         description="Firebase dynamic link", example="https://example.page.link/UVWXYZuvwxyz12345"
     )
+
 
 @docs(
     tags=["connection"],
@@ -2825,13 +2828,49 @@ async def generate_firebase_dynamic_link_for_connection_invitation_handler(reque
     try:
         # Call the function
         firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_connection_invitation(conn_id)
-    
+
     except (ConnectionManagerError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({
         "firebase_dynamic_link": firebase_dynamic_link
     })
+
+
+class SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema(OpenAPISchema):
+    """Schema for matching path parameters in send read all data agreement template message handler"""
+
+    connection_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Send read all data agreement template message to remote agent.",
+    responses={
+        200: {
+            "description": "Success",
+        }
+    }
+)
+@match_info_schema(SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema())
+async def send_read_all_data_agreement_template_message_handler(request: web.BaseRequest):
+    """Send read all data agreement template message to remote agent."""
+
+    context = request.app["request_context"]
+    connection_id = request.match_info["connection_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        await mydata_did_manager.send_read_all_data_agreement_template_message(connection_id)
+
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=200)
 
 
 async def register(app: web.Application):
@@ -3022,6 +3061,10 @@ async def register(app: web.Application):
             web.post(
                 "/connections/{conn_id}/invitation/firebase",
                 generate_firebase_dynamic_link_for_connection_invitation_handler
+            ),
+            web.post(
+                "/data-agreements/didcomm/read-all-template/connections/{connection_id}",
+                send_read_all_data_agreement_template_message_handler
             )
         ]
     )
