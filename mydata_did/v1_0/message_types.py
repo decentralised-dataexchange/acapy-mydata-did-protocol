@@ -58,6 +58,10 @@ JSON_LD_PROCESSED_DATA = f"json-ld/1.0/processed-data"
 JSON_LD_PROCESSED_RESPONSE_DATA = f"json-ld/1.0/processed-data-response"
 JSON_LD_PROBLEM_REPORT = f"json-ld/1.0/problem-report"
 
+# Data controller protocol
+DATA_CONTROLLER_DETAILS = f"data-controller/1.0/details"
+DATA_CONTROLLER_DETAILS_RESPONSE = f"data-controller/1.0/details-response"
+
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 
@@ -135,6 +139,12 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         READ_ALL_DATA_AGREEMENT_TEMPLATE_RESPONSE: (
             f"{PROTOCOL_PACKAGE}.messages.read_all_data_agreement_template_response.ReadAllDataAgreementTemplateResponseMessage"
+        ),
+        DATA_CONTROLLER_DETAILS: (
+            f"{PROTOCOL_PACKAGE}.messages.data_controller_details.DataControllerDetailsMessage"
+        ),
+        DATA_CONTROLLER_DETAILS_RESPONSE: (
+            f"{PROTOCOL_PACKAGE}.messages.data_controller_details_response.DataControllerDetailsResponseMessage"
         ),
     },
 )

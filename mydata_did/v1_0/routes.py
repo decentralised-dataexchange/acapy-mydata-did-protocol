@@ -1433,6 +1433,7 @@ async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: 
 
     return web.json_response(None, status=204)
 
+
 class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     """Query string schema for create data agreement handler"""
 
@@ -1441,6 +1442,7 @@ class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
         required=False,
         example=False
     )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1476,9 +1478,7 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
 
     # Fetch querystring params
     if "draft_mode" in request.query and request.query["draft_mode"] != "":
-        draft_mode = request.query["draft_mode"]
-        print("draft_mode: ", draft_mode)
-        print("type(draft_mode): ", type(draft_mode))
+        draft_mode = True if request.query["draft_mode"] == "true" else False
 
     try:
 
@@ -1493,6 +1493,7 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
 
     return web.json_response(data_agreement_v1_record.serialize(), status=201)
 
+
 class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
     """
     Schema to match info for the publish data agreement endpoint
@@ -1500,6 +1501,7 @@ class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
     data_agreement_id = fields.Str(
         description="Data agreement identifier", required=True
     )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1543,6 +1545,7 @@ async def publish_data_agreement_handler(request: web.BaseRequest):
 
     return web.json_response(data_agreement_v1_record.serialize(), status=200)
 
+
 @docs(
     tags=["Data Agreement - Core Functions"],
     summary="Query data agreements in the wallet",
@@ -1574,7 +1577,7 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
 
     if "delete_flag" in request.query and request.query["delete_flag"] != "":
         tag_filter["delete_flag"] = "True" if request.query["delete_flag"] == "true" else "False"
-    
+
     if "published_flag" in request.query and request.query["published_flag"] != "":
         tag_filter["published_flag"] = "True" if request.query["published_flag"] == "true" else "False"
 
@@ -2945,6 +2948,35 @@ async def send_read_all_data_agreement_template_message_handler(request: web.Bas
     return web.json_response({}, status=200)
 
 
+@docs(
+    tags=["Data Controller"],
+    summary="Send data controller details message to remote agent hosted by Data Controller",
+    responses={
+        200: {
+            "description": "Success",
+        }
+    }
+)
+async def send_data_controller_details_message_handler(request: web.BaseRequest):
+    """Send data controller details message to remote agent hosted by Data Controller."""
+
+    context = request.app["request_context"]
+    connection_id = request.match_info["connection_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        await mydata_did_manager.send_data_controller_details_message(connection_id)
+
+    except (ConnectionManagerError, BaseModelError, ADAManagerError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    except Exception as err:
+        raise web.HTTPInternalServerError(reason=str(err)) from err
+
+    return web.json_response({}, status=200)
+
+
 async def register(app: web.Application):
 
     app._middlewares = frozenlist.FrozenList(
@@ -3141,6 +3173,10 @@ async def register(app: web.Application):
             web.post(
                 "/data-agreements/didcomm/read-all-template/connections/{connection_id}",
                 send_read_all_data_agreement_template_message_handler
+            ),
+            web.post(
+                "/data-controller/didcomm/details/connections/{connection_id}",
+                send_data_controller_details_message_handler
             )
         ]
     )
@@ -3188,5 +3224,12 @@ def post_process_routes(app: web.Application):
         {
             "name": "JSON-LD",
             "description": "JSON-LD functions",
+        }
+    )
+
+    app._state["swagger_dict"]["tags"].append(
+        {
+            "name": "Data Controller",
+            "description": "Data Controller functions",
         }
     )

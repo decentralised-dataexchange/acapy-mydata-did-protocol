@@ -67,6 +67,8 @@ from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
 from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
 from .messages.read_all_data_agreement_template import ReadAllDataAgreementTemplateMessage
 from .messages.read_all_data_agreement_template_response import ReadAllDataAgreementTemplateResponseMessage
+from .messages.data_controller_details import DataControllerDetailsMessage
+from .messages.data_controller_details_response import DataControllerDetailsResponseMessage
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -85,6 +87,7 @@ from .models.data_agreement_verify_model import DataAgreementVerifyBody, DataAgr
 from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeInitiateBody
 from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
 from .models.json_ld_processed_model import JSONLDProcessedBody
+from .models.data_controller_model import DataController, DataControllerSchema
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
@@ -139,6 +142,9 @@ class ADAManager:
 
     # Temporary record for keeping personal data of unpublished (or draft) data agreements
     RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = "temporary_data_agreement_personal_data"
+
+    # Record for data controller details
+    RECORD_TYPE_DATA_CONTROLLER_DETAILS = "data_controller_details"
 
     DATA_AGREEMENT_RECORD_TYPE = "dataagreement_record"
 
@@ -3862,7 +3868,6 @@ class ADAManager:
             # Make request to iGrant.io organisation detail endpoint
             async with aiohttp.ClientSession(headers=request_headers) as session:
                 async with session.get(igrantio_organisation_detail_url) as resp:
-                    print(await resp.text())
                     if resp.status == 200:
                         jresp = await resp.json()
 
@@ -4093,3 +4098,181 @@ class ADAManager:
         # Send JSONLD Processed Message
         if responder:
             await responder.send_reply(read_all_data_agreement_template_message, connection_id=connection_record.connection_id)
+    
+
+    async def fetch_org_details_from_igrantio(self)-> str:
+        """
+        Fetch org details from iGrant.io.
+        """
+
+        # fetch iGrant.io config from os environment
+        igrantio_config = await self.fetch_igrantio_config_from_os_environ()
+
+        # Construct iGrant.io organisation detail endpoint URL
+        igrantio_organisation_detail_url = f"{igrantio_config['igrantio_endpoint_url']}/v1/organizations/{igrantio_config['igrantio_org_id']}"
+
+        # Construct request headers
+        request_headers = {
+            "Authorization": f"ApiKey {igrantio_config['igrantio_org_api_key']}"
+        }
+
+        data_controller = json.dumps({})
+
+        async with aiohttp.ClientSession(headers=request_headers) as session:
+            async with session.get(igrantio_organisation_detail_url) as resp:
+                if resp.status == 200:
+                    jresp = await resp.json()
+
+                    if "Organization" in jresp:
+                        organization_details = jresp["Organization"]
+
+                        exclude_keys = [
+                            "BillingInfo",
+                            "Admins",
+                            "HlcSupport",
+                            "DataRetention",
+                            "Enabled",
+                            "Subs"
+                        ]
+
+                        for exclude_key in exclude_keys:
+                            organization_details.pop(exclude_key, None)
+                        
+                        data_controller = DataController(
+                            organisation_id=organization_details["ID"],
+                            organisation_name=organization_details["Name"],
+                            cover_image_url=organization_details["CoverImageURL"] + "/web",
+                            logo_image_url=organization_details["LogoImageURL"] + "/web",
+                            location=organization_details["Location"],
+                            organisation_type=organization_details["Type"]["Type"],
+                            description=organization_details["Description"],
+                            policy_url=organization_details["PolicyURL"],
+                            eula_url=organization_details["EulaURL"]
+                        ).to_json()
+        
+        return data_controller
+
+    async def create_or_update_data_controller_details_in_wallet(self) -> StorageRecord:
+        """Create or update data controller details in wallet."""
+
+        # Storage instance
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        result = json.dumps({})
+
+        # Retrieve data controller details from storage
+        try:
+
+            storage_record: StorageRecord = await storage.search_records(
+                self.RECORD_TYPE_DATA_CONTROLLER_DETAILS
+            ).fetch_single()
+
+
+            data_controller = await self.fetch_org_details_from_igrantio()
+
+            await storage.update_record_value(storage_record, data_controller)
+
+            return data_controller
+
+        except StorageError as err:
+
+            try:
+                data_controller = await self.fetch_org_details_from_igrantio()
+
+                # Create data controller details record
+                storage_record = StorageRecord(
+                    self.RECORD_TYPE_DATA_CONTROLLER_DETAILS,
+                    data_controller,
+                )
+
+                await storage.add_record(storage_record)
+
+                return data_controller
+            except ADAManagerError as err:
+                # Create data controller details record
+                storage_record = StorageRecord(
+                    self.RECORD_TYPE_DATA_CONTROLLER_DETAILS,
+                    result,
+                )
+
+
+                await storage.add_record(storage_record)
+
+                return result
+        
+        except ADAManagerError as err:
+            pass
+        
+        return result
+
+    async def process_data_controller_details_message(self, data_controller_details_message: DataControllerDetailsMessage, receipt: MessageReceipt) -> None:
+        """
+        Process data controller details message.
+        """
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To MyData DIDs
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        # Query data_controller_details record
+        data_controller_details: str = await self.create_or_update_data_controller_details_in_wallet()
+
+        # Construct Data Controller model class
+        data_controller: DataController = DataControllerSchema().load(json.loads(data_controller_details))
+
+        # Construct DataControllerDetailsResponseMessage
+        data_controller_details_response_message = DataControllerDetailsResponseMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=data_controller
+        )
+
+        # Send DataControllerDetailsResponseMessage to the requester.
+
+        if responder:
+            await responder.send_reply(data_controller_details_response_message, connection_id=self.context.connection_record.connection_id)
+    
+    async def send_data_controller_details_message(self, conn_id: str) -> None:
+        """Send data controller details message."""
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                conn_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f"Failed to retrieve connection record: {err}"
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Construct DataControllerDetailsMessage Message
+        data_controller_details_message = DataControllerDetailsMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000)
+        )
+
+        # Send message
+        if responder:
+            await responder.send_reply(data_controller_details_message, connection_id=connection_record.connection_id)
