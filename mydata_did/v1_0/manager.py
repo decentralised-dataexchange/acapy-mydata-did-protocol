@@ -3805,3 +3805,67 @@ class ADAManager:
         await connection.attach_invitation(self.context, invitation)
 
         return connection, invitation
+    
+
+    async def generate_firebase_dynamic_link_for_connection_invitation(self, conn_id: str) -> str:
+        """Generate a Firebase Dynamic Link for a connection invitation."""
+
+        # Fetch config from os environ
+        config = await self.fetch_firebase_config_from_os_environ()
+
+        # Fetch connection record
+
+        try:
+
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                conn_id
+            )
+        
+        except StorageError as err:
+            raise ADAManagerError(
+                f"Failed to fetch connection record: {err}"
+            )
+
+        # Retreive connection invitation
+
+        connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
+
+        # Get the invitation url
+
+        invitation_url = connection_invitation.to_url()
+
+        # Generate the dynamic link
+
+        # Construct firebase payload
+        payload = {
+            "dynamicLinkInfo": {
+                "domainUriPrefix": config["firebase_domain_uri_prefix"],
+                "link": invitation_url,
+                "androidInfo": {
+                    "androidPackageName": config["firebase_android_android_package_name"],
+                },
+                "iosInfo": {
+                    "iosBundleId": config["firebase_ios_bundle_id"],
+                    "iosAppStoreId": config["firebase_ios_appstore_id"],
+                }
+            },
+            "suffix": {
+                "option": "UNGUESSABLE"
+            }
+        }
+
+        firebase_dynamic_link_endpoint = "https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + \
+            config["firebase_web_api_key"]
+
+        jresp = {}
+        async with aiohttp.ClientSession() as session:
+            async with session.post(firebase_dynamic_link_endpoint, json=payload) as resp:
+                if resp.status == 200:
+                    jresp = await resp.json()
+                else:
+                    raise ADAManagerError(
+                        f"Failed to generate firebase dynamic link for connection-invitation: {resp.status} {await resp.text()}"
+                    )
+
+        return jresp["shortLink"]

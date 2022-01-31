@@ -2784,6 +2784,55 @@ async def v2_connections_create_invitation(request: web.BaseRequest):
 
     return web.json_response(result)
 
+class GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema(OpenAPISchema):
+    """Schema for matching path parameters in generate firebase dynamic link for connection invitation handler"""
+
+    conn_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+class GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(OpenAPISchema):
+    """Schema for response of generate firebase dynamic link for connection invitation handler"""
+
+    # Firebase dynamic link
+    firebase_dynamic_link = fields.Str(
+        description="Firebase dynamic link", example="https://example.page.link/UVWXYZuvwxyz12345"
+    )
+
+@docs(
+    tags=["connection"],
+    summary="Generate firebase dynamic link for connection invitation",
+)
+@match_info_schema(GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema())
+@response_schema(GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(), 200)
+async def generate_firebase_dynamic_link_for_connection_invitation_handler(request: web.BaseRequest):
+    """
+    Request handler for generating firebase dynamic link for connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The firebase dynamic link
+
+    """
+
+    context = request.app["request_context"]
+    conn_id = request.match_info["conn_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_connection_invitation(conn_id)
+    
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({
+        "firebase_dynamic_link": firebase_dynamic_link
+    })
+
 
 async def register(app: web.Application):
 
@@ -2966,8 +3015,14 @@ async def register(app: web.Application):
                 "/json-ld/didcomm/processed-data/connections/{connection_id}",
                 send_json_ld_didcomm_processed_data_message_handler,
             ),
-            web.post("/connections/create-invitation/v2",
-                     v2_connections_create_invitation),
+            web.post(
+                "/connections/create-invitation/v2",
+                v2_connections_create_invitation
+            ),
+            web.post(
+                "/connections/{conn_id}/invitation/firebase",
+                generate_firebase_dynamic_link_for_connection_invitation_handler
+            )
         ]
     )
 
