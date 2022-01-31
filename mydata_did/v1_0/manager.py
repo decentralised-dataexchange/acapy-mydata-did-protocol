@@ -3447,7 +3447,10 @@ class ADAManager:
 
         igrantio_org_api_key = os.environ.get("IGRANTIO_ORG_API_KEY")
 
-        igrantio_org_api_key_secret = os.environ.get("IGRANTIO_ORG_API_KEY_SECRET")
+        igrantio_org_api_key_secret = os.environ.get(
+            "IGRANTIO_ORG_API_KEY_SECRET")
+
+        igrantio_endpoint_url = os.environ.get("IGRANTIO_ENDPOINT_URL")
 
         if not igrantio_org_id:
             raise ADAManagerError(
@@ -3456,15 +3459,20 @@ class ADAManager:
         if not igrantio_org_api_key:
             raise ADAManagerError(
                 "Failed to retrieve igrantio org api key from os environ")
-        
+
         if not igrantio_org_api_key_secret:
             raise ADAManagerError(
                 "Failed to retrieve igrantio org api key secret from os environ")
+
+        if not igrantio_endpoint_url:
+            raise ADAManagerError(
+                "Failed to retrieve igrantio endpoint url from os environ")
 
         return{
             "igrantio_org_id": igrantio_org_id,
             "igrantio_org_api_key": igrantio_org_api_key,
             "igrantio_org_api_key_secret": igrantio_org_api_key_secret,
+            "igrantio_endpoint_url": igrantio_endpoint_url,
         }
 
     async def generate_firebase_dynamic_link_for_data_agreement_qr_payload(self, *, data_agreement_id: str, qr_id: str) -> str:
@@ -3556,7 +3564,8 @@ class ADAManager:
                 data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
 
             # Base64 encode framed
-            framed_base64_encoded = base64.b64encode(json.dumps(framed).encode("utf-8")).decode("utf-8")
+            framed_base64_encoded = base64.b64encode(
+                json.dumps(framed).encode("utf-8")).decode("utf-8")
 
             # Base64 encode combine_hash
             combine_hash_base64_encoded = base64.b64encode(
@@ -3640,3 +3649,159 @@ class ADAManager:
         # Send JSONLD Processed Message
         if responder:
             await responder.send_reply(json_ld_processed_message, connection_id=connection_record.connection_id)
+
+    async def create_invitation(
+        self,
+        my_label: str = None,
+        my_endpoint: str = None,
+        their_role: str = None,
+        auto_accept: bool = None,
+        public: bool = False,
+        multi_use: bool = False,
+        alias: str = None,
+    ) -> typing.Tuple[ConnectionRecord, ConnectionInvitation]:
+        """
+        Generate new connection invitation.
+
+        This interaction represents an out-of-band communication channel. In the future
+        and in practice, these sort of invitations will be received over any number of
+        channels such as SMS, Email, QR Code, NFC, etc.
+
+        Structure of an invite message:
+
+        ::
+
+            {
+                "@type": "https://didcomm.org/connections/1.0/invitation",
+                "label": "Alice",
+                "did": "did:sov:QmWbsNYhMrjHiqZDTUTEJs"
+            }
+
+        Or, in the case of a peer DID:
+
+        ::
+
+            {
+                "@type": "https://didcomm.org/connections/1.0/invitation",
+                "label": "Alice",
+                "did": "did:peer:oiSqsNYhMrjHiqZDTUthsw",
+                "recipientKeys": ["8HH5gYEeNc3z7PYXmd54d4x6qAfCNrqQqEB3nS7Zfu7K"],
+                "serviceEndpoint": "https://example.com/endpoint"
+            }
+
+        Currently, only peer DID is supported.
+
+        Args:
+            my_label: label for this connection
+            my_endpoint: endpoint where other party can reach me
+            their_role: a role to assign the connection
+            auto_accept: auto-accept a corresponding connection request
+                (None to use config)
+            public: set to create an invitation from the public DID
+            multi_use: set to True to create an invitation for multiple use
+            alias: optional alias to apply to connection for later use
+
+        Returns:
+            A tuple of the new `ConnectionRecord` and `ConnectionInvitation` instances
+
+        """
+        if not my_label:
+            my_label = self.context.settings.get("default_label")
+
+        image_url = None
+
+        try:
+            # Fetch iGrant.io config
+            igrantio_config = await self.fetch_igrantio_config_from_os_environ()
+
+            # Construct iGrant.io organisation detail endpoint URL
+            igrantio_organisation_detail_url = f"{igrantio_config['igrantio_endpoint_url']}/v1/organizations/{igrantio_config['igrantio_org_id']}"
+
+            # Construct request headers
+            request_headers = {
+                "Authorization": f"ApiKey {igrantio_config['igrantio_org_api_key']}"
+            }
+
+            # Make request to iGrant.io organisation detail endpoint
+            async with aiohttp.ClientSession(headers=request_headers) as session:
+                async with session.get(igrantio_organisation_detail_url) as resp:
+                    print(await resp.text())
+                    if resp.status == 200:
+                        jresp = await resp.json()
+
+                        if "Organization" in jresp:
+                            organization_details = jresp["Organization"]
+                            my_label = organization_details["Name"]
+                            image_url = organization_details["LogoImageURL"] + "/web"
+
+        except ADAManagerError as err:
+            pass
+
+        wallet: BaseWallet = await self.context.inject(BaseWallet)
+
+        if public:
+            if not self.context.settings.get("public_invites"):
+                raise ConnectionManagerError(
+                    "Public invitations are not enabled")
+
+            public_did = await wallet.get_public_did()
+            if not public_did:
+                raise ConnectionManagerError(
+                    "Cannot create public invitation with no public DID"
+                )
+
+            if multi_use:
+                raise ConnectionManagerError(
+                    "Cannot use public and multi_use at the same time"
+                )
+
+            # FIXME - allow ledger instance to format public DID with prefix?
+            invitation = ConnectionInvitation(
+                label=my_label, did=f"did:sov:{public_did.did}", image_url=image_url
+            )
+            return None, invitation
+
+        invitation_mode = ConnectionRecord.INVITATION_MODE_ONCE
+        if multi_use:
+            invitation_mode = ConnectionRecord.INVITATION_MODE_MULTI
+
+        if not my_endpoint:
+            my_endpoint = self.context.settings.get("default_endpoint")
+        accept = (
+            ConnectionRecord.ACCEPT_AUTO
+            if (
+                auto_accept
+                or (
+                    auto_accept is None
+                    and self.context.settings.get("debug.auto_accept_requests")
+                )
+            )
+            else ConnectionRecord.ACCEPT_MANUAL
+        )
+
+        # Create and store new invitation key
+        connection_key = await wallet.create_signing_key()
+
+        # Create connection record
+        connection = ConnectionRecord(
+            initiator=ConnectionRecord.INITIATOR_SELF,
+            invitation_key=connection_key.verkey,
+            their_role=their_role,
+            state=ConnectionRecord.STATE_INVITATION,
+            accept=accept,
+            invitation_mode=invitation_mode,
+            alias=alias,
+        )
+
+        await connection.save(self.context, reason="Created new invitation")
+
+        # Create connection invitation message
+        # Note: Need to split this into two stages to support inbound routing of invites
+        # Would want to reuse create_did_document and convert the result
+        invitation = ConnectionInvitation(
+            label=my_label, recipient_keys=[
+                connection_key.verkey], endpoint=my_endpoint, image_url=image_url
+        )
+        await connection.attach_invitation(self.context, invitation)
+
+        return connection, invitation

@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import typing
 import uuid
@@ -27,6 +28,7 @@ from aries_cloudagent.wallet.indy import IndyWallet
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord, ConnectionRecordSchema
 from aries_cloudagent.storage.record import StorageRecord
 from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager, ConnectionManagerError
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import ConnectionInvitationSchema
 
 from .manager import ADAManager, ADAManagerError
 from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord, MyDataDIDRegistryDIDCommTransactionRecordSchema
@@ -2692,8 +2694,95 @@ async def authentication_middleware(request: web.BaseRequest, handler: typing.Co
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason="Invalid API Key.")
 
+    # Override the api key in environment variable.
+    os.environ["IGRANTIO_ORG_API_KEY"] = api_key
+
     # Call the handler.
     return await handler(request)
+
+
+class V2CreateInvitationQueryStringSchema(OpenAPISchema):
+    """Parameters and validators for create invitation request query string."""
+
+    alias = fields.Str(
+        description="Alias",
+        required=False,
+        example="Barry",
+    )
+    auto_accept = fields.Boolean(
+        description="Auto-accept connection (default as per configuration)",
+        required=False,
+    )
+    public = fields.Boolean(
+        description="Create invitation from public DID (default false)", required=False
+    )
+    multi_use = fields.Boolean(
+        description="Create invitation for multiple use (default false)", required=False
+    )
+
+
+class V2InvitationResultSchema(OpenAPISchema):
+    """Result schema for a new connection invitation."""
+
+    connection_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE
+    )
+    invitation = fields.Nested(ConnectionInvitationSchema())
+    invitation_url = fields.Str(
+        description="Invitation URL",
+        example="http://192.168.56.101:8020/invite?c_i=eyJAdHlwZSI6Li4ufQ==",
+    )
+
+
+@docs(
+    tags=["connection"],
+    summary="Create a new connection invitation (Overridden API)",
+)
+@querystring_schema(V2CreateInvitationQueryStringSchema())
+@response_schema(V2InvitationResultSchema(), 200)
+async def v2_connections_create_invitation(request: web.BaseRequest):
+    """
+    Request handler for creating a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection invitation details
+
+    """
+
+    context = request.app["request_context"]
+    auto_accept = json.loads(request.query.get("auto_accept", "null"))
+    alias = request.query.get("alias")
+    public = json.loads(request.query.get("public", "false"))
+    multi_use = json.loads(request.query.get("multi_use", "false"))
+
+    if public and not context.settings.get("public_invites"):
+        raise web.HTTPForbidden(
+            reason="Configuration does not include public invitations"
+        )
+    base_url = context.settings.get("invite_base_url")
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        (connection, invitation) = await mydata_did_manager.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            "connection_id": connection and connection.connection_id,
+            "invitation": invitation.serialize(),
+            "invitation_url": invitation.to_url(base_url),
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    if connection and connection.alias:
+        result["alias"] = connection.alias
+
+    return web.json_response(result)
 
 
 async def register(app: web.Application):
@@ -2876,7 +2965,9 @@ async def register(app: web.Application):
             web.post(
                 "/json-ld/didcomm/processed-data/connections/{connection_id}",
                 send_json_ld_didcomm_processed_data_message_handler,
-            )
+            ),
+            web.post("/connections/create-invitation/v2",
+                     v2_connections_create_invitation),
         ]
     )
 
