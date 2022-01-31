@@ -407,6 +407,11 @@ class DataAgreementQueryStringSchema(OpenAPISchema):
         required=False,
     )
 
+    published_flag = fields.Bool(
+        description="Published flag to query published data agreements",
+        required=False,
+    )
+
 
 class UpdateDataAgreementMatchInfoSchema(OpenAPISchema):
     """
@@ -1428,6 +1433,14 @@ async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: 
 
     return web.json_response(None, status=204)
 
+class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
+    """Query string schema for create data agreement handler"""
+
+    draft_mode = fields.Boolean(
+        description="Whether to create a draft data agreement",
+        required=False,
+        example=False
+    )
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1438,6 +1451,7 @@ async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: 
         }
     }
 )
+@querystring_schema(CreateOrUpdateDataAgreementInWalletQueryStringSchema())
 @request_schema(CreateOrUpdateDataAgreementInWalletRequestSchema())
 @response_schema(DataAgreementV1RecordResponseSchema(), 201)
 async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
@@ -1460,10 +1474,16 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
         context=context
     )
 
+    # Fetch querystring params
+    if "draft_mode" in request.query and request.query["draft_mode"] != "":
+        draft_mode = request.query["draft_mode"]
+        print("draft_mode: ", draft_mode)
+        print("type(draft_mode): ", type(draft_mode))
+
     try:
 
         # Create and store data agreement in wallet
-        data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement)
+        data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement, draft_mode=draft_mode)
 
         if not data_agreement_v1_record:
             raise web.HTTPBadRequest(reason="Data agreement not created")
@@ -1473,6 +1493,55 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
 
     return web.json_response(data_agreement_v1_record.serialize(), status=201)
 
+class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
+    """
+    Schema to match info for the publish data agreement endpoint
+    """
+    data_agreement_id = fields.Str(
+        description="Data agreement identifier", required=True
+    )
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Publish data agreement in the wallet",
+    responses={
+        400: {
+            "description": "Bad Request (invalid request payload)"
+        }
+    }
+)
+@match_info_schema(PublishDataAgreementMatchInfoSchema())
+@response_schema(DataAgreementV1RecordResponseSchema(), 200)
+async def publish_data_agreement_handler(request: web.BaseRequest):
+    """
+    Publish data agreement in the wallet.
+
+    This endpoint is used to publish data agreement in the wallet.
+    """
+
+    # Request context
+    context = request.app["request_context"]
+
+    # Get path parameters
+    data_agreement_id = request.match_info["data_agreement_id"]
+
+    # Initialise MyData DID Manager
+    mydata_did_manager: ADAManager = ADAManager(
+        context=context
+    )
+
+    try:
+
+        # Publish data agreement in the wallet
+        data_agreement_v1_record = await mydata_did_manager.publish_data_agreement_in_wallet(data_agreement_id)
+
+        if not data_agreement_v1_record:
+            raise web.HTTPBadRequest(reason="Data agreement not published")
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(data_agreement_v1_record.serialize(), status=200)
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1505,6 +1574,9 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
 
     if "delete_flag" in request.query and request.query["delete_flag"] != "":
         tag_filter["delete_flag"] = "True" if request.query["delete_flag"] == "true" else "False"
+    
+    if "published_flag" in request.query and request.query["published_flag"] != "":
+        tag_filter["published_flag"] = "True" if request.query["published_flag"] == "true" else "False"
 
     # Initialise MyData DID Manager
     mydata_did_manager: ADAManager = ADAManager(
@@ -2932,6 +3004,10 @@ async def register(app: web.Application):
             web.post(
                 "/data-agreements",
                 create_and_store_data_agreement_in_wallet,
+            ),
+            web.post(
+                "/data-agreements/{data_agreement_id}/publish",
+                publish_data_agreement_handler,
             ),
             web.get(
                 "/data-agreements",

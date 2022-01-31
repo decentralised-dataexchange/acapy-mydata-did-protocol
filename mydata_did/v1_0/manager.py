@@ -137,6 +137,9 @@ class ADAManager:
     # Record for keeping metadata about data agreement QR codes (client)
     RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = "data_agreement_qr_code_metadata"
 
+    # Temporary record for keeping personal data of unpublished (or draft) data agreements
+    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = "temporary_data_agreement_personal_data"
+
     DATA_AGREEMENT_RECORD_TYPE = "dataagreement_record"
 
     def __init__(self, context: InjectionContext) -> None:
@@ -1390,10 +1393,11 @@ class ADAManager:
         except (StorageNotFoundError, StorageDuplicateError):
             pass
 
-    async def create_and_store_data_agreement_in_wallet(self, data_agreement: dict) -> DataAgreementV1Record:
+    async def create_and_store_data_agreement_in_wallet(self, data_agreement: dict, draft_mode: bool = False) -> DataAgreementV1Record:
         """
         Create and store a data agreement in the wallet.
         """
+        storage: IndyStorage = await self.context.inject(BaseStorage)
 
         personal_data_list = data_agreement.get("personal_data", [])
 
@@ -1445,86 +1449,220 @@ class ADAManager:
             method_of_use=data_agreement.method_of_use,
             state=DataAgreementV1Record.STATE_PREPARATION,
             data_agreement=data_agreement.serialize(),
-            published_flag="True"
+            published_flag="True" if not draft_mode else "False"
         )
 
-        if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
-            # If method-of-use is "data-source", then create a schema and credential defintion
-
-            ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
-            if not ledger:
-                reason = "No ledger available"
-                if not self.context.settings.get_value("wallet.type"):
-                    reason += ": missing wallet-type?"
-
-                self._logger.error(
-                    f"Failed to create data agreement: {reason}")
-
-                return None
-
-            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
-
-            async with ledger:
-                try:
-
-                    # Create schema
-
-                    schema_name = data_agreement.usage_purpose
-                    schema_version = str(semver.VersionInfo(
-                        str(data_agreement.data_agreement_template_version)))
-                    attributes = [
-                        personal_data.attribute_name
-                        for personal_data in data_agreement.personal_data
-                    ]
-
-                    schema_id, schema_def = await shield(
-                        ledger.create_and_send_schema(
-                            issuer, schema_name, schema_version, attributes
-                        )
-                    )
-
-                    # Create credential definition
-
-                    tag = "default"
-                    support_revocation = False
-
-                    (cred_def_id, cred_def, novel) = await shield(
-                        ledger.create_and_send_credential_definition(
-                            issuer,
-                            schema_id,
-                            signature_type=None,
-                            tag=tag,
-                            support_revocation=support_revocation,
-                        )
-                    )
-
-                    # Update the data agreement record with schema and credential definition
-                    data_agreement_v1_record.schema_id = schema_id
-                    data_agreement_v1_record.cred_def_id = cred_def_id
-
-                except (IssuerError, LedgerError) as err:
-                    self._logger.error(
-                        f"Failed to create data agreement: {err.roll_up}")
-                    return None
-        else:
-            # If method-of-use is "data-using-service"
-
-            # Update data agreement with proof presentation request
-            proof_request_dict = await self.construct_proof_presentation_request_dict_from_data_agreement_personal_data(
-                personal_data=personal_data_new_list_for_proof_request,
-                usage_purpose=data_agreement.usage_purpose,
-                usage_purpose_description=data_agreement.usage_purpose_description,
-                data_agreement_template_version=str(semver.VersionInfo(
-                    str(data_agreement.data_agreement_template_version)))
-
+        if draft_mode:
+            # Save personal data list for proof request in a record.
+            # for unpublished or draft data agreement.
+            storage_record: StorageRecord = StorageRecord(
+                self.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA,
+                json.dumps(personal_data_new_list_for_proof_request),
+                {
+                    "data_agreement_id": data_agreement.data_agreement_template_id
+                }
             )
 
-            data_agreement_v1_record.data_agreement_proof_presentation_request = proof_request_dict
+            await storage.add_record(storage_record)
+
+        if not draft_mode:
+            if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+                # If method-of-use is "data-source", then create a schema and credential defintion
+
+                ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
+                if not ledger:
+                    reason = "No ledger available"
+                    if not self.context.settings.get_value("wallet.type"):
+                        reason += ": missing wallet-type?"
+
+                    self._logger.error(
+                        f"Failed to create data agreement: {reason}")
+
+                    return None
+
+                issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+
+                async with ledger:
+                    try:
+
+                        # Create schema
+
+                        schema_name = data_agreement.usage_purpose
+                        schema_version = str(semver.VersionInfo(
+                            str(data_agreement.data_agreement_template_version)))
+                        attributes = [
+                            personal_data.attribute_name
+                            for personal_data in data_agreement.personal_data
+                        ]
+
+                        schema_id, schema_def = await shield(
+                            ledger.create_and_send_schema(
+                                issuer, schema_name, schema_version, attributes
+                            )
+                        )
+
+                        # Create credential definition
+
+                        tag = "default"
+                        support_revocation = False
+
+                        (cred_def_id, cred_def, novel) = await shield(
+                            ledger.create_and_send_credential_definition(
+                                issuer,
+                                schema_id,
+                                signature_type=None,
+                                tag=tag,
+                                support_revocation=support_revocation,
+                            )
+                        )
+
+                        # Update the data agreement record with schema and credential definition
+                        data_agreement_v1_record.schema_id = schema_id
+                        data_agreement_v1_record.cred_def_id = cred_def_id
+
+                    except (IssuerError, LedgerError) as err:
+                        self._logger.error(
+                            f"Failed to create data agreement: {err.roll_up}")
+                        return None
+            else:
+                # If method-of-use is "data-using-service"
+
+                # Update data agreement with proof presentation request
+                proof_request_dict = await self.construct_proof_presentation_request_dict_from_data_agreement_personal_data(
+                    personal_data=personal_data_new_list_for_proof_request,
+                    usage_purpose=data_agreement.usage_purpose,
+                    usage_purpose_description=data_agreement.usage_purpose_description,
+                    data_agreement_template_version=str(semver.VersionInfo(
+                        str(data_agreement.data_agreement_template_version)))
+
+                )
+
+                data_agreement_v1_record.data_agreement_proof_presentation_request = proof_request_dict
 
         # Save the data agreement record
         await data_agreement_v1_record.save(self.context)
 
         return data_agreement_v1_record
+    
+    async def publish_data_agreement_in_wallet(self, data_agreement_id: str) -> DataAgreementV1Record:
+        """
+        Publish a data agreement in the wallet.
+        """
+
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        try:
+            # Retrieve the data agreement record
+            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(self.context, {
+                "data_agreement_id": data_agreement_id,
+                "delete_flag": "False"
+            })
+
+            # Check if the data agreement is already published
+            if data_agreement_record.published_flag == "True":
+                raise ADAManagerError(
+                    f"Failed to publish data agreement: data agreement with id {data_agreement_id} is already published"
+                )
+
+            # Set the data agreement record to published
+            data_agreement_record.published_flag = "True"
+
+            # Fetch personal data list for proof request
+            storage_record = await storage.search_records(
+                self.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA,
+                {"data_agreement_id": data_agreement_id}
+            ).fetch_single()
+
+            personal_data_new_list_for_proof_request = json.loads(storage_record.value)
+
+            # Delete the temporary record
+            await storage.delete_record(storage_record)
+
+            # Generate data agreement model class instance
+            data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(data_agreement_record.data_agreement)
+
+            if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
+                # If method-of-use is "data-source", then create a schema and credential defintion
+
+                ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
+                if not ledger:
+                    reason = "No ledger available"
+                    if not self.context.settings.get_value("wallet.type"):
+                        reason += ": missing wallet-type?"
+
+                    self._logger.error(
+                        f"Failed to create data agreement: {reason}")
+
+                    return None
+
+                issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+
+                async with ledger:
+                    try:
+
+                        # Create schema
+
+                        schema_name = data_agreement.usage_purpose
+                        schema_version = str(semver.VersionInfo(
+                            str(data_agreement.data_agreement_template_version)))
+                        attributes = [
+                            personal_data.attribute_name
+                            for personal_data in data_agreement.personal_data
+                        ]
+
+                        schema_id, schema_def = await shield(
+                            ledger.create_and_send_schema(
+                                issuer, schema_name, schema_version, attributes
+                            )
+                        )
+
+                        # Create credential definition
+
+                        tag = "default"
+                        support_revocation = False
+
+                        (cred_def_id, cred_def, novel) = await shield(
+                            ledger.create_and_send_credential_definition(
+                                issuer,
+                                schema_id,
+                                signature_type=None,
+                                tag=tag,
+                                support_revocation=support_revocation,
+                            )
+                        )
+
+                        # Update the data agreement record with schema and credential definition
+                        data_agreement_record.schema_id = schema_id
+                        data_agreement_record.cred_def_id = cred_def_id
+
+                    except (IssuerError, LedgerError) as err:
+                        self._logger.error(
+                            f"Failed to create data agreement: {err.roll_up}")
+                        return None
+            else:
+                # If method-of-use is "data-using-service"
+
+                # Update data agreement with proof presentation request
+                proof_request_dict = await self.construct_proof_presentation_request_dict_from_data_agreement_personal_data(
+                    personal_data=personal_data_new_list_for_proof_request,
+                    usage_purpose=data_agreement.usage_purpose,
+                    usage_purpose_description=data_agreement.usage_purpose_description,
+                    data_agreement_template_version=str(semver.VersionInfo(
+                        str(data_agreement.data_agreement_template_version)))
+
+                )
+
+                data_agreement_record.data_agreement_proof_presentation_request = proof_request_dict
+
+            # Save the data agreement record
+            await data_agreement_record.save(self.context)
+
+            return data_agreement_record
+
+        except (StorageNotFoundError, StorageError) as e:
+            raise ADAManagerError(
+                f"Failed to publish data agreement: {e}"
+            )
 
     async def query_data_agreements_in_wallet(self, tag_filter: dict = None) -> typing.List[DataAgreementV1Record]:
         """
@@ -1532,8 +1670,6 @@ class ADAManager:
         """
 
         try:
-            # Add the published_flag tag to the filter
-            tag_filter["published_flag"] = "True"
 
             # If template_version is provided, then data agreements with that version will be returned
             # published_flag flag is not required for this query
