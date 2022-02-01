@@ -3663,8 +3663,9 @@ class ADAManager:
                 if resp.status == 200:
                     jresp = await resp.json()
                 else:
+                    tresp = await resp.text()
                     raise ADAManagerError(
-                        f"Failed to generate firebase dynamic link for data agreement qr payload: {resp.status} {await resp.text()}"
+                        f"Failed to generate firebase dynamic link for data agreement qr payload: {resp.status} {tresp}"
                     )
 
         return jresp["shortLink"]
@@ -4005,8 +4006,9 @@ class ADAManager:
                 if resp.status == 200:
                     jresp = await resp.json()
                 else:
+                    tresp = await resp.text()
                     raise ADAManagerError(
-                        f"Failed to generate firebase dynamic link for connection-invitation: {resp.status} {await resp.text()}"
+                        f"Failed to generate firebase dynamic link for connection-invitation: {resp.status} {tresp}"
                     )
 
         return jresp["shortLink"]
