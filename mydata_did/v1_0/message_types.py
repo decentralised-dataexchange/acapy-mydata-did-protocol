@@ -62,6 +62,9 @@ JSON_LD_PROBLEM_REPORT = f"json-ld/1.0/problem-report"
 DATA_CONTROLLER_DETAILS = f"data-controller/1.0/details"
 DATA_CONTROLLER_DETAILS_RESPONSE = f"data-controller/1.0/details-response"
 
+# Existing connections protocol.
+EXISTING_CONNECTIONS = f"connections/1.0/exists"
+
 # Protocol package path
 PROTOCOL_PACKAGE = "mydata_did.v1_0"
 
@@ -145,6 +148,9 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DATA_CONTROLLER_DETAILS_RESPONSE: (
             f"{PROTOCOL_PACKAGE}.messages.data_controller_details_response.DataControllerDetailsResponseMessage"
+        ),
+        EXISTING_CONNECTIONS: (
+            f"{PROTOCOL_PACKAGE}.messages.existing_connections.ExistingConnectionsMessage"
         ),
     },
 )
