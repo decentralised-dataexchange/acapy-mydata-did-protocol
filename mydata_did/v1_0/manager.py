@@ -3199,7 +3199,8 @@ class ADAManager:
                     "connection_id": qr_code_metadata_record.tags.get("connection_id"),
                     "data_agreement_id": qr_code_metadata_record.tags.get("data_agreement_id"),
                     "multi_use": eval(qr_code_metadata_record.tags.get("multi_use")),
-                    "is_scanned": eval(qr_code_metadata_record.tags.get("is_scanned"))
+                    "is_scanned": eval(qr_code_metadata_record.tags.get("is_scanned")),
+                    "data_exchange_record_id":  qr_code_metadata_record.tags.get("data_exchange_record_id") if qr_code_metadata_record.tags.get("data_exchange_record_id") else "",
                 })
 
         return results

@@ -2420,6 +2420,10 @@ class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
     connection_id = fields.Str(
         description="Connection identifier", example=UUIDFour.EXAMPLE, required=False)
 
+    multi_use = fields.Bool()
+    is_scanned = fields.Bool()
+    data_exchange_record_id = fields.Str()
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
