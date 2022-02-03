@@ -2977,6 +2977,93 @@ async def send_data_controller_details_message_handler(request: web.BaseRequest)
     return web.json_response({}, status=200)
 
 
+class SendExistingConnectionsMessageHandlerMatchInfoSchema(OpenAPISchema):
+    """Schema for matching path parameters in send existing connections message handler"""
+
+    conn_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class SendExistingConnectionsMessageHandlerRequestSchema(OpenAPISchema):
+    """Schema for request body of send existing connections message handler"""
+
+    theirdid = fields.Str(
+        description="Their DID",
+        example="QmWbsNYhMrjHiqZDTUASHg",
+        required=True
+    )
+
+
+@docs(
+    tags=["connection"],
+    summary="Send existing connections message to remote agent.",
+    responses={
+        200: {
+            "description": "Success",
+        }
+    }
+)
+@match_info_schema(SendExistingConnectionsMessageHandlerMatchInfoSchema())
+@request_schema(SendExistingConnectionsMessageHandlerRequestSchema())
+async def send_existing_connections_message_handler(request: web.BaseRequest):
+    """Send existing connections message to remote agent."""
+
+    context = request.app["request_context"]
+    conn_id = request.match_info["conn_id"]
+
+    # Fetch request body
+    body = await request.json()
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        await mydata_did_manager.send_existing_connections_message(body["theirdid"], conn_id)
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=200)
+
+class GetExistingConnectionMatchInfoSchema(OpenAPISchema):
+    """Schema for matching path parameters in get existing connection handler"""
+
+    conn_id = fields.Str(
+        description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
+    )
+
+class GetExistingConnectionResponseSchema(OpenAPISchema):
+    """Schema for response of get existing connection handler"""
+
+    existing_connection_id = fields.Str()
+    my_did = fields.Str()
+    connection_status = fields.Str()
+    connection_id = fields.Str()
+
+@docs(
+    tags=["connection"],
+    summary="Fetch existing connection details if any for a current connection.",
+)
+@match_info_schema(GetExistingConnectionMatchInfoSchema())
+@response_schema(GetExistingConnectionResponseSchema(), 200)
+async def get_existing_connections_handler(request: web.BaseRequest):
+    """Fetch existing connection details if any for a current connection."""
+
+    context = request.app["request_context"]
+    conn_id = request.match_info["conn_id"]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    result = {}
+
+    # Call the function
+    result = await mydata_did_manager.fetch_existing_connections_record_for_current_connection(conn_id)
+
+    return web.json_response(result)
+
+
 async def register(app: web.Application):
 
     app._middlewares = frozenlist.FrozenList(
@@ -3177,6 +3264,15 @@ async def register(app: web.Application):
             web.post(
                 "/data-controller/didcomm/details/connections/{connection_id}",
                 send_data_controller_details_message_handler
+            ),
+            web.post(
+                "/connections/{conn_id}/existing",
+                send_existing_connections_message_handler
+            ),
+            web.get(
+                "/connections/{conn_id}/existing",
+                get_existing_connections_handler,
+                allow_head=False
             )
         ]
     )

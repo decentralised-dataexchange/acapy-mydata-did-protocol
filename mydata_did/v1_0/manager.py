@@ -69,6 +69,7 @@ from .messages.read_all_data_agreement_template import ReadAllDataAgreementTempl
 from .messages.read_all_data_agreement_template_response import ReadAllDataAgreementTemplateResponseMessage
 from .messages.data_controller_details import DataControllerDetailsMessage
 from .messages.data_controller_details_response import DataControllerDetailsResponseMessage
+from .messages.existing_connections import ExistingConnectionsMessage
 
 from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
 from .models.read_data_agreement_model import ReadDataAgreementBody
@@ -88,6 +89,7 @@ from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeIni
 from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
 from .models.json_ld_processed_model import JSONLDProcessedBody
 from .models.data_controller_model import DataController, DataControllerSchema
+from .models.existing_connections_model import ExistingConnectionsBody
 
 from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
@@ -145,6 +147,9 @@ class ADAManager:
 
     # Record for data controller details
     RECORD_TYPE_DATA_CONTROLLER_DETAILS = "data_controller_details"
+
+    # Record for existing connection details.
+    RECORD_TYPE_EXISTING_CONNECTION = "existing_connection"
 
     DATA_AGREEMENT_RECORD_TYPE = "dataagreement_record"
 
@@ -1549,7 +1554,7 @@ class ADAManager:
         await data_agreement_v1_record.save(self.context)
 
         return data_agreement_v1_record
-    
+
     async def publish_data_agreement_in_wallet(self, data_agreement_id: str) -> DataAgreementV1Record:
         """
         Publish a data agreement in the wallet.
@@ -1579,13 +1584,15 @@ class ADAManager:
                 {"data_agreement_id": data_agreement_id}
             ).fetch_single()
 
-            personal_data_new_list_for_proof_request = json.loads(storage_record.value)
+            personal_data_new_list_for_proof_request = json.loads(
+                storage_record.value)
 
             # Delete the temporary record
             await storage.delete_record(storage_record)
 
             # Generate data agreement model class instance
-            data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(data_agreement_record.data_agreement)
+            data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(
+                data_agreement_record.data_agreement)
 
             if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
                 # If method-of-use is "data-source", then create a schema and credential defintion
@@ -4100,9 +4107,8 @@ class ADAManager:
         # Send JSONLD Processed Message
         if responder:
             await responder.send_reply(read_all_data_agreement_template_message, connection_id=connection_record.connection_id)
-    
 
-    async def fetch_org_details_from_igrantio(self)-> str:
+    async def fetch_org_details_from_igrantio(self) -> str:
         """
         Fetch org details from iGrant.io.
         """
@@ -4139,7 +4145,7 @@ class ADAManager:
 
                         for exclude_key in exclude_keys:
                             organization_details.pop(exclude_key, None)
-                        
+
                         data_controller = DataController(
                             organisation_id=organization_details["ID"],
                             organisation_name=organization_details["Name"],
@@ -4151,7 +4157,7 @@ class ADAManager:
                             policy_url=organization_details["PolicyURL"],
                             eula_url=organization_details["EulaURL"]
                         ).to_json()
-        
+
         return data_controller
 
     async def create_or_update_data_controller_details_in_wallet(self) -> StorageRecord:
@@ -4168,7 +4174,6 @@ class ADAManager:
             storage_record: StorageRecord = await storage.search_records(
                 self.RECORD_TYPE_DATA_CONTROLLER_DETAILS
             ).fetch_single()
-
 
             data_controller = await self.fetch_org_details_from_igrantio()
 
@@ -4197,14 +4202,13 @@ class ADAManager:
                     result,
                 )
 
-
                 await storage.add_record(storage_record)
 
                 return result
-        
+
         except ADAManagerError as err:
             pass
-        
+
         return result
 
     async def process_data_controller_details_message(self, data_controller_details_message: DataControllerDetailsMessage, receipt: MessageReceipt) -> None:
@@ -4225,7 +4229,8 @@ class ADAManager:
         data_controller_details: str = await self.create_or_update_data_controller_details_in_wallet()
 
         # Construct Data Controller model class
-        data_controller: DataController = DataControllerSchema().load(json.loads(data_controller_details))
+        data_controller: DataController = DataControllerSchema().load(
+            json.loads(data_controller_details))
 
         # Construct DataControllerDetailsResponseMessage
         data_controller_details_response_message = DataControllerDetailsResponseMessage(
@@ -4239,7 +4244,7 @@ class ADAManager:
 
         if responder:
             await responder.send_reply(data_controller_details_response_message, connection_id=self.context.connection_record.connection_id)
-    
+
     async def send_data_controller_details_message(self, conn_id: str) -> None:
         """Send data controller details message."""
 
@@ -4278,3 +4283,124 @@ class ADAManager:
         # Send message
         if responder:
             await responder.send_reply(data_controller_details_message, connection_id=connection_record.connection_id)
+
+    async def process_existing_connections_message(self, existing_connections_message: ExistingConnectionsMessage, receipt: MessageReceipt) -> None:
+        """Processing connections/1.0/exists message."""
+
+        # Storage instance
+        storage = await self.context.inject(BaseStorage)
+
+        invitation_key = receipt.recipient_verkey
+
+        # fetch current connection record using invitation key
+        connection = await ConnectionRecord.retrieve_by_invitation_key(
+            self.context, invitation_key)
+
+        # Fetch existing connections record for the current connection.
+
+        existing_connection = await storage.search_records(
+            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
+            tag_query={
+                "connection_id": connection.connection_id
+            }
+        ).fetch_all()
+
+        if existing_connection:
+            # delete existing connections record
+            existing_connection = existing_connection[0]
+            await storage.delete_record(existing_connection)
+
+        existing_connection = None
+
+        # fetch the existing connection by did
+        existing_connection = await ConnectionRecord.retrieve_by_did(
+            self.context, their_did=None, my_did=existing_connections_message.body.theirdid)
+
+        # create existing_connections record with connection_id, did, connection_status available
+        record_tags = {
+            "existing_connection_id": existing_connection.connection_id,
+            "my_did": existing_connection.my_did,
+            "connection_status": "available",
+            "connection_id": connection.connection_id
+        }
+
+        record = StorageRecord(
+            self.RECORD_TYPE_EXISTING_CONNECTION,
+            connection.connection_id,
+            record_tags
+        )
+        await storage.add_record(record)
+
+        # updating the current connection invitation status to inactive
+        connection.state = ConnectionRecord.STATE_INACTIVE
+        await connection.save(context=self.context)
+
+    async def send_existing_connections_message(self, theirdid: str, connection_id: str) -> None:
+        """Send existing connections message."""
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+            connection_mgr = ConnectionManager(self.context)
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                connection_id
+            )
+
+            connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
+
+            request = await connection_mgr.create_request(connection_record)
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f"Failed to retrieve connection record: {err}"
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            request.connection.did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            request.connection.did, key_type=KeyType.ED25519
+        )
+
+        # Construct ExistingConnectionsMessage Message
+        existing_connections_message = ExistingConnectionsMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=ExistingConnectionsBody(
+                theirdid=theirdid
+            )
+        )
+
+        # Send message
+        if responder:
+            await responder.send_reply(existing_connections_message, connection_id=connection_record.connection_id)
+
+    async def fetch_existing_connections_record_for_current_connection(self, connection_id: str) -> dict:
+        """
+        Fetch existing connections record for the current connection.
+        """
+
+        # Storage instance
+        storage = await self.context.inject(BaseStorage)
+
+        # Fetch existing connections record for the current connection.
+
+        existing_connection = await storage.search_records(
+            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
+            tag_query={
+                "connection_id": connection_id
+            }
+        ).fetch_all()
+
+        if existing_connection:
+            existing_connection = existing_connection[0]
+            return existing_connection.tags
+        else:
+            return {}
