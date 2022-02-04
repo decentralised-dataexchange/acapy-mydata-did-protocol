@@ -1,5 +1,11 @@
 # ACA-Py plugin for MyData DID DIDComm protcol
 
+## Acknowledgements
+
+This repository was originally created as as a deliverable for Automated Data Agreement (ADA) Project. ADA project is part of NGI-eSSIF-Lab project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 871932.
+
+The lead developer to this project is iGrnt.io (Sweden), supported by Linaltec (Sweden) and PrivacyAnt (Finland).
+
 ## ACA-Py Version Compatibility
 
 This plugin is compatible with ACA-Py version 0.5.6.
@@ -65,3 +71,13 @@ $ aca-py start \
     --wallet-key "wallet@123" \
     --plugin "mydata_did"
 ```
+
+## Licensing
+
+Copyright (c) 2021-23 LCubed AB (iGrant.io), Sweden
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0.
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the LICENSE for the specific language governing permissions and limitations under the License.
