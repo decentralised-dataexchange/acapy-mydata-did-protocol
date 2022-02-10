@@ -4,7 +4,7 @@
 
 This repository was originally created as as a deliverable for Automated Data Agreement (ADA) Project. ADA project is part of NGI-eSSIF-Lab project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 871932.
 
-The lead developer to this project is iGrnt.io (Sweden), supported by Linaltec (Sweden) and PrivacyAnt (Finland).
+The lead developer to this project is iGrant.io (Sweden), supported by Linaltec (Sweden) and PrivacyAnt (Finland).
 
 ## ACA-Py Version Compatibility
 
