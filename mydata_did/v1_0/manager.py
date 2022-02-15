@@ -462,12 +462,8 @@ class ADAManager:
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
         # to_did
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": connection_record.their_did}
-        ).fetch_single()
         to_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # to be created did
         # Fetch local did record for verkey provided.
@@ -682,12 +678,8 @@ class ADAManager:
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
         # to_did
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": connection_record.their_did}
-        ).fetch_single()
         to_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # Create read-did message
         read_did_message = ReadDIDMessage(
@@ -919,12 +911,8 @@ class ADAManager:
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
         # to_did
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": connection_record.their_did}
-        ).fetch_single()
         to_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # To be deleted did
 
@@ -2315,12 +2303,8 @@ class ADAManager:
             remote_records[0].tags.get("did"))
 
         # Principle DID from connection record
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": connection_record.their_did}
-        ).fetch_single()
         principle_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # Construct data agreement negotiation offer message
 
@@ -2496,12 +2480,8 @@ class ADAManager:
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
         # to_did
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": connection_record.their_did}
-        ).fetch_single()
         to_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # Create read-did message
         read_did_message = ReadDIDMessage(
@@ -3030,12 +3010,8 @@ class ADAManager:
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
         # to_did
-        pairwise_remote_did_record = await storage.search_records(
-            type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-            tag_query={"did": auditor_connection_record.their_did}
-        ).fetch_single()
         to_did = DIDMyData.from_public_key_b58(
-            pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519)
 
         # Fetch data agreement instance
         data_agreement_instances = await self.query_data_agreement_instances(
