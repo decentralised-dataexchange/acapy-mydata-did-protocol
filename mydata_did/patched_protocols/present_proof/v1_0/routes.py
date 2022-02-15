@@ -1194,7 +1194,7 @@ async def send_presentation_request_for_data_agreement(request: web.BaseRequest)
     # Tag filter
     tag_filter = {
         "data_agreement_id": data_agreement_id,
-        "published_flag": "True",
+        "publish_flag": "True",
         "delete_flag": "False",
     }
 

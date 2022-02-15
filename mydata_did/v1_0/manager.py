@@ -1419,7 +1419,7 @@ class ADAManager:
 
             for personal_data in personal_data_list:
 
-                # Check if the personal data is already in the wallet
+                # Retreive the personal data record.
                 personal_data_record: DataAgreementPersonalDataRecord = await DataAgreementPersonalDataRecord.retrieve_by_id(self.context, personal_data.get("attribute_id"))
 
                 if personal_data_record:
@@ -1460,7 +1460,7 @@ class ADAManager:
             method_of_use=data_agreement.method_of_use,
             state=DataAgreementV1Record.STATE_PREPARATION,
             data_agreement=data_agreement.serialize(),
-            published_flag="True" if not draft_mode else "False"
+            publish_flag="True" if not draft_mode else "False"
         )
 
         if draft_mode:
@@ -1570,13 +1570,13 @@ class ADAManager:
             })
 
             # Check if the data agreement is already published
-            if data_agreement_record.published_flag == "True":
+            if data_agreement_record.publish_flag == "True":
                 raise ADAManagerError(
                     f"Failed to publish data agreement: data agreement with id {data_agreement_id} is already published"
                 )
 
             # Set the data agreement record to published
-            data_agreement_record.published_flag = "True"
+            data_agreement_record.publish_flag = "True"
 
             # Fetch personal data list for proof request
             storage_record = await storage.search_records(
@@ -1685,13 +1685,13 @@ class ADAManager:
         try:
 
             # If template_version is provided, then data agreements with that version will be returned
-            # published_flag flag is not required for this query
+            # publish_flag flag is not required for this query
             template_version = None
             if "template_version" in tag_filter:
                 template_version = tag_filter["template_version"]
 
                 tag_filter.pop("template_version", None)
-                tag_filter.pop("published_flag", None)
+                tag_filter.pop("publish_flag", None)
                 tag_filter.pop("delete_flag", None)
 
             self._logger.info(
@@ -1758,7 +1758,7 @@ class ADAManager:
             # Tag filter
             tag_filter = {
                 "data_agreement_id": data_agreement_id,
-                "published_flag": "True",
+                "publish_flag": "True",
                 "delete_flag": "False",
             }
 
@@ -1768,8 +1768,8 @@ class ADAManager:
                 tag_filter=tag_filter
             )
 
-            # Update the published_flag status for the old data agreement record
-            old_data_agreement_record.published_flag = "False"
+            # Update the publish_flag status for the old data agreement record
+            old_data_agreement_record.publish_flag = "False"
 
             # Update the old data agreement record
             await old_data_agreement_record.save(self.context)
@@ -1785,7 +1785,7 @@ class ADAManager:
                 method_of_use=data_agreement.method_of_use,
                 state=DataAgreementV1Record.STATE_PREPARATION,
                 data_agreement=data_agreement.serialize(),
-                published_flag="True"
+                publish_flag="True"
             )
 
             if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
@@ -1896,7 +1896,7 @@ class ADAManager:
 
             tag_filter = {
                 "data_agreement_id": data_agreement_id,
-                "published_flag": "True",
+                "publish_flag": "True",
                 "delete_flag": "False",
             }
 
@@ -3100,7 +3100,7 @@ class ADAManager:
         # Tag filter
         tag_filter = {
             "data_agreement_id": data_agreement_id,
-            "published_flag": "True",
+            "publish_flag": "True",
             "delete_flag": "False",
         }
 
@@ -3377,7 +3377,7 @@ class ADAManager:
         # Tag filter
         tag_filter = {
             "data_agreement_id": qr_code_metadata_record.tags.get("data_agreement_id"),
-            "published_flag": "True",
+            "publish_flag": "True",
             "delete_flag": "False",
         }
 
@@ -4042,7 +4042,7 @@ class ADAManager:
         # Query all the data agreement templates.
 
         tag_filter = {
-            "published_flag": "True",
+            "publish_flag": "True",
             "delete_flag": "False",
         }
         data_agreement_v1_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.query(

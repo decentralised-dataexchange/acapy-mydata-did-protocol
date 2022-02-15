@@ -407,7 +407,7 @@ class DataAgreementQueryStringSchema(OpenAPISchema):
         required=False,
     )
 
-    published_flag = fields.Bool(
+    publish_flag = fields.Bool(
         description="Published flag to query published data agreements",
         required=False,
     )
@@ -491,7 +491,7 @@ class DataAgreementV1RecordResponseSchema(OpenAPISchema):
     )
 
     # Production flag
-    published_flag = fields.Str(
+    publish_flag = fields.Str(
         required=True,
         description="The production flag.",
         example="False",
@@ -1578,8 +1578,8 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
     if "delete_flag" in request.query and request.query["delete_flag"] != "":
         tag_filter["delete_flag"] = "True" if request.query["delete_flag"] == "true" else "False"
 
-    if "published_flag" in request.query and request.query["published_flag"] != "":
-        tag_filter["published_flag"] = "True" if request.query["published_flag"] == "true" else "False"
+    if "publish_flag" in request.query and request.query["publish_flag"] != "":
+        tag_filter["publish_flag"] = "True" if request.query["publish_flag"] == "true" else "False"
 
     # Initialise MyData DID Manager
     mydata_did_manager: ADAManager = ADAManager(
