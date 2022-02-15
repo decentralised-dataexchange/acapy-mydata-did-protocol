@@ -579,7 +579,8 @@ class DataAgreementV1Schema(BaseModelSchema):
     # Data agreement personal data (attributes)
     personal_data = fields.List(
         fields.Nested(DataAgreementPersonalDataSchema),
-        required=True
+        required=True,
+        validate=validate.Length(min=1)
     )
 
     # Data agreement DPIA metadata
