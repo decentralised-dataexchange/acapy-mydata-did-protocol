@@ -3011,7 +3011,7 @@ class ADAManager:
 
         # to_did
         to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
+            auditor_connection_record.their_did, key_type=KeyType.ED25519)
 
         # Fetch data agreement instance
         data_agreement_instances = await self.query_data_agreement_instances(
