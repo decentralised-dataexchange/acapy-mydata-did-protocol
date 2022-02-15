@@ -136,6 +136,22 @@ def current_datetime_in_iso8601() -> str:
     """
     return str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
 
+def str_to_bool(s: str) -> bool:
+    """
+    Convert a string to a boolean.
+
+    Args:
+        s: string to convert
+
+    Returns: boolean value
+
+    """
+    if s.lower() in ['true', 't', '1']:
+        return True
+    elif s.lower() in ['false', 'f', '0']:
+        return False
+    else:
+        raise ValueError('Cannot convert string to boolean: {}'.format(s))
 
 if __name__ == "__main__":
     print(canon_did("did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"))
