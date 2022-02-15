@@ -29,7 +29,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
     TAG_NAMES = {
         "~method_of_use", 
         "~data_agreement_id", 
-        "~published_flag", 
+        "~publish_flag", 
         "~delete_flag",
         "~schema_id",
         "~cred_def_id",
@@ -50,7 +50,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         state: str = None,
         method_of_use: str = None,
         data_agreement: dict = None,
-        published_flag: str = "False",
+        publish_flag: str = "False",
         delete_flag: str = "False",
         schema_id: str = None,
         cred_def_id: str = None,
@@ -72,7 +72,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         self.state = state
         self.data_agreement = data_agreement
         self.data_agreement_id = data_agreement_id
-        self.published_flag = published_flag
+        self.publish_flag = publish_flag
         self.delete_flag = delete_flag
         self.schema_id = schema_id
         self.cred_def_id = cred_def_id
@@ -93,7 +93,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
                 "method_of_use",
                 "data_agreement",
                 "data_agreement_id",
-                "published_flag",
+                "publish_flag",
                 "delete_flag",
                 "schema_id",
                 "cred_def_id",
@@ -104,6 +104,36 @@ class DataAgreementV1Record(BaseExchangeRecord):
     def __eq__(self, other: Any) -> bool:
         """Comparison between records."""
         return super().__eq__(other)
+    
+    @property
+    def _publish_flag(self) -> bool:
+        """Accessor for publish_flag."""
+        return self.publish_flag == "True"
+
+    @_publish_flag.setter
+    def _publish_flag(self, value: bool) -> None:
+        """Setter for publish_flag."""
+        self.publish_flag = "True" if value else "False"
+    
+    @property
+    def _delete_flag(self) -> bool:
+        """Accessor for delete_flag."""
+        return self.delete_flag == "True"
+    
+    @_delete_flag.setter
+    def _delete_flag(self, value: bool) -> None:
+        """Setter for delete_flag."""
+        self.delete_flag = "True" if value else "False"
+
+    @property
+    def is_published(self) -> bool:
+        """Check if data agreement record is published."""
+        return True if self._publish_flag and not self._delete_flag else False
+    
+    @property
+    def is_deleted(self) -> bool:
+        """Check if data agreemnent is deleted."""
+        return True if self._delete_flag and not self._publish_flag else False
 
 
 class DataAgreementV1RecordSchema(BaseExchangeSchema):
@@ -160,7 +190,7 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
     )
 
     # Production flag
-    published_flag = fields.Str(
+    publish_flag = fields.Str(
         required=True,
         description="The production flag.",
         example="False",
