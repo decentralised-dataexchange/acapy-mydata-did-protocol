@@ -4044,7 +4044,7 @@ class ADAManager:
         # Send ReadAllDataAgreementTemplateResponse message to the requester.
 
         if responder:
-            await responder.send_reply(read_all_data_agreement_template_response, connection_id=self.context.connection_record.connection_id)
+            await responder.send_reply(read_all_data_agreement_template_response)
 
     async def send_read_all_data_agreement_template_message(self, conn_id: str) -> None:
         """Send read all data agreement template message to the remote agent."""
@@ -4220,7 +4220,7 @@ class ADAManager:
         # Send DataControllerDetailsResponseMessage to the requester.
 
         if responder:
-            await responder.send_reply(data_controller_details_response_message, connection_id=self.context.connection_record.connection_id)
+            await responder.send_reply(data_controller_details_response_message)
 
     async def send_data_controller_details_message(self, conn_id: str) -> None:
         """Send data controller details message."""
