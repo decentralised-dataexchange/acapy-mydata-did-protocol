@@ -975,12 +975,8 @@ class ADAManager:
                 pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
             # to_did
-            pairwise_remote_did_record = await storage.search_records(
-                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-                tag_query={"did": connection_record.their_did}
-            ).fetch_single()
             to_did = DIDMyData.from_public_key_b58(
-                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+                connection_record.their_did, key_type=KeyType.ED25519)
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to send read-data-agreement message: {err}"
@@ -2569,12 +2565,8 @@ class ADAManager:
                 pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
             # to_did
-            pairwise_remote_did_record = await storage.search_records(
-                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-                tag_query={"did": connection_record.their_did}
-            ).fetch_single()
             to_did = DIDMyData.from_public_key_b58(
-                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+                connection_record.their_did, key_type=KeyType.ED25519)
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to construct data agreement negotiation accept message: {err}"
@@ -2679,12 +2671,8 @@ class ADAManager:
                 pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
             # to_did
-            pairwise_remote_did_record = await storage.search_records(
-                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-                tag_query={"did": connection_record.their_did}
-            ).fetch_single()
             to_did = DIDMyData.from_public_key_b58(
-                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+                connection_record.their_did, key_type=KeyType.ED25519)
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to construct data agreement negotiation accept message: {err}"
@@ -2791,12 +2779,8 @@ class ADAManager:
                 pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
             # to_did
-            pairwise_remote_did_record = await storage.search_records(
-                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-                tag_query={"did": connection_record.their_did}
-            ).fetch_single()
             to_did = DIDMyData.from_public_key_b58(
-                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+                connection_record.their_did, key_type=KeyType.ED25519)
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to construct data agreement negotiation problem-report message: {err}"
@@ -2861,12 +2845,8 @@ class ADAManager:
                 pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
 
             # to_did
-            pairwise_remote_did_record = await storage.search_records(
-                type_filter=ConnectionManager.RECORD_TYPE_DID_KEY,
-                tag_query={"did": connection_record.their_did}
-            ).fetch_single()
             to_did = DIDMyData.from_public_key_b58(
-                pairwise_remote_did_record.value, key_type=KeyType.ED25519)
+                connection_record.their_did, key_type=KeyType.ED25519)
         except StorageError as err:
             raise ADAManagerError(
                 f"Failed to construct data agreement termination terminate message: {err}"
