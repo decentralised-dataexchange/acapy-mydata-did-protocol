@@ -3086,9 +3086,8 @@ class ADAManager:
 
         # Create a connection invitation
 
-        connection_mgr = ConnectionManager(self.context)
         try:
-            (connection, invitation) = await connection_mgr.create_invitation(
+            (connection, invitation) = await self.create_invitation(
                 auto_accept=True, public=False, multi_use=True, alias="DA_" + data_agreement_id + "_QR_" + qr_code_identifier
             )
 
@@ -3115,10 +3114,7 @@ class ADAManager:
 
         result = {
             "qr_id": qr_code_identifier,
-            "invitation": {
-                "service_endpoint": invitation.endpoint,
-                "recipient_keys": invitation.recipient_keys,
-            }
+            "invitation": invitation.serialize()
         }
 
         return result
@@ -3222,10 +3218,7 @@ class ADAManager:
 
         qr_payload = {
             "qr_id": qr_id,
-            "invitation": {
-                "service_endpoint": connection_invitation.endpoint,
-                "recipient_keys": connection_invitation.recipient_keys,
-            }
+            "invitation": connection_invitation.serialize(),
         }
 
         # Encode payload to base64
