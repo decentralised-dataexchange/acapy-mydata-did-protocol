@@ -4478,7 +4478,7 @@ class ADAManager:
                     existing_version=data_agreement_dict.data_agreement_template_version,
                     existing_data_agreement_id=data_agreement_dict.data_agreement_template_id
                 )
-            
+
             # Mark the old data agreement record as deleted
             data_agreement_record._delete_flag = True
             data_agreement_record._publish_flag = False
@@ -4488,3 +4488,38 @@ class ADAManager:
             raise ADAManagerError(
                 f"Failed to delete data agreement; Reason: {e.roll_up}"
             )
+
+    @classmethod
+    def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True) -> dict:
+        """
+        Serialize connection record.
+
+        Args:
+            connection_records: List of connection records.
+            is_list: If true, serialize as list.
+        
+        Returns:
+            List of serialized connection records.
+        """
+
+        connection_records_list = []
+        for connection_record in connection_records:
+            connection_records_list.append({
+                "state": connection_record.state,
+                "invitation_mode": connection_record.invitation_mode,
+                "connection_id": connection_record.connection_id,
+                "created_at": str_to_epoch(connection_record.created_at),
+                "updated_at": str_to_epoch(connection_record.updated_at),
+                "their_did": connection_record.their_did,
+                "accept": connection_record.accept,
+                "initiator": connection_record.initiator,
+                "invitation_key": connection_record.invitation_key,
+                "routing_state": connection_record.routing_state,
+                "their_label": connection_record.their_label,
+                "my_did": connection_record.my_did,
+            })
+
+        # Sort by created_at in descending order
+        connection_records_list = sorted(connection_records_list, key=lambda k: k['created_at'], reverse=True)
+
+        return connection_records_list if is_list else connection_records_list[0]

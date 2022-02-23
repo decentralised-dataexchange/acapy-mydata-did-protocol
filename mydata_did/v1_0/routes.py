@@ -3190,6 +3190,102 @@ async def get_existing_connections_handler(request: web.BaseRequest):
 
     return web.json_response(result)
 
+class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
+    """Parameters and validators for connections list request query string."""
+
+    alias = fields.Str(
+        description="Alias",
+        required=False,
+        example="Barry",
+    )
+    initiator = fields.Str(
+        description="Connection initiator",
+        required=False,
+        validate=validate.OneOf(["self", "external"]),
+    )
+    invitation_key = fields.Str(
+        description="invitation key", required=False, **INDY_RAW_PUBLIC_KEY
+    )
+    my_did = fields.Str(description="My DID", required=False, **INDY_DID)
+    state = fields.Str(
+        description="Connection state",
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(ConnectionRecord, m)
+                for m in vars(ConnectionRecord)
+                if m.startswith("STATE_")
+            ]
+        ),
+    )
+    their_did = fields.Str(description="Their DID", required=False, **INDY_DID)
+    their_role = fields.Str(
+        description="Their assigned connection role",
+        required=False,
+        example="Point of contact",
+    )
+
+
+class ConnectionListSchema(OpenAPISchema):
+    """Result schema for connection list."""
+
+    results = fields.List(
+        fields.Nested(ConnectionRecordSchema()),
+        description="List of connection records",
+    )
+
+def connection_sort_key(conn):
+    """Get the sorting key for a particular connection."""
+    if conn["state"] == ConnectionRecord.STATE_INACTIVE:
+        pfx = "2"
+    elif conn["state"] == ConnectionRecord.STATE_INVITATION:
+        pfx = "1"
+    else:
+        pfx = "0"
+    return pfx + conn["created_at"]
+
+@docs(
+    tags=["connection"],
+    summary="Query agent-to-agent connections (v2)",
+)
+@querystring_schema(ConnectionsListQueryStringSchemaV2())
+@response_schema(ConnectionListSchema(), 200)
+async def connections_list_v2(request: web.BaseRequest):
+    """
+    Request handler for searching connection records.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection list response
+
+    """
+    context = request.app["request_context"]
+    tag_filter = {}
+    for param_name in (
+        "invitation_id",
+        "my_did",
+        "their_did",
+        "request_id",
+    ):
+        if param_name in request.query and request.query[param_name] != "":
+            tag_filter[param_name] = request.query[param_name]
+    post_filter = {}
+    for param_name in (
+        "alias",
+        "initiator",
+        "state",
+        "their_role",
+    ):
+        if param_name in request.query and request.query[param_name] != "":
+            post_filter[param_name] = request.query[param_name]
+    try:
+        records = await ConnectionRecord.query(context, tag_filter, post_filter)
+        results = ADAManager.serialize_connection_record(records)
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    return web.json_response({"results": results})
 
 async def register(app: web.Application):
 
@@ -3398,6 +3494,11 @@ async def register(app: web.Application):
             web.get(
                 "/v1/connections/{conn_id}/existing",
                 get_existing_connections_handler,
+                allow_head=False
+            ),
+            web.get(
+                "/v2/connections",
+                connections_list_v2,
                 allow_head=False
             )
         ]
