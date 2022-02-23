@@ -2429,7 +2429,9 @@ class ADAManager:
                         # Append the data agreement instance to data_agreement_instances
                         data_agreement_instances.append({
                             "data_exchange_record_id": da_instance_metadata_record.tags.get("data_exchange_record_id"),
-                            "data_agreement": data_agreement_instance.serialize()
+                            "data_agreement": data_agreement_instance.serialize(),
+                            "created_at": str_to_epoch(cred_ex_record.created_at),
+                            "updated_at": str_to_epoch(cred_ex_record.updated_at)
                         })
 
                 except StorageError:
@@ -2453,11 +2455,17 @@ class ADAManager:
                         # Append the data agreement instance to data_agreement_instances
                         data_agreement_instances.append({
                             "data_exchange_record_id": da_instance_metadata_record.tags.get("data_exchange_record_id"),
-                            "data_agreement": data_agreement_instance.serialize()
+                            "data_agreement": data_agreement_instance.serialize(),
+                            "created_at": str_to_epoch(pres_ex_record.created_at),
+                            "updated_at": str_to_epoch(pres_ex_record.updated_at)
                         })
 
                 except StorageError:
                     pass
+
+        # Sort data_agreement_instances by created_at in descending order
+        data_agreement_instances = sorted(
+            data_agreement_instances, key=lambda k: k['created_at'], reverse=True)
 
         return data_agreement_instances
 
@@ -4497,7 +4505,7 @@ class ADAManager:
         Args:
             connection_records: List of connection records.
             is_list: If true, serialize as list.
-        
+
         Returns:
             List of serialized connection records.
         """
@@ -4520,6 +4528,7 @@ class ADAManager:
             })
 
         # Sort by created_at in descending order
-        connection_records_list = sorted(connection_records_list, key=lambda k: k['created_at'], reverse=True)
+        connection_records_list = sorted(
+            connection_records_list, key=lambda k: k['created_at'], reverse=True)
 
         return connection_records_list if is_list else connection_records_list[0]
