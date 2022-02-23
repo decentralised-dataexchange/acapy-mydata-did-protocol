@@ -940,8 +940,8 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
         # Tag filter
         tag_filter = {
             "data_agreement_id": data_agreement_id,
-            "published_flag": "True",
-            "delete_flag": "False",
+            "publish_flag": "true",
+            "delete_flag": "false",
         }
 
         try:
@@ -1069,8 +1069,8 @@ async def credential_exchange_send_bound_offer(request: web.BaseRequest):
             # Tag filter
             tag_filter = {
                 "data_agreement_id": data_agreement_id,
-                "published_flag": "True",
-                "delete_flag": "False",
+                "publish_flag": "true",
+                "delete_flag": "false",
             }
 
             try:

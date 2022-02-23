@@ -4,7 +4,7 @@ import validators
 
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-from marshmallow import fields, EXCLUDE, validate, validates
+from marshmallow import fields, EXCLUDE, validate, validates, pre_load
 from marshmallow.exceptions import ValidationError
 from typing import List
 
@@ -186,6 +186,65 @@ class DataAgreementDPIASchema(BaseModelSchema):
     )
 
 
+class DataAgreementPersonalDataRestriction(BaseModel):
+    """
+    Personal data restriction model class
+    """
+
+    class Meta:
+        # Schema class
+        schema_class = "DataAgreementPersonalDataRestrictionSchema"
+
+    def __init__(
+        self,
+        *,
+        schema_id: str = None,
+        cred_def_id: str = None,
+        **kwargs
+    ):
+        """
+        Initialise personal data restriction model.
+        """
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.schema_id = schema_id
+        self.cred_def_id = cred_def_id
+
+
+class DataAgreementPersonalDataRestrictionSchema(BaseModelSchema):
+    """
+    Personal data restriction schema class
+    """
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementPersonalDataRestriction
+
+    schema_id = fields.Str(
+        description="Schema identifier",
+        example="WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
+        required=False
+    )
+
+    cred_def_id = fields.Str(
+        description="Credential definition identifier",
+        example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+        required=False
+    )
+
+    @pre_load
+    def unwrap_envelope(self, data: dict, **kwargs):
+
+        if len(data.values()) < 1:
+            raise ValidationError(
+                "Personal data restriction must contain at least one attribute.")
+        
+        return data
+
+
 class DataAgreementPersonalData(BaseModel):
     """
     Personal data model class
@@ -201,6 +260,7 @@ class DataAgreementPersonalData(BaseModel):
                  attribute_sensitive: bool = None,
                  attribute_category: str = None,
                  attribute_description: str = None,
+                 restrictions: List[DataAgreementPersonalDataRestriction] = None,
                  **kwargs
                  ):
         """
@@ -216,6 +276,7 @@ class DataAgreementPersonalData(BaseModel):
         self.attribute_sensitive = attribute_sensitive
         self.attribute_category = attribute_category
         self.attribute_description = attribute_description
+        self.restrictions = restrictions
 
 
 class DataAgreementPersonalDataSchema(BaseModelSchema):
@@ -270,6 +331,11 @@ class DataAgreementPersonalDataSchema(BaseModelSchema):
         example="Name of the customer"
     )
 
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema),
+        required=False
+    )
+
 
 class DataAgreementEvent(BaseModel):
     """
@@ -283,12 +349,12 @@ class DataAgreementEvent(BaseModel):
         unknown = EXCLUDE
 
     def __init__(
-        self, 
-        *, 
-        event_id: str = None, 
-        time_stamp: str = None, 
-        principle_did: str = None, 
-        state: str = None, 
+        self,
+        *,
+        event_id: str = None,
+        time_stamp: str = None,
+        principle_did: str = None,
+        state: str = None,
         **kwargs
     ):
         # Call parent constructor
@@ -308,7 +374,7 @@ class DataAgreementEventSchema(BaseModelSchema):
     class Meta:
         # Model class
         model_class = DataAgreementEvent
-    
+
     event_id = fields.Str(
         data_key="id",
         example="did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
@@ -579,7 +645,8 @@ class DataAgreementV1Schema(BaseModelSchema):
     # Data agreement personal data (attributes)
     personal_data = fields.List(
         fields.Nested(DataAgreementPersonalDataSchema),
-        required=True
+        required=True,
+        validate=validate.Length(min=1)
     )
 
     # Data agreement DPIA metadata

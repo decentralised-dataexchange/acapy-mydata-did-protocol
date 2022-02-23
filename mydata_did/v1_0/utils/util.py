@@ -18,9 +18,11 @@ limitations under the License.
 """
 
 import datetime
+import semver
 
 from urllib.parse import urlparse
 from multibase import decode
+
 
 if __name__ == "__main__":
     from mydata_did.v1_0.utils.regex import MYDATA_DID_PATTERN
@@ -43,11 +45,13 @@ def resource(ref: str, delimiter: str = None) -> str:
 
     return ref.split(delimiter if delimiter else "#")[0]
 
+
 def derive_did_type(uri: str) -> str:
     mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
     if mydata_did_pattern_match:
         return mydata_did_pattern_match.group('did_type')
     return None
+
 
 def canon_did(uri: str) -> str:
     """
@@ -67,7 +71,8 @@ def canon_did(uri: str) -> str:
     if uri.startswith("did:mydata:"):
         mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
         if mydata_did_pattern_match:
-            prefix_end = 13 if mydata_did_pattern_match.group('did_type') else 11
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                'did_type') else 11
             rv = uri[prefix_end:]
             if ok_did(rv):
                 return rv
@@ -89,7 +94,8 @@ def canon_ref(did: str, ref: str, delimiter: str = None, did_type: str = None):
     """
 
     if not ok_did(did):
-        raise ValueError("Bad DID {} cannot act as DID document identifier".format(did))
+        raise ValueError(
+            "Bad DID {} cannot act as DID document identifier".format(did))
 
     if ok_did(ref):  # e.g., LjgpST2rjsoxYegQDRm7EL
         return "did:mydata:{}".format(did) if not did_type else "did:mydata:{}:{}".format(did_type, did)
@@ -100,18 +106,21 @@ def canon_ref(did: str, ref: str, delimiter: str = None, did_type: str = None):
     if ref.startswith(
         "did:mydata:"
     ):  # e.g., did:mydata:LjgpST2rjsoxYegQDRm7EL, did:mydata:LjgpST2rjsoxYegQDRm7EL#3
-        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(resource(ref, delimiter))
+        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(
+            resource(ref, delimiter))
         if mydata_did_pattern_match:
-            prefix_end = 13 if mydata_did_pattern_match.group('did_type') else 11
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                'did_type') else 11
             rv = ref[prefix_end:]
             if ok_did(resource(rv, delimiter)):
                 return ref
-        raise ValueError("Bad URI {} does not correspond to a MyData DID".format(ref))
+        raise ValueError(
+            "Bad URI {} does not correspond to a MyData DID".format(ref))
 
     if urlparse(ref).scheme:  # e.g., https://example.com/messages/8377464
         return ref
 
-    return "did:mydata:{}{}{}".format(did, delimiter if delimiter else "#", ref)  if not did_type else "did:mydata:{}:{}{}{}".format(did_type, did, delimiter if delimiter else "#", ref)
+    return "did:mydata:{}{}{}".format(did, delimiter if delimiter else "#", ref) if not did_type else "did:mydata:{}:{}{}{}".format(did_type, did, delimiter if delimiter else "#", ref)
 
 
 def ok_did(token: str) -> bool:
@@ -135,6 +144,44 @@ def current_datetime_in_iso8601() -> str:
     Return current datetime in ISO8601 format.
     """
     return str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+
+
+def str_to_bool(s: str) -> bool:
+    """
+    Convert a string to a boolean.
+
+    Args:
+        s: string to convert
+
+    Returns: boolean value
+
+    """
+    if s.lower() in ['true', 't', '1']:
+        return True
+    elif s.lower() in ['false', 'f', '0']:
+        return False
+    else:
+        raise ValueError('Cannot convert string to boolean: {}'.format(s))
+
+
+def bool_to_str(b: bool) -> str:
+    """
+    Convert a boolean to a string.
+
+    Args:
+        b: boolean to convert
+
+    Returns: string value
+
+    """
+    return 'true' if b else 'false'
+
+
+def int_to_semver_str(int_version: int) -> str:
+    """
+    Convert integer version to semver string.
+    """
+    return str(semver.VersionInfo(str(int_version)))
 
 
 if __name__ == "__main__":
