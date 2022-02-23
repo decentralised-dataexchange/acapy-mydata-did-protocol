@@ -286,7 +286,7 @@ class TestManager(AsyncTestCase):
         
         assert len(da_pd_records) == 1
 
-        serialized_da_pd_records = self.manager.serialize_personal_data_records(
+        serialized_da_pd_records = self.manager.serialize_personal_data_record(
             personal_data_records=da_pd_records,
         )
 
