@@ -1,4 +1,5 @@
 import json
+from nis import match
 import os
 import sys
 import typing
@@ -48,6 +49,7 @@ from .models.data_agreement_model import (
 from .models.diddoc_model import MyDataDIDDocSchema
 from .models.data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
+from .utils.util import str_to_bool, bool_to_str
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
 
@@ -494,11 +496,11 @@ class DataAgreementV1RecordResponseSchema(OpenAPISchema):
     publish_flag = fields.Str(
         required=True,
         description="The production flag.",
-        example="False",
+        example="false",
         validate=validate.OneOf(
             [
-                "True",
-                "False",
+                "true",
+                "false",
             ]
         )
     )
@@ -507,11 +509,11 @@ class DataAgreementV1RecordResponseSchema(OpenAPISchema):
     delete_flag = fields.Str(
         required=True,
         description="The delete flag.",
-        example="False",
+        example="false",
         validate=validate.OneOf(
             [
-                "True",
-                "False",
+                "true",
+                "false",
             ]
         )
     )
@@ -619,6 +621,42 @@ class CreateOrUpdateDataAgreementPersonalDataRestrictionSchema(OpenAPISchema):
     cred_def_id = fields.Str(
         description="Credential definition identifier",
         example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
+    )
+
+
+class CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema(OpenAPISchema):
+    """
+    Personal data schema class
+    """
+
+    @validates("attribute_name")
+    def validate_attribute_name(self, attribute_name):
+        """
+        Validate attribute name
+        """
+        if len(attribute_name) < 3:
+            raise ValidationError(
+                "Attribute name must be at least 3 characters long")
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example="Name",
+        description="Name of the attribute",
+        required=True
+    )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        required=True,
+        description="The description of the attribute.",
+        example="Name of the customer"
+    )
+
+    restrictions = fields.List(
+        fields.Nested(
+            CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description="List of restrictions",
+        required=False,
     )
 
 
@@ -784,6 +822,15 @@ class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
 
     # Data agreement DPIA metadata
     dpia = fields.Nested(DataAgreementDPIASchema, required=False)
+
+
+class CreateOrUpdateDataAgreementInWalletRequestSchemaV2(CreateOrUpdateDataAgreementInWalletRequestSchema):
+    # Data agreement personal data (attributes)
+    personal_data = fields.List(
+        fields.Nested(
+            CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema),
+        required=True
+    )
 
 
 class DataAgreementCRUDDIDCommTransactionResponseSchema(OpenAPISchema):
@@ -1437,16 +1484,22 @@ async def data_agreement_crud_didcomm_transaction_records_delete_by_id(request: 
 class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     """Query string schema for create data agreement handler"""
 
-    draft_mode = fields.Boolean(
-        description="Whether to create a draft data agreement",
+    draft = fields.Boolean(
+        description="draft mode",
         required=False,
         example=False
+    )
+
+    existing_schema_id = fields.Str(
+        description="Existing schema identifier",
+        required=False,
+        example="issuer_did:1:schema:1"
     )
 
 
 @docs(
     tags=["Data Agreement - Core Functions"],
-    summary="Create and store data agreement in wallet",
+    summary="Create and store data agreement in wallet (v2)",
     responses={
         422: {
             "description": "Unprocessable Entity (invalid request payload)"
@@ -1454,11 +1507,11 @@ class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     }
 )
 @querystring_schema(CreateOrUpdateDataAgreementInWalletQueryStringSchema())
-@request_schema(CreateOrUpdateDataAgreementInWalletRequestSchema())
+@request_schema(CreateOrUpdateDataAgreementInWalletRequestSchemaV2())
 @response_schema(DataAgreementV1RecordResponseSchema(), 201)
-async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
+async def create_and_store_data_agreement_in_wallet_v2(request: web.BaseRequest):
     """
-    Create and store data agreement in wallet.
+    Create and store data agreement in wallet. (v2)
 
     This endpoint is used to create and store data agreement in wallet.
     Request body should contain data agreement details.
@@ -1477,21 +1530,31 @@ async def create_and_store_data_agreement_in_wallet(request: web.BaseRequest):
     )
 
     # Fetch querystring params
-    if "draft_mode" in request.query and request.query["draft_mode"] != "":
-        draft_mode = True if request.query["draft_mode"] == "true" else False
+    draft = False
+    existing_schema_id = None
+
+    if "draft" in request.query and request.query["draft"] != "":
+        draft = str_to_bool(request.query["draft"])
+
+    if "existing_schema_id" in request.query and request.query["existing_schema_id"] != "":
+        existing_schema_id = request.query["existing_schema_id"]
 
     try:
 
         # Create and store data agreement in wallet
-        data_agreement_v1_record = await mydata_did_manager.create_and_store_data_agreement_in_wallet(data_agreement, draft_mode=draft_mode)
+        (data_agreement_v2_record, data_agreement_v2_dict) = await mydata_did_manager.create_data_agreement_and_personal_data_records(
+            data_agreement=data_agreement,
+            draft=draft,
+            existing_schema_id=existing_schema_id,
+        )
 
-        if not data_agreement_v1_record:
+        if not data_agreement_v2_record:
             raise web.HTTPBadRequest(reason="Data agreement not created")
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(data_agreement_v1_record.serialize(), status=201)
+    return web.json_response(data_agreement_v2_dict, status=201)
 
 
 class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
@@ -1535,7 +1598,7 @@ async def publish_data_agreement_handler(request: web.BaseRequest):
     try:
 
         # Publish data agreement in the wallet
-        data_agreement_v1_record = await mydata_did_manager.publish_data_agreement_in_wallet(data_agreement_id)
+        (data_agreement_v1_record, data_agreement_dict) = await mydata_did_manager.publish_data_agreement_in_wallet(data_agreement_id)
 
         if not data_agreement_v1_record:
             raise web.HTTPBadRequest(reason="Data agreement not published")
@@ -1543,7 +1606,7 @@ async def publish_data_agreement_handler(request: web.BaseRequest):
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(data_agreement_v1_record.serialize(), status=200)
+    return web.json_response(data_agreement_dict, status=200)
 
 
 @docs(
@@ -1576,10 +1639,12 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
         tag_filter["template_version"] = request.query["template_version"]
 
     if "delete_flag" in request.query and request.query["delete_flag"] != "":
-        tag_filter["delete_flag"] = "True" if request.query["delete_flag"] == "true" else "False"
+        tag_filter["delete_flag"] = bool_to_str(
+            str_to_bool(request.query["delete_flag"]))
 
     if "publish_flag" in request.query and request.query["publish_flag"] != "":
-        tag_filter["publish_flag"] = "True" if request.query["publish_flag"] == "true" else "False"
+        tag_filter["publish_flag"] = bool_to_str(
+            str_to_bool(request.query["publish_flag"]))
 
     # Initialise MyData DID Manager
     mydata_did_manager: ADAManager = ADAManager(
@@ -1587,14 +1652,14 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
     )
 
     # Query data agreements in the wallet
-    data_agreement_records: typing.List[DataAgreementV1Record] = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter)
+    (data_agreement_records, resp_da_list) = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter)
 
-    return web.json_response([data_agreement_record.serialize() for data_agreement_record in data_agreement_records])
+    return web.json_response(resp_da_list)
 
 
 @docs(
     tags=["Data Agreement - Core Functions"],
-    summary="Update data agreement in the wallet",
+    summary="Update data agreement in the wallet (v2)",
     responses={
         400: {
             "description": "Bad Request (invalid request payload)"
@@ -1602,11 +1667,12 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
     }
 )
 @match_info_schema(UpdateDataAgreementMatchInfoSchema())
-@request_schema(CreateOrUpdateDataAgreementInWalletRequestSchema())
-@response_schema(DataAgreementV1RecordResponseSchema(), 200)
-async def update_data_agreement_in_wallet(request: web.BaseRequest):
+@querystring_schema(CreateOrUpdateDataAgreementInWalletQueryStringSchema())
+@request_schema(CreateOrUpdateDataAgreementInWalletRequestSchemaV2())
+@response_schema(DataAgreementV1RecordResponseSchema(), 201)
+async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
     """
-    Update data agreement in the wallet.
+    Update data agreement in the wallet. (v2)
     """
 
     # Request context
@@ -1623,14 +1689,29 @@ async def update_data_agreement_in_wallet(request: web.BaseRequest):
         context=context
     )
 
+    # Fetch querystring params
+    draft = False
+    existing_schema_id = None
+
+    if "draft" in request.query and request.query["draft"] != "":
+        draft = str_to_bool(request.query["draft"])
+
+    if "existing_schema_id" in request.query and request.query["existing_schema_id"] != "":
+        existing_schema_id = request.query["existing_schema_id"]
+
     try:
         # Update data agreement in the wallet
-        data_agreement_v1_record: DataAgreementV1Record = await mydata_did_manager.update_data_agreement_in_wallet(data_agreement_id=data_agreement_id, data_agreement=data_agreement)
+        (data_agreement_v2_record, data_agreement_v2_dict) = await mydata_did_manager.update_data_agreement_and_personal_data_records(
+            data_agreement_id=data_agreement_id,
+            data_agreement=data_agreement,
+            existing_schema_id=existing_schema_id,
+            draft=draft
+        )
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(data_agreement_v1_record.serialize())
+    return web.json_response(data_agreement_v2_dict)
 
 
 @docs(
@@ -1702,59 +1783,25 @@ async def query_data_agreement_version_history(request: web.BaseRequest):
     try:
 
         # Query version history of a data agreement
-        data_agreement_version_history_records: typing.List[DataAgreementV1Record] = await mydata_did_manager.query_data_agreement_version_history(data_agreement_id=data_agreement_id)
+        (data_agreement_version_history_records, data_agreement_dict_list) = await mydata_did_manager.query_data_agreement_version_history(data_agreement_id=data_agreement_id)
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response([data_agreement_version_history_record.serialize() for data_agreement_version_history_record in data_agreement_version_history_records])
+    return web.json_response(data_agreement_dict_list)
 
+class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
 
-@docs(
-    tags=["Data Agreement - Core Functions"],
-    summary="Create and store data agreement personal data in wallet",
-    responses={
-        422: {
-            "description": "Unprocessable Entity (invalid request payload)"
-        }
-    }
-)
-@request_schema(CreateAndStoreDAPersonalDataInWalletRequestSchema())
-@response_schema(DataAgreementPersonalDataRecordSchema(), 201)
-async def create_and_store_da_personal_data_in_wallet(request: web.BaseRequest):
-    """
-    Create and store data agreement personal data in wallet.
-    """
-
-    # Request context
-    context = request.app["request_context"]
-
-    # Fetch request body
-    data_agreement_personal_data = await request.json()
-
-    # Initialise MyData DID Manager
-    mydata_did_manager: ADAManager = ADAManager(
-        context=context
+    attribute_id = fields.Str(
+        required=False,
+        description="Personal Data ID",
+        example=UUIDFour.EXAMPLE
     )
-
-    # Generate data agreement personal data model class instance
-    data_agreement_personal_data: DataAgreementPersonalData = DataAgreementPersonalDataSchema(
-    ).load(data_agreement_personal_data)
-
-    try:
-        # Create and store data agreement personal data in wallet
-        data_agreement_personal_data_record: DataAgreementPersonalDataRecord = await mydata_did_manager.create_and_store_da_personal_data_in_wallet(personal_data=data_agreement_personal_data)
-
-    except ADAManagerError as err:
-        raise web.HTTPUnprocessableEntity(reason=err.roll_up) from err
-
-    return web.json_response(data_agreement_personal_data_record.serialize(), status=201)
-
 
 @docs(
     tags=["Data Agreement - Core Functions"],
     summary="Query data agreement personal data in wallet",
 )
-@querystring_schema(QueryDAPersonalDataInWalletQueryStringSchema())
+@querystring_schema(QueryDaPersonalDataInWalletQueryStringSchema())
 @response_schema(DataAgreementPersonalDataRecordSchema(many=True), 200)
 async def query_da_personal_data_in_wallet(request: web.BaseRequest):
     """
@@ -1763,39 +1810,60 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
 
     # Request context
     context = request.app["request_context"]
-
-    # Fetch query string parameters
-    tag_filter = {}
-    if "attribute_category" in request.query and request.query["attribute_category"] != "":
-        tag_filter["attribute_category"] = request.query["attribute_category"]
-
-    if "attribute_sensitive" in request.query and request.query["attribute_sensitive"] != "":
-        tag_filter["attribute_sensitive"] = "True" if request.query["attribute_sensitive"] == "true" else "False"
-
     # Initialise MyData DID Manager
     mydata_did_manager: ADAManager = ADAManager(
         context=context
     )
 
+    personal_data_id = None
+    if "attribute_id" in request.query and request.query["attribute_id"] != "":
+        personal_data_id = request.query["attribute_id"]
+
     try:
         # Query data agreement personal data in wallet
-        data_agreement_personal_data_records: typing.List[DataAgreementPersonalDataRecord] = await mydata_did_manager.query_da_personal_data_in_wallet(tag_filter=tag_filter)
+        (data_agreement_personal_data_records, data_agreement_personal_data_dict_list) = await mydata_did_manager.query_da_personal_data_in_wallet(
+            personal_data_id=personal_data_id
+        )
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response([data_agreement_personal_data_record.serialize() for data_agreement_personal_data_record in data_agreement_personal_data_records])
+    return web.json_response(data_agreement_personal_data_dict_list)
+
+class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True,
+        description="Personal data identifier",
+        example=UUIDFour.EXAMPLE
+    )
+
+class UpdateDaPersonalDataInWalletRequestSchema(OpenAPISchema):
+    attribute_description = fields.Str(description="Attribute description", example="Age of the patient", required=True)
+
+class UpdateDaPersonalDataInWalletResponseSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(description="Attribute ID", example=UUIDFour.EXAMPLE)
+    attribute_name = fields.Str(description="Attribute name", example="Name")
+    attribute_description = fields.Str(description="Attribute description", example="Name of the patient")
+    data_agreement_template_id = fields.Str(description="Data Agreement Template ID", example=UUIDFour.EXAMPLE)
+    data_agreement_template_version = fields.Integer(description="Data Agreement Template version", example=1)
+    created_at = fields.Integer(description="Created at (Epoch time in seconds)", example=1578012800)
+    updated_at = fields.Integer(description="Updated at (Epoch time in seconds)", example=1578012800)
 
 
 @docs(
     tags=["Data Agreement - Core Functions"],
-    summary="List data agreement personal data category from wallet"
+    summary="Update data agreement personal data in wallet",
+    responses={
+        400: {
+            "description":  "Bad Request (invalid request payload)"
+        }
+    }
 )
-@response_schema(ListDAPersonalDataCategoryFromWalletResponseSchema(), 200)
-async def list_da_personal_data_category_from_wallet(request: web.BaseRequest):
-    """
-    List data agreement personal data category from wallet.
-    """
-
+@match_info_schema(UpdateDaPersonalDataInWalletMatchInfoSchema())
+@request_schema(UpdateDaPersonalDataInWalletRequestSchema())
+@response_schema(UpdateDaPersonalDataInWalletResponseSchema(), 200)
+async def update_da_personal_data_in_wallet(request: web.BaseRequest):
     # Request context
     context = request.app["request_context"]
 
@@ -1804,19 +1872,71 @@ async def list_da_personal_data_category_from_wallet(request: web.BaseRequest):
         context=context
     )
 
-    response = {"categories": []}
+    # URL params
+    personal_data_id = request.match_info["attribute_id"]
+
+    # Request data
+    body = await request.json()
+
+    attribute_description = body.get("attribute_description")
 
     try:
-        # List data agreement personal data category from wallet
-        data_agreement_personal_data_category_list: typing.List[str] = await mydata_did_manager.list_da_personal_data_category_from_wallet()
 
-        response["categories"] = data_agreement_personal_data_category_list
+        # Update data agreement personal data in wallet
+        (_, personal_data_dict) = await mydata_did_manager.update_personal_data_description(
+            personal_data_id=personal_data_id,
+            updated_description=attribute_description
+        )
+
+    except ADAManagerError as err:
+
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+
+    return web.json_response(personal_data_dict)
+
+class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True,
+        description="Personal data identifier",
+        example=UUIDFour.EXAMPLE
+    )
+
+@docs(
+    tags=["Data Agreement - Core Functions"],
+    summary="Delete data agreement personal data in wallet",
+    responses={
+        204: {
+            "description": "No Content (data agreement personal data deleted)"
+        },
+        400: {
+            "description":  "Bad Request (invalid request payload)"
+        }
+    }
+)
+@match_info_schema(DeleteDaPersonalDataInWalletMatchInfoSchema())
+async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
+    
+    # Request context
+    context = request.app["request_context"]
+
+    # URL params
+    personal_data_id = request.match_info["attribute_id"]
+
+    # Initialise MyData DID Manager
+    ada_mgr: ADAManager = ADAManager(context)
+
+    try:
+
+        await ada_mgr.delete_da_personal_data_in_wallet(
+            personal_data_id=personal_data_id
+        )
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(response)
-
+    
+    return web.json_response({}, status=204)
 
 @docs(
     tags=["Data Agreement - MyData DID Operations"],
@@ -3030,12 +3150,14 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 
     return web.json_response({}, status=200)
 
+
 class GetExistingConnectionMatchInfoSchema(OpenAPISchema):
     """Schema for matching path parameters in get existing connection handler"""
 
     conn_id = fields.Str(
         description="Connection identifier", example=UUIDFour.EXAMPLE, required=True
     )
+
 
 class GetExistingConnectionResponseSchema(OpenAPISchema):
     """Schema for response of get existing connection handler"""
@@ -3044,6 +3166,7 @@ class GetExistingConnectionResponseSchema(OpenAPISchema):
     my_did = fields.Str()
     connection_status = fields.Str()
     connection_id = fields.Str()
+
 
 @docs(
     tags=["connection"],
@@ -3076,205 +3199,204 @@ async def register(app: web.Application):
     app.add_routes(
         [
             web.get(
-                "/mydata-did/didcomm/transaction-records",
+                "/v1/mydata-did/didcomm/transaction-records",
                 mydata_did_registry_didcomm_transaction_records_list,
                 allow_head=False
             ),
             web.get(
-                "/mydata-did/didcomm/transaction-records/{mydata_did_registry_didcomm_transaction_record_id}",
+                "/v1/mydata-did/didcomm/transaction-records/{mydata_did_registry_didcomm_transaction_record_id}",
                 mydata_did_registry_didcomm_transaction_records_retreive_by_id,
                 allow_head=False,
             ),
             web.delete(
-                "/mydata-did/didcomm/transaction-records/{mydata_did_registry_didcomm_transaction_record_id}",
+                "/v1/mydata-did/didcomm/transaction-records/{mydata_did_registry_didcomm_transaction_record_id}",
                 mydata_did_registry_didcomm_transaction_records_delete_by_id,
             ),
             web.post(
-                "/mydata-did/didcomm/create-did/{did}",
+                "/v1/mydata-did/didcomm/create-did/{did}",
                 send_create_did_message_to_mydata_did_registry
             ),
             web.post(
-                "/mydata-did/didcomm/read-did/{did}",
+                "/v1/mydata-did/didcomm/read-did/{did}",
                 send_read_did_message_to_mydata_did_registry
             ),
             web.post(
-                "/mydata-did/didcomm/delete-did/{did}",
+                "/v1/mydata-did/didcomm/delete-did/{did}",
                 send_delete_did_message_to_mydata_did_registry
             ),
             web.get(
-                "/mydata-did/remote",
+                "/v1/mydata-did/remote",
                 mydata_did_remote_records_list,
                 allow_head=False
             ),
             web.get(
-                "/mydata-did-registry/mydata-did",
+                "/v1/mydata-did-registry/mydata-did",
                 mydata_did_registry_mydata_did_list,
                 allow_head=False
             ),
             web.post(
-                "/data-agreements/didcomm/read-data-agreement",
+                "/v1/data-agreements/didcomm/read-data-agreement",
                 send_read_data_agreement
             ),
             web.get(
-                "/data-agreements/didcomm/transactions",
+                "/v1/data-agreements/didcomm/transactions",
                 list_data_agreements_crud_didcomm_transactions,
                 allow_head=False
             ),
             web.delete(
-                "/data-agreements/didcomm/transactions/{da_crud_didcomm_tx_id}",
+                "/v1/data-agreements/didcomm/transactions/{da_crud_didcomm_tx_id}",
                 data_agreement_crud_didcomm_transaction_records_delete_by_id,
             ),
             web.post(
-                "/data-agreements",
-                create_and_store_data_agreement_in_wallet,
+                "/v1/data-agreements",
+                create_and_store_data_agreement_in_wallet_v2,
             ),
             web.post(
-                "/data-agreements/{data_agreement_id}/publish",
+                "/v1/data-agreements/{data_agreement_id}/publish",
                 publish_data_agreement_handler,
             ),
             web.get(
-                "/data-agreements",
+                "/v1/data-agreements",
                 query_data_agreements_in_wallet,
                 allow_head=False
             ),
             web.put(
-                "/data-agreements/{data_agreement_id}",
-                update_data_agreement_in_wallet,
+                "/v1/data-agreements/{data_agreement_id}",
+                update_data_agreement_in_wallet_v2,
             ),
             web.delete(
-                "/data-agreements/{data_agreement_id}",
+                "/v1/data-agreements/{data_agreement_id}",
                 delete_data_agreement_in_wallet,
             ),
             web.get(
-                "/data-agreements/version-history/{data_agreement_id}",
+                "/v1/data-agreements/version-history/{data_agreement_id}",
                 query_data_agreement_version_history,
                 allow_head=False
             ),
-            web.post(
-                "/data-agreements/personal-data",
-                create_and_store_da_personal_data_in_wallet,
-            ),
             web.get(
-                "/data-agreements/personal-data",
+                "/v1/data-agreements/personal-data",
                 query_da_personal_data_in_wallet,
                 allow_head=False
             ),
-            web.get(
-                "/data-agreements/personal-data/category",
-                list_da_personal_data_category_from_wallet,
-                allow_head=False
+            web.put(
+                "/v1/data-agreements/personal-data/{attribute_id}",
+                update_da_personal_data_in_wallet,
+            ),
+            web.delete(
+                "/v1/data-agreements/personal-data/{attribute_id}",
+                delete_da_personal_data_in_wallet,
             ),
             web.post(
-                "/mydata-did/set-did-registry-connection/{connection_id}",
+                "/v1/mydata-did/set-did-registry-connection/{connection_id}",
                 mark_existing_connection_as_mydata_did_registry,
             ),
             web.get(
-                "/mydata-did/get-did-registry-connection",
+                "/v1/mydata-did/get-did-registry-connection",
                 fetch_current_connection_marked_as_mydata_did_registry,
                 allow_head=False
             ),
             web.delete(
-                "/mydata-did/unset-did-registry-connection",
+                "/v1/mydata-did/unset-did-registry-connection",
                 unmark_current_connection_marked_as_mydata_did_registry,
             ),
             web.get(
-                "/dummy-did-resolve-route",
+                "/v1/dummy-did-resolve-route",
                 dummy_did_resolve_route_handler,
                 allow_head=False
             ),
             web.post(
-                "/auditor/set-auditor-connection/{connection_id}",
+                "/v1/auditor/set-auditor-connection/{connection_id}",
                 mark_existing_connection_as_auditor,
             ),
             web.get(
-                "/auditor/get-auditor-connection",
+                "/v1/auditor/get-auditor-connection",
                 fetch_current_connection_marked_as_auditor,
                 allow_head=False
             ),
             web.delete(
-                "/auditor/unset-auditor-connection",
+                "/v1/auditor/unset-auditor-connection",
                 unmark_current_connection_marked_as_auditor,
             ),
             web.get(
-                "/data-agreement-instances",
+                "/v1/data-agreement-instances",
                 query_data_agreement_instances,
                 allow_head=False
             ),
             web.get(
-                "/auditor/didcomm/transaction-records",
+                "/v1/auditor/didcomm/transaction-records",
                 auditor_didcomm_transaction_records_list,
                 allow_head=False
             ),
             web.get(
-                "/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
+                "/v1/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
                 auditor_didcomm_transaction_records_retreive_by_id,
                 allow_head=False,
             ),
             web.delete(
-                "/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
+                "/v1/auditor/didcomm/transaction-records/{auditor_didcomm_transaction_record_id}",
                 auditor_didcomm_transaction_records_delete_by_id,
             ),
             web.post(
-                "/auditor/didcomm/verify-request/{data_agreement_id}",
+                "/v1/auditor/didcomm/verify-request/{data_agreement_id}",
                 auditor_send_data_agreement_verify_request
             ),
             web.get(
-                "/.well-known/did-configuration.json",
+                "/v1/.well-known/did-configuration.json",
                 wellknown_connection_handler,
                 allow_head=False
             ),
             web.post(
-                "/data-agreements/{data_agreement_id}/qr",
+                "/v1/data-agreements/{data_agreement_id}/qr",
                 generate_data_agreement_qr_code_payload,
             ),
             web.get(
-                "/data-agreements/{data_agreement_id}/qr/{qr_id}/base64",
+                "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}/base64",
                 base64_encode_data_agreement_qr_code_payload_handler,
                 allow_head=False
             ),
             web.post(
-                "/data-agreements/{data_agreement_id}/qr/{qr_id}/firebase",
+                "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}/firebase",
                 generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler,
             ),
             web.get(
-                "/data-agreements/{data_agreement_id}/qr",
+                "/v1/data-agreements/{data_agreement_id}/qr",
                 query_data_agreement_qr_code_metadata_records_handler,
                 allow_head=False
             ),
             web.delete(
-                "/data-agreements/{data_agreement_id}/qr/{qr_id}",
+                "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}",
                 remove_data_agreement_qr_code_metadata_record_handler,
             ),
             web.post(
-                "/data-agreements/qr/{qr_id}/workflow-initiate/connections/{connection_id}",
+                "/v1/data-agreements/qr/{qr_id}/workflow-initiate/connections/{connection_id}",
                 send_data_agreements_qr_code_workflow_initiate_handler,
             ),
             web.post(
-                "/json-ld/didcomm/processed-data/connections/{connection_id}",
+                "/v1/json-ld/didcomm/processed-data/connections/{connection_id}",
                 send_json_ld_didcomm_processed_data_message_handler,
             ),
             web.post(
-                "/connections/create-invitation/v2",
+                "/v2/connections/create-invitation",
                 v2_connections_create_invitation
             ),
             web.post(
-                "/connections/{conn_id}/invitation/firebase",
+                "/v1/connections/{conn_id}/invitation/firebase",
                 generate_firebase_dynamic_link_for_connection_invitation_handler
             ),
             web.post(
-                "/data-agreements/didcomm/read-all-template/connections/{connection_id}",
+                "/v1/data-agreements/didcomm/read-all-template/connections/{connection_id}",
                 send_read_all_data_agreement_template_message_handler
             ),
             web.post(
-                "/data-controller/didcomm/details/connections/{connection_id}",
+                "/v1/data-controller/didcomm/details/connections/{connection_id}",
                 send_data_controller_details_message_handler
             ),
             web.post(
-                "/connections/{conn_id}/existing",
+                "/v1/connections/{conn_id}/existing",
                 send_existing_connections_message_handler
             ),
             web.get(
-                "/connections/{conn_id}/existing",
+                "/v1/connections/{conn_id}/existing",
                 get_existing_connections_handler,
                 allow_head=False
             )

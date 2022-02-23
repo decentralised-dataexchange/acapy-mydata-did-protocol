@@ -1,6 +1,13 @@
 from asynctest import TestCase as AsyncTestCase
 
-from ..data_agreement_model import DataAgreementV1Schema, DataAgreementV1
+from ..data_agreement_model import (
+    DataAgreementV1Schema, 
+    DataAgreementV1, 
+    DataAgreementPersonalData,
+    DataAgreementPersonalDataRestriction,
+    DataAgreementPersonalDataRestrictionSchema
+)
+
 from marshmallow.exceptions import ValidationError
 
 
@@ -46,6 +53,9 @@ class TestDataAgreementV1Model(AsyncTestCase):
 
         assert len(data_agreement.personal_data) == 1
 
+        self.assertIsInstance(
+            data_agreement.personal_data[0], DataAgreementPersonalData)
+
         self.assertIsNone(
             data_agreement.personal_data[0].attribute_id, "Attribute ID should be None")
 
@@ -67,7 +77,7 @@ class TestDataAgreementV1Model(AsyncTestCase):
         self.assertTrue(
             "Missing data for required field." in str(ctx.exception)
         )
-    
+
     def test_data_agreement_model_with_empty_personal_data(self):
         self.data_agreement_dict["personal_data"] = []
 
@@ -78,3 +88,15 @@ class TestDataAgreementV1Model(AsyncTestCase):
         self.assertTrue(
             "Shorter than minimum length 1." in str(ctx.exception)
         )
+
+    def test_data_agreement_personal_restrictions(self):
+        pd_restriction_dict  = {
+            "schema_id": "schema_issuer_did:name:1.0.0",
+            "cred_def_id": "issuer_did:3:CL:102:default"
+        }
+
+        pd_restriction: DataAgreementPersonalDataRestriction = DataAgreementPersonalDataRestrictionSchema().load(
+            pd_restriction_dict
+        )
+
+        assert pd_restriction.schema_id == "schema_issuer_did:name:1.0.0"

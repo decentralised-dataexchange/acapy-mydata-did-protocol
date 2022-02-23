@@ -10,7 +10,7 @@ from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, Ba
 from aries_cloudagent.messaging.valid import INDY_CRED_DEF_ID, INDY_SCHEMA_ID, UUIDFour
 
 unencrypted_tags = environ.get(
-    "EXCH_UNENCRYPTED_TAGS", "False").upper() == "TRUE"
+    "EXCH_UNENCRYPTED_TAGS", "false").upper() == "TRUE"
 
 
 class V10CredentialExchange(BaseExchangeRecord):

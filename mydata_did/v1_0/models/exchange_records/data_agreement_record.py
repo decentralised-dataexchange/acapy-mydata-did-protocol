@@ -1,9 +1,16 @@
+
+import json
+import typing
 from typing import Any
 
 from marshmallow import fields, validate
 
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema, match_post_filter
 from aries_cloudagent.messaging.valid import UUIDFour
+from aries_cloudagent.config.injection_context import InjectionContext
+from aries_cloudagent.storage.base import BaseStorage, StorageDuplicateError, StorageNotFoundError
+
+from ...utils.util import bool_to_str
 
 class DataAgreementV1Record(BaseExchangeRecord):
     """
@@ -33,6 +40,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         "~delete_flag",
         "~schema_id",
         "~cred_def_id",
+        "~is_existing_schema"
     }
 
     # State of the data agreement.
@@ -50,11 +58,12 @@ class DataAgreementV1Record(BaseExchangeRecord):
         state: str = None,
         method_of_use: str = None,
         data_agreement: dict = None,
-        publish_flag: str = "False",
-        delete_flag: str = "False",
+        publish_flag: str = "false",
+        delete_flag: str = "false",
         schema_id: str = None,
         cred_def_id: str = None,
         data_agreement_proof_presentation_request: dict = None,
+        is_existing_schema: str = "false",
         **kwargs
     ):
         """
@@ -77,6 +86,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
         self.schema_id = schema_id
         self.cred_def_id = cred_def_id
         self.data_agreement_proof_presentation_request = data_agreement_proof_presentation_request
+        self.is_existing_schema = is_existing_schema
 
     @property
     def data_agreement_record_id(self) -> str:
@@ -98,6 +108,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
                 "schema_id",
                 "cred_def_id",
                 "data_agreement_proof_presentation_request",
+                "is_existing_schema",
             )
         }
 
@@ -108,22 +119,32 @@ class DataAgreementV1Record(BaseExchangeRecord):
     @property
     def _publish_flag(self) -> bool:
         """Accessor for publish_flag."""
-        return self.publish_flag == "True"
+        return self.publish_flag == "true"
 
     @_publish_flag.setter
     def _publish_flag(self, value: bool) -> None:
         """Setter for publish_flag."""
-        self.publish_flag = "True" if value else "False"
+        self.publish_flag = "true" if value else "false"
     
     @property
     def _delete_flag(self) -> bool:
         """Accessor for delete_flag."""
-        return self.delete_flag == "True"
+        return self.delete_flag == "true"
     
     @_delete_flag.setter
     def _delete_flag(self, value: bool) -> None:
         """Setter for delete_flag."""
-        self.delete_flag = "True" if value else "False"
+        self.delete_flag = "true" if value else "false"
+    
+    @property
+    def _is_existing_schema(self) -> bool:
+        """Accessor for is_existing_schema."""
+        return self.is_existing_schema == "true"
+    
+    @_is_existing_schema.setter
+    def _is_existing_schema(self, value: bool) -> None:
+        """Setter for is_existing_schema."""
+        self.is_existing_schema = "true" if value else "false"
 
     @property
     def is_published(self) -> bool:
@@ -135,6 +156,63 @@ class DataAgreementV1Record(BaseExchangeRecord):
         """Check if data agreemnent is deleted."""
         return True if self._delete_flag and not self._publish_flag else False
 
+    @property
+    def is_draft(self) -> bool:
+        """Check if data agreement is a draft."""
+        return True if not self._publish_flag and not self._delete_flag else False
+    
+    @classmethod
+    async def retrieve_non_deleted_data_agreement_by_id(
+        cls, 
+        context: InjectionContext,
+        data_agreement_id: str,
+    ) -> "DataAgreementV1Record":
+        """
+        Retrieve a non-deleted data agreement record by its data agreement id.
+
+        Args:
+            context: The injection context to use.
+            data_agreement_id: The data agreement id.
+        
+        Returns:
+            The data agreement record.
+        """
+
+        tag_filter: dict = {
+            "data_agreement_id": data_agreement_id,
+            "delete_flag": bool_to_str(False)
+        }
+        post_filter: dict = None
+
+        return await cls.retrieve_by_tag_filter(
+            context,
+            tag_filter,
+            post_filter
+        )
+    
+    @classmethod
+    async def retrieve_all_non_deleted_data_agreements(
+        cls,
+        context: InjectionContext,
+    ) -> typing.List["DataAgreementV1Record"]:
+        """
+        Retrieve all non-deleted data agreements.
+
+        Args:
+            context: The injection context to use.
+
+        Returns:
+            The data agreements.
+        """
+
+        tag_filter: dict = {
+            "delete_flag": bool_to_str(False)
+        }
+
+        return await cls.query(
+            context,
+            tag_filter=tag_filter,
+        )
 
 class DataAgreementV1RecordSchema(BaseExchangeSchema):
 
@@ -193,11 +271,11 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
     publish_flag = fields.Str(
         required=True,
         description="The production flag.",
-        example="False",
+        example="false",
         validate=validate.OneOf(
             [
-                "True",
-                "False",
+                "true",
+                "false",
             ]
         )
     )
@@ -206,11 +284,11 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
     delete_flag = fields.Str(
         required=True,
         description="The delete flag.",
-        example="False",
+        example="false",
         validate=validate.OneOf(
             [
-                "True",
-                "False",
+                "true",
+                "false",
             ]
         )
     )
@@ -233,4 +311,16 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
     data_agreement_proof_presentation_request = fields.Dict(
         required=True,
         description="The data agreement proof presentation request.",
+    )
+
+    is_existing_schema = fields.Str(
+        required=True,
+        description="Is existing schema.",
+        example="false",
+        validate=validate.OneOf(
+            [
+                "true",
+                "false",
+            ]
+        )
     )

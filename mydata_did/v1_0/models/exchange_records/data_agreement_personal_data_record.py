@@ -1,4 +1,5 @@
 from os import environ
+import typing
 from typing import Any
 
 from marshmallow import fields, validate
@@ -6,7 +7,7 @@ from marshmallow import fields, validate
 from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
 from aries_cloudagent.messaging.valid import UUIDFour
 
-from ..data_agreement_model import DataAgreementPersonalData, DataAgreementPersonalDataSchema
+from ..data_agreement_model import DataAgreementPersonalDataRestriction, DataAgreementPersonalDataRestrictionSchema
 
 class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     """
@@ -20,7 +21,7 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     RECORD_TYPE = "data_agreement_personal_data_record"
 
     # Wallet record identifier field
-    RECORD_ID_NAME = "data_agreement_personal_data_record_id"
+    RECORD_ID_NAME = "personal_data_id"
 
     # Webhook topic name for this record type
     WEBHOOK_TOPIC = None
@@ -28,38 +29,44 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     # Wallet record tags used for filtering
     # Note: These are not tags for the ledger, but rather tags for the wallet
     #      to group records.
-    TAG_NAMES = {"~attribute_category", "~attribute_sensitive"}
+    TAG_NAMES = {"~attribute_category", "~attribute_sensitive", "~da_template_id"}
 
     def __init__(
         self,
         *,
-        data_agreement_personal_data_record_id: str = None,
+        personal_data_id: str = None,
         attribute_name: str = None,
         attribute_category: str = "Other",
-        attribute_sensitive: str = "True",
+        attribute_sensitive: str = "true",
         attribute_description: str = "Nil",
         state: str = None,
+        restrictions: typing.List[dict] = None,
+        da_template_id: str = None,
+        da_template_version: int = None,
         **kwargs
     ):
         """
         Initialise a new DataAgreementPersonalDataRecord instance.
 
         Args:
-            data_agreement_personal_data_record_id: The unique identifier for the data agreement personal data record.
+            personal_data_id: The unique identifier for the data agreement personal data record.
             attribute_name: The name of the attribute.
             attribute_category: The category of the attribute.
             attribute_sensitive: The sensitive flag of the attribute.
             state: The state of the data agreement personal data record.
         """
-        super().__init__(data_agreement_personal_data_record_id, state, **kwargs)
+        super().__init__(personal_data_id, state, **kwargs)
         self.state = state
         self.attribute_name = attribute_name
         self.attribute_category = attribute_category
         self.attribute_sensitive = attribute_sensitive
         self.attribute_description = attribute_description
+        self.restrictions = restrictions
+        self.da_template_id = da_template_id
+        self.da_template_version = da_template_version
 
     @property
-    def data_agreement_personal_data_record_id(self) -> str:
+    def personal_data_id(self) -> str:
         """
         Get the data agreement personal data record identifier.
 
@@ -78,6 +85,9 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
                 "attribute_category",
                 "attribute_sensitive",
                 "attribute_description",
+                "restrictions",
+                "da_template_id",
+                "da_template_version"
             )
         }
 
@@ -95,7 +105,7 @@ class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
         model_class = DataAgreementPersonalDataRecord
     
 
-    data_agreement_personal_data_record_id = fields.Str(
+    personal_data_id = fields.Str(
         required=True,
         example=UUIDFour.EXAMPLE
     )
@@ -122,7 +132,20 @@ class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
     attribute_sensitive = fields.Str(
         required=True,
         description="The sensitive flag of the attribute.",
-        example="True"
+        example="true"
+    )
+
+    restrictions = fields.List(fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False)
+
+    da_template_id = fields.Str(
+        required=True,
+        description="The data agreement template identifier.",
+        example=UUIDFour.EXAMPLE
+    )
+
+    da_template_version = fields.Int(
+        example=1,
+        description="Data agreement template version"
     )
 
 

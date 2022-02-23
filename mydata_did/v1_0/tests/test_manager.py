@@ -12,6 +12,7 @@ from aries_cloudagent.wallet.basic import BasicWallet
 from aries_cloudagent.storage.base import BaseStorage
 from aries_cloudagent.storage.basic import BasicStorage
 from aries_cloudagent.config.injection_context import InjectionContext
+from aries_cloudagent.messaging.util import str_to_epoch
 
 from ..utils.util import bool_to_str, int_to_semver_str
 
@@ -253,3 +254,43 @@ class TestManager(AsyncTestCase):
         )
 
         assert len(da_pd_records) == 2
+    
+    async def test_serialize_personal_data_records(self):
+        self.storage = BasicStorage()
+        self.wallet = BasicWallet()
+
+        self.context = InjectionContext(enforce_typing=False)
+        self.context.injector.bind_instance(
+            BaseStorage, self.storage
+        )
+        self.context.injector.bind_instance(
+            BaseWallet, self.wallet
+        )
+
+        self.manager = ADAManager(self.context)
+
+
+        da_pd = DataAgreementPersonalData(
+            attribute_name="Covid IN Beneficiary Name",
+            attribute_description="Full name of the individual",
+        )
+
+        da_pd_record = await self.manager.create_and_store_da_personal_data_in_wallet(
+            personal_data=da_pd,
+            da_template_id=str(uuid.uuid4()),
+            da_template_version=1
+        )
+
+        da_pd_records = await DataAgreementPersonalDataRecord.query(
+            self.context,
+        )
+        
+        assert len(da_pd_records) == 1
+
+        serialized_da_pd_records = self.manager.serialize_personal_data_records(
+            personal_data_records=da_pd_records,
+        )
+
+        assert serialized_da_pd_records[0]["attribute_name"] == da_pd_record.attribute_name
+        assert serialized_da_pd_records[0]["created_at"] == str_to_epoch(da_pd_record.created_at)
+
