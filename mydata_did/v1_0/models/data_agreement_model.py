@@ -154,20 +154,6 @@ class DataAgreementDPIASchema(BaseModelSchema):
         # Unknown fields are excluded
         unknown = EXCLUDE
 
-    @validates("dpia_date")
-    def validate_dpia_date(self, dpia_date):
-        """
-        Validates DPIA date
-        """
-        try:
-            datetime.datetime.fromisoformat(dpia_date)
-        except:
-            try:
-                datetime.datetime.fromisoformat(
-                    dpia_date.replace('Z', '+00:00'))
-            except:
-                raise ValidationError("DPIA date is not valid")
-
     # DPIA date
     dpia_date = fields.Str(
         data_key="dpia_date",
@@ -380,19 +366,6 @@ class DataAgreementEventSchema(BaseModelSchema):
         example="did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
         description="Data agreement event identifier",
     )
-
-    @validates("time_stamp")
-    def validate_time_stamp(self, time_stamp):
-        """
-        Validate time stamp
-        """
-        try:
-            datetime.fromisoformat(time_stamp)
-        except:
-            try:
-                datetime.fromisoformat(time_stamp.replace('Z', '+00:00'))
-            except:
-                raise ValidationError("Time stamp is not valid")
 
     # Time stamp
     time_stamp = fields.Str(
