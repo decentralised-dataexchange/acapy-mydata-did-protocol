@@ -10,6 +10,17 @@ import hashlib
 
 from pyld import jsonld
 
+cache = {}
+def caching_document_loader(url, options):
+    loader = jsonld.requests_document_loader()
+    if url in cache:
+        return cache[url]
+    resp = loader(url)
+    cache[url] = resp
+    return resp
+
+jsonld.set_document_loader(caching_document_loader)
+
 
 def _canonize(data):
     return jsonld.normalize(
