@@ -6,6 +6,7 @@ import typing
 import uuid
 import logging
 import jwt
+import math
 
 import validators
 
@@ -49,12 +50,14 @@ from .models.data_agreement_model import (
 from .models.diddoc_model import MyDataDIDDocSchema
 from .models.data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
-from .utils.util import str_to_bool, bool_to_str, comma_separated_str_to_list
+from .utils.util import str_to_bool, bool_to_str, comma_separated_str_to_list, get_slices
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
 
 
 LOGGER = logging.getLogger(__name__)
+
+PAGINATION_PAGE_SIZE = 10
 
 
 class SendCreateDIDMessageMatchInfoSchema(OpenAPISchema):
@@ -419,6 +422,18 @@ class DataAgreementQueryStringSchema(OpenAPISchema):
         required=False,
         description="Comma separated fields to be included in the response.",
         example="connection_id,state,presentation_exchange_id",
+    )
+
+    page = fields.Int(
+        required=False,
+        description="Page number",
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description="Page size",
+        example=10,
     )
 
 
@@ -1658,15 +1673,53 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
         context=context
     )
 
-    # Fields to be included in the response.
-    include_fields = request.query.get("include_fields")
-    include_fields = comma_separated_str_to_list(
-        include_fields) if include_fields else None
+    # Pagination parameters
+    pagination = {
+        "totalCount": 0,
+        "page": 0,
+        "pageSize": PAGINATION_PAGE_SIZE,
+        "totalPages": 0,
+    }
 
-    # Query data agreements in the wallet
-    (data_agreement_records, resp_da_list) = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter, include_fields=include_fields)
+    try:
 
-    return web.json_response(resp_da_list)
+        # Fields to be included in the response.
+        include_fields = request.query.get("include_fields")
+        include_fields = comma_separated_str_to_list(
+            include_fields) if include_fields else None
+
+        # Query data agreements in the wallet
+        (data_agreement_records, resp_da_list) = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter, include_fields=include_fields)
+
+        # Page size from request.
+        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
+        pagination["pageSize"] = page_size
+
+        # Total number of records
+        pagination["totalCount"] = len(resp_da_list)
+
+        # Total number of pages.
+        pagination["totalPages"] = math.ceil(
+            pagination["totalCount"] / pagination["pageSize"])
+
+        # Pagination parameters
+        page = request.query.get("page")
+        if page:
+            page = int(page)
+            pagination["page"] = page
+
+            lower, upper = get_slices(page, pagination["pageSize"])
+
+            resp_da_list = resp_da_list[lower:upper]
+
+    except (StorageError, BaseModelError, ValueError) as err:
+
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({
+        "results": resp_da_list,
+        "pagination": pagination if page else {},
+    })
 
 
 @docs(
@@ -3265,6 +3318,18 @@ class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
         example="connection_id,state,presentation_exchange_id",
     )
 
+    page = fields.Int(
+        required=False,
+        description="Page number",
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description="Page size",
+        example=10,
+    )
+
 
 class ConnectionListSchema(OpenAPISchema):
     """Result schema for connection list."""
@@ -3322,9 +3387,29 @@ async def connections_list_v2(request: web.BaseRequest):
     ):
         if param_name in request.query and request.query[param_name] != "":
             post_filter[param_name] = request.query[param_name]
+
+    # Pagination parameters
+    pagination = {
+        "totalCount": 0,
+        "page": 0,
+        "pageSize": PAGINATION_PAGE_SIZE,
+        "totalPages": 0,
+    }
+
     try:
 
         records = await ConnectionRecord.query(context, tag_filter, post_filter)
+
+        # Page size from request.
+        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
+        pagination["pageSize"] = page_size
+
+        # Total number of records
+        pagination["totalCount"] = len(records)
+
+        # Total number of pages.
+        pagination["totalPages"] = math.ceil(
+            pagination["totalCount"] / pagination["pageSize"])
 
         # Fields to be included in the response.
         include_fields = request.query.get("include_fields")
@@ -3334,9 +3419,24 @@ async def connections_list_v2(request: web.BaseRequest):
         results = ADAManager.serialize_connection_record(
             records, True, include_fields)
 
-    except (StorageError, BaseModelError) as err:
+        # Pagination parameters
+        page = request.query.get("page")
+        if page:
+            page = int(page)
+            pagination["page"] = page
+
+            lower, upper = get_slices(page, pagination["pageSize"])
+
+            results = results[lower:upper]
+
+    except (StorageError, BaseModelError, ValueError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
-    return web.json_response({"results": results})
+    return web.json_response(
+        {
+            "results": results,
+            "pagination": pagination if page else {},
+        }
+    )
 
 
 async def register(app: web.Application):

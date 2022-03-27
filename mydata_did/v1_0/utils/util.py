@@ -197,5 +197,23 @@ def comma_separated_str_to_list(s: str) -> list:
     return s.split(',')
 
 
+def get_slices(page, page_size=10):
+    """
+    Get the start and end indices for the given page and page size.
+
+    Args:
+        page: page number
+        page_size: page size
+
+    Returns: start and end indices
+
+    """
+    start = (page - 1) * page_size
+
+    end = start + page_size
+
+    return start, end
+
+
 if __name__ == "__main__":
     print(canon_did("did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"))

@@ -11,6 +11,7 @@ from aiohttp_apispec import (
 from json.decoder import JSONDecodeError
 from marshmallow import fields, validate
 import uuid
+import math
 
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.issuer.base import IssuerError
@@ -62,7 +63,10 @@ from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreement
 from ....v1_0.models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
 from ....v1_0.utils.did.mydata_did import DIDMyData
 from ....v1_0.utils.wallet.key_type import KeyType
-from ....v1_0.utils.util import comma_separated_str_to_list
+from ....v1_0.utils.util import comma_separated_str_to_list, get_slices
+
+
+PAGINATION_PAGE_SIZE = 10
 
 
 class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
@@ -120,6 +124,18 @@ class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
         required=False,
         description="Comma separated fields to be included in the response.",
         example="connection_id,state,presentation_exchange_id",
+    )
+
+    page = fields.Int(
+        required=False,
+        description="Page number",
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description="Page size",
+        example=10,
     )
 
 
@@ -427,9 +443,28 @@ async def credential_exchange_list(request: web.BaseRequest):
         if request.query.get(k, "") != ""
     }
 
+    # Pagination parameters
+    pagination = {
+        "totalCount": 0,
+        "page": 0,
+        "pageSize": PAGINATION_PAGE_SIZE,
+        "totalPages": 0,
+    }
+
     try:
 
         records = await V10CredentialExchange.query(context, tag_filter, post_filter)
+
+        # Page size from request.
+        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
+        pagination["pageSize"] = page_size
+
+        # Total number of records
+        pagination["totalCount"] = len(records)
+
+        # Total number of pages.
+        pagination["totalPages"] = math.ceil(
+            pagination["totalCount"] / pagination["pageSize"])
 
         # Fields to be included in the response.
         include_fields = request.query.get("include_fields")
@@ -440,10 +475,26 @@ async def credential_exchange_list(request: web.BaseRequest):
         results = ADAManager.serialize_credential_exchange_records(
             records, True, include_fields)
 
-    except (StorageError, BaseModelError) as err:
+        # Pagination parameters
+        page = request.query.get("page")
+
+        if page:
+            page = int(page)
+            pagination["page"] = page
+
+            lower, upper = get_slices(page, pagination["pageSize"])
+
+            results = results[lower:upper]
+
+    except (StorageError, BaseModelError, ValueError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({"results": results})
+    return web.json_response(
+        {
+            "results": results,
+            "pagination": pagination if page else {},
+        }
+    )
 
 
 @docs(tags=["issue-credential"], summary="Fetch a single credential exchange record")
