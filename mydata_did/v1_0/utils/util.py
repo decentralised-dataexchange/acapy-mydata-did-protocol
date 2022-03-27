@@ -184,5 +184,18 @@ def int_to_semver_str(int_version: int) -> str:
     return str(semver.VersionInfo(str(int_version)))
 
 
+def comma_separated_str_to_list(s: str) -> list:
+    """
+    Convert a comma separated string to a list.
+
+    Args:
+        s: string to convert
+
+    Returns: list value
+
+    """
+    return s.split(',')
+
+
 if __name__ == "__main__":
     print(canon_did("did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"))

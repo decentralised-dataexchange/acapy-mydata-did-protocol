@@ -49,7 +49,7 @@ from .models.data_agreement_model import (
 from .models.diddoc_model import MyDataDIDDocSchema
 from .models.data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
-from .utils.util import str_to_bool, bool_to_str
+from .utils.util import str_to_bool, bool_to_str, comma_separated_str_to_list
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
 
@@ -412,6 +412,13 @@ class DataAgreementQueryStringSchema(OpenAPISchema):
     publish_flag = fields.Bool(
         description="Published flag to query published data agreements",
         required=False,
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description="Comma separated fields to be included in the response.",
+        example="connection_id,state,presentation_exchange_id",
     )
 
 
@@ -1651,8 +1658,13 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
         context=context
     )
 
+    # Fields to be included in the response.
+    include_fields = request.query.get("include_fields")
+    include_fields = comma_separated_str_to_list(
+        include_fields) if include_fields else None
+
     # Query data agreements in the wallet
-    (data_agreement_records, resp_da_list) = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter)
+    (data_agreement_records, resp_da_list) = await mydata_did_manager.query_data_agreements_in_wallet(tag_filter=tag_filter, include_fields=include_fields)
 
     return web.json_response(resp_da_list)
 
@@ -1789,6 +1801,7 @@ async def query_data_agreement_version_history(request: web.BaseRequest):
 
     return web.json_response(data_agreement_dict_list)
 
+
 class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
 
     attribute_id = fields.Str(
@@ -1796,6 +1809,7 @@ class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
         description="Personal Data ID",
         example=UUIDFour.EXAMPLE
     )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1829,6 +1843,7 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
 
     return web.json_response(data_agreement_personal_data_dict_list)
 
+
 class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
 
     attribute_id = fields.Str(
@@ -1837,18 +1852,27 @@ class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
         example=UUIDFour.EXAMPLE
     )
 
+
 class UpdateDaPersonalDataInWalletRequestSchema(OpenAPISchema):
-    attribute_description = fields.Str(description="Attribute description", example="Age of the patient", required=True)
+    attribute_description = fields.Str(
+        description="Attribute description", example="Age of the patient", required=True)
+
 
 class UpdateDaPersonalDataInWalletResponseSchema(OpenAPISchema):
 
-    attribute_id = fields.Str(description="Attribute ID", example=UUIDFour.EXAMPLE)
+    attribute_id = fields.Str(
+        description="Attribute ID", example=UUIDFour.EXAMPLE)
     attribute_name = fields.Str(description="Attribute name", example="Name")
-    attribute_description = fields.Str(description="Attribute description", example="Name of the patient")
-    data_agreement_template_id = fields.Str(description="Data Agreement Template ID", example=UUIDFour.EXAMPLE)
-    data_agreement_template_version = fields.Integer(description="Data Agreement Template version", example=1)
-    created_at = fields.Integer(description="Created at (Epoch time in seconds)", example=1578012800)
-    updated_at = fields.Integer(description="Updated at (Epoch time in seconds)", example=1578012800)
+    attribute_description = fields.Str(
+        description="Attribute description", example="Name of the patient")
+    data_agreement_template_id = fields.Str(
+        description="Data Agreement Template ID", example=UUIDFour.EXAMPLE)
+    data_agreement_template_version = fields.Integer(
+        description="Data Agreement Template version", example=1)
+    created_at = fields.Integer(
+        description="Created at (Epoch time in seconds)", example=1578012800)
+    updated_at = fields.Integer(
+        description="Updated at (Epoch time in seconds)", example=1578012800)
 
 
 @docs(
@@ -1892,8 +1916,8 @@ async def update_da_personal_data_in_wallet(request: web.BaseRequest):
 
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-
     return web.json_response(personal_data_dict)
+
 
 class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
 
@@ -1902,6 +1926,7 @@ class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
         description="Personal data identifier",
         example=UUIDFour.EXAMPLE
     )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1917,7 +1942,7 @@ class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
 )
 @match_info_schema(DeleteDaPersonalDataInWalletMatchInfoSchema())
 async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
-    
+
     # Request context
     context = request.app["request_context"]
 
@@ -1935,8 +1960,9 @@ async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
-    
+
     return web.json_response({}, status=204)
+
 
 @docs(
     tags=["Data Agreement - MyData DID Operations"],
@@ -3190,6 +3216,7 @@ async def get_existing_connections_handler(request: web.BaseRequest):
 
     return web.json_response(result)
 
+
 class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
     """Parameters and validators for connections list request query string."""
 
@@ -3198,15 +3225,19 @@ class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
         required=False,
         example="Barry",
     )
+
     initiator = fields.Str(
         description="Connection initiator",
         required=False,
         validate=validate.OneOf(["self", "external"]),
     )
+
     invitation_key = fields.Str(
         description="invitation key", required=False, **INDY_RAW_PUBLIC_KEY
     )
+
     my_did = fields.Str(description="My DID", required=False, **INDY_DID)
+
     state = fields.Str(
         description="Connection state",
         required=False,
@@ -3218,11 +3249,20 @@ class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
             ]
         ),
     )
+
     their_did = fields.Str(description="Their DID", required=False, **INDY_DID)
+
     their_role = fields.Str(
         description="Their assigned connection role",
         required=False,
         example="Point of contact",
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description="Comma separated fields to be included in the response.",
+        example="connection_id,state,presentation_exchange_id",
     )
 
 
@@ -3234,6 +3274,7 @@ class ConnectionListSchema(OpenAPISchema):
         description="List of connection records",
     )
 
+
 def connection_sort_key(conn):
     """Get the sorting key for a particular connection."""
     if conn["state"] == ConnectionRecord.STATE_INACTIVE:
@@ -3243,6 +3284,7 @@ def connection_sort_key(conn):
     else:
         pfx = "0"
     return pfx + conn["created_at"]
+
 
 @docs(
     tags=["connection"],
@@ -3281,11 +3323,21 @@ async def connections_list_v2(request: web.BaseRequest):
         if param_name in request.query and request.query[param_name] != "":
             post_filter[param_name] = request.query[param_name]
     try:
+
         records = await ConnectionRecord.query(context, tag_filter, post_filter)
-        results = ADAManager.serialize_connection_record(records)
+
+        # Fields to be included in the response.
+        include_fields = request.query.get("include_fields")
+        include_fields = comma_separated_str_to_list(
+            include_fields) if include_fields else None
+
+        results = ADAManager.serialize_connection_record(
+            records, True, include_fields)
+
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
     return web.json_response({"results": results})
+
 
 async def register(app: web.Application):
 
