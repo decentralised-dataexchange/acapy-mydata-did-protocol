@@ -98,7 +98,7 @@ from .utils.wallet.key_type import KeyType
 from .utils.verification_method import PublicKeyType
 from .utils.jsonld import ED25519_2018_CONTEXT_URL
 from .utils.jsonld.data_agreement import sign_data_agreement
-from .utils.util import current_datetime_in_iso8601, str_to_bool, bool_to_str, int_to_semver_str
+from .utils.util import current_datetime_in_iso8601, bool_to_str, int_to_semver_str
 from .utils.jsonld.create_verify_data import create_verify_data
 
 from .decorators.data_agreement_context_decorator import DataAgreementContextDecoratorSchema, DataAgreementContextDecorator
@@ -1390,7 +1390,7 @@ class ADAManager:
         except (StorageNotFoundError, StorageDuplicateError):
             pass
 
-    async def query_data_agreements_in_wallet(self, tag_filter: dict = None) -> typing.List[DataAgreementV1Record]:
+    async def query_data_agreements_in_wallet(self, tag_filter: dict = None, include_fields: typing.List[str] = []) -> typing.List[DataAgreementV1Record]:
         """
         Query data agreements in the wallet.
         """
@@ -1427,7 +1427,7 @@ class ADAManager:
                     if data_agreement_v1_record.data_agreement.get("template_version") == int(template_version)
                 ]
 
-            return data_agreement_v1_records, [] if not data_agreement_v1_records else self.serialize_data_agreement_record(data_agreement_records=data_agreement_v1_records)
+            return data_agreement_v1_records, [] if not data_agreement_v1_records else self.serialize_data_agreement_record(data_agreement_records=data_agreement_v1_records, is_list=True, include_fields=include_fields)
         except StorageSearchError as e:
             # Raise an error
             raise ADAManagerError(
@@ -3991,7 +3991,7 @@ class ADAManager:
 
         return proof_presentation_request_dict
 
-    def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True) -> typing.Union[typing.List[dict], dict]:
+    def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True, include_fields: typing.List[str] = []) -> typing.Union[typing.List[dict], dict]:
         """
         Serialize data agreement record.
 
@@ -4008,7 +4008,7 @@ class ADAManager:
 
         for data_agreement_record in data_agreement_records:
 
-            data_agreement_record_list.append({
+            temp_record = {
                 "data_agreement_id": data_agreement_record.data_agreement_id,
                 "state": data_agreement_record.state,
                 "method_of_use": data_agreement_record.method_of_use,
@@ -4021,7 +4021,23 @@ class ADAManager:
                 "is_existing_schema": data_agreement_record._is_existing_schema,
                 "created_at": str_to_epoch(data_agreement_record.created_at),
                 "updated_at": str_to_epoch(data_agreement_record.updated_at)
-            })
+            }
+
+            # Include only the fields specified in the include_fields list
+            if include_fields:
+
+                # created_at must be present in the include_fields
+                if "created_at" not in include_fields:
+                    include_fields.append("created_at")
+
+                # updated_at must be present in the include_fields
+                if "updated_at" not in include_fields:
+                    include_fields.append("updated_at")
+
+                temp_record = {k: v for k,
+                               v in temp_record.items() if k in include_fields}
+
+            data_agreement_record_list.append(temp_record)
 
         # Sort data agreement records by created_at in descending order
         data_agreement_record_list = sorted(
@@ -4498,7 +4514,7 @@ class ADAManager:
             )
 
     @classmethod
-    def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True) -> dict:
+    def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True, include_fields: typing.List[str] = []) -> dict:
         """
         Serialize connection record.
 
@@ -4512,7 +4528,8 @@ class ADAManager:
 
         connection_records_list = []
         for connection_record in connection_records:
-            connection_records_list.append({
+
+            temp_record = {
                 "state": connection_record.state,
                 "invitation_mode": connection_record.invitation_mode,
                 "connection_id": connection_record.connection_id,
@@ -4525,10 +4542,157 @@ class ADAManager:
                 "routing_state": connection_record.routing_state,
                 "their_label": connection_record.their_label,
                 "my_did": connection_record.my_did,
-            })
+            }
+
+            # Include only the fields specified in the include_fields list
+            if include_fields:
+
+                # created_at must be present in the include_fields
+                if "created_at" not in include_fields:
+                    include_fields.append("created_at")
+
+                # updated_at must be present in the include_fields
+                if "updated_at" not in include_fields:
+                    include_fields.append("updated_at")
+
+                temp_record = {k: v for k,
+                               v in temp_record.items() if k in include_fields}
+
+            connection_records_list.append(temp_record)
 
         # Sort by created_at in descending order
         connection_records_list = sorted(
             connection_records_list, key=lambda k: k['created_at'], reverse=True)
 
         return connection_records_list if is_list else connection_records_list[0]
+
+    @classmethod
+    def serialize_presentation_exchange_records(cls, presentation_exchange_records: typing.List[V10PresentationExchange], is_list: bool = True, include_fields: typing.List[str] = []) -> dict:
+        """
+        Serialize presentation exchange records.
+
+        Args:
+            presentation_exchange_records: List of presentation exchange records.
+            is_list: If true, serialize as list.
+
+        Returns:
+            List of serialized presentation exchange records.
+        """
+
+        presentation_exchange_records_list = []
+
+        for presentation_exchange_record in presentation_exchange_records:
+
+            temp_record = {
+                "presentation_exchange_id": presentation_exchange_record.presentation_exchange_id,
+                "connection_id": presentation_exchange_record.connection_id,
+                "thread_id": presentation_exchange_record.thread_id,
+                "initiator": presentation_exchange_record.initiator,
+                "role": presentation_exchange_record.role,
+                "state": presentation_exchange_record.state,
+                "presentation_proposal_dict": presentation_exchange_record.presentation_proposal_dict,
+                "presentation_request": presentation_exchange_record.presentation_request,
+                "presentation_request_dict": presentation_exchange_record.presentation_request_dict,
+                "presentation": presentation_exchange_record.presentation,
+                "verified": presentation_exchange_record.verified,
+                "auto_present": presentation_exchange_record.auto_present,
+                "error_msg": presentation_exchange_record.error_msg,
+                "data_agreement": presentation_exchange_record.data_agreement,
+                "data_agreement_id": presentation_exchange_record.data_agreement_id,
+                "data_agreement_template_id": presentation_exchange_record.data_agreement_template_id,
+                "data_agreement_status": presentation_exchange_record.data_agreement_status,
+                "data_agreement_problem_report": presentation_exchange_record.data_agreement_problem_report,
+                "created_at": str_to_epoch(presentation_exchange_record.created_at),
+                "updated_at": str_to_epoch(presentation_exchange_record.updated_at),
+            }
+
+            # Include only the fields specified in the include_fields list
+            if include_fields:
+
+                # created_at must be present in the include_fields
+                if "created_at" not in include_fields:
+                    include_fields.append("created_at")
+
+                # updated_at must be present in the include_fields
+                if "updated_at" not in include_fields:
+                    include_fields.append("updated_at")
+
+                temp_record = {k: v for k,
+                               v in temp_record.items() if k in include_fields}
+
+            presentation_exchange_records_list.append(temp_record)
+
+        # Sort by created_at in descending order
+        presentation_exchange_records_list = sorted(
+            presentation_exchange_records_list, key=lambda k: k['created_at'], reverse=True)
+
+        return presentation_exchange_records_list if is_list else presentation_exchange_records_list[0]
+
+    @classmethod
+    def serialize_credential_exchange_records(cls, credential_exchange_records: typing.List[V10CredentialExchange], is_list: bool = True, include_fields: typing.List[str] = []) -> dict:
+        """
+        Serialize credential exchange records.
+
+        Args:
+            credential_exchange_records: List of credential exchange records.
+            is_list: If true, serialize as list.
+
+        Returns:
+            List of serialized credential exchange records.
+        """
+
+        credential_exchange_records_list = []
+
+        for credential_exchange_record in credential_exchange_records:
+
+            temp_record = {
+                "credential_exchange_id": credential_exchange_record.credential_exchange_id,
+                "connection_id": credential_exchange_record.connection_id,
+                "thread_id": credential_exchange_record.thread_id,
+                "initiator": credential_exchange_record.initiator,
+                "role": credential_exchange_record.role,
+                "state": credential_exchange_record.state,
+                "credential_definition_id": credential_exchange_record.credential_definition_id,
+                "schema_id": credential_exchange_record.schema_id,
+                "credential_proposal_dict": credential_exchange_record.credential_proposal_dict,
+                "credential_offer_dict": credential_exchange_record.credential_offer_dict,
+                "credential_offer": credential_exchange_record.credential_offer,
+                "credential_request": credential_exchange_record.credential_request,
+                "credential_request_metadata": credential_exchange_record.credential_request_metadata,
+                "credential_id": credential_exchange_record.credential_id,
+                "raw_credential": credential_exchange_record.raw_credential,
+                "credential": credential_exchange_record.credential,
+                "auto_offer": credential_exchange_record.auto_offer,
+                "auto_issue": credential_exchange_record.auto_issue,
+                "auto_remove": credential_exchange_record.auto_remove,
+                "error_msg": credential_exchange_record.error_msg,
+                "data_agreement": credential_exchange_record.data_agreement,
+                "data_agreement_id": credential_exchange_record.data_agreement_id,
+                "data_agreement_template_id": credential_exchange_record.data_agreement_template_id,
+                "data_agreement_status": credential_exchange_record.data_agreement_status,
+                "data_agreement_problem_report": credential_exchange_record.data_agreement_problem_report,
+                "created_at": str_to_epoch(credential_exchange_record.created_at),
+                "updated_at": str_to_epoch(credential_exchange_record.updated_at),
+            }
+
+            # Include only the fields specified in the include_fields list
+            if include_fields:
+
+                # created_at must be present in the include_fields
+                if "created_at" not in include_fields:
+                    include_fields.append("created_at")
+
+                # updated_at must be present in the include_fields
+                if "updated_at" not in include_fields:
+                    include_fields.append("updated_at")
+
+                temp_record = {k: v for k,
+                               v in temp_record.items() if k in include_fields}
+
+            credential_exchange_records_list.append(temp_record)
+
+        # Sort by created_at in descending order
+        credential_exchange_records_list = sorted(
+            credential_exchange_records_list, key=lambda k: k['created_at'], reverse=True)
+
+        return credential_exchange_records_list if is_list else credential_exchange_records_list[0]

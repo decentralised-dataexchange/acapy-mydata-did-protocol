@@ -62,6 +62,8 @@ from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreement
 from ....v1_0.models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
 from ....v1_0.utils.did.mydata_did import DIDMyData
 from ....v1_0.utils.wallet.key_type import KeyType
+from ....v1_0.utils.util import comma_separated_str_to_list
+
 
 class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
     """Parameters and validators for credential exchange list query."""
@@ -111,6 +113,13 @@ class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
         required=False,
         description="Data agreement template identifier",
         example=UUIDFour.EXAMPLE,
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description="Comma separated fields to be included in the response.",
+        example="connection_id,state,presentation_exchange_id",
     )
 
 
@@ -384,11 +393,14 @@ class DataAgreementBoundCredentialOfferMatchInfoSchema(OpenAPISchema):
         example=UUIDFour.EXAMPLE
     )
 
+
 class SendDataAgreementNegotiationProblemReportRequestSchema(OpenAPISchema):
     """Request schema for sending problem report."""
 
-    explain = fields.Str(description="Describe the problem", required=True, example="Data agreement context decorator not found in the didcomm message.")
-    problem_code = fields.Str(description="Problem code", required=True, example=DataAgreementNegotiationProblemReportReason.DATA_AGREEMENT_CONTEXT_INVALID.value)
+    explain = fields.Str(description="Describe the problem", required=True,
+                         example="Data agreement context decorator not found in the didcomm message.")
+    problem_code = fields.Str(description="Problem code", required=True,
+                              example=DataAgreementNegotiationProblemReportReason.DATA_AGREEMENT_CONTEXT_INVALID.value)
 
 
 @docs(tags=["issue-credential"], summary="Fetch all credential exchange records")
@@ -416,8 +428,18 @@ async def credential_exchange_list(request: web.BaseRequest):
     }
 
     try:
+
         records = await V10CredentialExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Fields to be included in the response.
+        include_fields = request.query.get("include_fields")
+        include_fields = comma_separated_str_to_list(
+            include_fields) if include_fields else None
+
+        # Serialise presentation exchange records and customize it based on include_fields.
+        results = ADAManager.serialize_credential_exchange_records(
+            records, True, include_fields)
+
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
@@ -1539,10 +1561,11 @@ async def send_data_agreement_reject_message_for_credential_offer(request: web.B
 
         await outbound_handler(data_agreement_negotiation_reject_message, connection_id=cred_ex_record.connection_id)
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(cred_ex_record.serialize())
+
 
 @docs(
     tags=["issue-credential"], summary="Send data agreement negotiation problem report message"
@@ -1579,11 +1602,9 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         )
     except StorageNotFoundError as err:
         raise web.HTTPNotFound(reason=err.roll_up) from err
-    
 
     if not cred_ex_record.data_agreement:
         raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
-    
 
     # Initialize ADA manager
     ada_manager = ADAManager(context)
@@ -1597,7 +1618,6 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         if not connection_record.is_ready:
             raise web.HTTPForbidden(
                 reason=f"Connection {connection_id} not ready")
-        
 
         data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
             connection_record=connection_record,
@@ -1611,7 +1631,7 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
             data_agreement_negotiation_problem_report_message=data_agreement_negotiation_problem_report,
         )
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({})
@@ -1675,19 +1695,18 @@ async def send_data_agreement_termination_message(request: web.BaseRequest):
         if not connection_record.is_ready:
             raise web.HTTPForbidden(
                 reason=f"Connection {connection_id} not ready")
-        
+
         # Fetch wallet from context
         wallet: IndyWallet = await context.inject(BaseWallet)
-        
+
         pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
         principle_did = DIDMyData.from_public_key_b58(
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-        
+
         if data_agreement_instance.principle_did != principle_did.did:
             raise web.HTTPBadRequest(
                 reason=f"Only the principle can terminate the data agreement."
             )
-        
 
         (data_agreement_instance, data_agreement_terminate_message) = await ada_manager.construct_data_agreement_termination_terminate_message(
             data_agreement_instance=data_agreement_instance,
@@ -1702,10 +1721,11 @@ async def send_data_agreement_termination_message(request: web.BaseRequest):
 
         await outbound_handler(data_agreement_terminate_message, connection_id=cred_ex_record.connection_id)
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(cred_ex_record.serialize())
+
 
 async def register(app: web.Application):
     """Register routes."""

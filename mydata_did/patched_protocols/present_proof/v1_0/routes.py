@@ -63,6 +63,8 @@ from ....v1_0.models.data_agreement_instance_model import DataAgreementInstance,
 from ....patched_protocols.issue_credential.v1_0.routes import SendDataAgreementNegotiationProblemReportRequestSchema
 from ....v1_0.utils.did.mydata_did import DIDMyData
 from ....v1_0.utils.wallet.key_type import KeyType
+from ....v1_0.utils.util import comma_separated_str_to_list
+
 
 class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
     """Parameters and validators for presentation exchange list query."""
@@ -112,6 +114,13 @@ class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
         required=False,
         description="Data agreement template identifier",
         example=UUIDFour.EXAMPLE,
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description="Comma separated fields to be included in the response.",
+        example="connection_id,state,presentation_exchange_id",
     )
 
 
@@ -244,7 +253,8 @@ class DAIndyProofReqAttrSpecSchema(OpenAPISchema):
         ),
         required=False,
     )
-    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(
+        DAIndyProofReqNonRevokedSchema(), required=False)
 
     @validates_schema
     def validate_fields(self, data, **kwargs):
@@ -288,7 +298,8 @@ class DAIndyProofReqPredSpecSchema(OpenAPISchema):
         description="If present, credential must satisfy one of given restrictions",
         required=False,
     )
-    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(
+        DAIndyProofReqNonRevokedSchema(), required=False)
 
 
 class DAIndyProofRequestSchema(OpenAPISchema):
@@ -322,7 +333,8 @@ class DAIndyProofRequestSchema(OpenAPISchema):
         keys=fields.Str(example="0_age_GE_uuid"),
         values=fields.Nested(DAIndyProofReqPredSpecSchema()),
     )
-    non_revoked = fields.Nested(DAIndyProofReqNonRevokedSchema(), required=False)
+    non_revoked = fields.Nested(
+        DAIndyProofReqNonRevokedSchema(), required=False)
 
 
 class V10PresentationCreateRequestRequestSchema(AdminAPIMessageTracingSchema):
@@ -481,10 +493,14 @@ async def presentation_exchange_list(request: web.BaseRequest):
         The presentation exchange list response
 
     """
+
     context = request.app["request_context"]
+
     tag_filter = {}
+
     if "thread_id" in request.query and request.query["thread_id"] != "":
         tag_filter["thread_id"] = request.query["thread_id"]
+
     post_filter = {
         k: request.query[k]
         for k in ("connection_id", "role", "state", "data_agreement_id", "data_agreement_template_id")
@@ -492,9 +508,20 @@ async def presentation_exchange_list(request: web.BaseRequest):
     }
 
     try:
+
         records = await V10PresentationExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Fields to be included in the response.
+        include_fields = request.query.get("include_fields")
+        include_fields = comma_separated_str_to_list(
+            include_fields) if include_fields else None
+
+        # Serialise presentation exchange records and customize it based on include_fields.
+        results = ADAManager.serialize_presentation_exchange_records(
+            records, True, include_fields)
+
     except (StorageError, BaseModelError) as err:
+
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({"results": results})
@@ -979,7 +1006,6 @@ async def presentation_exchange_send_presentation(request: web.BaseRequest):
             comment=body.get("comment"),
         )
 
-
         # Initialize ADA manager
         ada_manager = ADAManager(context)
 
@@ -1017,7 +1043,6 @@ async def presentation_exchange_send_presentation(request: web.BaseRequest):
 
         except ADAManagerError as err:
             raise web.HTTPBadRequest(reason=err.roll_up) from err
-
 
         result = pres_ex_record.serialize()
     except (
@@ -1364,7 +1389,7 @@ async def send_data_agreement_reject_message_for_presentation_request(request: w
 
         await outbound_handler(data_agreement_negotiation_reject_message, connection_id=pres_ex_record.connection_id)
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(pres_ex_record.serialize())
@@ -1405,11 +1430,9 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         )
     except StorageNotFoundError as err:
         raise web.HTTPNotFound(reason=err.roll_up) from err
-    
 
     if not pres_ex_record.data_agreement:
         raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
-    
 
     # Initialize ADA manager
     ada_manager = ADAManager(context)
@@ -1423,7 +1446,6 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
         if not connection_record.is_ready:
             raise web.HTTPForbidden(
                 reason=f"Connection {connection_id} not ready")
-        
 
         data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
             connection_record=connection_record,
@@ -1437,7 +1459,7 @@ async def send_data_agreement_negotiation_problem_report(request: web.BaseReques
             data_agreement_negotiation_problem_report_message=data_agreement_negotiation_problem_report,
         )
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({})
@@ -1501,19 +1523,18 @@ async def send_data_agreement_termination_message(request: web.BaseRequest):
         if not connection_record.is_ready:
             raise web.HTTPForbidden(
                 reason=f"Connection {connection_id} not ready")
-        
+
         # Fetch wallet from context
         wallet: IndyWallet = await context.inject(BaseWallet)
-        
+
         pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
         principle_did = DIDMyData.from_public_key_b58(
             pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-        
+
         if data_agreement_instance.principle_did != principle_did.did:
             raise web.HTTPBadRequest(
                 reason=f"Only the principle can terminate the data agreement."
             )
-        
 
         (data_agreement_instance, data_agreement_terminate_message) = await ada_manager.construct_data_agreement_termination_terminate_message(
             data_agreement_instance=data_agreement_instance,
@@ -1528,10 +1549,11 @@ async def send_data_agreement_termination_message(request: web.BaseRequest):
 
         await outbound_handler(data_agreement_terminate_message, connection_id=pres_ex_record.connection_id)
 
-    except (ADAManagerError,StorageError) as err:
+    except (ADAManagerError, StorageError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(pres_ex_record.serialize())
+
 
 async def register(app: web.Application):
     """Register routes."""
