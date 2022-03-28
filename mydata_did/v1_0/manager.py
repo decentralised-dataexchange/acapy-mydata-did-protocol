@@ -4456,6 +4456,9 @@ class ADAManager:
                     pd.da_template_id
                 )
 
+                data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
+                    data_agreement_record.data_agreement)
+
                 temp_pd = {
                     "attribute_id": pd.personal_data_id,
                     "attribute_name": pd.attribute_name,
@@ -4463,6 +4466,8 @@ class ADAManager:
                     "data_agreement": {
                         "data_agreement_id": data_agreement_record.data_agreement_record_id,
                         "method_of_use": data_agreement_record.method_of_use,
+                        "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
+                        "publish_flag" : data_agreement_record.is_published
                     },
                     "created_at": str_to_epoch(pd.created_at),
                     "updated_at": str_to_epoch(pd.updated_at),
