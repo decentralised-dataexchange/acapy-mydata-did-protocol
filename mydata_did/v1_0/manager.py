@@ -4450,34 +4450,40 @@ class ADAManager:
             # Iterate through personal data
             for pd in matched_personal_data_records:
 
-                # Fetch data agreement template.
-                data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                    self.context,
-                    pd.da_template_id
-                )
+                try:
 
-                data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                    data_agreement_record.data_agreement)
+                    # Fetch data agreement template.
+                    data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
+                        self.context,
+                        pd.da_template_id
+                    )
 
-                temp_pd = {
-                    "attribute_id": pd.personal_data_id,
-                    "attribute_name": pd.attribute_name,
-                    "attribute_description": pd.attribute_description,
-                    "data_agreement": {
-                        "data_agreement_id": data_agreement_record.data_agreement_record_id,
-                        "method_of_use": data_agreement_record.method_of_use,
-                        "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
-                        "publish_flag" : data_agreement_record.is_published
-                    },
-                    "created_at": str_to_epoch(pd.created_at),
-                    "updated_at": str_to_epoch(pd.updated_at),
-                }
+                    data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
+                        data_agreement_record.data_agreement)
 
-                if method_of_use:
-                    if data_agreement_record.method_of_use == method_of_use:
+                    temp_pd = {
+                        "attribute_id": pd.personal_data_id,
+                        "attribute_name": pd.attribute_name,
+                        "attribute_description": pd.attribute_description,
+                        "data_agreement": {
+                            "data_agreement_id": data_agreement_record.data_agreement_record_id,
+                            "method_of_use": data_agreement_record.method_of_use,
+                            "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
+                            "publish_flag" : data_agreement_record.is_published
+                        },
+                        "created_at": str_to_epoch(pd.created_at),
+                        "updated_at": str_to_epoch(pd.updated_at),
+                    }
+
+                    if method_of_use:
+                        if data_agreement_record.method_of_use == method_of_use:
+                            serialised_personal_data_records.append(temp_pd)
+                    else:
                         serialised_personal_data_records.append(temp_pd)
-                else:
-                    serialised_personal_data_records.append(temp_pd)
+
+                except (StorageNotFoundError, StorageDuplicateError) as e:
+                    # Continue to other personal data records.
+                    continue
 
             return self.serialize_personal_data_record(
                 personal_data_records=serialised_personal_data_records,
