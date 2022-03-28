@@ -4419,7 +4419,21 @@ class ADAManager:
                 new_pd.attribute_id
             )
 
-            return new_personal_data_record, self.serialize_personal_data_record(personal_data_records=[new_personal_data_record], is_list=False)
+            res = {
+                "attribute_id": new_pd.attribute_id,
+                "attribute_name": new_pd.attribute_name,
+                "attribute_description": new_pd.attribute_description,
+                "data_agreement": {
+                    "data_agreement_id": data_agreement_record.data_agreement_record_id,
+                    "method_of_use": data_agreement_record.method_of_use,
+                    "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
+                    "publish_flag": data_agreement_record.is_published
+                },
+                "created_at": str_to_epoch(data_agreement_record.created_at),
+                "updated_at": str_to_epoch(data_agreement_record.updated_at),
+            }
+
+            return new_personal_data_record, res
 
         except (StorageError, ValidationError) as err:
             raise ADAManagerError(err_string.format(err=err)) from err
@@ -4461,7 +4475,6 @@ class ADAManager:
                             personal_data.append(temp_pd)
                     else:
                         personal_data.append(temp_pd)
-
 
             return self.serialize_personal_data_record(
                 personal_data_records=personal_data,
