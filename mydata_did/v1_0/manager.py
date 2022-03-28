@@ -4431,66 +4431,44 @@ class ADAManager:
 
         try:
 
-            # Query for the old data agreement record by id
-            personal_data_records: typing.List[DataAgreementPersonalDataRecord] = await DataAgreementPersonalDataRecord.query(
-                self.context,
-            )
+            # Query all data agreements (non-deleted)
+            data_agreement_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.retrieve_all_non_deleted_data_agreements(self.context)
 
-            matched_personal_data_records = []
+            personal_data = []
 
-            if personal_data_id:
-                for pd in personal_data_records:
-                    if pd.personal_data_id == personal_data_id:
-                        matched_personal_data_records.append(pd)
-            else:
-                matched_personal_data_records = personal_data_records
+            for data_agreement_record in data_agreement_records:
+                data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
+                    data_agreement_record.data_agreement)
 
-            serialised_personal_data_records = []
-
-            # Iterate through personal data
-            for pd in matched_personal_data_records:
-
-                try:
-
-                    # Fetch data agreement template.
-                    data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                        self.context,
-                        pd.da_template_id
-                    )
-
-                    data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                        data_agreement_record.data_agreement)
+                # Query personal data
+                for pd in data_agreement_dict.personal_data:
 
                     temp_pd = {
-                        "attribute_id": pd.personal_data_id,
+                        "attribute_id": pd.attribute_id,
                         "attribute_name": pd.attribute_name,
                         "attribute_description": pd.attribute_description,
                         "data_agreement": {
                             "data_agreement_id": data_agreement_record.data_agreement_record_id,
                             "method_of_use": data_agreement_record.method_of_use,
                             "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
-                            "publish_flag" : data_agreement_record.is_published
+                            "publish_flag": data_agreement_record.is_published
                         },
-                        "created_at": str_to_epoch(pd.created_at),
-                        "updated_at": str_to_epoch(pd.updated_at),
+                        "created_at": str_to_epoch(data_agreement_record.created_at),
+                        "updated_at": str_to_epoch(data_agreement_record.updated_at),
                     }
-
                     if method_of_use:
                         if data_agreement_record.method_of_use == method_of_use:
-                            serialised_personal_data_records.append(temp_pd)
+                            personal_data.append(temp_pd)
                     else:
-                        serialised_personal_data_records.append(temp_pd)
+                        personal_data.append(temp_pd)
 
-                except (StorageNotFoundError, StorageDuplicateError) as e:
-                    # Continue to other personal data records.
-                    continue
 
             return self.serialize_personal_data_record(
-                personal_data_records=serialised_personal_data_records,
+                personal_data_records=personal_data,
                 is_list=True
             )
 
-        except (StorageSearchError) as e:
+        except (StorageSearchError, StorageNotFoundError, StorageDuplicateError) as e:
             # Raise an error
             raise ADAManagerError(
                 f"Failed to fetch all data agreements from wallet: {e}"
