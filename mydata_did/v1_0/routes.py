@@ -1863,6 +1863,24 @@ class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
         example=UUIDFour.EXAMPLE
     )
 
+    page = fields.Int(
+        required=False,
+        description="Page number",
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description="Page size",
+        example=10,
+    )
+
+    method_of_use = fields.Str(
+        required=False,
+        description="Method of use",
+        example="data-using-service",
+    )
+
 
 @docs(
     tags=["Data Agreement - Core Functions"],
@@ -1886,15 +1904,55 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
     if "attribute_id" in request.query and request.query["attribute_id"] != "":
         personal_data_id = request.query["attribute_id"]
 
+    method_of_use = None
+    if "method_of_use" in request.query and request.query["method_of_use"] != "":
+        method_of_use = request.query["method_of_use"]
+
+    # Pagination parameters
+    pagination = {
+        "totalCount": 0,
+        "page": 0,
+        "pageSize": PAGINATION_PAGE_SIZE,
+        "totalPages": 0,
+    }
+
     try:
+
         # Query data agreement personal data in wallet
-        (data_agreement_personal_data_records, data_agreement_personal_data_dict_list) = await mydata_did_manager.query_da_personal_data_in_wallet(
-            personal_data_id=personal_data_id
+        results = await mydata_did_manager.query_da_personal_data_in_wallet(
+            personal_data_id=personal_data_id,
+            method_of_use=method_of_use
         )
+
+        # Page size from request.
+        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
+        pagination["pageSize"] = page_size
+
+        # Total number of records
+        pagination["totalCount"] = len(results)
+
+        # Total number of pages.
+        pagination["totalPages"] = math.ceil(
+            pagination["totalCount"] / pagination["pageSize"])
+
+        # Pagination parameters
+        page = request.query.get("page")
+
+        if page:
+            page = int(page)
+            pagination["page"] = page
+
+            lower, upper = get_slices(page, pagination["pageSize"])
+
+            results = results[lower:upper]
+
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(data_agreement_personal_data_dict_list)
+    return web.json_response({
+        "results": results,
+        "pagination": pagination if page else {}
+    })
 
 
 class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):

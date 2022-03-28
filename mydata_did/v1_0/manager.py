@@ -4345,7 +4345,7 @@ class ADAManager:
                 f"Failed to fetch all data agreements from wallet; Reason: {e.roll_up}"
             )
 
-    def serialize_personal_data_record(self, *, personal_data_records: typing.List[DataAgreementPersonalDataRecord], is_list: bool = True) -> typing.List[dict]:
+    def serialize_personal_data_record(self, *, personal_data_records: typing.List[dict], is_list: bool = True) -> typing.List[dict]:
         """
         Serialize personal data records.
 
@@ -4357,26 +4357,11 @@ class ADAManager:
             Serialized personal data records.
         """
 
-        personal_data_records_list: typing.List[dict] = []
-
-        for personal_data_record in personal_data_records:
-            temp_personal_data_record = {
-                "attribute_id": personal_data_record.personal_data_id,
-                "attribute_name": personal_data_record.attribute_name,
-                "attribute_description": personal_data_record.attribute_description,
-                "data_agreement_template_id": personal_data_record.da_template_id,
-                "data_agreement_template_version": personal_data_record.da_template_version,
-                "created_at": str_to_epoch(personal_data_record.created_at),
-                "updated_at": str_to_epoch(personal_data_record.updated_at),
-            }
-
-            personal_data_records_list.append(temp_personal_data_record)
-
         # Sort personal data list by created_at in descending order
-        personal_data_records_list = sorted(
-            personal_data_records_list, key=lambda k: k['created_at'], reverse=True)
+        personal_data_records = sorted(
+            personal_data_records, key=lambda k: k['created_at'], reverse=True)
 
-        return personal_data_records_list if is_list else personal_data_records_list[0]
+        return personal_data_records if is_list else personal_data_records[0]
 
     async def update_personal_data_description(self, personal_data_id: str, updated_description: str) -> typing.Tuple[DataAgreementPersonalDataRecord, dict]:
 
@@ -4439,7 +4424,7 @@ class ADAManager:
         except (StorageError, ValidationError) as err:
             raise ADAManagerError(err_string.format(err=err)) from err
 
-    async def query_da_personal_data_in_wallet(self, personal_data_id: str = None) -> typing.Tuple[typing.List[DataAgreementPersonalDataRecord], dict]:
+    async def query_da_personal_data_in_wallet(self, personal_data_id: str = None, method_of_use: str = None) -> typing.List[dict]:
         """
         Query personal data in the wallet.
         """
@@ -4460,8 +4445,41 @@ class ADAManager:
             else:
                 matched_personal_data_records = personal_data_records
 
-            return matched_personal_data_records, self.serialize_personal_data_record(personal_data_records=matched_personal_data_records, is_list=True)
-        except StorageSearchError as e:
+            serialised_personal_data_records = []
+
+            # Iterate through personal data
+            for pd in matched_personal_data_records:
+
+                # Fetch data agreement template.
+                data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
+                    self.context,
+                    pd.da_template_id
+                )
+
+                temp_pd = {
+                    "attribute_id": pd.personal_data_id,
+                    "attribute_name": pd.attribute_name,
+                    "attribute_description": pd.attribute_description,
+                    "data_agreement": {
+                        "data_agreement_id": data_agreement_record.data_agreement_record_id,
+                        "method_of_use": data_agreement_record.method_of_use,
+                    },
+                    "created_at": str_to_epoch(pd.created_at),
+                    "updated_at": str_to_epoch(pd.updated_at),
+                }
+
+                if method_of_use:
+                    if data_agreement_record.method_of_use == method_of_use:
+                        serialised_personal_data_records.append(temp_pd)
+                else:
+                    serialised_personal_data_records.append(temp_pd)
+
+            return self.serialize_personal_data_record(
+                personal_data_records=serialised_personal_data_records,
+                is_list=True
+            )
+
+        except (StorageSearchError) as e:
             # Raise an error
             raise ADAManagerError(
                 f"Failed to fetch all data agreements from wallet: {e}"
