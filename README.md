@@ -40,7 +40,7 @@ $ pip install aries-cloudagent==0.5.6
 Install this plugin into the virtual environment:
 
 ```sh
-$ pip install git+https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol.git@master
+$ pip install acapy-mydata-did-protocol
 ```
 
 **Note:** Depending on your version of `pip`, you may need to drop or add 
