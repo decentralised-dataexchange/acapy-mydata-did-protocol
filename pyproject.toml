@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "acapy-mydata-did-protocol"
+version = "0.1.1"
+description = "ACA-Py plugin for MyData DID DIDComm protcol"
+authors = ["George J Padayatti <george.padayatti@igrant.io>"]
+license = "License :: OSI Approved :: Apache Software License"
+readme = "README.md"
+homepage = "https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol"
+repository = "https://github.com/decentralised-dataexchange/acapy-mydata-did-protocol"
+classifiers = [
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+keywords = ["acapy", "aries", "mydata", "ssi"]
+packages = [
+    { include = "mydata_did" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+acapy-patched = "^0.5.6"
+validators = "^0.20.0"
+PyJWT = "^2.4.0"
+MarkupSafe = "2.0.1"
+python3-indy = "^1.16.0"
+semver = "^2.13.0"
+py-multibase = "^1.0.3"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
