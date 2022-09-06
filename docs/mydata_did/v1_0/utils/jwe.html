@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.utils.jwe API documentation</title>
+<meta name="description" content="JSON Web Encryption utilities." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.utils.jwe</code></h1>
+</header>
+<section id="section-intro">
+<p>JSON Web Encryption utilities.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;JSON Web Encryption utilities.&#34;&#34;&#34;
+
+import json
+
+from collections import OrderedDict
+from typing import Any, Iterable, List, Mapping, Optional, Union
+
+from marshmallow import fields, Schema, ValidationError
+
+from .wallet.util import b64_to_bytes, bytes_to_b64
+
+IDENT_ENC_KEY = &#34;encrypted_key&#34;
+IDENT_HEADER = &#34;header&#34;
+IDENT_PROTECTED = &#34;protected&#34;
+IDENT_RECIPIENTS = &#34;recipients&#34;
+
+
+def b64url(value: Union[bytes, str]) -&gt; str:
+    &#34;&#34;&#34;Encode a string or bytes value as unpadded base64-URL.&#34;&#34;&#34;
+    if isinstance(value, str):
+        value = value.encode(&#34;utf-8&#34;)
+    return bytes_to_b64(value, urlsafe=True, pad=False)
+
+
+def from_b64url(value: str) -&gt; bytes:
+    &#34;&#34;&#34;Decode an unpadded base64-URL value.&#34;&#34;&#34;
+    return b64_to_bytes(value, urlsafe=True)
+
+
+class B64Value(fields.Str):
+    &#34;&#34;&#34;A marshmallow-compatible wrapper for base64-URL values.&#34;&#34;&#34;
+
+    def _serialize(self, value, attr, obj, **kwargs) -&gt; Optional[str]:
+        if value is None:
+            return None
+        if not isinstance(value, bytes):
+            return TypeError(&#34;Expected bytes&#34;)
+        return b64url(value)
+
+    def _deserialize(self, value, attr, data, **kwargs) -&gt; Any:
+        value = super()._deserialize(value, attr, data, **kwargs)
+        return from_b64url(value)
+
+
+class JweSchema(Schema):
+    &#34;&#34;&#34;JWE envelope schema.&#34;&#34;&#34;
+
+    protected = fields.Str(required=True)
+    unprotected = fields.Dict(required=False)
+    ciphertext = B64Value(required=True)
+    iv = B64Value(required=True)
+    tag = B64Value(required=True)
+    aad = B64Value(required=False)
+    # flattened:
+    header = fields.Dict(required=False)
+    encrypted_key = B64Value(required=False)
+
+
+class JweRecipientSchema(Schema):
+    &#34;&#34;&#34;JWE recipient schema.&#34;&#34;&#34;
+
+    encrypted_key = B64Value(required=True)
+    header = fields.Dict(many=True, required=False)
+
+
+class JweRecipient:
+    &#34;&#34;&#34;A single message recipient.&#34;&#34;&#34;
+
+    def __init__(self, *, encrypted_key: bytes, header: dict = None) -&gt; &#34;JweRecipient&#34;:
+        &#34;&#34;&#34;Initialize the JWE recipient.&#34;&#34;&#34;
+        self.encrypted_key = encrypted_key
+        self.header = header or {}
+
+    @classmethod
+    def deserialize(cls, entry: Mapping[str, Any]) -&gt; &#34;JweRecipient&#34;:
+        &#34;&#34;&#34;Deserialize a JWE recipient from a mapping.&#34;&#34;&#34;
+        vals = JweRecipientSchema().load(entry)
+        return cls(**vals)
+
+    def serialize(self) -&gt; dict:
+        &#34;&#34;&#34;Serialize the JWE recipient to a mapping.&#34;&#34;&#34;
+        ret = OrderedDict([(&#34;encrypted_key&#34;, b64url(self.encrypted_key))])
+        if self.header:
+            ret[&#34;header&#34;] = self.header
+        return ret
+
+
+class JweEnvelope:
+    &#34;&#34;&#34;JWE envelope instance.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        *,
+        protected: dict = None,
+        protected_b64: bytes = None,
+        unprotected: dict = None,
+        ciphertext: bytes = None,
+        iv: bytes = None,
+        tag: bytes = None,
+        aad: bytes = None,
+    ):
+        &#34;&#34;&#34;Initialize a new JWE envelope instance.&#34;&#34;&#34;
+        self.protected = protected
+        self.protected_b64 = protected_b64
+        self.unprotected = unprotected or OrderedDict()
+        self.ciphertext = ciphertext
+        self.iv = iv
+        self.tag = tag
+        self.aad = aad
+        self._recipients: List[JweRecipient] = []
+
+    @classmethod
+    def from_json(cls, message: Union[bytes, str]) -&gt; &#34;JweEnvelope&#34;:
+        &#34;&#34;&#34;Decode a JWE envelope from a JSON string or bytes value.&#34;&#34;&#34;
+        try:
+            return cls._deserialize(JweSchema().loads(message))
+        except json.JSONDecodeError:
+            raise ValidationError(&#34;Invalid JWE: not JSON&#34;)
+
+    @classmethod
+    def deserialize(cls, message: Mapping[str, Any]) -&gt; &#34;JweEnvelope&#34;:
+        &#34;&#34;&#34;Deserialize a JWE envelope from a mapping.&#34;&#34;&#34;
+        return cls._deserialize(JweSchema().load(message))
+
+    @classmethod
+    def _deserialize(cls, parsed: Mapping[str, Any]) -&gt; &#34;JweEnvelope&#34;:
+        protected_b64 = parsed[IDENT_PROTECTED]
+        try:
+            protected: dict = json.loads(from_b64url(protected_b64))
+        except json.JSONDecodeError:
+            raise ValidationError(
+                &#34;Invalid JWE: invalid JSON for protected headers&#34;
+            ) from None
+        unprotected = parsed.get(&#34;unprotected&#34;) or dict()
+        if protected.keys() &amp; unprotected.keys():
+            raise ValidationError(&#34;Invalid JWE: duplicate header&#34;)
+
+        if IDENT_RECIPIENTS in protected:
+            recips = [
+                JweRecipient.deserialize(recip)
+                for recip in protected.pop(IDENT_RECIPIENTS)
+            ]
+            if IDENT_ENC_KEY in protected or IDENT_HEADER in protected:
+                raise ValidationError(&#34;Invalid JWE: flattened form with recipients&#34;)
+        else:
+            if IDENT_ENC_KEY not in protected:
+                raise ValidationError(&#34;Invalid JWE: no recipients&#34;)
+            header = protected.pop(IDENT_HEADER) if IDENT_HEADER in protected else None
+            recips = [
+                JweRecipient(
+                    encrypted_key=from_b64url(protected.pop(IDENT_ENC_KEY)),
+                    header=header,
+                )
+            ]
+
+        inst = cls(
+            protected=protected,
+            protected_b64=protected_b64,
+            unprotected=unprotected,
+            ciphertext=parsed[&#34;ciphertext&#34;],
+            iv=parsed.get(&#34;iv&#34;),
+            tag=parsed[&#34;tag&#34;],
+            aad=parsed.get(&#34;aad&#34;),
+        )
+        all_h = protected.keys() | unprotected.keys()
+        for recip in recips:
+            if recip.header and recip.header.keys() &amp; all_h:
+                raise ValidationError(&#34;Invalid JWE: duplicate header&#34;)
+            inst.add_recipient(recip)
+
+        return inst
+
+    def serialize(self) -&gt; dict:
+        &#34;&#34;&#34;Serialize the JWE envelope to a mapping.&#34;&#34;&#34;
+        if self.protected_b64 is None:
+            raise ValidationError(&#34;Missing protected: use set_protected&#34;)
+        if self.ciphertext is None:
+            raise ValidationError(&#34;Missing ciphertext for JWE&#34;)
+        if self.iv is None:
+            raise ValidationError(&#34;Missing iv (nonce) for JWE&#34;)
+        if self.tag is None:
+            raise ValidationError(&#34;Missing tag for JWE&#34;)
+        env = OrderedDict()
+        env[&#34;protected&#34;] = self.protected_b64
+        if self.unprotected:
+            env[&#34;unprotected&#34;] = self.unprotected
+        env[&#34;iv&#34;] = b64url(self.iv)
+        env[&#34;ciphertext&#34;] = b64url(self.ciphertext)
+        env[&#34;tag&#34;] = b64url(self.tag)
+        if self.aad:
+            env[&#34;aad&#34;] = b64url(self.aad)
+        return env
+
+    def to_json(self) -&gt; str:
+        &#34;&#34;&#34;Serialize the JWE envelope to a JSON string.&#34;&#34;&#34;
+        return json.dumps(self.serialize())
+
+    def add_recipient(self, recip: JweRecipient):
+        &#34;&#34;&#34;Add a recipient to the JWE envelope.&#34;&#34;&#34;
+        self._recipients.append(recip)
+
+    def set_protected(self, protected: Mapping[str, Any], auto_flatten: bool = True):
+        &#34;&#34;&#34;Set the protected headers of the JWE envelope.
+
+        This method must be called after adding the message recipients,
+        or with the recipients pre-encoded and added to the headers.
+        &#34;&#34;&#34;
+        protected = OrderedDict(protected.items())
+        have_recips = IDENT_RECIPIENTS in protected or IDENT_ENC_KEY in protected
+        if not have_recips:
+            recipients = [recip.serialize() for recip in self._recipients]
+            if auto_flatten and len(recipients) == 1:
+                protected[IDENT_ENC_KEY] = recipients[0][&#34;encrypted_key&#34;]
+                if &#34;header&#34; in recipients[0]:
+                    protected[IDENT_HEADER] = recipients[0][&#34;header&#34;]
+            elif recipients:
+                protected[IDENT_RECIPIENTS] = recipients
+            else:
+                raise ValidationError(&#34;Missing message recipients&#34;)
+        self.protected_b64 = b64url(json.dumps(protected))
+
+    @property
+    def protected_bytes(self) -&gt; bytes:
+        &#34;&#34;&#34;Access the protected data encoded as bytes.
+
+        This value is used in the additional authenticated data when encrypting.
+        &#34;&#34;&#34;
+        return (
+            self.protected_b64.encode(&#34;utf-8&#34;)
+            if self.protected_b64 is not None
+            else None
+        )
+
+    def set_payload(self, ciphertext: bytes, iv: bytes, tag: bytes, aad: bytes = None):
+        &#34;&#34;&#34;Set the payload of the JWE envelope.&#34;&#34;&#34;
+        self.ciphertext = ciphertext
+        self.iv = iv
+        self.tag = tag
+        self.aad = aad
+
+    def recipients(self) -&gt; Iterable[JweRecipient]:
+        &#34;&#34;&#34;Accessor for an iterator over the JWE recipients.
+
+        The headers for each recipient include protected and unprotected headers from the
+        outer envelope.
+        &#34;&#34;&#34;
+        header = self.protected.copy()
+        header.update(self.unprotected)
+        for recip in self._recipients:
+            if recip.header:
+                recip_h = header.copy()
+                recip_h.update(recip.header)
+                yield JweRecipient(encrypted_key=recip.encrypted_key, header=recip_h)
+            else:
+                yield JweRecipient(encrypted_key=recip.encrypted_key, header=header)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.b64url"><code class="name flex">
+<span>def <span class="ident">b64url</span></span>(<span>value: Union[bytes, str]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Encode a string or bytes value as unpadded base64-URL.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def b64url(value: Union[bytes, str]) -&gt; str:
+    &#34;&#34;&#34;Encode a string or bytes value as unpadded base64-URL.&#34;&#34;&#34;
+    if isinstance(value, str):
+        value = value.encode(&#34;utf-8&#34;)
+    return bytes_to_b64(value, urlsafe=True, pad=False)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.from_b64url"><code class="name flex">
+<span>def <span class="ident">from_b64url</span></span>(<span>value: str) ‑> bytes</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decode an unpadded base64-URL value.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_b64url(value: str) -&gt; bytes:
+    &#34;&#34;&#34;Decode an unpadded base64-URL value.&#34;&#34;&#34;
+    return b64_to_bytes(value, urlsafe=True)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.B64Value"><code class="flex name class">
+<span>class <span class="ident">B64Value</span></span>
+<span>(</span><span>*, default: Any = &lt;marshmallow.missing&gt;, missing: Any = &lt;marshmallow.missing&gt;, data_key: str = None, attribute: str = None, validate: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]] = None, required: bool = False, allow_none: bool = None, load_only: bool = False, dump_only: bool = False, error_messages: Dict[str, str] = None, **metadata)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A marshmallow-compatible wrapper for base64-URL values.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class B64Value(fields.Str):
+    &#34;&#34;&#34;A marshmallow-compatible wrapper for base64-URL values.&#34;&#34;&#34;
+
+    def _serialize(self, value, attr, obj, **kwargs) -&gt; Optional[str]:
+        if value is None:
+            return None
+        if not isinstance(value, bytes):
+            return TypeError(&#34;Expected bytes&#34;)
+        return b64url(value)
+
+    def _deserialize(self, value, attr, data, **kwargs) -&gt; Any:
+        value = super()._deserialize(value, attr, data, **kwargs)
+        return from_b64url(value)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>marshmallow.fields.String</li>
+<li>marshmallow.fields.Field</li>
+<li>marshmallow.base.FieldABC</li>
+</ul>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope"><code class="flex name class">
+<span>class <span class="ident">JweEnvelope</span></span>
+<span>(</span><span>*, protected: dict = None, protected_b64: bytes = None, unprotected: dict = None, ciphertext: bytes = None, iv: bytes = None, tag: bytes = None, aad: bytes = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>JWE envelope instance.</p>
+<p>Initialize a new JWE envelope instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JweEnvelope:
+    &#34;&#34;&#34;JWE envelope instance.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        *,
+        protected: dict = None,
+        protected_b64: bytes = None,
+        unprotected: dict = None,
+        ciphertext: bytes = None,
+        iv: bytes = None,
+        tag: bytes = None,
+        aad: bytes = None,
+    ):
+        &#34;&#34;&#34;Initialize a new JWE envelope instance.&#34;&#34;&#34;
+        self.protected = protected
+        self.protected_b64 = protected_b64
+        self.unprotected = unprotected or OrderedDict()
+        self.ciphertext = ciphertext
+        self.iv = iv
+        self.tag = tag
+        self.aad = aad
+        self._recipients: List[JweRecipient] = []
+
+    @classmethod
+    def from_json(cls, message: Union[bytes, str]) -&gt; &#34;JweEnvelope&#34;:
+        &#34;&#34;&#34;Decode a JWE envelope from a JSON string or bytes value.&#34;&#34;&#34;
+        try:
+            return cls._deserialize(JweSchema().loads(message))
+        except json.JSONDecodeError:
+            raise ValidationError(&#34;Invalid JWE: not JSON&#34;)
+
+    @classmethod
+    def deserialize(cls, message: Mapping[str, Any]) -&gt; &#34;JweEnvelope&#34;:
+        &#34;&#34;&#34;Deserialize a JWE envelope from a mapping.&#34;&#34;&#34;
+        return cls._deserialize(JweSchema().load(message))
+
+    @classmethod
+    def _deserialize(cls, parsed: Mapping[str, Any]) -&gt; &#34;JweEnvelope&#34;:
+        protected_b64 = parsed[IDENT_PROTECTED]
+        try:
+            protected: dict = json.loads(from_b64url(protected_b64))
+        except json.JSONDecodeError:
+            raise ValidationError(
+                &#34;Invalid JWE: invalid JSON for protected headers&#34;
+            ) from None
+        unprotected = parsed.get(&#34;unprotected&#34;) or dict()
+        if protected.keys() &amp; unprotected.keys():
+            raise ValidationError(&#34;Invalid JWE: duplicate header&#34;)
+
+        if IDENT_RECIPIENTS in protected:
+            recips = [
+                JweRecipient.deserialize(recip)
+                for recip in protected.pop(IDENT_RECIPIENTS)
+            ]
+            if IDENT_ENC_KEY in protected or IDENT_HEADER in protected:
+                raise ValidationError(&#34;Invalid JWE: flattened form with recipients&#34;)
+        else:
+            if IDENT_ENC_KEY not in protected:
+                raise ValidationError(&#34;Invalid JWE: no recipients&#34;)
+            header = protected.pop(IDENT_HEADER) if IDENT_HEADER in protected else None
+            recips = [
+                JweRecipient(
+                    encrypted_key=from_b64url(protected.pop(IDENT_ENC_KEY)),
+                    header=header,
+                )
+            ]
+
+        inst = cls(
+            protected=protected,
+            protected_b64=protected_b64,
+            unprotected=unprotected,
+            ciphertext=parsed[&#34;ciphertext&#34;],
+            iv=parsed.get(&#34;iv&#34;),
+            tag=parsed[&#34;tag&#34;],
+            aad=parsed.get(&#34;aad&#34;),
+        )
+        all_h = protected.keys() | unprotected.keys()
+        for recip in recips:
+            if recip.header and recip.header.keys() &amp; all_h:
+                raise ValidationError(&#34;Invalid JWE: duplicate header&#34;)
+            inst.add_recipient(recip)
+
+        return inst
+
+    def serialize(self) -&gt; dict:
+        &#34;&#34;&#34;Serialize the JWE envelope to a mapping.&#34;&#34;&#34;
+        if self.protected_b64 is None:
+            raise ValidationError(&#34;Missing protected: use set_protected&#34;)
+        if self.ciphertext is None:
+            raise ValidationError(&#34;Missing ciphertext for JWE&#34;)
+        if self.iv is None:
+            raise ValidationError(&#34;Missing iv (nonce) for JWE&#34;)
+        if self.tag is None:
+            raise ValidationError(&#34;Missing tag for JWE&#34;)
+        env = OrderedDict()
+        env[&#34;protected&#34;] = self.protected_b64
+        if self.unprotected:
+            env[&#34;unprotected&#34;] = self.unprotected
+        env[&#34;iv&#34;] = b64url(self.iv)
+        env[&#34;ciphertext&#34;] = b64url(self.ciphertext)
+        env[&#34;tag&#34;] = b64url(self.tag)
+        if self.aad:
+            env[&#34;aad&#34;] = b64url(self.aad)
+        return env
+
+    def to_json(self) -&gt; str:
+        &#34;&#34;&#34;Serialize the JWE envelope to a JSON string.&#34;&#34;&#34;
+        return json.dumps(self.serialize())
+
+    def add_recipient(self, recip: JweRecipient):
+        &#34;&#34;&#34;Add a recipient to the JWE envelope.&#34;&#34;&#34;
+        self._recipients.append(recip)
+
+    def set_protected(self, protected: Mapping[str, Any], auto_flatten: bool = True):
+        &#34;&#34;&#34;Set the protected headers of the JWE envelope.
+
+        This method must be called after adding the message recipients,
+        or with the recipients pre-encoded and added to the headers.
+        &#34;&#34;&#34;
+        protected = OrderedDict(protected.items())
+        have_recips = IDENT_RECIPIENTS in protected or IDENT_ENC_KEY in protected
+        if not have_recips:
+            recipients = [recip.serialize() for recip in self._recipients]
+            if auto_flatten and len(recipients) == 1:
+                protected[IDENT_ENC_KEY] = recipients[0][&#34;encrypted_key&#34;]
+                if &#34;header&#34; in recipients[0]:
+                    protected[IDENT_HEADER] = recipients[0][&#34;header&#34;]
+            elif recipients:
+                protected[IDENT_RECIPIENTS] = recipients
+            else:
+                raise ValidationError(&#34;Missing message recipients&#34;)
+        self.protected_b64 = b64url(json.dumps(protected))
+
+    @property
+    def protected_bytes(self) -&gt; bytes:
+        &#34;&#34;&#34;Access the protected data encoded as bytes.
+
+        This value is used in the additional authenticated data when encrypting.
+        &#34;&#34;&#34;
+        return (
+            self.protected_b64.encode(&#34;utf-8&#34;)
+            if self.protected_b64 is not None
+            else None
+        )
+
+    def set_payload(self, ciphertext: bytes, iv: bytes, tag: bytes, aad: bytes = None):
+        &#34;&#34;&#34;Set the payload of the JWE envelope.&#34;&#34;&#34;
+        self.ciphertext = ciphertext
+        self.iv = iv
+        self.tag = tag
+        self.aad = aad
+
+    def recipients(self) -&gt; Iterable[JweRecipient]:
+        &#34;&#34;&#34;Accessor for an iterator over the JWE recipients.
+
+        The headers for each recipient include protected and unprotected headers from the
+        outer envelope.
+        &#34;&#34;&#34;
+        header = self.protected.copy()
+        header.update(self.unprotected)
+        for recip in self._recipients:
+            if recip.header:
+                recip_h = header.copy()
+                recip_h.update(recip.header)
+                yield JweRecipient(encrypted_key=recip.encrypted_key, header=recip_h)
+            else:
+                yield JweRecipient(encrypted_key=recip.encrypted_key, header=header)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.deserialize"><code class="name flex">
+<span>def <span class="ident">deserialize</span></span>(<span>message: Mapping[str, Any]) ‑> <a title="mydata_did.v1_0.utils.jwe.JweEnvelope" href="#mydata_did.v1_0.utils.jwe.JweEnvelope">JweEnvelope</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deserialize a JWE envelope from a mapping.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def deserialize(cls, message: Mapping[str, Any]) -&gt; &#34;JweEnvelope&#34;:
+    &#34;&#34;&#34;Deserialize a JWE envelope from a mapping.&#34;&#34;&#34;
+    return cls._deserialize(JweSchema().load(message))</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>message: Union[bytes, str]) ‑> <a title="mydata_did.v1_0.utils.jwe.JweEnvelope" href="#mydata_did.v1_0.utils.jwe.JweEnvelope">JweEnvelope</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Decode a JWE envelope from a JSON string or bytes value.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_json(cls, message: Union[bytes, str]) -&gt; &#34;JweEnvelope&#34;:
+    &#34;&#34;&#34;Decode a JWE envelope from a JSON string or bytes value.&#34;&#34;&#34;
+    try:
+        return cls._deserialize(JweSchema().loads(message))
+    except json.JSONDecodeError:
+        raise ValidationError(&#34;Invalid JWE: not JSON&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.protected_bytes"><code class="name">var <span class="ident">protected_bytes</span> : bytes</code></dt>
+<dd>
+<div class="desc"><p>Access the protected data encoded as bytes.</p>
+<p>This value is used in the additional authenticated data when encrypting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def protected_bytes(self) -&gt; bytes:
+    &#34;&#34;&#34;Access the protected data encoded as bytes.
+
+    This value is used in the additional authenticated data when encrypting.
+    &#34;&#34;&#34;
+    return (
+        self.protected_b64.encode(&#34;utf-8&#34;)
+        if self.protected_b64 is not None
+        else None
+    )</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.add_recipient"><code class="name flex">
+<span>def <span class="ident">add_recipient</span></span>(<span>self, recip: <a title="mydata_did.v1_0.utils.jwe.JweRecipient" href="#mydata_did.v1_0.utils.jwe.JweRecipient">JweRecipient</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a recipient to the JWE envelope.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_recipient(self, recip: JweRecipient):
+    &#34;&#34;&#34;Add a recipient to the JWE envelope.&#34;&#34;&#34;
+    self._recipients.append(recip)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.recipients"><code class="name flex">
+<span>def <span class="ident">recipients</span></span>(<span>self) ‑> Iterable[<a title="mydata_did.v1_0.utils.jwe.JweRecipient" href="#mydata_did.v1_0.utils.jwe.JweRecipient">JweRecipient</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Accessor for an iterator over the JWE recipients.</p>
+<p>The headers for each recipient include protected and unprotected headers from the
+outer envelope.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recipients(self) -&gt; Iterable[JweRecipient]:
+    &#34;&#34;&#34;Accessor for an iterator over the JWE recipients.
+
+    The headers for each recipient include protected and unprotected headers from the
+    outer envelope.
+    &#34;&#34;&#34;
+    header = self.protected.copy()
+    header.update(self.unprotected)
+    for recip in self._recipients:
+        if recip.header:
+            recip_h = header.copy()
+            recip_h.update(recip.header)
+            yield JweRecipient(encrypted_key=recip.encrypted_key, header=recip_h)
+        else:
+            yield JweRecipient(encrypted_key=recip.encrypted_key, header=header)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Serialize the JWE envelope to a mapping.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self) -&gt; dict:
+    &#34;&#34;&#34;Serialize the JWE envelope to a mapping.&#34;&#34;&#34;
+    if self.protected_b64 is None:
+        raise ValidationError(&#34;Missing protected: use set_protected&#34;)
+    if self.ciphertext is None:
+        raise ValidationError(&#34;Missing ciphertext for JWE&#34;)
+    if self.iv is None:
+        raise ValidationError(&#34;Missing iv (nonce) for JWE&#34;)
+    if self.tag is None:
+        raise ValidationError(&#34;Missing tag for JWE&#34;)
+    env = OrderedDict()
+    env[&#34;protected&#34;] = self.protected_b64
+    if self.unprotected:
+        env[&#34;unprotected&#34;] = self.unprotected
+    env[&#34;iv&#34;] = b64url(self.iv)
+    env[&#34;ciphertext&#34;] = b64url(self.ciphertext)
+    env[&#34;tag&#34;] = b64url(self.tag)
+    if self.aad:
+        env[&#34;aad&#34;] = b64url(self.aad)
+    return env</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.set_payload"><code class="name flex">
+<span>def <span class="ident">set_payload</span></span>(<span>self, ciphertext: bytes, iv: bytes, tag: bytes, aad: bytes = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the payload of the JWE envelope.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_payload(self, ciphertext: bytes, iv: bytes, tag: bytes, aad: bytes = None):
+    &#34;&#34;&#34;Set the payload of the JWE envelope.&#34;&#34;&#34;
+    self.ciphertext = ciphertext
+    self.iv = iv
+    self.tag = tag
+    self.aad = aad</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.set_protected"><code class="name flex">
+<span>def <span class="ident">set_protected</span></span>(<span>self, protected: Mapping[str, Any], auto_flatten: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the protected headers of the JWE envelope.</p>
+<p>This method must be called after adding the message recipients,
+or with the recipients pre-encoded and added to the headers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_protected(self, protected: Mapping[str, Any], auto_flatten: bool = True):
+    &#34;&#34;&#34;Set the protected headers of the JWE envelope.
+
+    This method must be called after adding the message recipients,
+    or with the recipients pre-encoded and added to the headers.
+    &#34;&#34;&#34;
+    protected = OrderedDict(protected.items())
+    have_recips = IDENT_RECIPIENTS in protected or IDENT_ENC_KEY in protected
+    if not have_recips:
+        recipients = [recip.serialize() for recip in self._recipients]
+        if auto_flatten and len(recipients) == 1:
+            protected[IDENT_ENC_KEY] = recipients[0][&#34;encrypted_key&#34;]
+            if &#34;header&#34; in recipients[0]:
+                protected[IDENT_HEADER] = recipients[0][&#34;header&#34;]
+        elif recipients:
+            protected[IDENT_RECIPIENTS] = recipients
+        else:
+            raise ValidationError(&#34;Missing message recipients&#34;)
+    self.protected_b64 = b64url(json.dumps(protected))</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweEnvelope.to_json"><code class="name flex">
+<span>def <span class="ident">to_json</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Serialize the JWE envelope to a JSON string.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_json(self) -&gt; str:
+    &#34;&#34;&#34;Serialize the JWE envelope to a JSON string.&#34;&#34;&#34;
+    return json.dumps(self.serialize())</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweRecipient"><code class="flex name class">
+<span>class <span class="ident">JweRecipient</span></span>
+<span>(</span><span>*, encrypted_key: bytes, header: dict = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A single message recipient.</p>
+<p>Initialize the JWE recipient.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JweRecipient:
+    &#34;&#34;&#34;A single message recipient.&#34;&#34;&#34;
+
+    def __init__(self, *, encrypted_key: bytes, header: dict = None) -&gt; &#34;JweRecipient&#34;:
+        &#34;&#34;&#34;Initialize the JWE recipient.&#34;&#34;&#34;
+        self.encrypted_key = encrypted_key
+        self.header = header or {}
+
+    @classmethod
+    def deserialize(cls, entry: Mapping[str, Any]) -&gt; &#34;JweRecipient&#34;:
+        &#34;&#34;&#34;Deserialize a JWE recipient from a mapping.&#34;&#34;&#34;
+        vals = JweRecipientSchema().load(entry)
+        return cls(**vals)
+
+    def serialize(self) -&gt; dict:
+        &#34;&#34;&#34;Serialize the JWE recipient to a mapping.&#34;&#34;&#34;
+        ret = OrderedDict([(&#34;encrypted_key&#34;, b64url(self.encrypted_key))])
+        if self.header:
+            ret[&#34;header&#34;] = self.header
+        return ret</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweRecipient.deserialize"><code class="name flex">
+<span>def <span class="ident">deserialize</span></span>(<span>entry: Mapping[str, Any]) ‑> <a title="mydata_did.v1_0.utils.jwe.JweRecipient" href="#mydata_did.v1_0.utils.jwe.JweRecipient">JweRecipient</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deserialize a JWE recipient from a mapping.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def deserialize(cls, entry: Mapping[str, Any]) -&gt; &#34;JweRecipient&#34;:
+    &#34;&#34;&#34;Deserialize a JWE recipient from a mapping.&#34;&#34;&#34;
+    vals = JweRecipientSchema().load(entry)
+    return cls(**vals)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweRecipient.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Serialize the JWE recipient to a mapping.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self) -&gt; dict:
+    &#34;&#34;&#34;Serialize the JWE recipient to a mapping.&#34;&#34;&#34;
+    ret = OrderedDict([(&#34;encrypted_key&#34;, b64url(self.encrypted_key))])
+    if self.header:
+        ret[&#34;header&#34;] = self.header
+    return ret</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweRecipientSchema"><code class="flex name class">
+<span>class <span class="ident">JweRecipientSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>JWE recipient schema.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JweRecipientSchema(Schema):
+    &#34;&#34;&#34;JWE recipient schema.&#34;&#34;&#34;
+
+    encrypted_key = B64Value(required=True)
+    header = fields.Dict(many=True, required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweRecipientSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.utils.jwe.JweSchema"><code class="flex name class">
+<span>class <span class="ident">JweSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>JWE envelope schema.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JweSchema(Schema):
+    &#34;&#34;&#34;JWE envelope schema.&#34;&#34;&#34;
+
+    protected = fields.Str(required=True)
+    unprotected = fields.Dict(required=False)
+    ciphertext = B64Value(required=True)
+    iv = B64Value(required=True)
+    tag = B64Value(required=True)
+    aad = B64Value(required=False)
+    # flattened:
+    header = fields.Dict(required=False)
+    encrypted_key = B64Value(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.jwe.JweSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.utils" href="index.html">mydata_did.v1_0.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.jwe.b64url" href="#mydata_did.v1_0.utils.jwe.b64url">b64url</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.from_b64url" href="#mydata_did.v1_0.utils.jwe.from_b64url">from_b64url</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.jwe.B64Value" href="#mydata_did.v1_0.utils.jwe.B64Value">B64Value</a></code></h4>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope" href="#mydata_did.v1_0.utils.jwe.JweEnvelope">JweEnvelope</a></code></h4>
+<ul class="two-column">
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.add_recipient" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.add_recipient">add_recipient</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.deserialize" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.deserialize">deserialize</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.from_json" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.from_json">from_json</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.protected_bytes" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.protected_bytes">protected_bytes</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.recipients" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.recipients">recipients</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.serialize" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.serialize">serialize</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.set_payload" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.set_payload">set_payload</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.set_protected" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.set_protected">set_protected</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweEnvelope.to_json" href="#mydata_did.v1_0.utils.jwe.JweEnvelope.to_json">to_json</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.jwe.JweRecipient" href="#mydata_did.v1_0.utils.jwe.JweRecipient">JweRecipient</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweRecipient.deserialize" href="#mydata_did.v1_0.utils.jwe.JweRecipient.deserialize">deserialize</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweRecipient.serialize" href="#mydata_did.v1_0.utils.jwe.JweRecipient.serialize">serialize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.jwe.JweRecipientSchema" href="#mydata_did.v1_0.utils.jwe.JweRecipientSchema">JweRecipientSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweRecipientSchema.opts" href="#mydata_did.v1_0.utils.jwe.JweRecipientSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.jwe.JweSchema" href="#mydata_did.v1_0.utils.jwe.JweSchema">JweSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.jwe.JweSchema.opts" href="#mydata_did.v1_0.utils.jwe.JweSchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

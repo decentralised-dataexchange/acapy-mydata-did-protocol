@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.utils.diddoc API documentation</title>
+<meta name="description" content="DID Document classes …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.utils.diddoc</code></h1>
+</header>
+<section id="section-intro">
+<p>DID Document classes.</p>
+<p>Copyright 2017-2019 Government of Canada
+Public Services and Procurement Canada - buyandsell.gc.ca</p>
+<p>Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+DID Document classes.
+
+Copyright 2017-2019 Government of Canada
+Public Services and Procurement Canada - buyandsell.gc.ca
+
+Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+&#34;&#34;&#34;
+
+
+import json
+import logging
+
+from typing import List, Sequence, Union
+
+if __name__ == &#34;__main__&#34;:
+    from mydata_did.v1_0.utils.verification_method import PublicKey, PublicKeyType
+    from mydata_did.v1_0.utils.service import Service
+    from mydata_did.v1_0.utils.util import canon_did, canon_ref, ok_did, resource, derive_did_type
+else:
+    from .verification_method import PublicKey, PublicKeyType
+    from .service import Service
+    from .util import canon_did, canon_ref, ok_did, resource, derive_did_type
+
+LOGGER = logging.getLogger(__name__)
+
+
+class DIDDoc:
+    &#34;&#34;&#34;
+    DID document, grouping a DID with verification keys and services.
+
+    Retains DIDs as raw values (orientated toward indy-facing operations),
+    everything else as URIs (oriented toward W3C-facing operations).
+    &#34;&#34;&#34;
+
+    CONTEXT = &#34;https://w3id.org/did/v1&#34;
+
+    def __init__(self, did: str = None) -&gt; None:
+        &#34;&#34;&#34;
+        Initialize the DIDDoc instance.
+
+        Retain DID (&#39;id&#39; in DIDDoc context); initialize verification keys
+        and services to empty lists.
+
+        Args:
+            did: DID for current DIDdoc
+
+        Raises:
+            ValueError: for bad input DID.
+
+        &#34;&#34;&#34;
+
+        # allow specification post-hoc
+        self._did = canon_did(did) if did else None
+        self._did_type = derive_did_type(did)
+        self._pubkey = {}
+        self._service = {}
+    
+    @property
+    def did_type(self) -&gt; str:
+        return self._did_type
+
+    @property
+    def did(self) -&gt; str:
+        &#34;&#34;&#34;Accessor for DID.&#34;&#34;&#34;
+
+        return self._did
+
+    @did.setter
+    def did(self, value: str) -&gt; None:
+        &#34;&#34;&#34;
+        Set DID (&#39;id&#39; in DIDDoc context).
+
+        Args:
+            value: DID
+
+        Raises:
+            ValueError: for bad input DID.
+
+        &#34;&#34;&#34;
+
+        self._did = canon_did(value) if value else None
+        self._did_type = derive_did_type(value)
+
+    @property
+    def pubkey(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for public keys by identifier.&#34;&#34;&#34;
+
+        return self._pubkey
+
+    @property
+    def authnkey(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for public keys marked as authentication keys, by identifier.&#34;&#34;&#34;
+
+        return {k: self._pubkey[k] for k in self._pubkey if self._pubkey[k].authn}
+
+    @property
+    def service(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for services by identifier.&#34;&#34;&#34;
+
+        return self._service
+
+    def set(self, item: Union[Service, PublicKey]) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Add or replace service or public key; return current DIDDoc.
+
+        Raises:
+            ValueError: if input item is neither service nor public key.
+
+        Args:
+            item: service or public key to set
+
+        Returns: the current DIDDoc
+
+        &#34;&#34;&#34;
+
+        if isinstance(item, Service):
+            self.service[item.id] = item
+        elif isinstance(item, PublicKey):
+            self.pubkey[item.id] = item
+        else:
+            raise ValueError(
+                &#34;Cannot add item {} to DIDDoc on DID {}&#34;.format(item, self.did)
+            )
+
+    def serialize(self) -&gt; str:
+        &#34;&#34;&#34;
+        Dump current object to a JSON-compatible dictionary.
+
+        Returns:
+            dict representation of current DIDDoc
+
+        &#34;&#34;&#34;
+
+        return {
+            &#34;@context&#34;: DIDDoc.CONTEXT,
+            &#34;id&#34;: canon_ref(self.did, self.did, did_type=self.did_type),
+            &#34;verificationMethod&#34;: [pubkey.to_dict() for pubkey in self.pubkey.values()],
+            &#34;authentication&#34;: [
+                {
+                    &#34;type&#34;: pubkey.type.authn_type,
+                    &#34;publicKey&#34;: canon_ref(self.did, pubkey.id),
+                }
+                for pubkey in self.pubkey.values()
+                if pubkey.authn
+            ],
+            &#34;service&#34;: [service.to_dict() for service in self.service.values()],
+        }
+
+    def to_json(self) -&gt; str:
+        &#34;&#34;&#34;
+        Dump current object as json (JSON-LD).
+
+        Returns:
+            json representation of current DIDDoc
+
+        &#34;&#34;&#34;
+
+        return json.dumps(self.serialize())
+
+    def add_service_pubkeys(
+        self, service: dict, tags: Union[Sequence[str], str]
+    ) -&gt; List[PublicKey]:
+        &#34;&#34;&#34;
+        Add public keys specified in service. Return public keys so discovered.
+
+        Args:
+            service: service from DID document
+            tags: potential tags marking public keys of type of interest
+                (the standard is still coalescing)
+
+        Raises:
+            ValueError: for public key reference not present in DID document.
+
+        Returns: list of public keys from the document service specification
+
+        &#34;&#34;&#34;
+
+        rv = []
+        for tag in [tags] if isinstance(tags, str) else list(tags):
+
+            for svc_key in service.get(tag, {}):
+                canon_key = canon_ref(self.did, svc_key)
+                pubkey = None
+
+                if &#34;#&#34; in svc_key:
+                    if canon_key in self.pubkey:
+                        pubkey = self.pubkey[canon_key]
+                    else:  # service key refers to another DID doc
+                        LOGGER.debug(
+                            &#34;DID document %s has no public key %s&#34;, self.did, svc_key
+                        )
+                        raise ValueError(
+                            &#34;DID document {} has no public key {}&#34;.format(
+                                self.did, svc_key
+                            )
+                        )
+                else:
+                    for existing_pubkey in self.pubkey.values():
+                        if existing_pubkey.value == svc_key:
+                            pubkey = existing_pubkey
+                            break
+                    else:
+                        pubkey = PublicKey(
+                            self.did,
+                            # industrial-grade uniqueness
+                            ident=svc_key[-9:-1],
+                            value=svc_key,
+                        )
+                        self._pubkey[pubkey.id] = pubkey
+
+                if (
+                    pubkey and pubkey not in rv
+                ):  # perverse case: could specify same key multiple ways; append once
+                    rv.append(pubkey)
+
+        return rv
+
+    @classmethod
+    def deserialize(cls, did_doc: dict) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Construct DIDDoc object from dict representation.
+
+        Args:
+            did_doc: DIDDoc dict representation
+
+        Raises:
+            ValueError: for bad DID or missing mandatory item.
+
+        Returns: DIDDoc from input json
+
+        &#34;&#34;&#34;
+
+        rv = None
+        if &#34;id&#34; in did_doc:
+            rv = DIDDoc(did_doc[&#34;id&#34;])
+        else:
+            # heuristic: get DID to serve as DID document identifier from
+            # the first OK-looking public key
+            for section in (&#34;verificationMethod&#34;, &#34;authentication&#34;):
+                if rv is None and section in did_doc:
+                    for key_spec in did_doc[section]:
+                        try:
+                            pubkey_did = canon_did(
+                                resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                            if ok_did(pubkey_did):
+                                rv = DIDDoc(pubkey_did)
+                                break
+                        except ValueError:  # no identifier here, move on to next
+                            break
+            if rv is None:
+                LOGGER.debug(&#34;no identifier in DID document&#34;)
+                raise ValueError(&#34;No identifier in DID document&#34;)
+        for pubkey in did_doc.get(
+            &#34;verificationMethod&#34;, {}
+        ):  # include all public keys, authentication pubkeys by reference
+            pubkey_type = PublicKeyType.get(pubkey[&#34;type&#34;])
+            authn = any(
+                canon_ref(rv.did, ak.get(&#34;publicKey&#34;, &#34;&#34;))
+                == canon_ref(rv.did, pubkey[&#34;id&#34;])
+                for ak in did_doc.get(&#34;authentication&#34;, {})
+                if isinstance(ak.get(&#34;publicKey&#34;, None), str)
+            )
+            key = PublicKey(  # initialization canonicalizes id
+                rv.did,
+                pubkey[&#34;id&#34;],
+                pubkey[pubkey_type.specifier],
+                pubkey_type,
+                canon_did(pubkey[&#34;controller&#34;]),
+                authn,
+            )
+            rv.pubkey[key.id] = key
+
+        for akey in did_doc.get(
+            &#34;authentication&#34;, {}
+        ):  # include embedded authentication keys
+            if &#34;publicKey&#34; not in akey:  # not yet got it with public keys
+                pubkey_type = PublicKeyType.get(akey[&#34;type&#34;])
+                key = PublicKey(  # initialization canonicalized id
+                    rv.did,
+                    akey[&#34;id&#34;],
+                    akey[pubkey_type.specifier],
+                    pubkey_type,
+                    canon_did(akey[&#34;controller&#34;]),
+                    True,
+                )
+                rv.pubkey[key.id] = key
+
+        for service in did_doc.get(&#34;service&#34;, {}):
+            endpoint = service[&#34;serviceEndpoint&#34;]
+            svc = Service(  # initialization canonicalizes id
+                rv.did,
+                service.get(
+                    &#34;id&#34;,
+                    canon_ref(
+                        rv.did, &#34;assigned-service-{}&#34;.format(
+                            len(rv.service)), &#34;;&#34;
+                    ),
+                ),
+                service[&#34;type&#34;],
+                rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
+                rv.add_service_pubkeys(
+                    service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+                canon_ref(rv.did, endpoint,
+                          &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+                service.get(&#34;priority&#34;, None),
+            )
+            rv.service[svc.id] = svc
+
+        return rv
+
+    @classmethod
+    def from_json(cls, did_doc_json: str) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Construct DIDDoc object from json representation.
+
+        Args:
+            did_doc_json: DIDDoc json representation
+
+        Returns: DIDDoc from input json
+
+        &#34;&#34;&#34;
+
+        return cls.deserialize(json.loads(did_doc_json))
+    
+    def validate(self):
+        # FIXME : Code refactor
+
+        # check public key and authentication key is available and if so, a single match item
+        if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+            # check if public key and authentication key match
+            if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
+                # check if controller and did and publicKeyBase58 matches
+                # check if public key type is Ed25519VerificationKey2018
+                public_key: PublicKey = list(self.pubkey.values())[0]
+                if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                    # Optional check, if service is available
+                    if self.service:
+                        if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                            service: Service = list(self.service.values())[0]
+                            if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                                return True
+                    else:
+                        return True
+        
+        return False
+
+
+    def __str__(self) -&gt; str:
+        &#34;&#34;&#34;Return string representation for abbreviated display.&#34;&#34;&#34;
+
+        return f&#34;DIDDoc({self.did})&#34;
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Format DIDDoc for logging.&#34;&#34;&#34;
+
+        return f&#34;&lt;DIDDoc did={self.did}&gt;&#34;
+
+
+if __name__ == &#34;__main__&#34;:
+    import json
+    from mydata_did.v1_0.utils.diddoc import DIDDoc
+    diddoc_json = {
+        &#34;@context&#34;: &#34;https://w3id.org/did/v1&#34;,
+        &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
+        &#34;verificationMethod&#34;: [
+            {
+                &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1&#34;,
+                &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
+                &#34;controller&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
+                &#34;publicKeyBase58&#34;: &#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
+            }
+        ],
+        &#34;authentication&#34;: [
+            {
+                &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
+                &#34;publicKey&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1&#34;
+            }
+        ],
+        &#34;service&#34;: [
+            {
+                &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E;didcomm&#34;,
+                &#34;type&#34;: &#34;DIDComm&#34;,
+                &#34;priority&#34;: 0,
+                &#34;recipientKeys&#34;: [
+                    &#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
+                ],
+                &#34;serviceEndpoint&#34;: &#34;https://ada-agent.example.com/service-x&#34;
+            }
+        ]
+    }
+    diddoc_str = json.dumps(diddoc_json)
+    diddoc = DIDDoc.from_json(diddoc_str)
+    if diddoc.validate():
+        print(&#34;\nValidation checks passed...&#34;)
+    else:
+        print(&#34;\nValidation checks failed...&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc"><code class="flex name class">
+<span>class <span class="ident">DIDDoc</span></span>
+<span>(</span><span>did: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>DID document, grouping a DID with verification keys and services.</p>
+<p>Retains DIDs as raw values (orientated toward indy-facing operations),
+everything else as URIs (oriented toward W3C-facing operations).</p>
+<p>Initialize the DIDDoc instance.</p>
+<p>Retain DID ('id' in DIDDoc context); initialize verification keys
+and services to empty lists.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did</code></strong></dt>
+<dd>DID for current DIDdoc</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>for bad input DID.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DIDDoc:
+    &#34;&#34;&#34;
+    DID document, grouping a DID with verification keys and services.
+
+    Retains DIDs as raw values (orientated toward indy-facing operations),
+    everything else as URIs (oriented toward W3C-facing operations).
+    &#34;&#34;&#34;
+
+    CONTEXT = &#34;https://w3id.org/did/v1&#34;
+
+    def __init__(self, did: str = None) -&gt; None:
+        &#34;&#34;&#34;
+        Initialize the DIDDoc instance.
+
+        Retain DID (&#39;id&#39; in DIDDoc context); initialize verification keys
+        and services to empty lists.
+
+        Args:
+            did: DID for current DIDdoc
+
+        Raises:
+            ValueError: for bad input DID.
+
+        &#34;&#34;&#34;
+
+        # allow specification post-hoc
+        self._did = canon_did(did) if did else None
+        self._did_type = derive_did_type(did)
+        self._pubkey = {}
+        self._service = {}
+    
+    @property
+    def did_type(self) -&gt; str:
+        return self._did_type
+
+    @property
+    def did(self) -&gt; str:
+        &#34;&#34;&#34;Accessor for DID.&#34;&#34;&#34;
+
+        return self._did
+
+    @did.setter
+    def did(self, value: str) -&gt; None:
+        &#34;&#34;&#34;
+        Set DID (&#39;id&#39; in DIDDoc context).
+
+        Args:
+            value: DID
+
+        Raises:
+            ValueError: for bad input DID.
+
+        &#34;&#34;&#34;
+
+        self._did = canon_did(value) if value else None
+        self._did_type = derive_did_type(value)
+
+    @property
+    def pubkey(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for public keys by identifier.&#34;&#34;&#34;
+
+        return self._pubkey
+
+    @property
+    def authnkey(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for public keys marked as authentication keys, by identifier.&#34;&#34;&#34;
+
+        return {k: self._pubkey[k] for k in self._pubkey if self._pubkey[k].authn}
+
+    @property
+    def service(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for services by identifier.&#34;&#34;&#34;
+
+        return self._service
+
+    def set(self, item: Union[Service, PublicKey]) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Add or replace service or public key; return current DIDDoc.
+
+        Raises:
+            ValueError: if input item is neither service nor public key.
+
+        Args:
+            item: service or public key to set
+
+        Returns: the current DIDDoc
+
+        &#34;&#34;&#34;
+
+        if isinstance(item, Service):
+            self.service[item.id] = item
+        elif isinstance(item, PublicKey):
+            self.pubkey[item.id] = item
+        else:
+            raise ValueError(
+                &#34;Cannot add item {} to DIDDoc on DID {}&#34;.format(item, self.did)
+            )
+
+    def serialize(self) -&gt; str:
+        &#34;&#34;&#34;
+        Dump current object to a JSON-compatible dictionary.
+
+        Returns:
+            dict representation of current DIDDoc
+
+        &#34;&#34;&#34;
+
+        return {
+            &#34;@context&#34;: DIDDoc.CONTEXT,
+            &#34;id&#34;: canon_ref(self.did, self.did, did_type=self.did_type),
+            &#34;verificationMethod&#34;: [pubkey.to_dict() for pubkey in self.pubkey.values()],
+            &#34;authentication&#34;: [
+                {
+                    &#34;type&#34;: pubkey.type.authn_type,
+                    &#34;publicKey&#34;: canon_ref(self.did, pubkey.id),
+                }
+                for pubkey in self.pubkey.values()
+                if pubkey.authn
+            ],
+            &#34;service&#34;: [service.to_dict() for service in self.service.values()],
+        }
+
+    def to_json(self) -&gt; str:
+        &#34;&#34;&#34;
+        Dump current object as json (JSON-LD).
+
+        Returns:
+            json representation of current DIDDoc
+
+        &#34;&#34;&#34;
+
+        return json.dumps(self.serialize())
+
+    def add_service_pubkeys(
+        self, service: dict, tags: Union[Sequence[str], str]
+    ) -&gt; List[PublicKey]:
+        &#34;&#34;&#34;
+        Add public keys specified in service. Return public keys so discovered.
+
+        Args:
+            service: service from DID document
+            tags: potential tags marking public keys of type of interest
+                (the standard is still coalescing)
+
+        Raises:
+            ValueError: for public key reference not present in DID document.
+
+        Returns: list of public keys from the document service specification
+
+        &#34;&#34;&#34;
+
+        rv = []
+        for tag in [tags] if isinstance(tags, str) else list(tags):
+
+            for svc_key in service.get(tag, {}):
+                canon_key = canon_ref(self.did, svc_key)
+                pubkey = None
+
+                if &#34;#&#34; in svc_key:
+                    if canon_key in self.pubkey:
+                        pubkey = self.pubkey[canon_key]
+                    else:  # service key refers to another DID doc
+                        LOGGER.debug(
+                            &#34;DID document %s has no public key %s&#34;, self.did, svc_key
+                        )
+                        raise ValueError(
+                            &#34;DID document {} has no public key {}&#34;.format(
+                                self.did, svc_key
+                            )
+                        )
+                else:
+                    for existing_pubkey in self.pubkey.values():
+                        if existing_pubkey.value == svc_key:
+                            pubkey = existing_pubkey
+                            break
+                    else:
+                        pubkey = PublicKey(
+                            self.did,
+                            # industrial-grade uniqueness
+                            ident=svc_key[-9:-1],
+                            value=svc_key,
+                        )
+                        self._pubkey[pubkey.id] = pubkey
+
+                if (
+                    pubkey and pubkey not in rv
+                ):  # perverse case: could specify same key multiple ways; append once
+                    rv.append(pubkey)
+
+        return rv
+
+    @classmethod
+    def deserialize(cls, did_doc: dict) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Construct DIDDoc object from dict representation.
+
+        Args:
+            did_doc: DIDDoc dict representation
+
+        Raises:
+            ValueError: for bad DID or missing mandatory item.
+
+        Returns: DIDDoc from input json
+
+        &#34;&#34;&#34;
+
+        rv = None
+        if &#34;id&#34; in did_doc:
+            rv = DIDDoc(did_doc[&#34;id&#34;])
+        else:
+            # heuristic: get DID to serve as DID document identifier from
+            # the first OK-looking public key
+            for section in (&#34;verificationMethod&#34;, &#34;authentication&#34;):
+                if rv is None and section in did_doc:
+                    for key_spec in did_doc[section]:
+                        try:
+                            pubkey_did = canon_did(
+                                resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                            if ok_did(pubkey_did):
+                                rv = DIDDoc(pubkey_did)
+                                break
+                        except ValueError:  # no identifier here, move on to next
+                            break
+            if rv is None:
+                LOGGER.debug(&#34;no identifier in DID document&#34;)
+                raise ValueError(&#34;No identifier in DID document&#34;)
+        for pubkey in did_doc.get(
+            &#34;verificationMethod&#34;, {}
+        ):  # include all public keys, authentication pubkeys by reference
+            pubkey_type = PublicKeyType.get(pubkey[&#34;type&#34;])
+            authn = any(
+                canon_ref(rv.did, ak.get(&#34;publicKey&#34;, &#34;&#34;))
+                == canon_ref(rv.did, pubkey[&#34;id&#34;])
+                for ak in did_doc.get(&#34;authentication&#34;, {})
+                if isinstance(ak.get(&#34;publicKey&#34;, None), str)
+            )
+            key = PublicKey(  # initialization canonicalizes id
+                rv.did,
+                pubkey[&#34;id&#34;],
+                pubkey[pubkey_type.specifier],
+                pubkey_type,
+                canon_did(pubkey[&#34;controller&#34;]),
+                authn,
+            )
+            rv.pubkey[key.id] = key
+
+        for akey in did_doc.get(
+            &#34;authentication&#34;, {}
+        ):  # include embedded authentication keys
+            if &#34;publicKey&#34; not in akey:  # not yet got it with public keys
+                pubkey_type = PublicKeyType.get(akey[&#34;type&#34;])
+                key = PublicKey(  # initialization canonicalized id
+                    rv.did,
+                    akey[&#34;id&#34;],
+                    akey[pubkey_type.specifier],
+                    pubkey_type,
+                    canon_did(akey[&#34;controller&#34;]),
+                    True,
+                )
+                rv.pubkey[key.id] = key
+
+        for service in did_doc.get(&#34;service&#34;, {}):
+            endpoint = service[&#34;serviceEndpoint&#34;]
+            svc = Service(  # initialization canonicalizes id
+                rv.did,
+                service.get(
+                    &#34;id&#34;,
+                    canon_ref(
+                        rv.did, &#34;assigned-service-{}&#34;.format(
+                            len(rv.service)), &#34;;&#34;
+                    ),
+                ),
+                service[&#34;type&#34;],
+                rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
+                rv.add_service_pubkeys(
+                    service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+                canon_ref(rv.did, endpoint,
+                          &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+                service.get(&#34;priority&#34;, None),
+            )
+            rv.service[svc.id] = svc
+
+        return rv
+
+    @classmethod
+    def from_json(cls, did_doc_json: str) -&gt; &#34;DIDDoc&#34;:
+        &#34;&#34;&#34;
+        Construct DIDDoc object from json representation.
+
+        Args:
+            did_doc_json: DIDDoc json representation
+
+        Returns: DIDDoc from input json
+
+        &#34;&#34;&#34;
+
+        return cls.deserialize(json.loads(did_doc_json))
+    
+    def validate(self):
+        # FIXME : Code refactor
+
+        # check public key and authentication key is available and if so, a single match item
+        if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+            # check if public key and authentication key match
+            if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
+                # check if controller and did and publicKeyBase58 matches
+                # check if public key type is Ed25519VerificationKey2018
+                public_key: PublicKey = list(self.pubkey.values())[0]
+                if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                    # Optional check, if service is available
+                    if self.service:
+                        if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                            service: Service = list(self.service.values())[0]
+                            if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                                return True
+                    else:
+                        return True
+        
+        return False
+
+
+    def __str__(self) -&gt; str:
+        &#34;&#34;&#34;Return string representation for abbreviated display.&#34;&#34;&#34;
+
+        return f&#34;DIDDoc({self.did})&#34;
+
+    def __repr__(self) -&gt; str:
+        &#34;&#34;&#34;Format DIDDoc for logging.&#34;&#34;&#34;
+
+        return f&#34;&lt;DIDDoc did={self.did}&gt;&#34;</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.CONTEXT"><code class="name">var <span class="ident">CONTEXT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.deserialize"><code class="name flex">
+<span>def <span class="ident">deserialize</span></span>(<span>did_doc: dict) ‑> <a title="mydata_did.v1_0.utils.diddoc.DIDDoc" href="#mydata_did.v1_0.utils.diddoc.DIDDoc">DIDDoc</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Construct DIDDoc object from dict representation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did_doc</code></strong></dt>
+<dd>DIDDoc dict representation</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>for bad DID or missing mandatory item.</dd>
+</dl>
+<p>Returns: DIDDoc from input json</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def deserialize(cls, did_doc: dict) -&gt; &#34;DIDDoc&#34;:
+    &#34;&#34;&#34;
+    Construct DIDDoc object from dict representation.
+
+    Args:
+        did_doc: DIDDoc dict representation
+
+    Raises:
+        ValueError: for bad DID or missing mandatory item.
+
+    Returns: DIDDoc from input json
+
+    &#34;&#34;&#34;
+
+    rv = None
+    if &#34;id&#34; in did_doc:
+        rv = DIDDoc(did_doc[&#34;id&#34;])
+    else:
+        # heuristic: get DID to serve as DID document identifier from
+        # the first OK-looking public key
+        for section in (&#34;verificationMethod&#34;, &#34;authentication&#34;):
+            if rv is None and section in did_doc:
+                for key_spec in did_doc[section]:
+                    try:
+                        pubkey_did = canon_did(
+                            resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                        if ok_did(pubkey_did):
+                            rv = DIDDoc(pubkey_did)
+                            break
+                    except ValueError:  # no identifier here, move on to next
+                        break
+        if rv is None:
+            LOGGER.debug(&#34;no identifier in DID document&#34;)
+            raise ValueError(&#34;No identifier in DID document&#34;)
+    for pubkey in did_doc.get(
+        &#34;verificationMethod&#34;, {}
+    ):  # include all public keys, authentication pubkeys by reference
+        pubkey_type = PublicKeyType.get(pubkey[&#34;type&#34;])
+        authn = any(
+            canon_ref(rv.did, ak.get(&#34;publicKey&#34;, &#34;&#34;))
+            == canon_ref(rv.did, pubkey[&#34;id&#34;])
+            for ak in did_doc.get(&#34;authentication&#34;, {})
+            if isinstance(ak.get(&#34;publicKey&#34;, None), str)
+        )
+        key = PublicKey(  # initialization canonicalizes id
+            rv.did,
+            pubkey[&#34;id&#34;],
+            pubkey[pubkey_type.specifier],
+            pubkey_type,
+            canon_did(pubkey[&#34;controller&#34;]),
+            authn,
+        )
+        rv.pubkey[key.id] = key
+
+    for akey in did_doc.get(
+        &#34;authentication&#34;, {}
+    ):  # include embedded authentication keys
+        if &#34;publicKey&#34; not in akey:  # not yet got it with public keys
+            pubkey_type = PublicKeyType.get(akey[&#34;type&#34;])
+            key = PublicKey(  # initialization canonicalized id
+                rv.did,
+                akey[&#34;id&#34;],
+                akey[pubkey_type.specifier],
+                pubkey_type,
+                canon_did(akey[&#34;controller&#34;]),
+                True,
+            )
+            rv.pubkey[key.id] = key
+
+    for service in did_doc.get(&#34;service&#34;, {}):
+        endpoint = service[&#34;serviceEndpoint&#34;]
+        svc = Service(  # initialization canonicalizes id
+            rv.did,
+            service.get(
+                &#34;id&#34;,
+                canon_ref(
+                    rv.did, &#34;assigned-service-{}&#34;.format(
+                        len(rv.service)), &#34;;&#34;
+                ),
+            ),
+            service[&#34;type&#34;],
+            rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
+            rv.add_service_pubkeys(
+                service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+            canon_ref(rv.did, endpoint,
+                      &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+            service.get(&#34;priority&#34;, None),
+        )
+        rv.service[svc.id] = svc
+
+    return rv</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>did_doc_json: str) ‑> <a title="mydata_did.v1_0.utils.diddoc.DIDDoc" href="#mydata_did.v1_0.utils.diddoc.DIDDoc">DIDDoc</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Construct DIDDoc object from json representation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did_doc_json</code></strong></dt>
+<dd>DIDDoc json representation</dd>
+</dl>
+<p>Returns: DIDDoc from input json</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_json(cls, did_doc_json: str) -&gt; &#34;DIDDoc&#34;:
+    &#34;&#34;&#34;
+    Construct DIDDoc object from json representation.
+
+    Args:
+        did_doc_json: DIDDoc json representation
+
+    Returns: DIDDoc from input json
+
+    &#34;&#34;&#34;
+
+    return cls.deserialize(json.loads(did_doc_json))</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.authnkey"><code class="name">var <span class="ident">authnkey</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Accessor for public keys marked as authentication keys, by identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def authnkey(self) -&gt; dict:
+    &#34;&#34;&#34;Accessor for public keys marked as authentication keys, by identifier.&#34;&#34;&#34;
+
+    return {k: self._pubkey[k] for k in self._pubkey if self._pubkey[k].authn}</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.did"><code class="name">var <span class="ident">did</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Accessor for DID.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def did(self) -&gt; str:
+    &#34;&#34;&#34;Accessor for DID.&#34;&#34;&#34;
+
+    return self._did</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.did_type"><code class="name">var <span class="ident">did_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def did_type(self) -&gt; str:
+    return self._did_type</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.pubkey"><code class="name">var <span class="ident">pubkey</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Accessor for public keys by identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def pubkey(self) -&gt; dict:
+    &#34;&#34;&#34;Accessor for public keys by identifier.&#34;&#34;&#34;
+
+    return self._pubkey</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.service"><code class="name">var <span class="ident">service</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Accessor for services by identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def service(self) -&gt; dict:
+    &#34;&#34;&#34;Accessor for services by identifier.&#34;&#34;&#34;
+
+    return self._service</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.add_service_pubkeys"><code class="name flex">
+<span>def <span class="ident">add_service_pubkeys</span></span>(<span>self, service: dict, tags: Union[Sequence[str], str]) ‑> List[<a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add public keys specified in service. Return public keys so discovered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>service</code></strong></dt>
+<dd>service from DID document</dd>
+<dt><strong><code>tags</code></strong></dt>
+<dd>potential tags marking public keys of type of interest
+(the standard is still coalescing)</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>for public key reference not present in DID document.</dd>
+</dl>
+<p>Returns: list of public keys from the document service specification</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_service_pubkeys(
+    self, service: dict, tags: Union[Sequence[str], str]
+) -&gt; List[PublicKey]:
+    &#34;&#34;&#34;
+    Add public keys specified in service. Return public keys so discovered.
+
+    Args:
+        service: service from DID document
+        tags: potential tags marking public keys of type of interest
+            (the standard is still coalescing)
+
+    Raises:
+        ValueError: for public key reference not present in DID document.
+
+    Returns: list of public keys from the document service specification
+
+    &#34;&#34;&#34;
+
+    rv = []
+    for tag in [tags] if isinstance(tags, str) else list(tags):
+
+        for svc_key in service.get(tag, {}):
+            canon_key = canon_ref(self.did, svc_key)
+            pubkey = None
+
+            if &#34;#&#34; in svc_key:
+                if canon_key in self.pubkey:
+                    pubkey = self.pubkey[canon_key]
+                else:  # service key refers to another DID doc
+                    LOGGER.debug(
+                        &#34;DID document %s has no public key %s&#34;, self.did, svc_key
+                    )
+                    raise ValueError(
+                        &#34;DID document {} has no public key {}&#34;.format(
+                            self.did, svc_key
+                        )
+                    )
+            else:
+                for existing_pubkey in self.pubkey.values():
+                    if existing_pubkey.value == svc_key:
+                        pubkey = existing_pubkey
+                        break
+                else:
+                    pubkey = PublicKey(
+                        self.did,
+                        # industrial-grade uniqueness
+                        ident=svc_key[-9:-1],
+                        value=svc_key,
+                    )
+                    self._pubkey[pubkey.id] = pubkey
+
+            if (
+                pubkey and pubkey not in rv
+            ):  # perverse case: could specify same key multiple ways; append once
+                rv.append(pubkey)
+
+    return rv</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dump current object to a JSON-compatible dictionary.</p>
+<h2 id="returns">Returns</h2>
+<p>dict representation of current DIDDoc</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self) -&gt; str:
+    &#34;&#34;&#34;
+    Dump current object to a JSON-compatible dictionary.
+
+    Returns:
+        dict representation of current DIDDoc
+
+    &#34;&#34;&#34;
+
+    return {
+        &#34;@context&#34;: DIDDoc.CONTEXT,
+        &#34;id&#34;: canon_ref(self.did, self.did, did_type=self.did_type),
+        &#34;verificationMethod&#34;: [pubkey.to_dict() for pubkey in self.pubkey.values()],
+        &#34;authentication&#34;: [
+            {
+                &#34;type&#34;: pubkey.type.authn_type,
+                &#34;publicKey&#34;: canon_ref(self.did, pubkey.id),
+            }
+            for pubkey in self.pubkey.values()
+            if pubkey.authn
+        ],
+        &#34;service&#34;: [service.to_dict() for service in self.service.values()],
+    }</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self, item: Union[<a title="mydata_did.v1_0.utils.service.Service" href="service.html#mydata_did.v1_0.utils.service.Service">Service</a>, <a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>]) ‑> <a title="mydata_did.v1_0.utils.diddoc.DIDDoc" href="#mydata_did.v1_0.utils.diddoc.DIDDoc">DIDDoc</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add or replace service or public key; return current DIDDoc.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if input item is neither service nor public key.</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item</code></strong></dt>
+<dd>service or public key to set</dd>
+</dl>
+<p>Returns: the current DIDDoc</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set(self, item: Union[Service, PublicKey]) -&gt; &#34;DIDDoc&#34;:
+    &#34;&#34;&#34;
+    Add or replace service or public key; return current DIDDoc.
+
+    Raises:
+        ValueError: if input item is neither service nor public key.
+
+    Args:
+        item: service or public key to set
+
+    Returns: the current DIDDoc
+
+    &#34;&#34;&#34;
+
+    if isinstance(item, Service):
+        self.service[item.id] = item
+    elif isinstance(item, PublicKey):
+        self.pubkey[item.id] = item
+    else:
+        raise ValueError(
+            &#34;Cannot add item {} to DIDDoc on DID {}&#34;.format(item, self.did)
+        )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.to_json"><code class="name flex">
+<span>def <span class="ident">to_json</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dump current object as json (JSON-LD).</p>
+<h2 id="returns">Returns</h2>
+<p>json representation of current DIDDoc</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_json(self) -&gt; str:
+    &#34;&#34;&#34;
+    Dump current object as json (JSON-LD).
+
+    Returns:
+        json representation of current DIDDoc
+
+    &#34;&#34;&#34;
+
+    return json.dumps(self.serialize())</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.diddoc.DIDDoc.validate"><code class="name flex">
+<span>def <span class="ident">validate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate(self):
+    # FIXME : Code refactor
+
+    # check public key and authentication key is available and if so, a single match item
+    if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+        # check if public key and authentication key match
+        if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
+            # check if controller and did and publicKeyBase58 matches
+            # check if public key type is Ed25519VerificationKey2018
+            public_key: PublicKey = list(self.pubkey.values())[0]
+            if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                # Optional check, if service is available
+                if self.service:
+                    if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                        service: Service = list(self.service.values())[0]
+                        if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                            return True
+                else:
+                    return True
+    
+    return False</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.utils" href="index.html">mydata_did.v1_0.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc" href="#mydata_did.v1_0.utils.diddoc.DIDDoc">DIDDoc</a></code></h4>
+<ul class="two-column">
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.CONTEXT" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.CONTEXT">CONTEXT</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.add_service_pubkeys" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.add_service_pubkeys">add_service_pubkeys</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.authnkey" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.authnkey">authnkey</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.deserialize" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.deserialize">deserialize</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.did" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.did">did</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.did_type" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.did_type">did_type</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.from_json" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.from_json">from_json</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.pubkey" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.pubkey">pubkey</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.serialize" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.serialize">serialize</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.service" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.service">service</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.set" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.set">set</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.to_json" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.to_json">to_json</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.diddoc.DIDDoc.validate" href="#mydata_did.v1_0.utils.diddoc.DIDDoc.validate">validate</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

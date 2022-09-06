@@ -1,0 +1,1921 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.models.data_agreement_model API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.models.data_agreement_model</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import datetime
+
+import validators
+
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields, EXCLUDE, validate, validates, pre_load
+from marshmallow.exceptions import ValidationError
+from typing import List
+
+from ..utils.regex import MYDATA_DID
+
+DATA_AGREEMENT_V1_SCHEMA_CONTEXT = &#34;https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld&#34;
+
+
+class DataAgreementDataPolicy(BaseModel):
+    &#34;&#34;&#34;
+    Data policy model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementDataPolicySchema&#34;
+
+    def __init__(
+        self,
+        *,
+        data_retention_period: int,
+        policy_url: str,
+        jurisdiction: str,
+        industry_scope: str,
+        geographic_restriction: str,
+        storage_location: str,
+        third_party_data_sharing: bool,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize data policy model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.data_retention_period = data_retention_period
+        self.policy_url = policy_url
+        self.jurisdiction = jurisdiction
+        self.industry_scope = industry_scope
+        self.geographic_restriction = geographic_restriction
+        self.storage_location = storage_location
+        self.third_party_data_sharing = third_party_data_sharing
+
+
+class DataAgreementDataPolicySchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data policy schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementDataPolicy
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    @validates(&#34;data_retention_period&#34;)
+    def validate_data_retention_period(self, data_retention_period):
+        &#34;&#34;&#34;
+        Validate data retention period
+        &#34;&#34;&#34;
+        if data_retention_period &lt; 1:
+            raise ValidationError(
+                &#34;Data retention period must be greater than or equal to 1&#34;
+            )
+
+    # Data retention period
+    data_retention_period = fields.Int(
+        data_key=&#34;data_retention_period&#34;,
+        example=365,
+        description=&#34;Data retention period in days&#34;,
+        required=True,
+    )
+
+    @validates(&#34;policy_url&#34;)
+    def validate_policy_url(self, policy_url):
+        &#34;&#34;&#34;
+        Validate policy url
+        &#34;&#34;&#34;
+        if not validators.url(policy_url):
+            raise ValidationError(&#34;Policy URL is not valid&#34;)
+
+    # Policy URL
+    policy_url = fields.Str(
+        data_key=&#34;policy_URL&#34;,
+        example=&#34;https://clarifyhealth.com/privacy-policy/&#34;,
+        description=&#34;Policy URL&#34;,
+        required=True,
+    )
+
+    # Jurisdiction
+    jurisdiction = fields.Str(
+        data_key=&#34;jurisdiction&#34;,
+        example=&#34;Sweden&#34;,
+        description=&#34;Jurisdiction&#34;,
+        required=True,
+    )
+
+    # Industry scope
+    industry_scope = fields.Str(
+        data_key=&#34;industry_sector&#34;,
+        example=&#34;Healthcare&#34;,
+        description=&#34;Industry scope&#34;,
+        required=False,
+    )
+
+    # Geographic restriction
+    geographic_restriction = fields.Str(
+        data_key=&#34;geographic_restriction&#34;,
+        example=&#34;Europe&#34;,
+        description=&#34;Geographic restriction&#34;,
+        required=True,
+    )
+
+    # Storage location
+    storage_location = fields.Str(
+        data_key=&#34;storage_location&#34;,
+        example=&#34;Europe&#34;,
+        description=&#34;Storage location&#34;,
+        required=True,
+    )
+
+    third_party_data_sharing = fields.Bool(
+        data_key=&#34;third_party_data_sharing&#34;,
+        example=False,
+        description=&#34;Third party data sharing&#34;,
+        required=True,
+    )
+
+
+class DataAgreementDPIA(BaseModel):
+    &#34;&#34;&#34;
+    DPIA model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementDPIASchema&#34;
+
+    def __init__(self, *, dpia_date: str, dpia_summary_url: str, **kwargs):
+        &#34;&#34;&#34;
+        Initialize DPIA model
+        &#34;&#34;&#34;
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.dpia_date = dpia_date
+        self.dpia_summary_url = dpia_summary_url
+
+
+class DataAgreementDPIASchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    DPIA schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementDPIA
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # DPIA date
+    dpia_date = fields.Str(
+        data_key=&#34;dpia_date&#34;,
+        example=str(
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        ),
+        description=&#34;DPIA conducted date time in ISO 8601 UTC date time format&#34;,
+        required=False,
+    )
+
+    # DPIA summary URL
+    dpia_summary_url = fields.Str(
+        data_key=&#34;dpia_summary_url&#34;,
+        example=&#34;https://org.com/dpia_results.html&#34;,
+        description=&#34;DPIA summary URL&#34;,
+        required=False,
+    )
+
+
+class DataAgreementPersonalDataRestriction(BaseModel):
+    &#34;&#34;&#34;
+    Personal data restriction model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementPersonalDataRestrictionSchema&#34;
+
+    def __init__(self, *, schema_id: str = None, cred_def_id: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialise personal data restriction model.
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.schema_id = schema_id
+        self.cred_def_id = cred_def_id
+
+
+class DataAgreementPersonalDataRestrictionSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Personal data restriction schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementPersonalDataRestriction
+
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0&#34;,
+        required=False,
+    )
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:3:CL:20:tag&#34;,
+        required=False,
+    )
+
+    @pre_load
+    def unwrap_envelope(self, data: dict, **kwargs):
+
+        if len(data.values()) &lt; 1:
+            raise ValidationError(
+                &#34;Personal data restriction must contain at least one attribute.&#34;
+            )
+
+        return data
+
+
+class DataAgreementPersonalData(BaseModel):
+    &#34;&#34;&#34;
+    Personal data model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementPersonalDataSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        attribute_id: str = None,
+        attribute_name: str = None,
+        attribute_sensitive: bool = None,
+        attribute_category: str = None,
+        attribute_description: str = None,
+        restrictions: List[DataAgreementPersonalDataRestriction] = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize personal data model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.attribute_id = attribute_id
+        self.attribute_name = attribute_name
+        self.attribute_sensitive = attribute_sensitive
+        self.attribute_category = attribute_category
+        self.attribute_description = attribute_description
+        self.restrictions = restrictions
+
+
+class DataAgreementPersonalDataSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Personal data schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementPersonalData
+
+    # Attribute identifier
+    attribute_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Attribute identifier&#34;,
+        required=False,
+    )
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute sensitive
+    attribute_sensitive = fields.Bool(
+        example=True, description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    # Attribute category
+    attribute_category = fields.Str(
+        example=&#34;Personal&#34;, description=&#34;Category of the attribute&#34;, required=False
+    )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        required=True,
+        description=&#34;The description of the attribute.&#34;,
+        example=&#34;Name of the customer&#34;,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False
+    )
+
+
+class DataAgreementEvent(BaseModel):
+    &#34;&#34;&#34;
+    Data agreement event model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementEventSchema&#34;
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    def __init__(
+        self,
+        *,
+        event_id: str = None,
+        time_stamp: str = None,
+        principle_did: str = None,
+        state: str = None,
+        **kwargs,
+    ):
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.event_id = event_id
+        self.time_stamp = time_stamp
+        self.principle_did = principle_did
+        self.state = state
+
+
+class DataAgreementEventSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data agreement event schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementEvent
+
+    event_id = fields.Str(
+        data_key=&#34;id&#34;,
+        example=&#34;did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
+        description=&#34;Data agreement event identifier&#34;,
+    )
+
+    # Time stamp
+    time_stamp = fields.Str(
+        data_key=&#34;time_stamp&#34;,
+        example=str(
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        ),
+        description=&#34;Data agreement event timestamp in ISO 8601 UTC date time format&#34;,
+        dump_only=True,
+    )
+
+    # Principle DID
+    principle_did = fields.Str(
+        data_key=&#34;data_subject_did&#34;,
+        description=&#34;MyData decentralised identifier&#34;,
+        dump_only=True,
+        **MYDATA_DID,
+    )
+
+    # State
+    state = fields.Str(
+        description=&#34;State of the event&#34;, example=&#34;capture&#34;, dump_only=True
+    )
+
+
+class DataAgreementV1(BaseModel):
+    &#34;&#34;&#34;
+    Data agreement model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementV1Schema&#34;
+
+    def __init__(
+        self,
+        *,
+        context: str = None,
+        data_agreement_template_id: str = None,
+        data_agreement_template_version: int = None,
+        pii_controller_name: str = None,
+        pii_controller_url: str = None,
+        usage_purpose: str = None,
+        usage_purpose_description: str = None,
+        legal_basis: str = None,
+        method_of_use: str = None,
+        data_policy: DataAgreementDataPolicy = None,
+        personal_data: List[DataAgreementPersonalData] = None,
+        dpia: DataAgreementDPIA = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize data agreement model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.context = context
+        self.data_agreement_template_id = data_agreement_template_id
+        self.data_agreement_template_version = data_agreement_template_version
+        self.pii_controller_name = pii_controller_name
+        self.pii_controller_url = pii_controller_url
+        self.usage_purpose = usage_purpose
+        self.usage_purpose_description = usage_purpose_description
+        self.legal_basis = legal_basis
+        self.method_of_use = method_of_use
+        self.data_policy = data_policy
+        self.personal_data = personal_data
+        self.dpia = dpia
+
+
+class DataAgreementV1Schema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data agreement schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementV1
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # Data agreement schema context i.e. which schema is used
+    context = fields.Str(
+        data_key=&#34;@context&#34;,
+        example=&#34;https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld&#34;,
+        description=&#34;Context of the schema&#34;,
+        required=True,
+    )
+
+    # TODO: &#34;data_agreement_id&#34; and &#34;data_agreement_version&#34; are only
+    # TODO: ... generated when the data agreement is presented to the end user
+    # TODO: ... therefore they will only be part of DataAgreement &#34;instance&#34;
+    # # Data agreement instance identifier
+    # # i.e. identifier of the &#34;capture&#34; data agreement instance
+    # data_agreement_id = fields.Str(
+    #     data_key=&#34;id&#34;,
+    #     example=UUIDFour.EXAMPLE,
+    #     description=&#34;Data agreement identifier&#34;,
+    #     required=False,
+    # )
+
+    # # Data agreement instance version
+    # # i.e. version of the &#34;capture&#34; data agreement instance
+    # data_agreement_version = fields.Str(
+    #     data_key=&#34;version&#34;,
+    #     example=&#34;v1.0&#34;,
+    #     description=&#34;Data agreement version&#34;,
+    #     dump_only=True,
+    # )
+
+    # Data agreement template identifier
+    # i.e. identifier of the &#34;prepared&#34; data agreement template
+    data_agreement_template_id = fields.Str(
+        data_key=&#34;template_id&#34;,
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Data agreement template identifier&#34;,
+    )
+
+    # Data agreement template version
+    # i.e. version of the &#34;prepared&#34; data agreement template
+    data_agreement_template_version = fields.Int(
+        data_key=&#34;template_version&#34;,
+        example=1,
+        description=&#34;Data agreement template version&#34;,
+    )
+
+    @validates(&#34;pii_controller_name&#34;)
+    def validate_pii_controller_name(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema pii controller name
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(
+                f&#34;PII controller name must be at least 3 characters long.&#34;
+            )
+        if len(value) &gt; 100:
+            raise ValidationError(
+                f&#34;PII controller name must be at most 100 characters long.&#34;
+            )
+
+    # Data agreement data controller name
+    # i.e. Organization name of the data controller
+    pii_controller_name = fields.Str(
+        data_key=&#34;data_controller_name&#34;,
+        example=&#34;Happy Shopping AB&#34;,
+        description=&#34;PII controller name&#34;,
+        required=True,
+    )
+
+    @validates(&#34;pii_controller_url&#34;)
+    def validate_pii_controller_url(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema pii controller url
+        &#34;&#34;&#34;
+        if not validators.url(value):
+            raise ValidationError(f&#34;Provided PII controller URL is not valid.&#34;)
+
+    # Data agreement data controller URL
+    pii_controller_url = fields.Str(
+        data_key=&#34;data_controller_url&#34;,
+        example=&#34;https://www.happyshopping.com&#34;,
+        description=&#34;PII controller URL&#34;,
+    )
+
+    @validates(&#34;usage_purpose&#34;)
+    def validate_usage_purpose(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema usage purpose
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(f&#34;Usage purpose must be at least 3 characters long.&#34;)
+        if len(value) &gt; 100:
+            raise ValidationError(f&#34;Usage purpose must be at most 100 characters long.&#34;)
+
+    # Data agreement usage purpose
+    usage_purpose = fields.Str(
+        data_key=&#34;purpose&#34;,
+        example=&#34;Customized shopping experience&#34;,
+        description=&#34;Usage purpose title&#34;,
+        required=True,
+    )
+
+    @validates(&#34;usage_purpose_description&#34;)
+    def validate_usage_purpose_description(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema usage purpose description
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(
+                f&#34;Usage purpose description must be at least 3 characters long.&#34;
+            )
+        if len(value) &gt; 500:
+            raise ValidationError(
+                f&#34;Usage purpose description must be at most 500 characters long.&#34;
+            )
+
+    # Data agreement usage purpose description
+    usage_purpose_description = fields.Str(
+        data_key=&#34;purpose_description&#34;,
+        example=&#34;Collecting user data for offering custom tailored shopping experience&#34;,
+        description=&#34;Usage purpose description&#34;,
+        required=True,
+    )
+
+    # Data agreement legal basis
+    legal_basis = fields.Str(
+        data_key=&#34;lawful_basis&#34;,
+        example=&#34;consent&#34;,
+        description=&#34;Legal basis of processing&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                &#34;consent&#34;,
+                &#34;legal_obligation&#34;,
+                &#34;contract&#34;,
+                &#34;vital_interest&#34;,
+                &#34;public_task&#34;,
+                &#34;legitimate_interest&#34;,
+            ]
+        ),
+    )
+
+    # Data agreement method of use (i.e. how the data is used)
+    # 2 method of use: &#34;data-source&#34; and &#34;data-using-service&#34;
+    method_of_use = fields.Str(
+        data_key=&#34;method_of_use&#34;,
+        example=&#34;data-using-service&#34;,
+        description=&#34;Method of use (or data exchange mode)&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+
+    # Data agreement data policy
+    data_policy = fields.Nested(DataAgreementDataPolicySchema, required=True)
+
+    # Data agreement personal data (attributes)
+    personal_data = fields.List(
+        fields.Nested(DataAgreementPersonalDataSchema),
+        required=True,
+        validate=validate.Length(min=1),
+    )
+
+    # Data agreement DPIA metadata
+    dpia = fields.Nested(DataAgreementDPIASchema, required=False)
+
+    # TODO: &#34;event&#34; list will be populated during the capture phase of DA lifecycle
+    # event = fields.List(fields.Nested(
+    #     DataAgreementEventSchema), dump_only=True)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA"><code class="flex name class">
+<span>class <span class="ident">DataAgreementDPIA</span></span>
+<span>(</span><span>*, dpia_date: str, dpia_summary_url: str, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>DPIA model class</p>
+<p>Initialize DPIA model</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementDPIA(BaseModel):
+    &#34;&#34;&#34;
+    DPIA model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementDPIASchema&#34;
+
+    def __init__(self, *, dpia_date: str, dpia_summary_url: str, **kwargs):
+        &#34;&#34;&#34;
+        Initialize DPIA model
+        &#34;&#34;&#34;
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.dpia_date = dpia_date
+        self.dpia_summary_url = dpia_summary_url</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementDPIASchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>DPIA schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementDPIASchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    DPIA schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementDPIA
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # DPIA date
+    dpia_date = fields.Str(
+        data_key=&#34;dpia_date&#34;,
+        example=str(
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        ),
+        description=&#34;DPIA conducted date time in ISO 8601 UTC date time format&#34;,
+        required=False,
+    )
+
+    # DPIA summary URL
+    dpia_summary_url = fields.Str(
+        data_key=&#34;dpia_summary_url&#34;,
+        example=&#34;https://org.com/dpia_results.html&#34;,
+        description=&#34;DPIA summary URL&#34;,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy"><code class="flex name class">
+<span>class <span class="ident">DataAgreementDataPolicy</span></span>
+<span>(</span><span>*, data_retention_period: int, policy_url: str, jurisdiction: str, industry_scope: str, geographic_restriction: str, storage_location: str, third_party_data_sharing: bool, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data policy model class</p>
+<p>Initialize data policy model</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementDataPolicy(BaseModel):
+    &#34;&#34;&#34;
+    Data policy model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementDataPolicySchema&#34;
+
+    def __init__(
+        self,
+        *,
+        data_retention_period: int,
+        policy_url: str,
+        jurisdiction: str,
+        industry_scope: str,
+        geographic_restriction: str,
+        storage_location: str,
+        third_party_data_sharing: bool,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize data policy model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.data_retention_period = data_retention_period
+        self.policy_url = policy_url
+        self.jurisdiction = jurisdiction
+        self.industry_scope = industry_scope
+        self.geographic_restriction = geographic_restriction
+        self.storage_location = storage_location
+        self.third_party_data_sharing = third_party_data_sharing</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementDataPolicySchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data policy schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementDataPolicySchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data policy schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementDataPolicy
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    @validates(&#34;data_retention_period&#34;)
+    def validate_data_retention_period(self, data_retention_period):
+        &#34;&#34;&#34;
+        Validate data retention period
+        &#34;&#34;&#34;
+        if data_retention_period &lt; 1:
+            raise ValidationError(
+                &#34;Data retention period must be greater than or equal to 1&#34;
+            )
+
+    # Data retention period
+    data_retention_period = fields.Int(
+        data_key=&#34;data_retention_period&#34;,
+        example=365,
+        description=&#34;Data retention period in days&#34;,
+        required=True,
+    )
+
+    @validates(&#34;policy_url&#34;)
+    def validate_policy_url(self, policy_url):
+        &#34;&#34;&#34;
+        Validate policy url
+        &#34;&#34;&#34;
+        if not validators.url(policy_url):
+            raise ValidationError(&#34;Policy URL is not valid&#34;)
+
+    # Policy URL
+    policy_url = fields.Str(
+        data_key=&#34;policy_URL&#34;,
+        example=&#34;https://clarifyhealth.com/privacy-policy/&#34;,
+        description=&#34;Policy URL&#34;,
+        required=True,
+    )
+
+    # Jurisdiction
+    jurisdiction = fields.Str(
+        data_key=&#34;jurisdiction&#34;,
+        example=&#34;Sweden&#34;,
+        description=&#34;Jurisdiction&#34;,
+        required=True,
+    )
+
+    # Industry scope
+    industry_scope = fields.Str(
+        data_key=&#34;industry_sector&#34;,
+        example=&#34;Healthcare&#34;,
+        description=&#34;Industry scope&#34;,
+        required=False,
+    )
+
+    # Geographic restriction
+    geographic_restriction = fields.Str(
+        data_key=&#34;geographic_restriction&#34;,
+        example=&#34;Europe&#34;,
+        description=&#34;Geographic restriction&#34;,
+        required=True,
+    )
+
+    # Storage location
+    storage_location = fields.Str(
+        data_key=&#34;storage_location&#34;,
+        example=&#34;Europe&#34;,
+        description=&#34;Storage location&#34;,
+        required=True,
+    )
+
+    third_party_data_sharing = fields.Bool(
+        data_key=&#34;third_party_data_sharing&#34;,
+        example=False,
+        description=&#34;Third party data sharing&#34;,
+        required=True,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_data_retention_period"><code class="name flex">
+<span>def <span class="ident">validate_data_retention_period</span></span>(<span>self, data_retention_period)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate data retention period</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;data_retention_period&#34;)
+def validate_data_retention_period(self, data_retention_period):
+    &#34;&#34;&#34;
+    Validate data retention period
+    &#34;&#34;&#34;
+    if data_retention_period &lt; 1:
+        raise ValidationError(
+            &#34;Data retention period must be greater than or equal to 1&#34;
+        )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_policy_url"><code class="name flex">
+<span>def <span class="ident">validate_policy_url</span></span>(<span>self, policy_url)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate policy url</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;policy_url&#34;)
+def validate_policy_url(self, policy_url):
+    &#34;&#34;&#34;
+    Validate policy url
+    &#34;&#34;&#34;
+    if not validators.url(policy_url):
+        raise ValidationError(&#34;Policy URL is not valid&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent"><code class="flex name class">
+<span>class <span class="ident">DataAgreementEvent</span></span>
+<span>(</span><span>*, event_id: str = None, time_stamp: str = None, principle_did: str = None, state: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data agreement event model class</p>
+<p>Initialize BaseModel.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If schema_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementEvent(BaseModel):
+    &#34;&#34;&#34;
+    Data agreement event model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementEventSchema&#34;
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    def __init__(
+        self,
+        *,
+        event_id: str = None,
+        time_stamp: str = None,
+        principle_did: str = None,
+        state: str = None,
+        **kwargs,
+    ):
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.event_id = event_id
+        self.time_stamp = time_stamp
+        self.principle_did = principle_did
+        self.state = state</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementEventSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data agreement event schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementEventSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data agreement event schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementEvent
+
+    event_id = fields.Str(
+        data_key=&#34;id&#34;,
+        example=&#34;did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
+        description=&#34;Data agreement event identifier&#34;,
+    )
+
+    # Time stamp
+    time_stamp = fields.Str(
+        data_key=&#34;time_stamp&#34;,
+        example=str(
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        ),
+        description=&#34;Data agreement event timestamp in ISO 8601 UTC date time format&#34;,
+        dump_only=True,
+    )
+
+    # Principle DID
+    principle_did = fields.Str(
+        data_key=&#34;data_subject_did&#34;,
+        description=&#34;MyData decentralised identifier&#34;,
+        dump_only=True,
+        **MYDATA_DID,
+    )
+
+    # State
+    state = fields.Str(
+        description=&#34;State of the event&#34;, example=&#34;capture&#34;, dump_only=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData"><code class="flex name class">
+<span>class <span class="ident">DataAgreementPersonalData</span></span>
+<span>(</span><span>*, attribute_id: str = None, attribute_name: str = None, attribute_sensitive: bool = None, attribute_category: str = None, attribute_description: str = None, restrictions: List[<a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction">DataAgreementPersonalDataRestriction</a>] = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Personal data model class</p>
+<p>Initialize personal data model</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementPersonalData(BaseModel):
+    &#34;&#34;&#34;
+    Personal data model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementPersonalDataSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        attribute_id: str = None,
+        attribute_name: str = None,
+        attribute_sensitive: bool = None,
+        attribute_category: str = None,
+        attribute_description: str = None,
+        restrictions: List[DataAgreementPersonalDataRestriction] = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize personal data model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.attribute_id = attribute_id
+        self.attribute_name = attribute_name
+        self.attribute_sensitive = attribute_sensitive
+        self.attribute_category = attribute_category
+        self.attribute_description = attribute_description
+        self.restrictions = restrictions</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction"><code class="flex name class">
+<span>class <span class="ident">DataAgreementPersonalDataRestriction</span></span>
+<span>(</span><span>*, schema_id: str = None, cred_def_id: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Personal data restriction model class</p>
+<p>Initialise personal data restriction model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementPersonalDataRestriction(BaseModel):
+    &#34;&#34;&#34;
+    Personal data restriction model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementPersonalDataRestrictionSchema&#34;
+
+    def __init__(self, *, schema_id: str = None, cred_def_id: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialise personal data restriction model.
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.schema_id = schema_id
+        self.cred_def_id = cred_def_id</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementPersonalDataRestrictionSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Personal data restriction schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementPersonalDataRestrictionSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Personal data restriction schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementPersonalDataRestriction
+
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0&#34;,
+        required=False,
+    )
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:3:CL:20:tag&#34;,
+        required=False,
+    )
+
+    @pre_load
+    def unwrap_envelope(self, data: dict, **kwargs):
+
+        if len(data.values()) &lt; 1:
+            raise ValidationError(
+                &#34;Personal data restriction must contain at least one attribute.&#34;
+            )
+
+        return data</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.unwrap_envelope"><code class="name flex">
+<span>def <span class="ident">unwrap_envelope</span></span>(<span>self, data: dict, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@pre_load
+def unwrap_envelope(self, data: dict, **kwargs):
+
+    if len(data.values()) &lt; 1:
+        raise ValidationError(
+            &#34;Personal data restriction must contain at least one attribute.&#34;
+        )
+
+    return data</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementPersonalDataSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Personal data schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementPersonalDataSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Personal data schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementPersonalData
+
+    # Attribute identifier
+    attribute_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Attribute identifier&#34;,
+        required=False,
+    )
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute sensitive
+    attribute_sensitive = fields.Bool(
+        example=True, description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    # Attribute category
+    attribute_category = fields.Str(
+        example=&#34;Personal&#34;, description=&#34;Category of the attribute&#34;, required=False
+    )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        required=True,
+        description=&#34;The description of the attribute.&#34;,
+        example=&#34;Name of the customer&#34;,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.validate_attribute_name"><code class="name flex">
+<span>def <span class="ident">validate_attribute_name</span></span>(<span>self, attribute_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate attribute name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;attribute_name&#34;)
+def validate_attribute_name(self, attribute_name):
+    &#34;&#34;&#34;
+    Validate attribute name
+    &#34;&#34;&#34;
+    if len(attribute_name) &lt; 3:
+        raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1"><code class="flex name class">
+<span>class <span class="ident">DataAgreementV1</span></span>
+<span>(</span><span>*, context: str = None, data_agreement_template_id: str = None, data_agreement_template_version: int = None, pii_controller_name: str = None, pii_controller_url: str = None, usage_purpose: str = None, usage_purpose_description: str = None, legal_basis: str = None, method_of_use: str = None, data_policy: <a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy">DataAgreementDataPolicy</a> = None, personal_data: List[<a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData">DataAgreementPersonalData</a>] = None, dpia: <a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA">DataAgreementDPIA</a> = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data agreement model class</p>
+<p>Initialize data agreement model</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementV1(BaseModel):
+    &#34;&#34;&#34;
+    Data agreement model class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementV1Schema&#34;
+
+    def __init__(
+        self,
+        *,
+        context: str = None,
+        data_agreement_template_id: str = None,
+        data_agreement_template_version: int = None,
+        pii_controller_name: str = None,
+        pii_controller_url: str = None,
+        usage_purpose: str = None,
+        usage_purpose_description: str = None,
+        legal_basis: str = None,
+        method_of_use: str = None,
+        data_policy: DataAgreementDataPolicy = None,
+        personal_data: List[DataAgreementPersonalData] = None,
+        dpia: DataAgreementDPIA = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize data agreement model
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.context = context
+        self.data_agreement_template_id = data_agreement_template_id
+        self.data_agreement_template_version = data_agreement_template_version
+        self.pii_controller_name = pii_controller_name
+        self.pii_controller_url = pii_controller_url
+        self.usage_purpose = usage_purpose
+        self.usage_purpose_description = usage_purpose_description
+        self.legal_basis = legal_basis
+        self.method_of_use = method_of_use
+        self.data_policy = data_policy
+        self.personal_data = personal_data
+        self.dpia = dpia</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementV1Schema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data agreement schema class</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementV1Schema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Data agreement schema class
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementV1
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # Data agreement schema context i.e. which schema is used
+    context = fields.Str(
+        data_key=&#34;@context&#34;,
+        example=&#34;https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld&#34;,
+        description=&#34;Context of the schema&#34;,
+        required=True,
+    )
+
+    # TODO: &#34;data_agreement_id&#34; and &#34;data_agreement_version&#34; are only
+    # TODO: ... generated when the data agreement is presented to the end user
+    # TODO: ... therefore they will only be part of DataAgreement &#34;instance&#34;
+    # # Data agreement instance identifier
+    # # i.e. identifier of the &#34;capture&#34; data agreement instance
+    # data_agreement_id = fields.Str(
+    #     data_key=&#34;id&#34;,
+    #     example=UUIDFour.EXAMPLE,
+    #     description=&#34;Data agreement identifier&#34;,
+    #     required=False,
+    # )
+
+    # # Data agreement instance version
+    # # i.e. version of the &#34;capture&#34; data agreement instance
+    # data_agreement_version = fields.Str(
+    #     data_key=&#34;version&#34;,
+    #     example=&#34;v1.0&#34;,
+    #     description=&#34;Data agreement version&#34;,
+    #     dump_only=True,
+    # )
+
+    # Data agreement template identifier
+    # i.e. identifier of the &#34;prepared&#34; data agreement template
+    data_agreement_template_id = fields.Str(
+        data_key=&#34;template_id&#34;,
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Data agreement template identifier&#34;,
+    )
+
+    # Data agreement template version
+    # i.e. version of the &#34;prepared&#34; data agreement template
+    data_agreement_template_version = fields.Int(
+        data_key=&#34;template_version&#34;,
+        example=1,
+        description=&#34;Data agreement template version&#34;,
+    )
+
+    @validates(&#34;pii_controller_name&#34;)
+    def validate_pii_controller_name(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema pii controller name
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(
+                f&#34;PII controller name must be at least 3 characters long.&#34;
+            )
+        if len(value) &gt; 100:
+            raise ValidationError(
+                f&#34;PII controller name must be at most 100 characters long.&#34;
+            )
+
+    # Data agreement data controller name
+    # i.e. Organization name of the data controller
+    pii_controller_name = fields.Str(
+        data_key=&#34;data_controller_name&#34;,
+        example=&#34;Happy Shopping AB&#34;,
+        description=&#34;PII controller name&#34;,
+        required=True,
+    )
+
+    @validates(&#34;pii_controller_url&#34;)
+    def validate_pii_controller_url(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema pii controller url
+        &#34;&#34;&#34;
+        if not validators.url(value):
+            raise ValidationError(f&#34;Provided PII controller URL is not valid.&#34;)
+
+    # Data agreement data controller URL
+    pii_controller_url = fields.Str(
+        data_key=&#34;data_controller_url&#34;,
+        example=&#34;https://www.happyshopping.com&#34;,
+        description=&#34;PII controller URL&#34;,
+    )
+
+    @validates(&#34;usage_purpose&#34;)
+    def validate_usage_purpose(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema usage purpose
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(f&#34;Usage purpose must be at least 3 characters long.&#34;)
+        if len(value) &gt; 100:
+            raise ValidationError(f&#34;Usage purpose must be at most 100 characters long.&#34;)
+
+    # Data agreement usage purpose
+    usage_purpose = fields.Str(
+        data_key=&#34;purpose&#34;,
+        example=&#34;Customized shopping experience&#34;,
+        description=&#34;Usage purpose title&#34;,
+        required=True,
+    )
+
+    @validates(&#34;usage_purpose_description&#34;)
+    def validate_usage_purpose_description(self, value):
+        &#34;&#34;&#34;
+        Validate data agreement schema usage purpose description
+        &#34;&#34;&#34;
+        if len(value) &lt; 3:
+            raise ValidationError(
+                f&#34;Usage purpose description must be at least 3 characters long.&#34;
+            )
+        if len(value) &gt; 500:
+            raise ValidationError(
+                f&#34;Usage purpose description must be at most 500 characters long.&#34;
+            )
+
+    # Data agreement usage purpose description
+    usage_purpose_description = fields.Str(
+        data_key=&#34;purpose_description&#34;,
+        example=&#34;Collecting user data for offering custom tailored shopping experience&#34;,
+        description=&#34;Usage purpose description&#34;,
+        required=True,
+    )
+
+    # Data agreement legal basis
+    legal_basis = fields.Str(
+        data_key=&#34;lawful_basis&#34;,
+        example=&#34;consent&#34;,
+        description=&#34;Legal basis of processing&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                &#34;consent&#34;,
+                &#34;legal_obligation&#34;,
+                &#34;contract&#34;,
+                &#34;vital_interest&#34;,
+                &#34;public_task&#34;,
+                &#34;legitimate_interest&#34;,
+            ]
+        ),
+    )
+
+    # Data agreement method of use (i.e. how the data is used)
+    # 2 method of use: &#34;data-source&#34; and &#34;data-using-service&#34;
+    method_of_use = fields.Str(
+        data_key=&#34;method_of_use&#34;,
+        example=&#34;data-using-service&#34;,
+        description=&#34;Method of use (or data exchange mode)&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+
+    # Data agreement data policy
+    data_policy = fields.Nested(DataAgreementDataPolicySchema, required=True)
+
+    # Data agreement personal data (attributes)
+    personal_data = fields.List(
+        fields.Nested(DataAgreementPersonalDataSchema),
+        required=True,
+        validate=validate.Length(min=1),
+    )
+
+    # Data agreement DPIA metadata
+    dpia = fields.Nested(DataAgreementDPIASchema, required=False)
+
+    # TODO: &#34;event&#34; list will be populated during the capture phase of DA lifecycle
+    # event = fields.List(fields.Nested(
+    #     DataAgreementEventSchema), dump_only=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_name"><code class="name flex">
+<span>def <span class="ident">validate_pii_controller_name</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate data agreement schema pii controller name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;pii_controller_name&#34;)
+def validate_pii_controller_name(self, value):
+    &#34;&#34;&#34;
+    Validate data agreement schema pii controller name
+    &#34;&#34;&#34;
+    if len(value) &lt; 3:
+        raise ValidationError(
+            f&#34;PII controller name must be at least 3 characters long.&#34;
+        )
+    if len(value) &gt; 100:
+        raise ValidationError(
+            f&#34;PII controller name must be at most 100 characters long.&#34;
+        )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_url"><code class="name flex">
+<span>def <span class="ident">validate_pii_controller_url</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate data agreement schema pii controller url</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;pii_controller_url&#34;)
+def validate_pii_controller_url(self, value):
+    &#34;&#34;&#34;
+    Validate data agreement schema pii controller url
+    &#34;&#34;&#34;
+    if not validators.url(value):
+        raise ValidationError(f&#34;Provided PII controller URL is not valid.&#34;)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose"><code class="name flex">
+<span>def <span class="ident">validate_usage_purpose</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate data agreement schema usage purpose</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;usage_purpose&#34;)
+def validate_usage_purpose(self, value):
+    &#34;&#34;&#34;
+    Validate data agreement schema usage purpose
+    &#34;&#34;&#34;
+    if len(value) &lt; 3:
+        raise ValidationError(f&#34;Usage purpose must be at least 3 characters long.&#34;)
+    if len(value) &gt; 100:
+        raise ValidationError(f&#34;Usage purpose must be at most 100 characters long.&#34;)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose_description"><code class="name flex">
+<span>def <span class="ident">validate_usage_purpose_description</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate data agreement schema usage purpose description</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;usage_purpose_description&#34;)
+def validate_usage_purpose_description(self, value):
+    &#34;&#34;&#34;
+    Validate data agreement schema usage purpose description
+    &#34;&#34;&#34;
+    if len(value) &lt; 3:
+        raise ValidationError(
+            f&#34;Usage purpose description must be at least 3 characters long.&#34;
+        )
+    if len(value) &gt; 500:
+        raise ValidationError(
+            f&#34;Usage purpose description must be at most 500 characters long.&#34;
+        )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.models" href="index.html">mydata_did.v1_0.models</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA">DataAgreementDPIA</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIA.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema">DataAgreementDPIASchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDPIASchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy">DataAgreementDataPolicy</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicy.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema">DataAgreementDataPolicySchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_data_retention_period" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_data_retention_period">validate_data_retention_period</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_policy_url" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementDataPolicySchema.validate_policy_url">validate_policy_url</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent">DataAgreementEvent</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementEvent.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema">DataAgreementEventSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementEventSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData">DataAgreementPersonalData</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalData.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction">DataAgreementPersonalDataRestriction</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestriction.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema">DataAgreementPersonalDataRestrictionSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.unwrap_envelope" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataRestrictionSchema.unwrap_envelope">unwrap_envelope</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema">DataAgreementPersonalDataSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.validate_attribute_name" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementPersonalDataSchema.validate_attribute_name">validate_attribute_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1">DataAgreementV1</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema">DataAgreementV1Schema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.Meta" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.opts" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_name" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_name">validate_pii_controller_name</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_url" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_pii_controller_url">validate_pii_controller_url</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose">validate_usage_purpose</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose_description" href="#mydata_did.v1_0.models.data_agreement_model.DataAgreementV1Schema.validate_usage_purpose_description">validate_usage_purpose_description</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

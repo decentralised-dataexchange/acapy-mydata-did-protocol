@@ -1,0 +1,1502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview API documentation</title>
+<meta name="description" content="A presentation preview inner object." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview</code></h1>
+</header>
+<section id="section-intro">
+<p>A presentation preview inner object.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;A presentation preview inner object.&#34;&#34;&#34;
+
+from enum import Enum
+from time import time
+from typing import Mapping, Sequence
+
+from marshmallow import fields
+
+from aries_cloudagent.ledger.indy import IndyLedger
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from aries_cloudagent.messaging.util import canon
+from aries_cloudagent.messaging.valid import INDY_CRED_DEF_ID, INDY_PREDICATE
+from aries_cloudagent.revocation.models.indy import NonRevocationInterval
+from aries_cloudagent.wallet.util import b64_to_str
+from aries_cloudagent.indy.util import generate_pr_nonce
+
+from aries_cloudagent.protocols.didcomm_prefix import DIDCommPrefix
+
+from ...message_types import PRESENTATION_PREVIEW
+from ...util.predicate import Predicate
+
+
+class PresPredSpec(BaseModel):
+    &#34;&#34;&#34;Class representing a predicate specification within a presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Pred spec metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresPredSpecSchema&#34;
+
+    def __init__(
+        self,
+        name: str,
+        *,
+        cred_def_id: str = None,
+        predicate: str,
+        threshold: int,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize  preview object.
+
+        Args:
+            name: attribute name
+            cred_def_id: credential definition identifier
+            predicate: predicate type (e.g., &#34;&gt;=&#34;)
+            threshold: threshold value
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.name = name
+        self.cred_def_id = cred_def_id
+        self.predicate = predicate
+        self.threshold = threshold
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        if canon(self.name) != canon(other.name):
+            return False  # distinct attribute names modulo canonicalization
+
+        if self.cred_def_id != other.cred_def_id:
+            return False
+
+        if self.predicate != other.predicate:
+            return False
+
+        return self.threshold == other.threshold
+
+
+class PresPredSpecSchema(BaseModelSchema):
+    &#34;&#34;&#34;Predicate specifiation schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Predicate specifiation schema metadata.&#34;&#34;&#34;
+
+        model_class = PresPredSpec
+
+    name = fields.Str(description=&#34;Attribute name&#34;, required=True, example=&#34;high_score&#34;)
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    predicate = fields.Str(
+        description=&#34;Predicate type (&#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;&gt;=&#39;, or &#39;&gt;&#39;)&#34;,
+        required=True,
+        **INDY_PREDICATE,
+    )
+    threshold = fields.Int(description=&#34;Threshold value&#34;, required=True)
+
+
+class PresAttrSpec(BaseModel):
+    &#34;&#34;&#34;Class representing an attibute specification within a presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Attr spec metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresAttrSpecSchema&#34;
+
+    class Posture(Enum):
+        &#34;&#34;&#34;Attribute posture: self-attested, revealed claim or unrevealed claim.&#34;&#34;&#34;
+
+        SELF_ATTESTED = 0
+        REVEALED_CLAIM = 1
+        UNREVEALED_CLAIM = 2
+
+    def __init__(
+        self,
+        name: str,
+        cred_def_id: str = None,
+        mime_type: str = None,
+        value: str = None,
+        referent: str = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize attribute specification object.
+
+        Args:
+            name: attribute name
+            cred_def_id: credential definition identifier
+                (None for self-attested attribute)
+            mime_type: MIME type
+            value: attribute value as credential stores it
+                (None for unrevealed attribute)
+            referent: credential referent
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.name = name
+        self.cred_def_id = cred_def_id
+        self.mime_type = mime_type.lower() if mime_type else None
+        self.value = value
+        self.referent = referent
+
+    @staticmethod
+    def list_plain(plain: dict, cred_def_id: str, referent: str = None):
+        &#34;&#34;&#34;
+        Return a list of `PresAttrSpec` on input cred def id.
+
+        Args:
+            plain: dict mapping names to values
+            cred_def_id: credential definition identifier to specify
+            referent: single referent to use, omit for none
+
+        Returns:
+            List of PresAttrSpec on input cred def id with no MIME types
+
+        &#34;&#34;&#34;
+        return [
+            PresAttrSpec(
+                name=k, cred_def_id=cred_def_id, value=plain[k], referent=referent
+            )
+            for k in plain
+        ]
+
+    @property
+    def posture(self) -&gt; &#34;PresAttrSpec.Posture&#34;:
+        &#34;&#34;&#34;Attribute posture: self-attested, revealed claim, or unrevealed claim.&#34;&#34;&#34;
+
+        if self.cred_def_id:
+            if self.value:
+                return PresAttrSpec.Posture.REVEALED_CLAIM
+            return PresAttrSpec.Posture.UNREVEALED_CLAIM
+        if self.value:
+            return PresAttrSpec.Posture.SELF_ATTESTED
+
+        return None
+
+    def b64_decoded_value(self) -&gt; str:
+        &#34;&#34;&#34;Value, base64-decoded if applicable.&#34;&#34;&#34;
+
+        return b64_to_str(self.value) if self.value and self.mime_type else self.value
+
+    def satisfies(self, pred_spec: PresPredSpec):
+        &#34;&#34;&#34;Whether current specified attribute satisfies input specified predicate.&#34;&#34;&#34;
+
+        return bool(
+            self.value
+            and not self.mime_type
+            and canon(self.name) == canon(pred_spec.name)
+            and not pred_spec.cred_def_id
+            or (self.cred_def_id == pred_spec.cred_def_id)
+            and Predicate.get(pred_spec.predicate).value.yes(
+                self.value, pred_spec.threshold
+            )
+        )
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        if canon(self.name) != canon(other.name):
+            return False  # distinct attribute names
+
+        if self.cred_def_id != other.cred_def_id:
+            return False  # distinct attribute cred def ids
+
+        if self.mime_type != other.mime_type:
+            return False  # distinct MIME types
+
+        if self.referent != other.referent:
+            return False  # distinct credential referents
+
+        return self.b64_decoded_value() == other.b64_decoded_value()
+
+
+class PresAttrSpecSchema(BaseModelSchema):
+    &#34;&#34;&#34;Attribute specifiation schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Attribute specifiation schema metadata.&#34;&#34;&#34;
+
+        model_class = PresAttrSpec
+
+    name = fields.Str(
+        description=&#34;Attribute name&#34;, required=True, example=&#34;favourite_drink&#34;
+    )
+    cred_def_id = fields.Str(required=False, **INDY_CRED_DEF_ID)
+    mime_type = fields.Str(
+        description=&#34;MIME type (default null)&#34;,
+        required=False,
+        data_key=&#34;mime-type&#34;,
+        example=&#34;image/jpeg&#34;,
+    )
+    value = fields.Str(description=&#34;Attribute value&#34;, required=False, example=&#34;martini&#34;)
+    referent = fields.Str(
+        description=&#34;Credential referent&#34;, required=False, example=&#34;0&#34;
+    )
+
+
+class PresentationPreview(BaseModel):
+    &#34;&#34;&#34;Class representing presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Presentation preview metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresentationPreviewSchema&#34;
+        message_type = PRESENTATION_PREVIEW
+
+    def __init__(
+        self,
+        *,
+        _type: str = None,
+        attributes: Sequence[PresAttrSpec] = None,
+        predicates: Sequence[PresPredSpec] = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize presentation preview object.
+
+        Args:
+            _type: formalism for Marshmallow model creation: ignored
+            attributes: list of attribute specifications
+            predicates: list of predicate specifications
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.attributes = list(attributes) if attributes else []
+        self.predicates = list(predicates) if predicates else []
+
+    @property
+    def _type(self):
+        &#34;&#34;&#34;Accessor for message type.&#34;&#34;&#34;
+
+        return DIDCommPrefix.qualify_current(PresentationPreview.Meta.message_type)
+
+    def has_attr_spec(self, cred_def_id: str, name: str, value: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Return whether preview contains given attribute specification.
+
+        Args:
+            cred_def_id: credential definition identifier
+            name: attribute name
+            value: attribute value
+
+        Returns:
+            Whether preview contains matching attribute specification.
+
+        &#34;&#34;&#34;
+
+        return any(
+            canon(a.name) == canon(name)
+            and a.value in (value, None)
+            and a.cred_def_id == cred_def_id
+            for a in self.attributes
+        )
+
+    async def indy_proof_request(
+        self,
+        name: str = None,
+        version: str = None,
+        nonce: str = None,
+        ledger: IndyLedger = None,
+        non_revoc_intervals: Mapping[str, NonRevocationInterval] = None,
+    ) -&gt; dict:
+        &#34;&#34;&#34;
+        Return indy proof request corresponding to presentation preview.
+
+        Typically the verifier turns the proof preview into a proof request.
+
+        Args:
+            name: for proof request
+            version: version for proof request
+            nonce: nonce for proof request
+            ledger: ledger with credential definitions, to check for revocation support
+            non_revoc_intervals: non-revocation interval to use per cred def id
+                where applicable (default from and to the current time if applicable)
+
+        Returns:
+            Indy proof request dict.
+
+        &#34;&#34;&#34;
+
+        def non_revoc(cred_def_id: str) -&gt; NonRevocationInterval:
+            &#34;&#34;&#34;Non-revocation interval to use for input cred def id.&#34;&#34;&#34;
+
+            nonlocal epoch_now
+            nonlocal non_revoc_intervals
+
+            return (non_revoc_intervals or {}).get(
+                cred_def_id, NonRevocationInterval(epoch_now, epoch_now)
+            )
+
+        epoch_now = int(time())
+
+        proof_req = {
+            &#34;name&#34;: name or &#34;proof-request&#34;,
+            &#34;version&#34;: version or &#34;1.0&#34;,
+            &#34;nonce&#34;: nonce or await generate_pr_nonce(),
+            &#34;requested_attributes&#34;: {},
+            &#34;requested_predicates&#34;: {},
+        }
+
+        attr_specs_names = {}
+        for attr_spec in self.attributes:
+            if attr_spec.posture == PresAttrSpec.Posture.SELF_ATTESTED:
+                proof_req[&#34;requested_attributes&#34;][
+                    &#34;self_{}_uuid&#34;.format(canon(attr_spec.name))
+                ] = {&#34;name&#34;: attr_spec.name}
+                continue
+
+            cd_id = attr_spec.cred_def_id
+            revoc_support = False
+            if cd_id:
+                if ledger:
+                    async with ledger:
+                        revoc_support = (await ledger.get_credential_definition(cd_id))[
+                            &#34;value&#34;
+                        ].get(&#34;revocation&#34;)
+                interval = non_revoc(cd_id) if revoc_support else None
+
+            if attr_spec.referent:
+                if attr_spec.referent in attr_specs_names:
+                    attr_specs_names[attr_spec.referent][&#34;names&#34;].append(attr_spec.name)
+                else:
+                    attr_specs_names[attr_spec.referent] = {
+                        &#34;names&#34;: [attr_spec.name],
+                        **{
+                            &#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}]
+                            for _ in [&#34;&#34;]
+                            if cd_id
+                        },
+                        **{
+                            &#34;non_revoked&#34;: interval.serialize()
+                            for _ in [&#34;&#34;]
+                            if revoc_support
+                        },
+                    }
+            else:
+                proof_req[&#34;requested_attributes&#34;][
+                    &#34;{}_{}_uuid&#34;.format(
+                        len(proof_req[&#34;requested_attributes&#34;]),
+                        canon(attr_spec.name),
+                    )
+                ] = {
+                    &#34;name&#34;: attr_spec.name,
+                    **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+                    **{
+                        &#34;non_revoked&#34;: interval.serialize()
+                        for _ in [&#34;&#34;]
+                        if revoc_support
+                    },
+                }
+
+        for (reft, attr_spec) in attr_specs_names.items():
+            proof_req[&#34;requested_attributes&#34;][
+                &#34;{}_{}_uuid&#34;.format(
+                    len(proof_req[&#34;requested_attributes&#34;]), canon(attr_spec[&#34;names&#34;][0])
+                )
+            ] = attr_spec
+
+        for pred_spec in self.predicates:
+            cd_id = pred_spec.cred_def_id
+            revoc_support = False
+            if cd_id:
+                if ledger:
+                    async with ledger:
+                        revoc_support = (await ledger.get_credential_definition(cd_id))[
+                            &#34;value&#34;
+                        ].get(&#34;revocation&#34;)
+                interval = non_revoc(cd_id) if revoc_support else None
+
+            proof_req[&#34;requested_predicates&#34;][
+                &#34;{}_{}_{}_uuid&#34;.format(
+                    len(proof_req[&#34;requested_predicates&#34;]),
+                    canon(pred_spec.name),
+                    Predicate.get(pred_spec.predicate).value.fortran,
+                )
+            ] = {
+                &#34;name&#34;: pred_spec.name,
+                &#34;p_type&#34;: pred_spec.predicate,
+                &#34;p_value&#34;: pred_spec.threshold,
+                **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+                **{&#34;non_revoked&#34;: interval.serialize() for _ in [&#34;&#34;] if revoc_support},
+            }
+
+        return proof_req
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        for part in vars(self):
+            if getattr(self, part, None) != getattr(other, part, None):
+                return False
+        return True
+
+
+class PresentationPreviewSchema(BaseModelSchema):
+    &#34;&#34;&#34;Presentation preview schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Presentation preview schema metadata.&#34;&#34;&#34;
+
+        model_class = PresentationPreview
+
+    _type = fields.Str(
+        description=&#34;Message type identifier&#34;,
+        required=False,
+        example=DIDCommPrefix.qualify_current(PRESENTATION_PREVIEW),
+        data_key=&#34;@type&#34;,
+    )
+    attributes = fields.Nested(PresAttrSpecSchema, required=True, many=True)
+    predicates = fields.Nested(PresPredSpecSchema, required=True, many=True)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec"><code class="flex name class">
+<span>class <span class="ident">PresAttrSpec</span></span>
+<span>(</span><span>name: str, cred_def_id: str = None, mime_type: str = None, value: str = None, referent: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class representing an attibute specification within a presentation preview.</p>
+<p>Initialize attribute specification object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>attribute name</dd>
+<dt><strong><code>cred_def_id</code></strong></dt>
+<dd>credential definition identifier
+(None for self-attested attribute)</dd>
+<dt><strong><code>mime_type</code></strong></dt>
+<dd>MIME type</dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>attribute value as credential stores it
+(None for unrevealed attribute)</dd>
+<dt><strong><code>referent</code></strong></dt>
+<dd>credential referent</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresAttrSpec(BaseModel):
+    &#34;&#34;&#34;Class representing an attibute specification within a presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Attr spec metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresAttrSpecSchema&#34;
+
+    class Posture(Enum):
+        &#34;&#34;&#34;Attribute posture: self-attested, revealed claim or unrevealed claim.&#34;&#34;&#34;
+
+        SELF_ATTESTED = 0
+        REVEALED_CLAIM = 1
+        UNREVEALED_CLAIM = 2
+
+    def __init__(
+        self,
+        name: str,
+        cred_def_id: str = None,
+        mime_type: str = None,
+        value: str = None,
+        referent: str = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize attribute specification object.
+
+        Args:
+            name: attribute name
+            cred_def_id: credential definition identifier
+                (None for self-attested attribute)
+            mime_type: MIME type
+            value: attribute value as credential stores it
+                (None for unrevealed attribute)
+            referent: credential referent
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.name = name
+        self.cred_def_id = cred_def_id
+        self.mime_type = mime_type.lower() if mime_type else None
+        self.value = value
+        self.referent = referent
+
+    @staticmethod
+    def list_plain(plain: dict, cred_def_id: str, referent: str = None):
+        &#34;&#34;&#34;
+        Return a list of `PresAttrSpec` on input cred def id.
+
+        Args:
+            plain: dict mapping names to values
+            cred_def_id: credential definition identifier to specify
+            referent: single referent to use, omit for none
+
+        Returns:
+            List of PresAttrSpec on input cred def id with no MIME types
+
+        &#34;&#34;&#34;
+        return [
+            PresAttrSpec(
+                name=k, cred_def_id=cred_def_id, value=plain[k], referent=referent
+            )
+            for k in plain
+        ]
+
+    @property
+    def posture(self) -&gt; &#34;PresAttrSpec.Posture&#34;:
+        &#34;&#34;&#34;Attribute posture: self-attested, revealed claim, or unrevealed claim.&#34;&#34;&#34;
+
+        if self.cred_def_id:
+            if self.value:
+                return PresAttrSpec.Posture.REVEALED_CLAIM
+            return PresAttrSpec.Posture.UNREVEALED_CLAIM
+        if self.value:
+            return PresAttrSpec.Posture.SELF_ATTESTED
+
+        return None
+
+    def b64_decoded_value(self) -&gt; str:
+        &#34;&#34;&#34;Value, base64-decoded if applicable.&#34;&#34;&#34;
+
+        return b64_to_str(self.value) if self.value and self.mime_type else self.value
+
+    def satisfies(self, pred_spec: PresPredSpec):
+        &#34;&#34;&#34;Whether current specified attribute satisfies input specified predicate.&#34;&#34;&#34;
+
+        return bool(
+            self.value
+            and not self.mime_type
+            and canon(self.name) == canon(pred_spec.name)
+            and not pred_spec.cred_def_id
+            or (self.cred_def_id == pred_spec.cred_def_id)
+            and Predicate.get(pred_spec.predicate).value.yes(
+                self.value, pred_spec.threshold
+            )
+        )
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        if canon(self.name) != canon(other.name):
+            return False  # distinct attribute names
+
+        if self.cred_def_id != other.cred_def_id:
+            return False  # distinct attribute cred def ids
+
+        if self.mime_type != other.mime_type:
+            return False  # distinct MIME types
+
+        if self.referent != other.referent:
+            return False  # distinct credential referents
+
+        return self.b64_decoded_value() == other.b64_decoded_value()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Attr spec metadata.</p></div>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Posture"><code class="name">var <span class="ident">Posture</span></code></dt>
+<dd>
+<div class="desc"><p>Attribute posture: self-attested, revealed claim or unrevealed claim.</p></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.list_plain"><code class="name flex">
+<span>def <span class="ident">list_plain</span></span>(<span>plain: dict, cred_def_id: str, referent: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a list of <code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec">PresAttrSpec</a></code> on input cred def id.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>plain</code></strong></dt>
+<dd>dict mapping names to values</dd>
+<dt><strong><code>cred_def_id</code></strong></dt>
+<dd>credential definition identifier to specify</dd>
+<dt><strong><code>referent</code></strong></dt>
+<dd>single referent to use, omit for none</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of PresAttrSpec on input cred def id with no MIME types</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def list_plain(plain: dict, cred_def_id: str, referent: str = None):
+    &#34;&#34;&#34;
+    Return a list of `PresAttrSpec` on input cred def id.
+
+    Args:
+        plain: dict mapping names to values
+        cred_def_id: credential definition identifier to specify
+        referent: single referent to use, omit for none
+
+    Returns:
+        List of PresAttrSpec on input cred def id with no MIME types
+
+    &#34;&#34;&#34;
+    return [
+        PresAttrSpec(
+            name=k, cred_def_id=cred_def_id, value=plain[k], referent=referent
+        )
+        for k in plain
+    ]</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.posture"><code class="name">var <span class="ident">posture</span> : <a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Posture" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Posture">PresAttrSpec.Posture</a></code></dt>
+<dd>
+<div class="desc"><p>Attribute posture: self-attested, revealed claim, or unrevealed claim.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def posture(self) -&gt; &#34;PresAttrSpec.Posture&#34;:
+    &#34;&#34;&#34;Attribute posture: self-attested, revealed claim, or unrevealed claim.&#34;&#34;&#34;
+
+    if self.cred_def_id:
+        if self.value:
+            return PresAttrSpec.Posture.REVEALED_CLAIM
+        return PresAttrSpec.Posture.UNREVEALED_CLAIM
+    if self.value:
+        return PresAttrSpec.Posture.SELF_ATTESTED
+
+    return None</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.b64_decoded_value"><code class="name flex">
+<span>def <span class="ident">b64_decoded_value</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Value, base64-decoded if applicable.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def b64_decoded_value(self) -&gt; str:
+    &#34;&#34;&#34;Value, base64-decoded if applicable.&#34;&#34;&#34;
+
+    return b64_to_str(self.value) if self.value and self.mime_type else self.value</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.satisfies"><code class="name flex">
+<span>def <span class="ident">satisfies</span></span>(<span>self, pred_spec: <a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec">PresPredSpec</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Whether current specified attribute satisfies input specified predicate.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def satisfies(self, pred_spec: PresPredSpec):
+    &#34;&#34;&#34;Whether current specified attribute satisfies input specified predicate.&#34;&#34;&#34;
+
+    return bool(
+        self.value
+        and not self.mime_type
+        and canon(self.name) == canon(pred_spec.name)
+        and not pred_spec.cred_def_id
+        or (self.cred_def_id == pred_spec.cred_def_id)
+        and Predicate.get(pred_spec.predicate).value.yes(
+            self.value, pred_spec.threshold
+        )
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema"><code class="flex name class">
+<span>class <span class="ident">PresAttrSpecSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attribute specifiation schema.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresAttrSpecSchema(BaseModelSchema):
+    &#34;&#34;&#34;Attribute specifiation schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Attribute specifiation schema metadata.&#34;&#34;&#34;
+
+        model_class = PresAttrSpec
+
+    name = fields.Str(
+        description=&#34;Attribute name&#34;, required=True, example=&#34;favourite_drink&#34;
+    )
+    cred_def_id = fields.Str(required=False, **INDY_CRED_DEF_ID)
+    mime_type = fields.Str(
+        description=&#34;MIME type (default null)&#34;,
+        required=False,
+        data_key=&#34;mime-type&#34;,
+        example=&#34;image/jpeg&#34;,
+    )
+    value = fields.Str(description=&#34;Attribute value&#34;, required=False, example=&#34;martini&#34;)
+    referent = fields.Str(
+        description=&#34;Credential referent&#34;, required=False, example=&#34;0&#34;
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Attribute specifiation schema metadata.</p></div>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec"><code class="flex name class">
+<span>class <span class="ident">PresPredSpec</span></span>
+<span>(</span><span>name: str, *, cred_def_id: str = None, predicate: str, threshold: int, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class representing a predicate specification within a presentation preview.</p>
+<p>Initialize
+preview object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>attribute name</dd>
+<dt><strong><code>cred_def_id</code></strong></dt>
+<dd>credential definition identifier</dd>
+<dt><strong><code>predicate</code></strong></dt>
+<dd>predicate type (e.g., "&gt;=")</dd>
+<dt><strong><code>threshold</code></strong></dt>
+<dd>threshold value</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresPredSpec(BaseModel):
+    &#34;&#34;&#34;Class representing a predicate specification within a presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Pred spec metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresPredSpecSchema&#34;
+
+    def __init__(
+        self,
+        name: str,
+        *,
+        cred_def_id: str = None,
+        predicate: str,
+        threshold: int,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize  preview object.
+
+        Args:
+            name: attribute name
+            cred_def_id: credential definition identifier
+            predicate: predicate type (e.g., &#34;&gt;=&#34;)
+            threshold: threshold value
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.name = name
+        self.cred_def_id = cred_def_id
+        self.predicate = predicate
+        self.threshold = threshold
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        if canon(self.name) != canon(other.name):
+            return False  # distinct attribute names modulo canonicalization
+
+        if self.cred_def_id != other.cred_def_id:
+            return False
+
+        if self.predicate != other.predicate:
+            return False
+
+        return self.threshold == other.threshold</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Pred spec metadata.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema"><code class="flex name class">
+<span>class <span class="ident">PresPredSpecSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Predicate specifiation schema.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresPredSpecSchema(BaseModelSchema):
+    &#34;&#34;&#34;Predicate specifiation schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Predicate specifiation schema metadata.&#34;&#34;&#34;
+
+        model_class = PresPredSpec
+
+    name = fields.Str(description=&#34;Attribute name&#34;, required=True, example=&#34;high_score&#34;)
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    predicate = fields.Str(
+        description=&#34;Predicate type (&#39;&lt;&#39;, &#39;&lt;=&#39;, &#39;&gt;=&#39;, or &#39;&gt;&#39;)&#34;,
+        required=True,
+        **INDY_PREDICATE,
+    )
+    threshold = fields.Int(description=&#34;Threshold value&#34;, required=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Predicate specifiation schema metadata.</p></div>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview"><code class="flex name class">
+<span>class <span class="ident">PresentationPreview</span></span>
+<span>(</span><span>*, attributes: Sequence[<a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec">PresAttrSpec</a>] = None, predicates: Sequence[<a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec">PresPredSpec</a>] = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class representing presentation preview.</p>
+<p>Initialize presentation preview object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_type</code></strong></dt>
+<dd>formalism for Marshmallow model creation: ignored</dd>
+<dt><strong><code>attributes</code></strong></dt>
+<dd>list of attribute specifications</dd>
+<dt><strong><code>predicates</code></strong></dt>
+<dd>list of predicate specifications</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresentationPreview(BaseModel):
+    &#34;&#34;&#34;Class representing presentation preview.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Presentation preview metadata.&#34;&#34;&#34;
+
+        schema_class = &#34;PresentationPreviewSchema&#34;
+        message_type = PRESENTATION_PREVIEW
+
+    def __init__(
+        self,
+        *,
+        _type: str = None,
+        attributes: Sequence[PresAttrSpec] = None,
+        predicates: Sequence[PresPredSpec] = None,
+        **kwargs,
+    ):
+        &#34;&#34;&#34;
+        Initialize presentation preview object.
+
+        Args:
+            _type: formalism for Marshmallow model creation: ignored
+            attributes: list of attribute specifications
+            predicates: list of predicate specifications
+
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+        self.attributes = list(attributes) if attributes else []
+        self.predicates = list(predicates) if predicates else []
+
+    @property
+    def _type(self):
+        &#34;&#34;&#34;Accessor for message type.&#34;&#34;&#34;
+
+        return DIDCommPrefix.qualify_current(PresentationPreview.Meta.message_type)
+
+    def has_attr_spec(self, cred_def_id: str, name: str, value: str) -&gt; bool:
+        &#34;&#34;&#34;
+        Return whether preview contains given attribute specification.
+
+        Args:
+            cred_def_id: credential definition identifier
+            name: attribute name
+            value: attribute value
+
+        Returns:
+            Whether preview contains matching attribute specification.
+
+        &#34;&#34;&#34;
+
+        return any(
+            canon(a.name) == canon(name)
+            and a.value in (value, None)
+            and a.cred_def_id == cred_def_id
+            for a in self.attributes
+        )
+
+    async def indy_proof_request(
+        self,
+        name: str = None,
+        version: str = None,
+        nonce: str = None,
+        ledger: IndyLedger = None,
+        non_revoc_intervals: Mapping[str, NonRevocationInterval] = None,
+    ) -&gt; dict:
+        &#34;&#34;&#34;
+        Return indy proof request corresponding to presentation preview.
+
+        Typically the verifier turns the proof preview into a proof request.
+
+        Args:
+            name: for proof request
+            version: version for proof request
+            nonce: nonce for proof request
+            ledger: ledger with credential definitions, to check for revocation support
+            non_revoc_intervals: non-revocation interval to use per cred def id
+                where applicable (default from and to the current time if applicable)
+
+        Returns:
+            Indy proof request dict.
+
+        &#34;&#34;&#34;
+
+        def non_revoc(cred_def_id: str) -&gt; NonRevocationInterval:
+            &#34;&#34;&#34;Non-revocation interval to use for input cred def id.&#34;&#34;&#34;
+
+            nonlocal epoch_now
+            nonlocal non_revoc_intervals
+
+            return (non_revoc_intervals or {}).get(
+                cred_def_id, NonRevocationInterval(epoch_now, epoch_now)
+            )
+
+        epoch_now = int(time())
+
+        proof_req = {
+            &#34;name&#34;: name or &#34;proof-request&#34;,
+            &#34;version&#34;: version or &#34;1.0&#34;,
+            &#34;nonce&#34;: nonce or await generate_pr_nonce(),
+            &#34;requested_attributes&#34;: {},
+            &#34;requested_predicates&#34;: {},
+        }
+
+        attr_specs_names = {}
+        for attr_spec in self.attributes:
+            if attr_spec.posture == PresAttrSpec.Posture.SELF_ATTESTED:
+                proof_req[&#34;requested_attributes&#34;][
+                    &#34;self_{}_uuid&#34;.format(canon(attr_spec.name))
+                ] = {&#34;name&#34;: attr_spec.name}
+                continue
+
+            cd_id = attr_spec.cred_def_id
+            revoc_support = False
+            if cd_id:
+                if ledger:
+                    async with ledger:
+                        revoc_support = (await ledger.get_credential_definition(cd_id))[
+                            &#34;value&#34;
+                        ].get(&#34;revocation&#34;)
+                interval = non_revoc(cd_id) if revoc_support else None
+
+            if attr_spec.referent:
+                if attr_spec.referent in attr_specs_names:
+                    attr_specs_names[attr_spec.referent][&#34;names&#34;].append(attr_spec.name)
+                else:
+                    attr_specs_names[attr_spec.referent] = {
+                        &#34;names&#34;: [attr_spec.name],
+                        **{
+                            &#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}]
+                            for _ in [&#34;&#34;]
+                            if cd_id
+                        },
+                        **{
+                            &#34;non_revoked&#34;: interval.serialize()
+                            for _ in [&#34;&#34;]
+                            if revoc_support
+                        },
+                    }
+            else:
+                proof_req[&#34;requested_attributes&#34;][
+                    &#34;{}_{}_uuid&#34;.format(
+                        len(proof_req[&#34;requested_attributes&#34;]),
+                        canon(attr_spec.name),
+                    )
+                ] = {
+                    &#34;name&#34;: attr_spec.name,
+                    **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+                    **{
+                        &#34;non_revoked&#34;: interval.serialize()
+                        for _ in [&#34;&#34;]
+                        if revoc_support
+                    },
+                }
+
+        for (reft, attr_spec) in attr_specs_names.items():
+            proof_req[&#34;requested_attributes&#34;][
+                &#34;{}_{}_uuid&#34;.format(
+                    len(proof_req[&#34;requested_attributes&#34;]), canon(attr_spec[&#34;names&#34;][0])
+                )
+            ] = attr_spec
+
+        for pred_spec in self.predicates:
+            cd_id = pred_spec.cred_def_id
+            revoc_support = False
+            if cd_id:
+                if ledger:
+                    async with ledger:
+                        revoc_support = (await ledger.get_credential_definition(cd_id))[
+                            &#34;value&#34;
+                        ].get(&#34;revocation&#34;)
+                interval = non_revoc(cd_id) if revoc_support else None
+
+            proof_req[&#34;requested_predicates&#34;][
+                &#34;{}_{}_{}_uuid&#34;.format(
+                    len(proof_req[&#34;requested_predicates&#34;]),
+                    canon(pred_spec.name),
+                    Predicate.get(pred_spec.predicate).value.fortran,
+                )
+            ] = {
+                &#34;name&#34;: pred_spec.name,
+                &#34;p_type&#34;: pred_spec.predicate,
+                &#34;p_value&#34;: pred_spec.threshold,
+                **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+                **{&#34;non_revoked&#34;: interval.serialize() for _ in [&#34;&#34;] if revoc_support},
+            }
+
+        return proof_req
+
+    def __eq__(self, other):
+        &#34;&#34;&#34;Equality comparator.&#34;&#34;&#34;
+
+        for part in vars(self):
+            if getattr(self, part, None) != getattr(other, part, None):
+                return False
+        return True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Presentation preview metadata.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.has_attr_spec"><code class="name flex">
+<span>def <span class="ident">has_attr_spec</span></span>(<span>self, cred_def_id: str, name: str, value: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return whether preview contains given attribute specification.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cred_def_id</code></strong></dt>
+<dd>credential definition identifier</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>attribute name</dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>attribute value</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Whether preview contains matching attribute specification.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_attr_spec(self, cred_def_id: str, name: str, value: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Return whether preview contains given attribute specification.
+
+    Args:
+        cred_def_id: credential definition identifier
+        name: attribute name
+        value: attribute value
+
+    Returns:
+        Whether preview contains matching attribute specification.
+
+    &#34;&#34;&#34;
+
+    return any(
+        canon(a.name) == canon(name)
+        and a.value in (value, None)
+        and a.cred_def_id == cred_def_id
+        for a in self.attributes
+    )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.indy_proof_request"><code class="name flex">
+<span>async def <span class="ident">indy_proof_request</span></span>(<span>self, name: str = None, version: str = None, nonce: str = None, ledger: aries_cloudagent.ledger.indy.IndyLedger = None, non_revoc_intervals: Mapping[str, aries_cloudagent.revocation.models.indy.NonRevocationInterval] = None) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return indy proof request corresponding to presentation preview.</p>
+<p>Typically the verifier turns the proof preview into a proof request.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>for proof request</dd>
+<dt><strong><code>version</code></strong></dt>
+<dd>version for proof request</dd>
+<dt><strong><code>nonce</code></strong></dt>
+<dd>nonce for proof request</dd>
+<dt><strong><code>ledger</code></strong></dt>
+<dd>ledger with credential definitions, to check for revocation support</dd>
+<dt><strong><code>non_revoc_intervals</code></strong></dt>
+<dd>non-revocation interval to use per cred def id
+where applicable (default from and to the current time if applicable)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Indy proof request dict.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def indy_proof_request(
+    self,
+    name: str = None,
+    version: str = None,
+    nonce: str = None,
+    ledger: IndyLedger = None,
+    non_revoc_intervals: Mapping[str, NonRevocationInterval] = None,
+) -&gt; dict:
+    &#34;&#34;&#34;
+    Return indy proof request corresponding to presentation preview.
+
+    Typically the verifier turns the proof preview into a proof request.
+
+    Args:
+        name: for proof request
+        version: version for proof request
+        nonce: nonce for proof request
+        ledger: ledger with credential definitions, to check for revocation support
+        non_revoc_intervals: non-revocation interval to use per cred def id
+            where applicable (default from and to the current time if applicable)
+
+    Returns:
+        Indy proof request dict.
+
+    &#34;&#34;&#34;
+
+    def non_revoc(cred_def_id: str) -&gt; NonRevocationInterval:
+        &#34;&#34;&#34;Non-revocation interval to use for input cred def id.&#34;&#34;&#34;
+
+        nonlocal epoch_now
+        nonlocal non_revoc_intervals
+
+        return (non_revoc_intervals or {}).get(
+            cred_def_id, NonRevocationInterval(epoch_now, epoch_now)
+        )
+
+    epoch_now = int(time())
+
+    proof_req = {
+        &#34;name&#34;: name or &#34;proof-request&#34;,
+        &#34;version&#34;: version or &#34;1.0&#34;,
+        &#34;nonce&#34;: nonce or await generate_pr_nonce(),
+        &#34;requested_attributes&#34;: {},
+        &#34;requested_predicates&#34;: {},
+    }
+
+    attr_specs_names = {}
+    for attr_spec in self.attributes:
+        if attr_spec.posture == PresAttrSpec.Posture.SELF_ATTESTED:
+            proof_req[&#34;requested_attributes&#34;][
+                &#34;self_{}_uuid&#34;.format(canon(attr_spec.name))
+            ] = {&#34;name&#34;: attr_spec.name}
+            continue
+
+        cd_id = attr_spec.cred_def_id
+        revoc_support = False
+        if cd_id:
+            if ledger:
+                async with ledger:
+                    revoc_support = (await ledger.get_credential_definition(cd_id))[
+                        &#34;value&#34;
+                    ].get(&#34;revocation&#34;)
+            interval = non_revoc(cd_id) if revoc_support else None
+
+        if attr_spec.referent:
+            if attr_spec.referent in attr_specs_names:
+                attr_specs_names[attr_spec.referent][&#34;names&#34;].append(attr_spec.name)
+            else:
+                attr_specs_names[attr_spec.referent] = {
+                    &#34;names&#34;: [attr_spec.name],
+                    **{
+                        &#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}]
+                        for _ in [&#34;&#34;]
+                        if cd_id
+                    },
+                    **{
+                        &#34;non_revoked&#34;: interval.serialize()
+                        for _ in [&#34;&#34;]
+                        if revoc_support
+                    },
+                }
+        else:
+            proof_req[&#34;requested_attributes&#34;][
+                &#34;{}_{}_uuid&#34;.format(
+                    len(proof_req[&#34;requested_attributes&#34;]),
+                    canon(attr_spec.name),
+                )
+            ] = {
+                &#34;name&#34;: attr_spec.name,
+                **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+                **{
+                    &#34;non_revoked&#34;: interval.serialize()
+                    for _ in [&#34;&#34;]
+                    if revoc_support
+                },
+            }
+
+    for (reft, attr_spec) in attr_specs_names.items():
+        proof_req[&#34;requested_attributes&#34;][
+            &#34;{}_{}_uuid&#34;.format(
+                len(proof_req[&#34;requested_attributes&#34;]), canon(attr_spec[&#34;names&#34;][0])
+            )
+        ] = attr_spec
+
+    for pred_spec in self.predicates:
+        cd_id = pred_spec.cred_def_id
+        revoc_support = False
+        if cd_id:
+            if ledger:
+                async with ledger:
+                    revoc_support = (await ledger.get_credential_definition(cd_id))[
+                        &#34;value&#34;
+                    ].get(&#34;revocation&#34;)
+            interval = non_revoc(cd_id) if revoc_support else None
+
+        proof_req[&#34;requested_predicates&#34;][
+            &#34;{}_{}_{}_uuid&#34;.format(
+                len(proof_req[&#34;requested_predicates&#34;]),
+                canon(pred_spec.name),
+                Predicate.get(pred_spec.predicate).value.fortran,
+            )
+        ] = {
+            &#34;name&#34;: pred_spec.name,
+            &#34;p_type&#34;: pred_spec.predicate,
+            &#34;p_value&#34;: pred_spec.threshold,
+            **{&#34;restrictions&#34;: [{&#34;cred_def_id&#34;: cd_id}] for _ in [&#34;&#34;] if cd_id},
+            **{&#34;non_revoked&#34;: interval.serialize() for _ in [&#34;&#34;] if revoc_support},
+        }
+
+    return proof_req</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema"><code class="flex name class">
+<span>class <span class="ident">PresentationPreviewSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Presentation preview schema.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PresentationPreviewSchema(BaseModelSchema):
+    &#34;&#34;&#34;Presentation preview schema.&#34;&#34;&#34;
+
+    class Meta:
+        &#34;&#34;&#34;Presentation preview schema metadata.&#34;&#34;&#34;
+
+        model_class = PresentationPreview
+
+    _type = fields.Str(
+        description=&#34;Message type identifier&#34;,
+        required=False,
+        example=DIDCommPrefix.qualify_current(PRESENTATION_PREVIEW),
+        data_key=&#34;@type&#34;,
+    )
+    attributes = fields.Nested(PresAttrSpecSchema, required=True, many=True)
+    predicates = fields.Nested(PresPredSpecSchema, required=True, many=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"><p>Presentation preview schema metadata.</p></div>
+</dd>
+<dt id="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner" href="index.html">mydata_did.patched_protocols.present_proof.v1_0.messages.inner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec">PresAttrSpec</a></code></h4>
+<ul class="two-column">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Posture" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.Posture">Posture</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.b64_decoded_value" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.b64_decoded_value">b64_decoded_value</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.list_plain" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.list_plain">list_plain</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.posture" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.posture">posture</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.satisfies" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpec.satisfies">satisfies</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema">PresAttrSpecSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.opts" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresAttrSpecSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec">PresPredSpec</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpec.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema">PresPredSpecSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.opts" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresPredSpecSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview">PresentationPreview</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.has_attr_spec" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.has_attr_spec">has_attr_spec</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.indy_proof_request" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreview.indy_proof_request">indy_proof_request</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema">PresentationPreviewSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.Meta" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.opts" href="#mydata_did.patched_protocols.present_proof.v1_0.messages.inner.presentation_preview.PresentationPreviewSchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

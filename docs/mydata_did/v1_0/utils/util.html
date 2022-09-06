@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.utils.util API documentation</title>
+<meta name="description" content="DIDDoc utility methods …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.utils.util</code></h1>
+</header>
+<section id="section-intro">
+<p>DIDDoc utility methods.</p>
+<p>Copyright 2017-2019 Government of Canada
+Public Services and Procurement Canada - buyandsell.gc.ca</p>
+<p>Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+DIDDoc utility methods.
+
+Copyright 2017-2019 Government of Canada
+Public Services and Procurement Canada - buyandsell.gc.ca
+
+Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+&#34;&#34;&#34;
+
+import datetime
+import semver
+
+from urllib.parse import urlparse
+from multibase import decode
+
+
+if __name__ == &#34;__main__&#34;:
+    from mydata_did.v1_0.utils.regex import MYDATA_DID_PATTERN
+else:
+    from .regex import MYDATA_DID_PATTERN
+
+
+def resource(ref: str, delimiter: str = None) -&gt; str:
+    &#34;&#34;&#34;
+    Extract the resource for an identifier.
+
+    Given a (URI) reference, return up to its delimiter (exclusively), or all of it if
+    there is none.
+
+    Args:
+        ref: reference
+        delimiter: delimiter character
+            (default None maps to &#39;#&#39;, or &#39;;&#39; introduces identifiers)
+    &#34;&#34;&#34;
+
+    return ref.split(delimiter if delimiter else &#34;#&#34;)[0]
+
+
+def derive_did_type(uri: str) -&gt; str:
+    mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
+    if mydata_did_pattern_match:
+        return mydata_did_pattern_match.group(&#39;did_type&#39;)
+    return None
+
+
+def canon_did(uri: str) -&gt; str:
+    &#34;&#34;&#34;
+    Convert a URI into a DID if need be, left-stripping &#39;did:mydata:&#39; if present.
+
+    Args:
+        uri: input URI or DID
+
+    Raises:
+        ValueError: for invalid input.
+
+    &#34;&#34;&#34;
+
+    if ok_did(uri):
+        return uri
+
+    if uri.startswith(&#34;did:mydata:&#34;):
+        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
+        if mydata_did_pattern_match:
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                &#39;did_type&#39;) else 11
+            rv = uri[prefix_end:]
+            if ok_did(rv):
+                return rv
+    raise ValueError(
+        &#34;Bad specification {} does not correspond to a MyData DID&#34;.format(uri)
+    )
+
+
+def canon_ref(did: str, ref: str, delimiter: str = None, did_type: str = None):
+    &#34;&#34;&#34;
+    Given a reference in a DID document, return it in its canonical form of a URI.
+
+    Args:
+        did: DID acting as the identifier of the DID document
+        ref: reference to canonicalize, either a DID or a fragment pointing to a
+            location in the DID doc
+        delimiter: delimiter character marking fragment (default &#39;#&#39;) or
+            introducing identifier (&#39;;&#39;) against DID resource
+    &#34;&#34;&#34;
+
+    if not ok_did(did):
+        raise ValueError(
+            &#34;Bad DID {} cannot act as DID document identifier&#34;.format(did))
+
+    if ok_did(ref):  # e.g., LjgpST2rjsoxYegQDRm7EL
+        return &#34;did:mydata:{}&#34;.format(did) if not did_type else &#34;did:mydata:{}:{}&#34;.format(did_type, did)
+
+    if ok_did(resource(ref, delimiter)):  # e.g., LjgpST2rjsoxYegQDRm7EL#keys-1
+        return &#34;did:mydata:{}&#34;.format(ref) if not did_type else &#34;did:mydata:{}:{}&#34;.format(did_type, did)
+
+    if ref.startswith(
+        &#34;did:mydata:&#34;
+    ):  # e.g., did:mydata:LjgpST2rjsoxYegQDRm7EL, did:mydata:LjgpST2rjsoxYegQDRm7EL#3
+        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(
+            resource(ref, delimiter))
+        if mydata_did_pattern_match:
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                &#39;did_type&#39;) else 11
+            rv = ref[prefix_end:]
+            if ok_did(resource(rv, delimiter)):
+                return ref
+        raise ValueError(
+            &#34;Bad URI {} does not correspond to a MyData DID&#34;.format(ref))
+
+    if urlparse(ref).scheme:  # e.g., https://example.com/messages/8377464
+        return ref
+
+    return &#34;did:mydata:{}{}{}&#34;.format(did, delimiter if delimiter else &#34;#&#34;, ref) if not did_type else &#34;did:mydata:{}:{}{}{}&#34;.format(did_type, did, delimiter if delimiter else &#34;#&#34;, ref)
+
+
+def ok_did(token: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Whether input token looks like a valid decentralized identifier.
+
+    Args:
+        token: candidate string
+
+    Returns: whether input token looks like a valid schema identifier
+
+    &#34;&#34;&#34;
+    try:
+        return len(decode(token)) == 34 if token else False
+    except ValueError:
+        return False
+
+
+def current_datetime_in_iso8601() -&gt; str:
+    &#34;&#34;&#34;
+    Return current datetime in ISO8601 format.
+    &#34;&#34;&#34;
+    return str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())
+
+
+def str_to_bool(s: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Convert a string to a boolean.
+
+    Args:
+        s: string to convert
+
+    Returns: boolean value
+
+    &#34;&#34;&#34;
+
+    if not isinstance(s, str):
+        return False
+
+    if s.lower() in [&#39;true&#39;, &#39;t&#39;, &#39;1&#39;]:
+        return True
+    elif s.lower() in [&#39;false&#39;, &#39;f&#39;, &#39;0&#39;]:
+        return False
+    else:
+        raise ValueError(&#39;Cannot convert string to boolean: {}&#39;.format(s))
+
+
+def bool_to_str(b: bool) -&gt; str:
+    &#34;&#34;&#34;
+    Convert a boolean to a string.
+
+    Args:
+        b: boolean to convert
+
+    Returns: string value
+
+    &#34;&#34;&#34;
+    return &#39;true&#39; if b else &#39;false&#39;
+
+
+def int_to_semver_str(int_version: int) -&gt; str:
+    &#34;&#34;&#34;
+    Convert integer version to semver string.
+    &#34;&#34;&#34;
+    return str(semver.VersionInfo(str(int_version)))
+
+
+def comma_separated_str_to_list(s: str) -&gt; list:
+    &#34;&#34;&#34;
+    Convert a comma separated string to a list.
+
+    Args:
+        s: string to convert
+
+    Returns: list value
+
+    &#34;&#34;&#34;
+    return s.split(&#39;,&#39;)
+
+
+def get_slices(page, page_size=10):
+    &#34;&#34;&#34;
+    Get the start and end indices for the given page and page size.
+
+    Args:
+        page: page number
+        page_size: page size
+
+    Returns: start and end indices
+
+    &#34;&#34;&#34;
+    start = (page - 1) * page_size
+
+    end = start + page_size
+
+    return start, end
+
+
+if __name__ == &#34;__main__&#34;:
+    print(canon_did(&#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.util.bool_to_str"><code class="name flex">
+<span>def <span class="ident">bool_to_str</span></span>(<span>b: bool) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a boolean to a string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>b</code></strong></dt>
+<dd>boolean to convert</dd>
+</dl>
+<p>Returns: string value</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bool_to_str(b: bool) -&gt; str:
+    &#34;&#34;&#34;
+    Convert a boolean to a string.
+
+    Args:
+        b: boolean to convert
+
+    Returns: string value
+
+    &#34;&#34;&#34;
+    return &#39;true&#39; if b else &#39;false&#39;</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.canon_did"><code class="name flex">
+<span>def <span class="ident">canon_did</span></span>(<span>uri: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a URI into a DID if need be, left-stripping 'did:mydata:' if present.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>uri</code></strong></dt>
+<dd>input URI or DID</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>for invalid input.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def canon_did(uri: str) -&gt; str:
+    &#34;&#34;&#34;
+    Convert a URI into a DID if need be, left-stripping &#39;did:mydata:&#39; if present.
+
+    Args:
+        uri: input URI or DID
+
+    Raises:
+        ValueError: for invalid input.
+
+    &#34;&#34;&#34;
+
+    if ok_did(uri):
+        return uri
+
+    if uri.startswith(&#34;did:mydata:&#34;):
+        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
+        if mydata_did_pattern_match:
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                &#39;did_type&#39;) else 11
+            rv = uri[prefix_end:]
+            if ok_did(rv):
+                return rv
+    raise ValueError(
+        &#34;Bad specification {} does not correspond to a MyData DID&#34;.format(uri)
+    )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.canon_ref"><code class="name flex">
+<span>def <span class="ident">canon_ref</span></span>(<span>did: str, ref: str, delimiter: str = None, did_type: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Given a reference in a DID document, return it in its canonical form of a URI.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did</code></strong></dt>
+<dd>DID acting as the identifier of the DID document</dd>
+<dt><strong><code>ref</code></strong></dt>
+<dd>reference to canonicalize, either a DID or a fragment pointing to a
+location in the DID doc</dd>
+<dt><strong><code>delimiter</code></strong></dt>
+<dd>delimiter character marking fragment (default '#') or
+introducing identifier (';') against DID resource</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def canon_ref(did: str, ref: str, delimiter: str = None, did_type: str = None):
+    &#34;&#34;&#34;
+    Given a reference in a DID document, return it in its canonical form of a URI.
+
+    Args:
+        did: DID acting as the identifier of the DID document
+        ref: reference to canonicalize, either a DID or a fragment pointing to a
+            location in the DID doc
+        delimiter: delimiter character marking fragment (default &#39;#&#39;) or
+            introducing identifier (&#39;;&#39;) against DID resource
+    &#34;&#34;&#34;
+
+    if not ok_did(did):
+        raise ValueError(
+            &#34;Bad DID {} cannot act as DID document identifier&#34;.format(did))
+
+    if ok_did(ref):  # e.g., LjgpST2rjsoxYegQDRm7EL
+        return &#34;did:mydata:{}&#34;.format(did) if not did_type else &#34;did:mydata:{}:{}&#34;.format(did_type, did)
+
+    if ok_did(resource(ref, delimiter)):  # e.g., LjgpST2rjsoxYegQDRm7EL#keys-1
+        return &#34;did:mydata:{}&#34;.format(ref) if not did_type else &#34;did:mydata:{}:{}&#34;.format(did_type, did)
+
+    if ref.startswith(
+        &#34;did:mydata:&#34;
+    ):  # e.g., did:mydata:LjgpST2rjsoxYegQDRm7EL, did:mydata:LjgpST2rjsoxYegQDRm7EL#3
+        mydata_did_pattern_match = MYDATA_DID_PATTERN.match(
+            resource(ref, delimiter))
+        if mydata_did_pattern_match:
+            prefix_end = 13 if mydata_did_pattern_match.group(
+                &#39;did_type&#39;) else 11
+            rv = ref[prefix_end:]
+            if ok_did(resource(rv, delimiter)):
+                return ref
+        raise ValueError(
+            &#34;Bad URI {} does not correspond to a MyData DID&#34;.format(ref))
+
+    if urlparse(ref).scheme:  # e.g., https://example.com/messages/8377464
+        return ref
+
+    return &#34;did:mydata:{}{}{}&#34;.format(did, delimiter if delimiter else &#34;#&#34;, ref) if not did_type else &#34;did:mydata:{}:{}{}{}&#34;.format(did_type, did, delimiter if delimiter else &#34;#&#34;, ref)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.comma_separated_str_to_list"><code class="name flex">
+<span>def <span class="ident">comma_separated_str_to_list</span></span>(<span>s: str) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a comma separated string to a list.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s</code></strong></dt>
+<dd>string to convert</dd>
+</dl>
+<p>Returns: list value</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def comma_separated_str_to_list(s: str) -&gt; list:
+    &#34;&#34;&#34;
+    Convert a comma separated string to a list.
+
+    Args:
+        s: string to convert
+
+    Returns: list value
+
+    &#34;&#34;&#34;
+    return s.split(&#39;,&#39;)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.current_datetime_in_iso8601"><code class="name flex">
+<span>def <span class="ident">current_datetime_in_iso8601</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return current datetime in ISO8601 format.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def current_datetime_in_iso8601() -&gt; str:
+    &#34;&#34;&#34;
+    Return current datetime in ISO8601 format.
+    &#34;&#34;&#34;
+    return str(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat())</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.derive_did_type"><code class="name flex">
+<span>def <span class="ident">derive_did_type</span></span>(<span>uri: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def derive_did_type(uri: str) -&gt; str:
+    mydata_did_pattern_match = MYDATA_DID_PATTERN.match(uri)
+    if mydata_did_pattern_match:
+        return mydata_did_pattern_match.group(&#39;did_type&#39;)
+    return None</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.get_slices"><code class="name flex">
+<span>def <span class="ident">get_slices</span></span>(<span>page, page_size=10)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the start and end indices for the given page and page size.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>page</code></strong></dt>
+<dd>page number</dd>
+<dt><strong><code>page_size</code></strong></dt>
+<dd>page size</dd>
+</dl>
+<p>Returns: start and end indices</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_slices(page, page_size=10):
+    &#34;&#34;&#34;
+    Get the start and end indices for the given page and page size.
+
+    Args:
+        page: page number
+        page_size: page size
+
+    Returns: start and end indices
+
+    &#34;&#34;&#34;
+    start = (page - 1) * page_size
+
+    end = start + page_size
+
+    return start, end</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.int_to_semver_str"><code class="name flex">
+<span>def <span class="ident">int_to_semver_str</span></span>(<span>int_version: int) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert integer version to semver string.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def int_to_semver_str(int_version: int) -&gt; str:
+    &#34;&#34;&#34;
+    Convert integer version to semver string.
+    &#34;&#34;&#34;
+    return str(semver.VersionInfo(str(int_version)))</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.ok_did"><code class="name flex">
+<span>def <span class="ident">ok_did</span></span>(<span>token: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Whether input token looks like a valid decentralized identifier.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>token</code></strong></dt>
+<dd>candidate string</dd>
+</dl>
+<p>Returns: whether input token looks like a valid schema identifier</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ok_did(token: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Whether input token looks like a valid decentralized identifier.
+
+    Args:
+        token: candidate string
+
+    Returns: whether input token looks like a valid schema identifier
+
+    &#34;&#34;&#34;
+    try:
+        return len(decode(token)) == 34 if token else False
+    except ValueError:
+        return False</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.resource"><code class="name flex">
+<span>def <span class="ident">resource</span></span>(<span>ref: str, delimiter: str = None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract the resource for an identifier.</p>
+<p>Given a (URI) reference, return up to its delimiter (exclusively), or all of it if
+there is none.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ref</code></strong></dt>
+<dd>reference</dd>
+<dt><strong><code>delimiter</code></strong></dt>
+<dd>delimiter character
+(default None maps to '#', or ';' introduces identifiers)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resource(ref: str, delimiter: str = None) -&gt; str:
+    &#34;&#34;&#34;
+    Extract the resource for an identifier.
+
+    Given a (URI) reference, return up to its delimiter (exclusively), or all of it if
+    there is none.
+
+    Args:
+        ref: reference
+        delimiter: delimiter character
+            (default None maps to &#39;#&#39;, or &#39;;&#39; introduces identifiers)
+    &#34;&#34;&#34;
+
+    return ref.split(delimiter if delimiter else &#34;#&#34;)[0]</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.util.str_to_bool"><code class="name flex">
+<span>def <span class="ident">str_to_bool</span></span>(<span>s: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a string to a boolean.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s</code></strong></dt>
+<dd>string to convert</dd>
+</dl>
+<p>Returns: boolean value</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def str_to_bool(s: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Convert a string to a boolean.
+
+    Args:
+        s: string to convert
+
+    Returns: boolean value
+
+    &#34;&#34;&#34;
+
+    if not isinstance(s, str):
+        return False
+
+    if s.lower() in [&#39;true&#39;, &#39;t&#39;, &#39;1&#39;]:
+        return True
+    elif s.lower() in [&#39;false&#39;, &#39;f&#39;, &#39;0&#39;]:
+        return False
+    else:
+        raise ValueError(&#39;Cannot convert string to boolean: {}&#39;.format(s))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.utils" href="index.html">mydata_did.v1_0.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.util.bool_to_str" href="#mydata_did.v1_0.utils.util.bool_to_str">bool_to_str</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.canon_did" href="#mydata_did.v1_0.utils.util.canon_did">canon_did</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.canon_ref" href="#mydata_did.v1_0.utils.util.canon_ref">canon_ref</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.comma_separated_str_to_list" href="#mydata_did.v1_0.utils.util.comma_separated_str_to_list">comma_separated_str_to_list</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.current_datetime_in_iso8601" href="#mydata_did.v1_0.utils.util.current_datetime_in_iso8601">current_datetime_in_iso8601</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.derive_did_type" href="#mydata_did.v1_0.utils.util.derive_did_type">derive_did_type</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.get_slices" href="#mydata_did.v1_0.utils.util.get_slices">get_slices</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.int_to_semver_str" href="#mydata_did.v1_0.utils.util.int_to_semver_str">int_to_semver_str</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.ok_did" href="#mydata_did.v1_0.utils.util.ok_did">ok_did</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.resource" href="#mydata_did.v1_0.utils.util.resource">resource</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.util.str_to_bool" href="#mydata_did.v1_0.utils.util.str_to_bool">str_to_bool</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

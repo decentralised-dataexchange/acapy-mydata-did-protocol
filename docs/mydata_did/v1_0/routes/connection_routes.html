@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.routes.connection_routes API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.routes.connection_routes</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import json
+import uuid
+import logging
+import math
+from aiohttp import web
+from aiohttp_apispec import (
+    docs,
+    request_schema,
+    querystring_schema,
+    response_schema,
+    match_info_schema,
+)
+from aries_cloudagent.messaging.models.base import BaseModelError
+from aries_cloudagent.storage.error import StorageError
+from aries_cloudagent.connections.models.connection_record import (
+    ConnectionRecord,
+)
+from aries_cloudagent.protocols.connections.v1_0.manager import (
+    ConnectionManager,
+    ConnectionManagerError,
+)
+from ..manager import ADAManager, ADAManagerError
+from ..utils.util import (
+    comma_separated_str_to_list,
+    get_slices,
+)
+
+from .openapi import (
+    V2CreateInvitationQueryStringSchema,
+    V2InvitationResultSchema,
+    GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema,
+    GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema,
+    SendExistingConnectionsMessageHandlerMatchInfoSchema,
+    SendExistingConnectionsMessageHandlerRequestSchema,
+    GetExistingConnectionMatchInfoSchema,
+    GetExistingConnectionResponseSchema,
+    ConnectionsListQueryStringSchemaV2,
+    ConnectionListSchema,
+)
+
+LOGGER = logging.getLogger(__name__)
+
+PAGINATION_PAGE_SIZE = 10
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Well-known endpoint for connection&#34;,
+)
+async def wellknown_connection_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Handler for well-known connection for the agent.&#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    auto_accept = True
+    alias = &#34;&#34;
+    public = False
+    multi_use = False
+
+    connection_mgr = ConnectionManager(context)
+    try:
+        (connection, invitation) = await connection_mgr.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            &#34;ServiceEndpoint&#34;: invitation.serialize()[&#34;serviceEndpoint&#34;],
+            &#34;RoutingKey&#34;: &#34;&#34;,
+            &#34;Invitation&#34;: {
+                &#34;label&#34;: invitation.label,
+                &#34;serviceEndpoint&#34;: invitation.serialize()[&#34;serviceEndpoint&#34;],
+                &#34;routingKeys&#34;: [],
+                &#34;recipientKeys&#34;: invitation.serialize()[&#34;recipientKeys&#34;],
+                &#34;@id&#34;: str(uuid.uuid4()),
+                &#34;@type&#34;: &#34;did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation&#34;,
+            },
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Create a new connection invitation (Overridden API)&#34;,
+)
+@querystring_schema(V2CreateInvitationQueryStringSchema())
+@response_schema(V2InvitationResultSchema(), 200)
+async def v2_connections_create_invitation(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection invitation details
+
+    &#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    auto_accept = json.loads(request.query.get(&#34;auto_accept&#34;, &#34;null&#34;))
+    alias = request.query.get(&#34;alias&#34;)
+    public = json.loads(request.query.get(&#34;public&#34;, &#34;false&#34;))
+    multi_use = json.loads(request.query.get(&#34;multi_use&#34;, &#34;false&#34;))
+
+    if public and not context.settings.get(&#34;public_invites&#34;):
+        raise web.HTTPForbidden(
+            reason=&#34;Configuration does not include public invitations&#34;
+        )
+    base_url = context.settings.get(&#34;invite_base_url&#34;)
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        (connection, invitation) = await mydata_did_manager.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            &#34;connection_id&#34;: connection and connection.connection_id,
+            &#34;invitation&#34;: invitation.serialize(),
+            &#34;invitation_url&#34;: invitation.to_url(base_url),
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    if connection and connection.alias:
+        result[&#34;alias&#34;] = connection.alias
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Generate firebase dynamic link for connection invitation&#34;,
+)
+@match_info_schema(GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema())
+@response_schema(
+    GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(), 200
+)
+async def generate_firebase_dynamic_link_for_connection_invitation_handler(
+    request: web.BaseRequest,
+):
+    &#34;&#34;&#34;
+    Request handler for generating firebase dynamic link for connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The firebase dynamic link
+
+    &#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_connection_invitation(
+            conn_id
+        )
+
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({&#34;firebase_dynamic_link&#34;: firebase_dynamic_link})
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Send existing connections message to remote agent.&#34;,
+    responses={
+        200: {
+            &#34;description&#34;: &#34;Success&#34;,
+        }
+    },
+)
+@match_info_schema(SendExistingConnectionsMessageHandlerMatchInfoSchema())
+@request_schema(SendExistingConnectionsMessageHandlerRequestSchema())
+async def send_existing_connections_message_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Send existing connections message to remote agent.&#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Fetch request body
+    body = await request.json()
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        await mydata_did_manager.send_existing_connections_message(
+            body[&#34;theirdid&#34;], conn_id
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=200)
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Fetch existing connection details if any for a current connection.&#34;,
+)
+@match_info_schema(GetExistingConnectionMatchInfoSchema())
+@response_schema(GetExistingConnectionResponseSchema(), 200)
+async def get_existing_connections_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Fetch existing connection details if any for a current connection.&#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    result = {}
+
+    # Call the function
+    result = await mydata_did_manager.fetch_existing_connections_record_for_current_connection(
+        conn_id
+    )
+
+    return web.json_response(result)
+
+
+def connection_sort_key(conn):
+    &#34;&#34;&#34;Get the sorting key for a particular connection.&#34;&#34;&#34;
+    if conn[&#34;state&#34;] == ConnectionRecord.STATE_INACTIVE:
+        pfx = &#34;2&#34;
+    elif conn[&#34;state&#34;] == ConnectionRecord.STATE_INVITATION:
+        pfx = &#34;1&#34;
+    else:
+        pfx = &#34;0&#34;
+    return pfx + conn[&#34;created_at&#34;]
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Query agent-to-agent connections (v2)&#34;,
+)
+@querystring_schema(ConnectionsListQueryStringSchemaV2())
+@response_schema(ConnectionListSchema(), 200)
+async def connections_list_v2(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for searching connection records.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection list response
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    tag_filter = {}
+    for param_name in (
+        &#34;invitation_id&#34;,
+        &#34;my_did&#34;,
+        &#34;their_did&#34;,
+        &#34;request_id&#34;,
+    ):
+        if param_name in request.query and request.query[param_name] != &#34;&#34;:
+            tag_filter[param_name] = request.query[param_name]
+    post_filter = {}
+    for param_name in (
+        &#34;alias&#34;,
+        &#34;initiator&#34;,
+        &#34;state&#34;,
+        &#34;their_role&#34;,
+    ):
+        if param_name in request.query and request.query[param_name] != &#34;&#34;:
+            post_filter[param_name] = request.query[param_name]
+
+    # Pagination parameters
+    pagination = {
+        &#34;totalCount&#34;: 0,
+        &#34;page&#34;: 0,
+        &#34;pageSize&#34;: PAGINATION_PAGE_SIZE,
+        &#34;totalPages&#34;: 0,
+    }
+
+    try:
+
+        records = await ConnectionRecord.query(context, tag_filter, post_filter)
+
+        # Page size from request.
+        page_size = int(request.query.get(&#34;page_size&#34;, PAGINATION_PAGE_SIZE))
+        pagination[&#34;pageSize&#34;] = page_size
+
+        # Total number of records
+        pagination[&#34;totalCount&#34;] = len(records)
+
+        # Total number of pages.
+        pagination[&#34;totalPages&#34;] = math.ceil(
+            pagination[&#34;totalCount&#34;] / pagination[&#34;pageSize&#34;]
+        )
+
+        # Fields to be included in the response.
+        include_fields = request.query.get(&#34;include_fields&#34;)
+        include_fields = (
+            comma_separated_str_to_list(include_fields) if include_fields else None
+        )
+
+        results = ADAManager.serialize_connection_record(records, True, include_fields)
+
+        # Pagination parameters
+        page = request.query.get(&#34;page&#34;)
+        if page:
+            page = int(page)
+            pagination[&#34;page&#34;] = page
+
+            lower, upper = get_slices(page, pagination[&#34;pageSize&#34;])
+
+            results = results[lower:upper]
+
+    except (StorageError, BaseModelError, ValueError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    return web.json_response(
+        {
+            &#34;results&#34;: results,
+            &#34;pagination&#34;: pagination if page else {},
+        }
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="mydata_did.v1_0.routes.connection_routes.connection_sort_key"><code class="name flex">
+<span>def <span class="ident">connection_sort_key</span></span>(<span>conn)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the sorting key for a particular connection.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connection_sort_key(conn):
+    &#34;&#34;&#34;Get the sorting key for a particular connection.&#34;&#34;&#34;
+    if conn[&#34;state&#34;] == ConnectionRecord.STATE_INACTIVE:
+        pfx = &#34;2&#34;
+    elif conn[&#34;state&#34;] == ConnectionRecord.STATE_INVITATION:
+        pfx = &#34;1&#34;
+    else:
+        pfx = &#34;0&#34;
+    return pfx + conn[&#34;created_at&#34;]</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.connections_list_v2"><code class="name flex">
+<span>async def <span class="ident">connections_list_v2</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for searching connection records.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The connection list response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Query agent-to-agent connections (v2)&#34;,
+)
+@querystring_schema(ConnectionsListQueryStringSchemaV2())
+@response_schema(ConnectionListSchema(), 200)
+async def connections_list_v2(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for searching connection records.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection list response
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    tag_filter = {}
+    for param_name in (
+        &#34;invitation_id&#34;,
+        &#34;my_did&#34;,
+        &#34;their_did&#34;,
+        &#34;request_id&#34;,
+    ):
+        if param_name in request.query and request.query[param_name] != &#34;&#34;:
+            tag_filter[param_name] = request.query[param_name]
+    post_filter = {}
+    for param_name in (
+        &#34;alias&#34;,
+        &#34;initiator&#34;,
+        &#34;state&#34;,
+        &#34;their_role&#34;,
+    ):
+        if param_name in request.query and request.query[param_name] != &#34;&#34;:
+            post_filter[param_name] = request.query[param_name]
+
+    # Pagination parameters
+    pagination = {
+        &#34;totalCount&#34;: 0,
+        &#34;page&#34;: 0,
+        &#34;pageSize&#34;: PAGINATION_PAGE_SIZE,
+        &#34;totalPages&#34;: 0,
+    }
+
+    try:
+
+        records = await ConnectionRecord.query(context, tag_filter, post_filter)
+
+        # Page size from request.
+        page_size = int(request.query.get(&#34;page_size&#34;, PAGINATION_PAGE_SIZE))
+        pagination[&#34;pageSize&#34;] = page_size
+
+        # Total number of records
+        pagination[&#34;totalCount&#34;] = len(records)
+
+        # Total number of pages.
+        pagination[&#34;totalPages&#34;] = math.ceil(
+            pagination[&#34;totalCount&#34;] / pagination[&#34;pageSize&#34;]
+        )
+
+        # Fields to be included in the response.
+        include_fields = request.query.get(&#34;include_fields&#34;)
+        include_fields = (
+            comma_separated_str_to_list(include_fields) if include_fields else None
+        )
+
+        results = ADAManager.serialize_connection_record(records, True, include_fields)
+
+        # Pagination parameters
+        page = request.query.get(&#34;page&#34;)
+        if page:
+            page = int(page)
+            pagination[&#34;page&#34;] = page
+
+            lower, upper = get_slices(page, pagination[&#34;pageSize&#34;])
+
+            results = results[lower:upper]
+
+    except (StorageError, BaseModelError, ValueError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    return web.json_response(
+        {
+            &#34;results&#34;: results,
+            &#34;pagination&#34;: pagination if page else {},
+        }
+    )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.generate_firebase_dynamic_link_for_connection_invitation_handler"><code class="name flex">
+<span>async def <span class="ident">generate_firebase_dynamic_link_for_connection_invitation_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for generating firebase dynamic link for connection invitation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The firebase dynamic link</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Generate firebase dynamic link for connection invitation&#34;,
+)
+@match_info_schema(GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema())
+@response_schema(
+    GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(), 200
+)
+async def generate_firebase_dynamic_link_for_connection_invitation_handler(
+    request: web.BaseRequest,
+):
+    &#34;&#34;&#34;
+    Request handler for generating firebase dynamic link for connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The firebase dynamic link
+
+    &#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_connection_invitation(
+            conn_id
+        )
+
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({&#34;firebase_dynamic_link&#34;: firebase_dynamic_link})</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.get_existing_connections_handler"><code class="name flex">
+<span>async def <span class="ident">get_existing_connections_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetch existing connection details if any for a current connection.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Fetch existing connection details if any for a current connection.&#34;,
+)
+@match_info_schema(GetExistingConnectionMatchInfoSchema())
+@response_schema(GetExistingConnectionResponseSchema(), 200)
+async def get_existing_connections_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Fetch existing connection details if any for a current connection.&#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+
+    result = {}
+
+    # Call the function
+    result = await mydata_did_manager.fetch_existing_connections_record_for_current_connection(
+        conn_id
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.send_existing_connections_message_handler"><code class="name flex">
+<span>async def <span class="ident">send_existing_connections_message_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send existing connections message to remote agent.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Send existing connections message to remote agent.&#34;,
+    responses={
+        200: {
+            &#34;description&#34;: &#34;Success&#34;,
+        }
+    },
+)
+@match_info_schema(SendExistingConnectionsMessageHandlerMatchInfoSchema())
+@request_schema(SendExistingConnectionsMessageHandlerRequestSchema())
+async def send_existing_connections_message_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Send existing connections message to remote agent.&#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    conn_id = request.match_info[&#34;conn_id&#34;]
+
+    # Fetch request body
+    body = await request.json()
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        # Call the function
+        await mydata_did_manager.send_existing_connections_message(
+            body[&#34;theirdid&#34;], conn_id
+        )
+
+    except ADAManagerError as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response({}, status=200)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.v2_connections_create_invitation"><code class="name flex">
+<span>async def <span class="ident">v2_connections_create_invitation</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for creating a new connection invitation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The connection invitation details</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Create a new connection invitation (Overridden API)&#34;,
+)
+@querystring_schema(V2CreateInvitationQueryStringSchema())
+@response_schema(V2InvitationResultSchema(), 200)
+async def v2_connections_create_invitation(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection invitation details
+
+    &#34;&#34;&#34;
+
+    context = request.app[&#34;request_context&#34;]
+    auto_accept = json.loads(request.query.get(&#34;auto_accept&#34;, &#34;null&#34;))
+    alias = request.query.get(&#34;alias&#34;)
+    public = json.loads(request.query.get(&#34;public&#34;, &#34;false&#34;))
+    multi_use = json.loads(request.query.get(&#34;multi_use&#34;, &#34;false&#34;))
+
+    if public and not context.settings.get(&#34;public_invites&#34;):
+        raise web.HTTPForbidden(
+            reason=&#34;Configuration does not include public invitations&#34;
+        )
+    base_url = context.settings.get(&#34;invite_base_url&#34;)
+
+    # Initialise MyData DID Manager.
+    mydata_did_manager: ADAManager = ADAManager(context=context)
+    try:
+        (connection, invitation) = await mydata_did_manager.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            &#34;connection_id&#34;: connection and connection.connection_id,
+            &#34;invitation&#34;: invitation.serialize(),
+            &#34;invitation_url&#34;: invitation.to_url(base_url),
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    if connection and connection.alias:
+        result[&#34;alias&#34;] = connection.alias
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler"><code class="name flex">
+<span>async def <span class="ident">wellknown_connection_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Handler for well-known connection for the agent.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Well-known endpoint for connection&#34;,
+)
+async def wellknown_connection_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Handler for well-known connection for the agent.&#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    auto_accept = True
+    alias = &#34;&#34;
+    public = False
+    multi_use = False
+
+    connection_mgr = ConnectionManager(context)
+    try:
+        (connection, invitation) = await connection_mgr.create_invitation(
+            auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
+        )
+
+        result = {
+            &#34;ServiceEndpoint&#34;: invitation.serialize()[&#34;serviceEndpoint&#34;],
+            &#34;RoutingKey&#34;: &#34;&#34;,
+            &#34;Invitation&#34;: {
+                &#34;label&#34;: invitation.label,
+                &#34;serviceEndpoint&#34;: invitation.serialize()[&#34;serviceEndpoint&#34;],
+                &#34;routingKeys&#34;: [],
+                &#34;recipientKeys&#34;: invitation.serialize()[&#34;recipientKeys&#34;],
+                &#34;@id&#34;: str(uuid.uuid4()),
+                &#34;@type&#34;: &#34;did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation&#34;,
+            },
+        }
+    except (ConnectionManagerError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.routes" href="index.html">mydata_did.v1_0.routes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.connection_sort_key" href="#mydata_did.v1_0.routes.connection_routes.connection_sort_key">connection_sort_key</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.connections_list_v2" href="#mydata_did.v1_0.routes.connection_routes.connections_list_v2">connections_list_v2</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.generate_firebase_dynamic_link_for_connection_invitation_handler" href="#mydata_did.v1_0.routes.connection_routes.generate_firebase_dynamic_link_for_connection_invitation_handler">generate_firebase_dynamic_link_for_connection_invitation_handler</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.get_existing_connections_handler" href="#mydata_did.v1_0.routes.connection_routes.get_existing_connections_handler">get_existing_connections_handler</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.send_existing_connections_message_handler" href="#mydata_did.v1_0.routes.connection_routes.send_existing_connections_message_handler">send_existing_connections_message_handler</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.v2_connections_create_invitation" href="#mydata_did.v1_0.routes.connection_routes.v2_connections_create_invitation">v2_connections_create_invitation</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler" href="#mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler">wellknown_connection_handler</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

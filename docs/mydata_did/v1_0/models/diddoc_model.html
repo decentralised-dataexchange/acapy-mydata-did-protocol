@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.models.diddoc_model API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.models.diddoc_model</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import typing
+
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from aries_cloudagent.messaging.valid import UUIDFour
+
+from marshmallow import fields, EXCLUDE
+from marshmallow.exceptions import ValidationError
+
+from ..utils.diddoc import DIDDoc
+from ..utils.regex import MYDATA_DID, MyDataDID
+from ..utils.verification_method import PublicKeyType
+
+
+class DIDDocWrapper(fields.Field):
+    &#34;&#34;&#34;Field that loads and serializes DIDDoc.&#34;&#34;&#34;
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        &#34;&#34;&#34;
+        Serialize the DIDDoc.
+
+        Args:
+            value: The value to serialize
+
+        Returns:
+            The serialized DIDDoc
+
+        &#34;&#34;&#34;
+        return value.serialize()
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        &#34;&#34;&#34;
+        Deserialize a value into a DIDDoc.
+
+        Args:
+            value: The value to deserialize
+
+        Returns:
+            The deserialized value
+
+        &#34;&#34;&#34;
+        return DIDDoc.deserialize(value)
+
+    def _validate(self, value: DIDDoc):
+        if not value.validate():
+            raise ValidationError(&#34;MyData DIDDoc is not valid.&#34;)
+
+
+class MyDataDIDBody(BaseModel):
+    class Meta:
+        schema_class = &#34;MyDataDIDBodySchema&#34;
+
+    def __init__(self, *, did_doc: DIDDoc, **kwargs):
+        super().__init__(**kwargs)
+        self.did_doc = did_doc
+
+
+class MyDataDIDBodySchema(BaseModelSchema):
+    class Meta:
+        model_class = MyDataDIDBody
+        unknown = EXCLUDE
+
+    did_doc = DIDDocWrapper(
+        data_key=&#34;did&#34;,
+        required=False
+    )
+
+
+class MyDataDIDDocService(BaseModel):
+    &#34;&#34;&#34;
+    Service information for a DID Document.
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocServiceSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        service_id: str = None,
+        service_type: str = None,
+        service_priority: int = 0,
+        recipient_keys: typing.List[str] = None,
+        service_endpoint: str = None,
+        **kwargs
+    ):
+        &#34;&#34;&#34;
+        Initialize a DID Document Service object.
+
+        Args:
+            service_id: The service ID
+            service_type: The service type
+            service_priority: The service priority
+            recipient_keys: The recipient keys
+            service_endpoint: The service endpoint
+        &#34;&#34;&#34;
+
+        super().__init__(**kwargs)
+
+        # Service ID
+        self.service_id = service_id
+
+        # Service type
+        self.service_type = service_type
+
+        # Service priority
+        self.service_priority = service_priority
+
+        # Recipient keys
+        self.recipient_keys = recipient_keys
+
+        # Service endpoint
+        self.service_endpoint = service_endpoint
+
+
+class MyDataDIDDocServiceSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Schema for DID Document Service. 
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDDocService
+
+        # Unknown fields are excluded.
+        unknown = EXCLUDE
+
+    # Service ID
+    service_id = fields.Str(data_key=&#34;id&#34;, required=True, example=f&#34;did:mydata:{MyDataDID.EXAMPLE};didcomm&#34;)
+
+    # Service type
+    service_type = fields.Str(data_key=&#34;type&#34;, required=True, example=&#34;DIDComm&#34;)
+
+    # Service priority
+    service_priority = fields.Int(data_key=&#34;priority&#34;, required=True, example=1)
+
+    # Recipient keys
+    recipient_keys = fields.List(
+        fields.Str(required=True, example=MyDataDID.EXAMPLE),
+        data_key=&#34;recipientKeys&#34;,
+        required=True
+    )
+
+    # Service endpoint
+    service_endpoint = fields.Str(data_key=&#34;serviceEndpoint&#34;, required=True, example=&#34;https://didcomm.org&#34;)
+
+
+class MyDataDIDDocAuthentication(BaseModel):
+    &#34;&#34;&#34;
+    Authentication information for a DID Document.
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocAuthenticationSchema&#34;
+
+    def __init__(self, *, authentication_type: str = None, public_key: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialize a DID Document Authentication object.
+
+        Args:
+            authentication_type: The authentication type
+            public_key: The public key
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.authentication_type = authentication_type
+        self.public_key = public_key
+
+
+class MyDataDIDDocAuthenticationSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Schema for DID Document Authentication.
+
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDDocAuthentication
+
+        # Unknown fields are excluded.
+        unknown = EXCLUDE
+
+    # The authentication type
+    authentication_type = fields.Str(data_key=&#34;type&#34;, required=True, example=PublicKeyType.ED25519_SIG_2018.authn_type)
+
+    # The public key
+    public_key = fields.Str(data_key=&#34;publicKey&#34;, required=True, example=f&#34;did:mydata:f{MyDataDID.EXAMPLE}#1&#34;)
+
+
+class MyDataDIDDocVerificationMethod(BaseModel):
+    &#34;&#34;&#34;
+    A DID Document Verification Method.
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocVerificationMethodSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        verification_method_id: str = None,
+        verification_method_type: str = None,
+        controller: str = None,
+        public_key_base58: str = None,
+        **kwargs
+    ):
+        &#34;&#34;&#34;
+        Initialize a DID Document Verification Method.
+
+        Args:
+            verification_method_id: The verification method id
+            verification_method_type: The verification method type
+            controller: The controller
+            public_key_base58: The public key base58
+        &#34;&#34;&#34;
+
+        # Initialize the super class
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.verification_method_id = verification_method_id
+        self.verification_method_type = verification_method_type
+        self.controller = controller
+        self.public_key_base58 = public_key_base58
+
+
+class MyDataDIDDocVerificationMethodSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    A DID Document Verification Method Schema.
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        model_class = MyDataDIDDocVerificationMethod
+
+    # Verification method id
+    verification_method_id = fields.Str(
+        data_key=&#34;id&#34;,
+        required=True,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}#1&#34;
+    )
+
+    # Verification method type
+    verification_method_type = fields.Str(
+        data_key=&#34;type&#34;,
+        required=True,
+        example=PublicKeyType.ED25519_SIG_2018.ver_type
+    )
+
+    # Controller
+    controller = fields.Str(
+        data_key=&#34;controller&#34;,
+        required=True,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}&#34;
+    )
+
+    # Public key base58
+    public_key_base58 = fields.Str(
+        data_key=&#34;publicKeyBase58&#34;,
+        required=True,
+        example=f&#34;{MyDataDID.EXAMPLE}&#34;
+    )
+
+
+class MyDataDIDDoc(BaseModel):
+    &#34;&#34;&#34;
+    MyData DIDDoc model
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocSchema&#34;
+
+    def __init__(self,
+                 *,
+                 context: str = None,
+                 diddoc_id: str = None,
+                 verification_method: typing.List[MyDataDIDDocVerificationMethod] = None,
+                 authentication: typing.List[MyDataDIDDocAuthentication] = None,
+                 service: typing.List[MyDataDIDDocService] = None,
+                 **kwargs):
+        &#34;&#34;&#34;
+        Initialize a MyData DIDDoc model.
+
+        Args:
+            context: The DIDDoc context
+            diddoc_id: The DIDDoc id
+            verification_method: The verification method
+            authentication: The authentication method
+            service: The service
+            kwargs: The extra arguments
+
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.context = context
+        self.diddoc_id = diddoc_id
+        self.verification_method = verification_method
+        self.authentication = authentication
+        self.service = service
+
+
+class MyDataDIDDocSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    MyData DIDDoc schema
+    &#34;&#34;&#34;
+    class Meta:
+        # Model class
+        model_class = MyDataDIDDoc
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # The DIDDoc context
+    context = fields.Str(
+        required=True,
+        data_key=&#34;@context&#34;,
+        example=DIDDoc.CONTEXT,
+        description=&#34;The DIDDoc context&#34;
+    )
+
+    # The DIDDoc id
+    diddoc_id = fields.Str(
+        required=True,
+        data_key=&#34;id&#34;,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}&#34;,
+    )
+
+    # The verification method
+    verification_method = fields.List(
+        fields.Nested(MyDataDIDDocVerificationMethodSchema),
+        required=True
+    )
+
+    # The authentication method
+    authentication = fields.List(
+        fields.Nested(MyDataDIDDocAuthenticationSchema),
+        required=True
+    )
+
+    # The service
+    service = fields.List(
+        fields.Nested(MyDataDIDDocServiceSchema),
+        required=True
+    )
+
+
+class MyDataDIDResponseBody(BaseModel):
+    &#34;&#34;&#34;
+    MyData DID response body model
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Schema class
+        schema_class = &#34;MyDataDIDResponseBodySchema&#34;
+
+    def __init__(self, *, did_doc: MyDataDIDDoc = None, version: str = None, status: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialize a MyData DID response body model.
+
+        Args:
+            did_doc: The DIDDoc
+            version: The version
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.did_doc = did_doc
+        self.version = version
+        self.status = status
+
+
+class MyDataDIDResponseBodySchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    MyData DID response body schema
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDResponseBody
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+    
+    # The DIDDoc
+    did_doc = fields.Nested(MyDataDIDDocSchema, required=True)
+
+    # The version
+    version = fields.Str(data_key=&#34;version&#34;)
+
+    # The status
+    status = fields.Str(data_key=&#34;status&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.DIDDocWrapper"><code class="flex name class">
+<span>class <span class="ident">DIDDocWrapper</span></span>
+<span>(</span><span>*, default: Any = &lt;marshmallow.missing&gt;, missing: Any = &lt;marshmallow.missing&gt;, data_key: str = None, attribute: str = None, validate: Union[Callable[[Any], Any], Iterable[Callable[[Any], Any]]] = None, required: bool = False, allow_none: bool = None, load_only: bool = False, dump_only: bool = False, error_messages: Dict[str, str] = None, **metadata)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Field that loads and serializes DIDDoc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DIDDocWrapper(fields.Field):
+    &#34;&#34;&#34;Field that loads and serializes DIDDoc.&#34;&#34;&#34;
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        &#34;&#34;&#34;
+        Serialize the DIDDoc.
+
+        Args:
+            value: The value to serialize
+
+        Returns:
+            The serialized DIDDoc
+
+        &#34;&#34;&#34;
+        return value.serialize()
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        &#34;&#34;&#34;
+        Deserialize a value into a DIDDoc.
+
+        Args:
+            value: The value to deserialize
+
+        Returns:
+            The deserialized value
+
+        &#34;&#34;&#34;
+        return DIDDoc.deserialize(value)
+
+    def _validate(self, value: DIDDoc):
+        if not value.validate():
+            raise ValidationError(&#34;MyData DIDDoc is not valid.&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>marshmallow.fields.Field</li>
+<li>marshmallow.base.FieldABC</li>
+</ul>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDBody"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDBody</span></span>
+<span>(</span><span>*, did_doc: <a title="mydata_did.v1_0.utils.diddoc.DIDDoc" href="../utils/diddoc.html#mydata_did.v1_0.utils.diddoc.DIDDoc">DIDDoc</a>, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base model that provides convenience methods.</p>
+<p>Initialize BaseModel.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If schema_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDBody(BaseModel):
+    class Meta:
+        schema_class = &#34;MyDataDIDBodySchema&#34;
+
+    def __init__(self, *, did_doc: DIDDoc, **kwargs):
+        super().__init__(**kwargs)
+        self.did_doc = did_doc</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDBodySchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>BaseModel schema.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDBodySchema(BaseModelSchema):
+    class Meta:
+        model_class = MyDataDIDBody
+        unknown = EXCLUDE
+
+    did_doc = DIDDocWrapper(
+        data_key=&#34;did&#34;,
+        required=False
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDoc</span></span>
+<span>(</span><span>*, context: str = None, diddoc_id: str = None, verification_method: List[<a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod">MyDataDIDDocVerificationMethod</a>] = None, authentication: List[<a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication">MyDataDIDDocAuthentication</a>] = None, service: List[<a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService">MyDataDIDDocService</a>] = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MyData DIDDoc model</p>
+<p>Initialize a MyData DIDDoc model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>context</code></strong></dt>
+<dd>The DIDDoc context</dd>
+<dt><strong><code>diddoc_id</code></strong></dt>
+<dd>The DIDDoc id</dd>
+<dt><strong><code>verification_method</code></strong></dt>
+<dd>The verification method</dd>
+<dt><strong><code>authentication</code></strong></dt>
+<dd>The authentication method</dd>
+<dt><strong><code>service</code></strong></dt>
+<dd>The service</dd>
+<dt><strong><code>kwargs</code></strong></dt>
+<dd>The extra arguments</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDoc(BaseModel):
+    &#34;&#34;&#34;
+    MyData DIDDoc model
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocSchema&#34;
+
+    def __init__(self,
+                 *,
+                 context: str = None,
+                 diddoc_id: str = None,
+                 verification_method: typing.List[MyDataDIDDocVerificationMethod] = None,
+                 authentication: typing.List[MyDataDIDDocAuthentication] = None,
+                 service: typing.List[MyDataDIDDocService] = None,
+                 **kwargs):
+        &#34;&#34;&#34;
+        Initialize a MyData DIDDoc model.
+
+        Args:
+            context: The DIDDoc context
+            diddoc_id: The DIDDoc id
+            verification_method: The verification method
+            authentication: The authentication method
+            service: The service
+            kwargs: The extra arguments
+
+        &#34;&#34;&#34;
+
+        # Call parent constructor
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.context = context
+        self.diddoc_id = diddoc_id
+        self.verification_method = verification_method
+        self.authentication = authentication
+        self.service = service</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocAuthentication</span></span>
+<span>(</span><span>*, authentication_type: str = None, public_key: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Authentication information for a DID Document.</p>
+<p>Initialize a DID Document Authentication object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>authentication_type</code></strong></dt>
+<dd>The authentication type</dd>
+<dt><strong><code>public_key</code></strong></dt>
+<dd>The public key</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocAuthentication(BaseModel):
+    &#34;&#34;&#34;
+    Authentication information for a DID Document.
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocAuthenticationSchema&#34;
+
+    def __init__(self, *, authentication_type: str = None, public_key: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialize a DID Document Authentication object.
+
+        Args:
+            authentication_type: The authentication type
+            public_key: The public key
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.authentication_type = authentication_type
+        self.public_key = public_key</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocAuthenticationSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for DID Document Authentication.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocAuthenticationSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Schema for DID Document Authentication.
+
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDDocAuthentication
+
+        # Unknown fields are excluded.
+        unknown = EXCLUDE
+
+    # The authentication type
+    authentication_type = fields.Str(data_key=&#34;type&#34;, required=True, example=PublicKeyType.ED25519_SIG_2018.authn_type)
+
+    # The public key
+    public_key = fields.Str(data_key=&#34;publicKey&#34;, required=True, example=f&#34;did:mydata:f{MyDataDID.EXAMPLE}#1&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MyData DIDDoc schema</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    MyData DIDDoc schema
+    &#34;&#34;&#34;
+    class Meta:
+        # Model class
+        model_class = MyDataDIDDoc
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    # The DIDDoc context
+    context = fields.Str(
+        required=True,
+        data_key=&#34;@context&#34;,
+        example=DIDDoc.CONTEXT,
+        description=&#34;The DIDDoc context&#34;
+    )
+
+    # The DIDDoc id
+    diddoc_id = fields.Str(
+        required=True,
+        data_key=&#34;id&#34;,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}&#34;,
+    )
+
+    # The verification method
+    verification_method = fields.List(
+        fields.Nested(MyDataDIDDocVerificationMethodSchema),
+        required=True
+    )
+
+    # The authentication method
+    authentication = fields.List(
+        fields.Nested(MyDataDIDDocAuthenticationSchema),
+        required=True
+    )
+
+    # The service
+    service = fields.List(
+        fields.Nested(MyDataDIDDocServiceSchema),
+        required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocService</span></span>
+<span>(</span><span>*, service_id: str = None, service_type: str = None, service_priority: int = 0, recipient_keys: List[str] = None, service_endpoint: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Service information for a DID Document.</p>
+<p>Initialize a DID Document Service object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>service_id</code></strong></dt>
+<dd>The service ID</dd>
+<dt><strong><code>service_type</code></strong></dt>
+<dd>The service type</dd>
+<dt><strong><code>service_priority</code></strong></dt>
+<dd>The service priority</dd>
+<dt><strong><code>recipient_keys</code></strong></dt>
+<dd>The recipient keys</dd>
+<dt><strong><code>service_endpoint</code></strong></dt>
+<dd>The service endpoint</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocService(BaseModel):
+    &#34;&#34;&#34;
+    Service information for a DID Document.
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocServiceSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        service_id: str = None,
+        service_type: str = None,
+        service_priority: int = 0,
+        recipient_keys: typing.List[str] = None,
+        service_endpoint: str = None,
+        **kwargs
+    ):
+        &#34;&#34;&#34;
+        Initialize a DID Document Service object.
+
+        Args:
+            service_id: The service ID
+            service_type: The service type
+            service_priority: The service priority
+            recipient_keys: The recipient keys
+            service_endpoint: The service endpoint
+        &#34;&#34;&#34;
+
+        super().__init__(**kwargs)
+
+        # Service ID
+        self.service_id = service_id
+
+        # Service type
+        self.service_type = service_type
+
+        # Service priority
+        self.service_priority = service_priority
+
+        # Recipient keys
+        self.recipient_keys = recipient_keys
+
+        # Service endpoint
+        self.service_endpoint = service_endpoint</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocServiceSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for DID Document Service. </p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocServiceSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    Schema for DID Document Service. 
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDDocService
+
+        # Unknown fields are excluded.
+        unknown = EXCLUDE
+
+    # Service ID
+    service_id = fields.Str(data_key=&#34;id&#34;, required=True, example=f&#34;did:mydata:{MyDataDID.EXAMPLE};didcomm&#34;)
+
+    # Service type
+    service_type = fields.Str(data_key=&#34;type&#34;, required=True, example=&#34;DIDComm&#34;)
+
+    # Service priority
+    service_priority = fields.Int(data_key=&#34;priority&#34;, required=True, example=1)
+
+    # Recipient keys
+    recipient_keys = fields.List(
+        fields.Str(required=True, example=MyDataDID.EXAMPLE),
+        data_key=&#34;recipientKeys&#34;,
+        required=True
+    )
+
+    # Service endpoint
+    service_endpoint = fields.Str(data_key=&#34;serviceEndpoint&#34;, required=True, example=&#34;https://didcomm.org&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocVerificationMethod</span></span>
+<span>(</span><span>*, verification_method_id: str = None, verification_method_type: str = None, controller: str = None, public_key_base58: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A DID Document Verification Method.</p>
+<p>Initialize a DID Document Verification Method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>verification_method_id</code></strong></dt>
+<dd>The verification method id</dd>
+<dt><strong><code>verification_method_type</code></strong></dt>
+<dd>The verification method type</dd>
+<dt><strong><code>controller</code></strong></dt>
+<dd>The controller</dd>
+<dt><strong><code>public_key_base58</code></strong></dt>
+<dd>The public key base58</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocVerificationMethod(BaseModel):
+    &#34;&#34;&#34;
+    A DID Document Verification Method.
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        schema_class = &#34;MyDataDIDDocVerificationMethodSchema&#34;
+
+    def __init__(
+        self,
+        *,
+        verification_method_id: str = None,
+        verification_method_type: str = None,
+        controller: str = None,
+        public_key_base58: str = None,
+        **kwargs
+    ):
+        &#34;&#34;&#34;
+        Initialize a DID Document Verification Method.
+
+        Args:
+            verification_method_id: The verification method id
+            verification_method_type: The verification method type
+            controller: The controller
+            public_key_base58: The public key base58
+        &#34;&#34;&#34;
+
+        # Initialize the super class
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.verification_method_id = verification_method_id
+        self.verification_method_type = verification_method_type
+        self.controller = controller
+        self.public_key_base58 = public_key_base58</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDDocVerificationMethodSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A DID Document Verification Method Schema.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDDocVerificationMethodSchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    A DID Document Verification Method Schema.
+    &#34;&#34;&#34;
+
+    class Meta:
+        # Schema class
+        model_class = MyDataDIDDocVerificationMethod
+
+    # Verification method id
+    verification_method_id = fields.Str(
+        data_key=&#34;id&#34;,
+        required=True,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}#1&#34;
+    )
+
+    # Verification method type
+    verification_method_type = fields.Str(
+        data_key=&#34;type&#34;,
+        required=True,
+        example=PublicKeyType.ED25519_SIG_2018.ver_type
+    )
+
+    # Controller
+    controller = fields.Str(
+        data_key=&#34;controller&#34;,
+        required=True,
+        example=f&#34;did:mydata:{MyDataDID.EXAMPLE}&#34;
+    )
+
+    # Public key base58
+    public_key_base58 = fields.Str(
+        data_key=&#34;publicKeyBase58&#34;,
+        required=True,
+        example=f&#34;{MyDataDID.EXAMPLE}&#34;
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDResponseBody</span></span>
+<span>(</span><span>*, did_doc: <a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc">MyDataDIDDoc</a> = None, version: str = None, status: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MyData DID response body model</p>
+<p>Initialize a MyData DID response body model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did_doc</code></strong></dt>
+<dd>The DIDDoc</dd>
+<dt><strong><code>version</code></strong></dt>
+<dd>The version</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDResponseBody(BaseModel):
+    &#34;&#34;&#34;
+    MyData DID response body model
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Schema class
+        schema_class = &#34;MyDataDIDResponseBodySchema&#34;
+
+    def __init__(self, *, did_doc: MyDataDIDDoc = None, version: str = None, status: str = None, **kwargs):
+        &#34;&#34;&#34;
+        Initialize a MyData DID response body model.
+
+        Args:
+            did_doc: The DIDDoc
+            version: The version
+        &#34;&#34;&#34;
+        super().__init__(**kwargs)
+
+        # Set attributes
+        self.did_doc = did_doc
+        self.version = version
+        self.status = status</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDResponseBodySchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MyData DID response body schema</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDResponseBodySchema(BaseModelSchema):
+    &#34;&#34;&#34;
+    MyData DID response body schema
+    &#34;&#34;&#34;
+    class Meta:
+
+        # Model class
+        model_class = MyDataDIDResponseBody
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+    
+    # The DIDDoc
+    did_doc = fields.Nested(MyDataDIDDocSchema, required=True)
+
+    # The version
+    version = fields.Str(data_key=&#34;version&#34;)
+
+    # The status
+    status = fields.Str(data_key=&#34;status&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.models" href="index.html">mydata_did.v1_0.models</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.DIDDocWrapper" href="#mydata_did.v1_0.models.diddoc_model.DIDDocWrapper">DIDDocWrapper</a></code></h4>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDBody" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDBody">MyDataDIDBody</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDBody.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDBody.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema">MyDataDIDBodySchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDBodySchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc">MyDataDIDDoc</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDoc.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication">MyDataDIDDocAuthentication</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthentication.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema">MyDataDIDDocAuthenticationSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocAuthenticationSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema">MyDataDIDDocSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService">MyDataDIDDocService</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocService.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema">MyDataDIDDocServiceSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocServiceSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod">MyDataDIDDocVerificationMethod</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethod.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema">MyDataDIDDocVerificationMethodSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDDocVerificationMethodSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody">MyDataDIDResponseBody</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody.Meta">Meta</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema">MyDataDIDResponseBodySchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.Meta" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.opts" href="#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBodySchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

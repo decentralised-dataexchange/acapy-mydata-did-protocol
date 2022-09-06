@@ -1,0 +1,3735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.routes.openapi.schemas API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.routes.openapi.schemas</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from marshmallow import fields, validate, validates
+from marshmallow.exceptions import ValidationError
+
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
+from aries_cloudagent.messaging.valid import (
+    INDY_DID,
+    UUIDFour,
+    UUID4,
+    INDY_RAW_PUBLIC_KEY,
+)
+from aries_cloudagent.connections.models.connection_record import (
+    ConnectionRecord,
+    ConnectionRecordSchema,
+)
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
+    ConnectionInvitationSchema,
+)
+
+from ...models.exchange_records.data_agreement_didcomm_transaction_record import (
+    DataAgreementCRUDDIDCommTransaction,
+)
+from ...models.exchange_records.data_agreement_record import (
+    DataAgreementV1Record,
+)
+from ...models.diddoc_model import MyDataDIDDocSchema
+
+from ...utils.regex import MYDATA_DID
+
+
+class ReadDataAgreementRequestSchema(OpenAPISchema):
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class DataAgreementCRUDDIDCommTransactionResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the data agreement CRUD DID comm transaction response
+    &#34;&#34;&#34;
+
+    # Transaction identifier
+    da_crud_didcomm_tx_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Data agreement CRUD DIDComm transaction identifier&#34;,
+        required=False,
+    )
+
+    # Thread identifier
+    thread_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Thread identifier&#34;,
+        required=False,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        example=&#34;read-data-agreement&#34;,
+        description=&#34;Message type&#34;,
+        required=False,
+    )
+
+    # Message list
+    messages_list = fields.List(
+        fields.Str(),
+        description=&#34;List of messages&#34;,
+        required=False,
+    )
+
+    # Connection identifier
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Connection identifier&#34;,
+        required=False,
+    )
+
+
+class DACRUDDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing data agreement CRUD DIDComm transaction records.
+    &#34;&#34;&#34;
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        description=&#34;Message type&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DataAgreementCRUDDIDCommTransaction, m)
+                for m in vars(DataAgreementCRUDDIDCommTransaction)
+                if m.startswith(&#34;MESSAGE_TYPE_&#34;)
+            ]
+        ),
+    )
+
+
+class DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Delete a transaction record by its identifier.&#34;&#34;&#34;
+
+    da_crud_didcomm_tx_id = fields.Str(
+        description=&#34;Data agreement CRUD didcomm transaction identifier&#34;,
+        required=True,
+        **UUID4,
+    )
+
+
+class CreateOrUpdateDataAgreementPersonalDataRestrictionSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the create or update data agreement personal data restriction
+    &#34;&#34;&#34;
+
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0&#34;,
+    )
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:3:CL:20:tag&#34;,
+    )
+
+
+class CreateOrUpdateDataAgreementPersonalDataRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the create or update data agreement personal data request
+    &#34;&#34;&#34;
+
+    attribute_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Attribute identifier&#34;,
+        required=False,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description=&#34;List of restrictions&#34;,
+        required=False,
+    )
+
+
+class DPIAOpenAPISchema(OpenAPISchema):
+    dpia_date = fields.Str(data_key=&#34;dpiaDate&#34;)
+    dpia_summary_url = fields.Str(data_key=&#34;dpiaSummaryUrl&#34;)
+
+
+class PersonalDataRestrictionOpenAPISchema(OpenAPISchema):
+    schema_id = fields.Str(data_key=&#34;schemaId&#34;)
+    cred_def_id = fields.Str(data_key=&#34;credDefId&#34;)
+
+
+class PersonalDataOpenAPISchema(OpenAPISchema):
+    attribute_id = fields.Str(data_key=&#34;attributeId&#34;)
+    attribute_name = fields.Str(data_key=&#34;attributeName&#34;)
+    attribute_sensitive = fields.Bool(data_key=&#34;attributeSensitive&#34;)
+    attribute_category = fields.Str(data_key=&#34;attributeCategory&#34;)
+    attribute_description = fields.Str(data_key=&#34;attributeDescription&#34;)
+    restrictions = fields.List(
+        fields.Nested(PersonalDataRestrictionOpenAPISchema),
+        data_key=&#34;restrictions&#34;
+    )
+
+
+class DataPolicyOpenAPISchema(OpenAPISchema):
+    policy_url = fields.Str(data_key=&#34;policyUrl&#34;)
+    jurisdiction = fields.Str(data_key=&#34;jurisdiction&#34;)
+    industry_sector = fields.Str(data_key=&#34;industrySector&#34;)
+    data_retention_period = fields.Int(data_key=&#34;dataRetentionPeriod&#34;)
+    geographic_restriction = fields.Str(data_key=&#34;geographicRestriction&#34;)
+    storage_location = fields.Str(data_key=&#34;storageLocation&#34;)
+    third_party_data_sharing = fields.Bool(data_key=&#34;thirdPartyDataSharing&#34;)
+
+
+class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
+    language = fields.Str(data_key=&#34;language&#34;)
+    data_controller_name = fields.Str(data_key=&#34;dataControllerName&#34;)
+    data_controller_url = fields.Str(data_key=&#34;dataControllerUrl&#34;)
+    data_policy = fields.Nested(DataPolicyOpenAPISchema, data_key=&#34;dataPolicy&#34;)
+    purpose = fields.Str(data_key=&#34;purpose&#34;)
+    purpose_descripton = fields.Str(data_key=&#34;purposeDescription&#34;)
+    lawful_basis = fields.Str(data_key=&#34;lawfulBasis&#34;)
+    method_of_use = fields.Str(data_key=&#34;methodOfUse&#34;)
+    personal_data = fields.List(fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;)
+    dpia = fields.Nested(DPIAOpenAPISchema, data_key=&#34;dpia&#34;)
+
+
+class CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Personal data schema class
+    &#34;&#34;&#34;
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        required=True,
+        description=&#34;The description of the attribute.&#34;,
+        example=&#34;Name of the customer&#34;,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description=&#34;List of restrictions&#34;,
+        required=False,
+    )
+
+
+class CreateOrUpdateDataAgreementInWalletRequestSchemaV2(
+    CreateOrUpdateDataAgreementInWalletRequestSchema
+):
+    # Data agreement personal data (attributes)
+    personal_data = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema),
+        required=True,
+    )
+
+
+class DataAgreementV1RecordResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for data agreement v1 record response
+    &#34;&#34;&#34;
+    template_id = fields.Str()
+    state = fields.Str()
+    method_of_use = fields.Str()
+    data_agreement = fields.Dict()
+    schema_id = fields.Str()
+    cred_def_id = fields.Str()
+    presentation_request = fields.Dict()
+    publish_flag = fields.Str()
+    delete_flag = fields.Str()
+    existing_schema_flag = fields.Str()
+    latest_version_flag = fields.Str()
+
+
+class AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Retrieve a transaction record by its identifier.
+    &#34;&#34;&#34;
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description=&#34;Auditor didcomm transaction identifier&#34;, required=True, **UUID4
+    )
+
+
+class AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Delete a transaction record by its identifier.
+    &#34;&#34;&#34;
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description=&#34;Auditor didcomm transaction identifier&#34;, required=True, **UUID4
+    )
+
+
+class AuditorDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing Auditor DIDComm transaction records.
+    &#34;&#34;&#34;
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class DataAgreementQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for data agreements
+    &#34;&#34;&#34;
+
+    method_of_use = fields.Str(
+        description=&#34;Method of use&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DataAgreementV1Record, m)
+                for m in vars(DataAgreementV1Record)
+                if m.startswith(&#34;METHOD_OF_USE_&#34;)
+            ]
+        ),
+    )
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;,
+        required=False,
+    )
+
+    template_version = fields.Str(
+        description=&#34;Template version&#34;,
+    )
+
+    delete_flag = fields.Bool(
+        description=&#34;Query deleted templates&#34;,
+        required=False,
+    )
+
+    publish_flag = fields.Bool(
+        description=&#34;Query published templates&#34;,
+        required=False,
+    )
+
+    third_party_data_sharing = fields.Bool(
+        description=&#34;Third party data sharing&#34;,
+        required=False,
+    )
+
+    latest_version_flag = fields.Bool(
+        description=&#34;Latest version of the template&#34;,
+        required=False,
+    )
+
+    page = fields.Int(
+        required=False,
+        description=&#34;Page number&#34;,
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description=&#34;Page size&#34;,
+        example=10,
+    )
+
+
+class UpdateDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the update data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;, required=True
+    )
+
+
+class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the delete data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;, required=True
+    )
+
+
+class CreateAndStoreDAPersonalDataInWalletRequestSchema(OpenAPISchema):
+
+    &#34;&#34;&#34;
+    Schema for the create and store personal data in wallet request
+    &#34;&#34;&#34;
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute sensitive
+    attribute_sensitive = fields.Bool(
+        example=True, description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    # Attribute category
+    attribute_category = fields.Str(
+        example=&#34;Personal&#34;, description=&#34;Category of the attribute&#34;, required=False
+    )
+
+    @validates(&#34;attribute_description&#34;)
+    def validate_attribute_description(self, attribute_description):
+        &#34;&#34;&#34;
+        Validate attribute description
+        &#34;&#34;&#34;
+        if len(attribute_description) &lt; 3:
+            raise ValidationError(
+                &#34;Attribute description must be at least 3 characters long&#34;
+            )
+
+        if len(attribute_description) &gt; 1000:
+            raise ValidationError(
+                &#34;Attribute description must be at most 1000 characters long&#34;
+            )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        example=&#34;Name of the user&#34;,
+        description=&#34;Description of the attribute&#34;,
+        required=False,
+    )
+
+
+class QueryDAPersonalDataInWalletQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the query personal data in wallet query string
+    &#34;&#34;&#34;
+
+    attribute_sensitive = fields.Bool(
+        description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    attribute_category = fields.Str(
+        description=&#34;Category of the attribute&#34;, required=False
+    )
+
+
+class ListDAPersonalDataCategoryFromWalletResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the list personal data category from wallet response
+    &#34;&#34;&#34;
+
+    # List of categories
+    categories = fields.List(
+        fields.Str(description=&#34;Category&#34;, example=&#34;Personal&#34;),
+        description=&#34;List of categories&#34;,
+        required=True,
+    )
+
+
+class MarkExistingConnectionAsAuditorMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the mark existing connection as auditor match info
+    &#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE, description=&#34;Connection identifier&#34;, required=True
+    )
+
+
+class QueryDataAgreementInstanceQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query data agreement instances
+    &#34;&#34;&#34;
+
+    instance_id = fields.Str(required=False)
+    template_id = fields.Str(required=False)
+    template_version = fields.Str(required=False)
+    method_of_use = fields.Str(
+        required=False,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+    third_party_data_sharing = fields.Bool(required=False)
+    data_ex_id = fields.Str(required=False)
+    data_subject_did = fields.Str(required=False)
+    page = fields.Int(required=False)
+    page_size = fields.Int(required=False)
+
+
+class AuditorSendDataAgreementVerifyRequestMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to send data agreement verify request to the auditor
+    &#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class DataAgreementQRCodeMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for data agreement QR code match info
+    &#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+
+
+class DataAgreementQRCodeInvitationSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for connection invitation details inside in data agreement qr code payload.&#34;&#34;&#34;
+
+    service_endpoint = fields.Str(
+        description=&#34;Service endpoint&#34;, example=&#34;http://localhost:8080/&#34;
+    )
+    recipient_key = fields.Str(description=&#34;Recipient key&#34;, **INDY_RAW_PUBLIC_KEY)
+
+
+class GenerateDataAgreementQrCodePayloadResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for Data Agreement QR code payload
+    &#34;&#34;&#34;
+
+    qr_id = fields.Str(description=&#34;QR code ID&#34;, **UUID4)
+    connection_id = fields.Str(description=&#34;Connection ID&#34;, **UUID4)
+    invitation = fields.Nested(
+        DataAgreementQRCodeInvitationSchema(),
+        description=&#34;Connection invitation information&#34;,
+    )
+
+
+class SendReadDIDMessageMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Send a read-did message to the MyData DID registry service.
+    &#34;&#34;&#34;
+
+    did = fields.Str(description=&#34;did:mydata identifier&#34;, required=True, **MYDATA_DID)
+
+
+class MyDataDIDRemoteRecordsQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing MyData DID remote records.
+    &#34;&#34;&#34;
+
+    # Sovrin verkey
+    sov_verkey = fields.Str(
+        description=&#34;Sovrin verkey&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    # DID
+    did = fields.Str(**MYDATA_DID, description=&#34;MyData decentralised identifier&#34;)
+
+    # Status
+    status = fields.Str(
+        description=&#34;MyData DID remote status&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;active&#34;, &#34;revoked&#34;]),
+    )
+
+
+class MyDataDIDRemoteRecordResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Response schema for MyData DID remote record.
+    &#34;&#34;&#34;
+
+    did_doc = fields.Nested(
+        MyDataDIDDocSchema,
+        description=&#34;MyData DID document&#34;,
+    )
+
+    did = fields.Str(**MYDATA_DID, description=&#34;MyData decentralised identifier&#34;)
+
+    sov_verkey = fields.Str(
+        description=&#34;Sovrin verkey&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    status = fields.Str(
+        description=&#34;MyData DID remote status&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;active&#34;, &#34;revoked&#34;]),
+    )
+
+
+class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Query string schema for create data agreement handler&#34;&#34;&#34;
+
+    publish_flag = fields.Boolean(description=&#34;Publish the agreement&#34;,
+                                  required=False, example=False)
+
+    existing_schema_id = fields.Str(
+        description=&#34;Existing schema identifier&#34;,
+        required=False,
+        example=&#34;issuer_did:1:schema:1&#34;,
+    )
+
+
+class UpdateDataAgreementTemplateOpenAPISchema(OpenAPISchema):
+    publish_flag = fields.Boolean(required=False)
+    existing_schema_id = fields.Str(required=False)
+
+
+class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the publish data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str()
+
+
+class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
+    template_id = fields.Str(required=False)
+    page = fields.Int(required=False)
+    page_size = fields.Int(required=False)
+    method_of_use = fields.Str(
+        required=False,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+    third_party_data_sharing = fields.Bool(required=False)
+
+
+class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True, description=&#34;Personal data identifier&#34;, example=UUIDFour.EXAMPLE
+    )
+
+
+class UpdateDaPersonalDataInWalletRequestSchema(OpenAPISchema):
+    attribute_description = fields.Str(
+        description=&#34;Attribute description&#34;, example=&#34;Age of the patient&#34;, required=True
+    )
+
+
+class UpdateDaPersonalDataInWalletResponseSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(description=&#34;Attribute ID&#34;, example=UUIDFour.EXAMPLE)
+    attribute_name = fields.Str(description=&#34;Attribute name&#34;, example=&#34;Name&#34;)
+    attribute_description = fields.Str(
+        description=&#34;Attribute description&#34;, example=&#34;Name of the patient&#34;
+    )
+    data_agreement_template_id = fields.Str(
+        description=&#34;Data Agreement Template ID&#34;, example=UUIDFour.EXAMPLE
+    )
+    data_agreement_template_version = fields.Integer(
+        description=&#34;Data Agreement Template version&#34;, example=1
+    )
+    created_at = fields.Integer(
+        description=&#34;Created at (Epoch time in seconds)&#34;, example=1578012800
+    )
+    updated_at = fields.Integer(
+        description=&#34;Updated at (Epoch time in seconds)&#34;, example=1578012800
+    )
+
+
+class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True, description=&#34;Personal data identifier&#34;, example=UUIDFour.EXAMPLE
+    )
+
+
+class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema to validate path parameters for query data agreement qr code metadata records.&#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+        required=False,
+    )
+
+
+class QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for querying data agreement qr code metadata records&#34;&#34;&#34;
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )
+
+
+class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for querying data agreement qr code metadata records response&#34;&#34;&#34;
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+        required=False,
+    )
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )
+
+    multi_use = fields.Bool()
+    is_scanned = fields.Bool()
+    data_exchange_record_id = fields.Str()
+
+
+class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class Base64EncodeDataAgreementQrCodeMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Match info (URL path params) schema for base64 encode
+    data agreement QR code payload endpoint&#34;&#34;&#34;
+
+    # Data Agreement identifier.
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Match info (URL path params) schema for send
+    data agreement qr code workflow initiate endpoint&#34;&#34;&#34;
+
+    # Connection identifier.
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in send read all
+    data agreement template message handler&#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class GenerateDataAgreementQrCodePayloadQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for query string parameters to generate data agreement qr code payload&#34;&#34;&#34;
+
+    multi_use = fields.Bool()
+
+
+class SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema(OpenAPISchema):
+    data = fields.Dict()
+    signature_options = fields.Dict()
+    proof_chain = fields.Bool()
+
+
+class SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema(OpenAPISchema):
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class V2CreateInvitationQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for create invitation request query string.&#34;&#34;&#34;
+
+    alias = fields.Str(
+        description=&#34;Alias&#34;,
+        required=False,
+        example=&#34;Barry&#34;,
+    )
+    auto_accept = fields.Boolean(
+        description=&#34;Auto-accept connection (default as per configuration)&#34;,
+        required=False,
+    )
+    public = fields.Boolean(
+        description=&#34;Create invitation from public DID (default false)&#34;, required=False
+    )
+    multi_use = fields.Boolean(
+        description=&#34;Create invitation for multiple use (default false)&#34;, required=False
+    )
+
+
+class V2InvitationResultSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for a new connection invitation.&#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE
+    )
+    invitation = fields.Nested(ConnectionInvitationSchema())
+    invitation_url = fields.Str(
+        description=&#34;Invitation URL&#34;,
+        example=&#34;http://192.168.56.101:8020/invite?c_i=eyJAdHlwZSI6Li4ufQ==&#34;,
+    )
+
+
+class GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in generate firebase
+    dynamic link for connection invitation handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for response of generate firebase dynamic link for connection invitation handler&#34;&#34;&#34;
+
+    # Firebase dynamic link
+    firebase_dynamic_link = fields.Str(
+        description=&#34;Firebase dynamic link&#34;,
+        example=&#34;https://example.page.link/UVWXYZuvwxyz12345&#34;,
+    )
+
+
+class SendExistingConnectionsMessageHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in send existing connections message handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class SendExistingConnectionsMessageHandlerRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for request body of send existing connections message handler&#34;&#34;&#34;
+
+    theirdid = fields.Str(
+        description=&#34;Their DID&#34;, example=&#34;QmWbsNYhMrjHiqZDTUASHg&#34;, required=True
+    )
+
+
+class GetExistingConnectionMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in get existing connection handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+
+class GetExistingConnectionResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for response of get existing connection handler&#34;&#34;&#34;
+
+    existing_connection_id = fields.Str()
+    my_did = fields.Str()
+    connection_status = fields.Str()
+    connection_id = fields.Str()
+
+
+class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for connections list request query string.&#34;&#34;&#34;
+
+    alias = fields.Str(
+        description=&#34;Alias&#34;,
+        required=False,
+        example=&#34;Barry&#34;,
+    )
+
+    initiator = fields.Str(
+        description=&#34;Connection initiator&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;self&#34;, &#34;external&#34;]),
+    )
+
+    invitation_key = fields.Str(
+        description=&#34;invitation key&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    my_did = fields.Str(description=&#34;My DID&#34;, required=False, **INDY_DID)
+
+    state = fields.Str(
+        description=&#34;Connection state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(ConnectionRecord, m)
+                for m in vars(ConnectionRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )
+
+    their_did = fields.Str(description=&#34;Their DID&#34;, required=False, **INDY_DID)
+
+    their_role = fields.Str(
+        description=&#34;Their assigned connection role&#34;,
+        required=False,
+        example=&#34;Point of contact&#34;,
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description=&#34;Comma separated fields to be included in the response.&#34;,
+        example=&#34;connection_id,state,presentation_exchange_id&#34;,
+    )
+
+    page = fields.Int(
+        required=False,
+        description=&#34;Page number&#34;,
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description=&#34;Page size&#34;,
+        example=10,
+    )
+
+
+class ConnectionListSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for connection list.&#34;&#34;&#34;
+
+    results = fields.List(
+        fields.Nested(ConnectionRecordSchema()),
+        description=&#34;List of connection records&#34;,
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">AuditorDIDCommTransactionRecordListQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query string schema for listing Auditor DIDComm transaction records.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AuditorDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing Auditor DIDComm transaction records.
+    &#34;&#34;&#34;
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete a transaction record by its identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Delete a transaction record by its identifier.
+    &#34;&#34;&#34;
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description=&#34;Auditor didcomm transaction identifier&#34;, required=True, **UUID4
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve a transaction record by its identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Retrieve a transaction record by its identifier.
+    &#34;&#34;&#34;
+
+    auditor_didcomm_transaction_record_id = fields.Str(
+        description=&#34;Auditor didcomm transaction identifier&#34;, required=True, **UUID4
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">AuditorSendDataAgreementVerifyRequestMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema to send data agreement verify request to the auditor</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AuditorSendDataAgreementVerifyRequestMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to send data agreement verify request to the auditor
+    &#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">Base64EncodeDataAgreementQrCodeMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Match info (URL path params) schema for base64 encode
+data agreement QR code payload endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Base64EncodeDataAgreementQrCodeMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Match info (URL path params) schema for base64 encode
+    data agreement QR code payload endpoint&#34;&#34;&#34;
+
+    # Data Agreement identifier.
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema"><code class="flex name class">
+<span>class <span class="ident">ConnectionListSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Result schema for connection list.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConnectionListSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for connection list.&#34;&#34;&#34;
+
+    results = fields.List(
+        fields.Nested(ConnectionRecordSchema()),
+        description=&#34;List of connection records&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2"><code class="flex name class">
+<span>class <span class="ident">ConnectionsListQueryStringSchemaV2</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parameters and validators for connections list request query string.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for connections list request query string.&#34;&#34;&#34;
+
+    alias = fields.Str(
+        description=&#34;Alias&#34;,
+        required=False,
+        example=&#34;Barry&#34;,
+    )
+
+    initiator = fields.Str(
+        description=&#34;Connection initiator&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;self&#34;, &#34;external&#34;]),
+    )
+
+    invitation_key = fields.Str(
+        description=&#34;invitation key&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    my_did = fields.Str(description=&#34;My DID&#34;, required=False, **INDY_DID)
+
+    state = fields.Str(
+        description=&#34;Connection state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(ConnectionRecord, m)
+                for m in vars(ConnectionRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )
+
+    their_did = fields.Str(description=&#34;Their DID&#34;, required=False, **INDY_DID)
+
+    their_role = fields.Str(
+        description=&#34;Their assigned connection role&#34;,
+        required=False,
+        example=&#34;Point of contact&#34;,
+    )
+
+    # Response fields
+    include_fields = fields.Str(
+        required=False,
+        description=&#34;Comma separated fields to be included in the response.&#34;,
+        example=&#34;connection_id,state,presentation_exchange_id&#34;,
+    )
+
+    page = fields.Int(
+        required=False,
+        description=&#34;Page number&#34;,
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description=&#34;Page size&#34;,
+        example=10,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema"><code class="flex name class">
+<span>class <span class="ident">CreateAndStoreDAPersonalDataInWalletRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the create and store personal data in wallet request</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateAndStoreDAPersonalDataInWalletRequestSchema(OpenAPISchema):
+
+    &#34;&#34;&#34;
+    Schema for the create and store personal data in wallet request
+    &#34;&#34;&#34;
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute sensitive
+    attribute_sensitive = fields.Bool(
+        example=True, description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    # Attribute category
+    attribute_category = fields.Str(
+        example=&#34;Personal&#34;, description=&#34;Category of the attribute&#34;, required=False
+    )
+
+    @validates(&#34;attribute_description&#34;)
+    def validate_attribute_description(self, attribute_description):
+        &#34;&#34;&#34;
+        Validate attribute description
+        &#34;&#34;&#34;
+        if len(attribute_description) &lt; 3:
+            raise ValidationError(
+                &#34;Attribute description must be at least 3 characters long&#34;
+            )
+
+        if len(attribute_description) &gt; 1000:
+            raise ValidationError(
+                &#34;Attribute description must be at most 1000 characters long&#34;
+            )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        example=&#34;Name of the user&#34;,
+        description=&#34;Description of the attribute&#34;,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_description"><code class="name flex">
+<span>def <span class="ident">validate_attribute_description</span></span>(<span>self, attribute_description)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate attribute description</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;attribute_description&#34;)
+def validate_attribute_description(self, attribute_description):
+    &#34;&#34;&#34;
+    Validate attribute description
+    &#34;&#34;&#34;
+    if len(attribute_description) &lt; 3:
+        raise ValidationError(
+            &#34;Attribute description must be at least 3 characters long&#34;
+        )
+
+    if len(attribute_description) &gt; 1000:
+        raise ValidationError(
+            &#34;Attribute description must be at most 1000 characters long&#34;
+        )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_name"><code class="name flex">
+<span>def <span class="ident">validate_attribute_name</span></span>(<span>self, attribute_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate attribute name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;attribute_name&#34;)
+def validate_attribute_name(self, attribute_name):
+    &#34;&#34;&#34;
+    Validate attribute name
+    &#34;&#34;&#34;
+    if len(attribute_name) &lt; 3:
+        raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementInWalletQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query string schema for create data agreement handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Query string schema for create data agreement handler&#34;&#34;&#34;
+
+    publish_flag = fields.Boolean(description=&#34;Publish the agreement&#34;,
+                                  required=False, example=False)
+
+    existing_schema_id = fields.Str(
+        description=&#34;Existing schema identifier&#34;,
+        required=False,
+        example=&#34;issuer_did:1:schema:1&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementInWalletRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
+    language = fields.Str(data_key=&#34;language&#34;)
+    data_controller_name = fields.Str(data_key=&#34;dataControllerName&#34;)
+    data_controller_url = fields.Str(data_key=&#34;dataControllerUrl&#34;)
+    data_policy = fields.Nested(DataPolicyOpenAPISchema, data_key=&#34;dataPolicy&#34;)
+    purpose = fields.Str(data_key=&#34;purpose&#34;)
+    purpose_descripton = fields.Str(data_key=&#34;purposeDescription&#34;)
+    lawful_basis = fields.Str(data_key=&#34;lawfulBasis&#34;)
+    method_of_use = fields.Str(data_key=&#34;methodOfUse&#34;)
+    personal_data = fields.List(fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;)
+    dpia = fields.Nested(DPIAOpenAPISchema, data_key=&#34;dpia&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2">CreateOrUpdateDataAgreementInWalletRequestSchemaV2</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementInWalletRequestSchemaV2</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementInWalletRequestSchemaV2(
+    CreateOrUpdateDataAgreementInWalletRequestSchema
+):
+    # Data agreement personal data (attributes)
+    personal_data = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema),
+        required=True,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema">CreateOrUpdateDataAgreementInWalletRequestSchema</a></li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the create or update data agreement personal data request</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementPersonalDataRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the create or update data agreement personal data request
+    &#34;&#34;&#34;
+
+    attribute_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Attribute identifier&#34;,
+        required=False,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description=&#34;List of restrictions&#34;,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataRestrictionSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the create or update data agreement personal data restriction</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementPersonalDataRestrictionSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the create or update data agreement personal data restriction
+    &#34;&#34;&#34;
+
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0&#34;,
+    )
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        example=&#34;WgWxqztrNooG92RXvxSTWv:3:CL:20:tag&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema"><code class="flex name class">
+<span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Personal data schema class</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Personal data schema class
+    &#34;&#34;&#34;
+
+    @validates(&#34;attribute_name&#34;)
+    def validate_attribute_name(self, attribute_name):
+        &#34;&#34;&#34;
+        Validate attribute name
+        &#34;&#34;&#34;
+        if len(attribute_name) &lt; 3:
+            raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)
+
+    # Attribute name
+    attribute_name = fields.Str(
+        example=&#34;Name&#34;, description=&#34;Name of the attribute&#34;, required=True
+    )
+
+    # Attribute description
+    attribute_description = fields.Str(
+        required=True,
+        description=&#34;The description of the attribute.&#34;,
+        example=&#34;Name of the customer&#34;,
+    )
+
+    restrictions = fields.List(
+        fields.Nested(CreateOrUpdateDataAgreementPersonalDataRestrictionSchema),
+        description=&#34;List of restrictions&#34;,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.validate_attribute_name"><code class="name flex">
+<span>def <span class="ident">validate_attribute_name</span></span>(<span>self, attribute_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate attribute name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@validates(&#34;attribute_name&#34;)
+def validate_attribute_name(self, attribute_name):
+    &#34;&#34;&#34;
+    Validate attribute name
+    &#34;&#34;&#34;
+    if len(attribute_name) &lt; 3:
+        raise ValidationError(&#34;Attribute name must be at least 3 characters long&#34;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">DACRUDDIDCommTransactionRecordListQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query string schema for listing data agreement CRUD DIDComm transaction records.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DACRUDDIDCommTransactionRecordListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing data agreement CRUD DIDComm transaction records.
+    &#34;&#34;&#34;
+
+    # Connection identifier
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Thread identifier
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        description=&#34;Message type&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DataAgreementCRUDDIDCommTransaction, m)
+                for m in vars(DataAgreementCRUDDIDCommTransaction)
+                if m.startswith(&#34;MESSAGE_TYPE_&#34;)
+            ]
+        ),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema"><code class="flex name class">
+<span>class <span class="ident">DPIAOpenAPISchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DPIAOpenAPISchema(OpenAPISchema):
+    dpia_date = fields.Str(data_key=&#34;dpiaDate&#34;)
+    dpia_summary_url = fields.Str(data_key=&#34;dpiaSummaryUrl&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete a transaction record by its identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Delete a transaction record by its identifier.&#34;&#34;&#34;
+
+    da_crud_didcomm_tx_id = fields.Str(
+        description=&#34;Data agreement CRUD didcomm transaction identifier&#34;,
+        required=True,
+        **UUID4,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementCRUDDIDCommTransactionResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the data agreement CRUD DID comm transaction response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementCRUDDIDCommTransactionResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the data agreement CRUD DID comm transaction response
+    &#34;&#34;&#34;
+
+    # Transaction identifier
+    da_crud_didcomm_tx_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Data agreement CRUD DIDComm transaction identifier&#34;,
+        required=False,
+    )
+
+    # Thread identifier
+    thread_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Thread identifier&#34;,
+        required=False,
+    )
+
+    # Message type
+    message_type = fields.Str(
+        example=&#34;read-data-agreement&#34;,
+        description=&#34;Message type&#34;,
+        required=False,
+    )
+
+    # Message list
+    messages_list = fields.List(
+        fields.Str(),
+        description=&#34;List of messages&#34;,
+        required=False,
+    )
+
+    # Connection identifier
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE,
+        description=&#34;Connection identifier&#34;,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementQRCodeInvitationSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for connection invitation details inside in data agreement qr code payload.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementQRCodeInvitationSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for connection invitation details inside in data agreement qr code payload.&#34;&#34;&#34;
+
+    service_endpoint = fields.Str(
+        description=&#34;Service endpoint&#34;, example=&#34;http://localhost:8080/&#34;
+    )
+    recipient_key = fields.Str(description=&#34;Recipient key&#34;, **INDY_RAW_PUBLIC_KEY)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementQRCodeMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for data agreement QR code match info</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementQRCodeMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for data agreement QR code match info
+    &#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query string schema for data agreements</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for data agreements
+    &#34;&#34;&#34;
+
+    method_of_use = fields.Str(
+        description=&#34;Method of use&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DataAgreementV1Record, m)
+                for m in vars(DataAgreementV1Record)
+                if m.startswith(&#34;METHOD_OF_USE_&#34;)
+            ]
+        ),
+    )
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;,
+        required=False,
+    )
+
+    template_version = fields.Str(
+        description=&#34;Template version&#34;,
+    )
+
+    delete_flag = fields.Bool(
+        description=&#34;Query deleted templates&#34;,
+        required=False,
+    )
+
+    publish_flag = fields.Bool(
+        description=&#34;Query published templates&#34;,
+        required=False,
+    )
+
+    third_party_data_sharing = fields.Bool(
+        description=&#34;Third party data sharing&#34;,
+        required=False,
+    )
+
+    latest_version_flag = fields.Bool(
+        description=&#34;Latest version of the template&#34;,
+        required=False,
+    )
+
+    page = fields.Int(
+        required=False,
+        description=&#34;Page number&#34;,
+        example=1,
+    )
+
+    page_size = fields.Int(
+        required=False,
+        description=&#34;Page size&#34;,
+        example=10,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementV1RecordResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for data agreement v1 record response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementV1RecordResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for data agreement v1 record response
+    &#34;&#34;&#34;
+    template_id = fields.Str()
+    state = fields.Str()
+    method_of_use = fields.Str()
+    data_agreement = fields.Dict()
+    schema_id = fields.Str()
+    cred_def_id = fields.Str()
+    presentation_request = fields.Dict()
+    publish_flag = fields.Str()
+    delete_flag = fields.Str()
+    existing_schema_flag = fields.Str()
+    latest_version_flag = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema"><code class="flex name class">
+<span>class <span class="ident">DataPolicyOpenAPISchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataPolicyOpenAPISchema(OpenAPISchema):
+    policy_url = fields.Str(data_key=&#34;policyUrl&#34;)
+    jurisdiction = fields.Str(data_key=&#34;jurisdiction&#34;)
+    industry_sector = fields.Str(data_key=&#34;industrySector&#34;)
+    data_retention_period = fields.Int(data_key=&#34;dataRetentionPeriod&#34;)
+    geographic_restriction = fields.Str(data_key=&#34;geographicRestriction&#34;)
+    storage_location = fields.Str(data_key=&#34;storageLocation&#34;)
+    third_party_data_sharing = fields.Bool(data_key=&#34;thirdPartyDataSharing&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">DeleteDaPersonalDataInWalletMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True, description=&#34;Personal data identifier&#34;, example=UUIDFour.EXAMPLE
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">DeleteDataAgreementMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema to match info for the delete data agreement endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the delete data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">GenerateDataAgreementQrCodePayloadQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for query string parameters to generate data agreement qr code payload</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GenerateDataAgreementQrCodePayloadQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for query string parameters to generate data agreement qr code payload&#34;&#34;&#34;
+
+    multi_use = fields.Bool()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema"><code class="flex name class">
+<span>class <span class="ident">GenerateDataAgreementQrCodePayloadResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for Data Agreement QR code payload</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GenerateDataAgreementQrCodePayloadResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for Data Agreement QR code payload
+    &#34;&#34;&#34;
+
+    qr_id = fields.Str(description=&#34;QR code ID&#34;, **UUID4)
+    connection_id = fields.Str(description=&#34;Connection ID&#34;, **UUID4)
+    invitation = fields.Nested(
+        DataAgreementQRCodeInvitationSchema(),
+        description=&#34;Connection invitation information&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for matching path parameters in generate firebase
+dynamic link for connection invitation handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in generate firebase
+    dynamic link for connection invitation handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema"><code class="flex name class">
+<span>class <span class="ident">GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for response of generate firebase dynamic link for connection invitation handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for response of generate firebase dynamic link for connection invitation handler&#34;&#34;&#34;
+
+    # Firebase dynamic link
+    firebase_dynamic_link = fields.Str(
+        description=&#34;Firebase dynamic link&#34;,
+        example=&#34;https://example.page.link/UVWXYZuvwxyz12345&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">GetExistingConnectionMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for matching path parameters in get existing connection handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GetExistingConnectionMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in get existing connection handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema"><code class="flex name class">
+<span>class <span class="ident">GetExistingConnectionResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for response of get existing connection handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GetExistingConnectionResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for response of get existing connection handler&#34;&#34;&#34;
+
+    existing_connection_id = fields.Str()
+    my_did = fields.Str()
+    connection_status = fields.Str()
+    connection_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema"><code class="flex name class">
+<span>class <span class="ident">ListDAPersonalDataCategoryFromWalletResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the list personal data category from wallet response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ListDAPersonalDataCategoryFromWalletResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the list personal data category from wallet response
+    &#34;&#34;&#34;
+
+    # List of categories
+    categories = fields.List(
+        fields.Str(description=&#34;Category&#34;, example=&#34;Personal&#34;),
+        description=&#34;List of categories&#34;,
+        required=True,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">MarkExistingConnectionAsAuditorMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the mark existing connection as auditor match info</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MarkExistingConnectionAsAuditorMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the mark existing connection as auditor match info
+    &#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        example=UUIDFour.EXAMPLE, description=&#34;Connection identifier&#34;, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDRemoteRecordResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Response schema for MyData DID remote record.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDRemoteRecordResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Response schema for MyData DID remote record.
+    &#34;&#34;&#34;
+
+    did_doc = fields.Nested(
+        MyDataDIDDocSchema,
+        description=&#34;MyData DID document&#34;,
+    )
+
+    did = fields.Str(**MYDATA_DID, description=&#34;MyData decentralised identifier&#34;)
+
+    sov_verkey = fields.Str(
+        description=&#34;Sovrin verkey&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    status = fields.Str(
+        description=&#34;MyData DID remote status&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;active&#34;, &#34;revoked&#34;]),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">MyDataDIDRemoteRecordsQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query string schema for listing MyData DID remote records.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MyDataDIDRemoteRecordsQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query string schema for listing MyData DID remote records.
+    &#34;&#34;&#34;
+
+    # Sovrin verkey
+    sov_verkey = fields.Str(
+        description=&#34;Sovrin verkey&#34;, required=False, **INDY_RAW_PUBLIC_KEY
+    )
+
+    # DID
+    did = fields.Str(**MYDATA_DID, description=&#34;MyData decentralised identifier&#34;)
+
+    # Status
+    status = fields.Str(
+        description=&#34;MyData DID remote status&#34;,
+        required=False,
+        validate=validate.OneOf([&#34;active&#34;, &#34;revoked&#34;]),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema"><code class="flex name class">
+<span>class <span class="ident">PersonalDataOpenAPISchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PersonalDataOpenAPISchema(OpenAPISchema):
+    attribute_id = fields.Str(data_key=&#34;attributeId&#34;)
+    attribute_name = fields.Str(data_key=&#34;attributeName&#34;)
+    attribute_sensitive = fields.Bool(data_key=&#34;attributeSensitive&#34;)
+    attribute_category = fields.Str(data_key=&#34;attributeCategory&#34;)
+    attribute_description = fields.Str(data_key=&#34;attributeDescription&#34;)
+    restrictions = fields.List(
+        fields.Nested(PersonalDataRestrictionOpenAPISchema),
+        data_key=&#34;restrictions&#34;
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema"><code class="flex name class">
+<span>class <span class="ident">PersonalDataRestrictionOpenAPISchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PersonalDataRestrictionOpenAPISchema(OpenAPISchema):
+    schema_id = fields.Str(data_key=&#34;schemaId&#34;)
+    cred_def_id = fields.Str(data_key=&#34;credDefId&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">PublishDataAgreementMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema to match info for the publish data agreement endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PublishDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the publish data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDAPersonalDataInWalletQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for the query personal data in wallet query string</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDAPersonalDataInWalletQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema for the query personal data in wallet query string
+    &#34;&#34;&#34;
+
+    attribute_sensitive = fields.Bool(
+        description=&#34;Sensitivity of the attribute&#34;, required=False
+    )
+
+    attribute_category = fields.Str(
+        description=&#34;Category of the attribute&#34;, required=False
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDaPersonalDataInWalletQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDaPersonalDataInWalletQueryStringSchema(OpenAPISchema):
+    template_id = fields.Str(required=False)
+    page = fields.Int(required=False)
+    page_size = fields.Int(required=False)
+    method_of_use = fields.Str(
+        required=False,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+    third_party_data_sharing = fields.Bool(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDataAgreementInstanceQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query data agreement instances</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDataAgreementInstanceQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Query data agreement instances
+    &#34;&#34;&#34;
+
+    instance_id = fields.Str(required=False)
+    template_id = fields.Str(required=False)
+    template_version = fields.Str(required=False)
+    method_of_use = fields.Str(
+        required=False,
+        validate=validate.OneOf(
+            [
+                &#34;data-source&#34;,
+                &#34;data-using-service&#34;,
+            ]
+        ),
+    )
+    third_party_data_sharing = fields.Bool(required=False)
+    data_ex_id = fields.Str(required=False)
+    data_subject_did = fields.Str(required=False)
+    page = fields.Int(required=False)
+    page_size = fields.Int(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDataAgreementQRCodeMetadataRecordsResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for querying data agreement qr code metadata records response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for querying data agreement qr code metadata records response&#34;&#34;&#34;
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+        required=False,
+    )
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )
+
+    multi_use = fields.Bool()
+    is_scanned = fields.Bool()
+    data_exchange_record_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema to validate path parameters for query data agreement qr code metadata records.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema to validate path parameters for query data agreement qr code metadata records.&#34;&#34;&#34;
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for querying data agreement qr code metadata records</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for querying data agreement qr code metadata records&#34;&#34;&#34;
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=False
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema"><code class="flex name class">
+<span>class <span class="ident">ReadDataAgreementRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ReadDataAgreementRequestSchema(OpenAPISchema):
+    data_agreement_id = fields.Str(
+        description=&#34;Data agreement identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
+
+    data_agreement_id = fields.Str(
+        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Match info (URL path params) schema for send
+data agreement qr code workflow initiate endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Match info (URL path params) schema for send
+    data agreement qr code workflow initiate endpoint&#34;&#34;&#34;
+
+    # Connection identifier.
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )
+
+    # Qr code identifier
+    qr_id = fields.Str(
+        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendExistingConnectionsMessageHandlerMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for matching path parameters in send existing connections message handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendExistingConnectionsMessageHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in send existing connections message handler&#34;&#34;&#34;
+
+    conn_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema"><code class="flex name class">
+<span>class <span class="ident">SendExistingConnectionsMessageHandlerRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for request body of send existing connections message handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendExistingConnectionsMessageHandlerRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for request body of send existing connections message handler&#34;&#34;&#34;
+
+    theirdid = fields.Str(
+        description=&#34;Their DID&#34;, example=&#34;QmWbsNYhMrjHiqZDTUASHg&#34;, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema(OpenAPISchema):
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema"><code class="flex name class">
+<span>class <span class="ident">SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema(OpenAPISchema):
+    data = fields.Dict()
+    signature_options = fields.Dict()
+    proof_chain = fields.Bool()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for matching path parameters in send read all
+data agreement template message handler</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Schema for matching path parameters in send read all
+    data agreement template message handler&#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendReadDIDMessageMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send a read-did message to the MyData DID registry service.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendReadDIDMessageMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Send a read-did message to the MyData DID registry service.
+    &#34;&#34;&#34;
+
+    did = fields.Str(description=&#34;did:mydata identifier&#34;, required=True, **MYDATA_DID)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">UpdateDaPersonalDataInWalletMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(
+        required=True, description=&#34;Personal data identifier&#34;, example=UUIDFour.EXAMPLE
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema"><code class="flex name class">
+<span>class <span class="ident">UpdateDaPersonalDataInWalletRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateDaPersonalDataInWalletRequestSchema(OpenAPISchema):
+    attribute_description = fields.Str(
+        description=&#34;Attribute description&#34;, example=&#34;Age of the patient&#34;, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema"><code class="flex name class">
+<span>class <span class="ident">UpdateDaPersonalDataInWalletResponseSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateDaPersonalDataInWalletResponseSchema(OpenAPISchema):
+
+    attribute_id = fields.Str(description=&#34;Attribute ID&#34;, example=UUIDFour.EXAMPLE)
+    attribute_name = fields.Str(description=&#34;Attribute name&#34;, example=&#34;Name&#34;)
+    attribute_description = fields.Str(
+        description=&#34;Attribute description&#34;, example=&#34;Name of the patient&#34;
+    )
+    data_agreement_template_id = fields.Str(
+        description=&#34;Data Agreement Template ID&#34;, example=UUIDFour.EXAMPLE
+    )
+    data_agreement_template_version = fields.Integer(
+        description=&#34;Data Agreement Template version&#34;, example=1
+    )
+    created_at = fields.Integer(
+        description=&#34;Created at (Epoch time in seconds)&#34;, example=1578012800
+    )
+    updated_at = fields.Integer(
+        description=&#34;Updated at (Epoch time in seconds)&#34;, example=1578012800
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">UpdateDataAgreementMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema to match info for the update data agreement endpoint</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateDataAgreementMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;
+    Schema to match info for the update data agreement endpoint
+    &#34;&#34;&#34;
+
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;, required=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema"><code class="flex name class">
+<span>class <span class="ident">UpdateDataAgreementTemplateOpenAPISchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateDataAgreementTemplateOpenAPISchema(OpenAPISchema):
+    publish_flag = fields.Boolean(required=False)
+    existing_schema_id = fields.Str(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">V2CreateInvitationQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parameters and validators for create invitation request query string.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V2CreateInvitationQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for create invitation request query string.&#34;&#34;&#34;
+
+    alias = fields.Str(
+        description=&#34;Alias&#34;,
+        required=False,
+        example=&#34;Barry&#34;,
+    )
+    auto_accept = fields.Boolean(
+        description=&#34;Auto-accept connection (default as per configuration)&#34;,
+        required=False,
+    )
+    public = fields.Boolean(
+        description=&#34;Create invitation from public DID (default false)&#34;, required=False
+    )
+    multi_use = fields.Boolean(
+        description=&#34;Create invitation for multiple use (default false)&#34;, required=False
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema"><code class="flex name class">
+<span>class <span class="ident">V2InvitationResultSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Result schema for a new connection invitation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V2InvitationResultSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for a new connection invitation.&#34;&#34;&#34;
+
+    connection_id = fields.Str(
+        description=&#34;Connection identifier&#34;, example=UUIDFour.EXAMPLE
+    )
+    invitation = fields.Nested(ConnectionInvitationSchema())
+    invitation_url = fields.Str(
+        description=&#34;Invitation URL&#34;,
+        example=&#34;http://192.168.56.101:8020/invite?c_i=eyJAdHlwZSI6Li4ufQ==&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.routes.openapi" href="index.html">mydata_did.v1_0.routes.openapi</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema">AuditorDIDCommTransactionRecordListQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema">AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema">AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema">AuditorSendDataAgreementVerifyRequestMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema">Base64EncodeDataAgreementQrCodeMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema" href="#mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema">ConnectionListSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2" href="#mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2">ConnectionsListQueryStringSchemaV2</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema">CreateAndStoreDAPersonalDataInWalletRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_description" href="#mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_description">validate_attribute_description</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_name" href="#mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema.validate_attribute_name">validate_attribute_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema">CreateOrUpdateDataAgreementInWalletQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema">CreateOrUpdateDataAgreementInWalletRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2">CreateOrUpdateDataAgreementInWalletRequestSchemaV2</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema">CreateOrUpdateDataAgreementPersonalDataRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema">CreateOrUpdateDataAgreementPersonalDataRestrictionSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema">CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.validate_attribute_name" href="#mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema.validate_attribute_name">validate_attribute_name</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema">DACRUDDIDCommTransactionRecordListQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema" href="#mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema">DPIAOpenAPISchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema">DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema">DataAgreementCRUDDIDCommTransactionResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema">DataAgreementQRCodeInvitationSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema">DataAgreementQRCodeMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema">DataAgreementQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema">DataAgreementV1RecordResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema" href="#mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema">DataPolicyOpenAPISchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema">DeleteDaPersonalDataInWalletMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema">DeleteDataAgreementMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema">GenerateDataAgreementQrCodePayloadQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema">GenerateDataAgreementQrCodePayloadResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema">GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema">GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema">GetExistingConnectionMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema">GetExistingConnectionResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema">ListDAPersonalDataCategoryFromWalletResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema">MarkExistingConnectionAsAuditorMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema">MyDataDIDRemoteRecordResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema">MyDataDIDRemoteRecordsQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema" href="#mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema">PersonalDataOpenAPISchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema" href="#mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema">PersonalDataRestrictionOpenAPISchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema">PublishDataAgreementMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema">QueryDAPersonalDataInWalletQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema">QueryDaPersonalDataInWalletQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema">QueryDataAgreementInstanceQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema">QueryDataAgreementQRCodeMetadataRecordsResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema">QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema">QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema">ReadDataAgreementRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema">RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema">SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema">SendExistingConnectionsMessageHandlerMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema">SendExistingConnectionsMessageHandlerRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema">SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema">SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema">SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema">SendReadDIDMessageMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema">UpdateDaPersonalDataInWalletMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema">UpdateDaPersonalDataInWalletRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema">UpdateDaPersonalDataInWalletResponseSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema">UpdateDataAgreementMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema">UpdateDataAgreementTemplateOpenAPISchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema">V2CreateInvitationQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema" href="#mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema">V2InvitationResultSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

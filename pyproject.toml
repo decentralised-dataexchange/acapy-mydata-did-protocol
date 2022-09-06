@@ -33,6 +33,7 @@ dexa-sdk = { path = "/Users/georgejpadayatti/decentralised-dataexchange/dexa-sdk
 black = "^22.8.0"
 flake8 = "^5.0.4"
 autopep8 = "^1.7.0"
+pdoc3 = "^0.10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.utils.did.mydata_did API documentation</title>
+<meta name="description" content="DID MyData class and resolver methods." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.utils.did.mydata_did</code></h1>
+</header>
+<section id="section-intro">
+<p>DID MyData class and resolver methods.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;DID MyData class and resolver methods.&#34;&#34;&#34;
+
+from ..wallet.crypto import ed25519_pk_to_curve25519
+from ..wallet.key_type import KeyType
+from ..wallet.util import b58_to_bytes, bytes_to_b58
+
+from ..diddoc import DIDDoc
+
+
+class DIDMyData:
+    &#34;&#34;&#34;DID MyData parser and resolver.&#34;&#34;&#34;
+
+    _key_type: KeyType
+    _public_key: bytes
+
+    def __init__(self, public_key: bytes, key_type: KeyType) -&gt; None:
+        &#34;&#34;&#34;Initialize new DIDMyData instance.&#34;&#34;&#34;
+        self._public_key = public_key
+        self._key_type = key_type
+
+    @classmethod
+    def from_public_key(cls, public_key: bytes, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from public key and key type.&#34;&#34;&#34;
+
+        return cls(public_key, key_type)
+
+    @classmethod
+    def from_public_key_b58(cls, public_key: str, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from base58 encoded public key and key type.&#34;&#34;&#34;
+        public_key_bytes = b58_to_bytes(public_key)
+        return cls.from_public_key(public_key_bytes, key_type)
+
+    @classmethod
+    def from_fingerprint(cls, fingerprint: str) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from multibase encoded fingerprint.
+
+        The fingerprint contains both the public key and key type.
+        &#34;&#34;&#34;
+        # Assert fingerprint is in multibase format
+        assert fingerprint[0] == &#34;z&#34;
+
+        # Get key bytes, remove multicodec prefix
+        key_bytes_with_prefix = b58_to_bytes(fingerprint[1:])
+
+        # Get associated key type with prefixed bytes
+        key_type = KeyType.from_prefixed_bytes(key_bytes_with_prefix)
+
+        if not key_type:
+            raise Exception(
+                f&#34;No key type for prefixed public key &#39;{key_bytes_with_prefix}&#39; found.&#34;
+            )
+
+        # Remove the prefix bytes to get the public key
+        prefix_len = len(key_type.multicodec_prefix)
+        public_key_bytes = key_bytes_with_prefix[prefix_len:]
+
+        return cls(public_key_bytes, key_type)
+
+    @classmethod
+    def from_did(cls, did: str) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize a new DIDMyData instance from a fully qualified did:mydata string.
+
+        Extracts the fingerprint from the did:mydata and uses that to constrcut the did:mydata.
+        &#34;&#34;&#34;
+        did_parts = did.split(&#34;#&#34;)
+        _, fingerprint = did_parts[0].split(&#34;did:mydata:&#34;)
+
+        return cls.from_fingerprint(fingerprint)
+
+    @property
+    def prefixed_public_key(self) -&gt; bytes:
+        &#34;&#34;&#34;Getter for multicodec prefixed public key.&#34;&#34;&#34;
+        return b&#34;&#34;.join([self.key_type.multicodec_prefix, self.public_key])
+
+    @property
+    def fingerprint(self) -&gt; str:
+        &#34;&#34;&#34;Getter for DID MyData fingerprint.&#34;&#34;&#34;
+        return f&#34;z{bytes_to_b58(self.prefixed_public_key)}&#34;
+
+    @property
+    def did(self) -&gt; str:
+        &#34;&#34;&#34;Getter for full did:mydata string.&#34;&#34;&#34;
+        return f&#34;did:mydata:{self.fingerprint}&#34;
+
+    @property
+    def did_doc(self) -&gt; dict:
+        &#34;&#34;&#34;Getter for did document associated with did:mydata.&#34;&#34;&#34;
+        resolver = DID_KEY_RESOLVERS[self.key_type]
+        return resolver(self)
+
+    @property
+    def public_key(self) -&gt; bytes:
+        &#34;&#34;&#34;Getter for public key.&#34;&#34;&#34;
+        return self._public_key
+
+    @property
+    def public_key_b58(self) -&gt; str:
+        &#34;&#34;&#34;Getter for base58 encoded public key.&#34;&#34;&#34;
+        return bytes_to_b58(self.public_key)
+
+    @property
+    def key_type(self) -&gt; KeyType:
+        &#34;&#34;&#34;Getter for key type.&#34;&#34;&#34;
+        return self._key_type
+
+    @property
+    def key_id(self) -&gt; str:
+        &#34;&#34;&#34;Getter for key id.&#34;&#34;&#34;
+        return f&#34;{self.did}#{self.fingerprint}&#34;
+
+def construct_did_key_ed25519(did_key: &#34;DIDMyData&#34;) -&gt; dict:
+    &#34;&#34;&#34;Construct Ed25519 did:mydata.
+
+    Args:
+        did_key (DIDMyData): DID MyData instance to parse ed25519 did:mydata document from
+
+    Returns:
+        dict: The ed25519 did:mydata did document
+
+    &#34;&#34;&#34;
+    curve25519 = ed25519_pk_to_curve25519(did_key.public_key)
+    x25519 = DIDMyData.from_public_key(curve25519, KeyType.X25519)
+
+    did_doc = construct_did_signature_key_base(
+        id=did_key.did,
+        key_id=did_key.key_id,
+        verification_method={
+            &#34;id&#34;: did_key.key_id,
+            &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
+            &#34;controller&#34;: did_key.did,
+            &#34;publicKeyBase58&#34;: did_key.public_key_b58,
+        },
+    )
+
+    # Ed25519 has pair with X25519
+    did_doc[&#34;keyAgreement&#34;].append(
+        {
+            &#34;id&#34;: f&#34;{did_key.did}#{x25519.fingerprint}&#34;,
+            &#34;type&#34;: &#34;X25519KeyAgreementKey2019&#34;,
+            &#34;controller&#34;: did_key.did,
+            &#34;publicKeyBase58&#34;: bytes_to_b58(curve25519),
+        }
+    )
+
+    return did_doc
+
+
+def construct_did_signature_key_base(
+    *, id: str, key_id: str, verification_method: dict
+):
+    &#34;&#34;&#34;Create base DID MyData structure to use for most signature keys.
+
+    May not be suitable for all DID MyData types
+
+    &#34;&#34;&#34;
+
+    return {
+        &#34;@context&#34;: DIDDoc.CONTEXT,
+        &#34;id&#34;: id,
+        &#34;verificationMethod&#34;: [verification_method],
+        &#34;authentication&#34;: [key_id],
+        &#34;assertionMethod&#34;: [key_id],
+        &#34;capabilityDelegation&#34;: [key_id],
+        &#34;capabilityInvocation&#34;: [key_id],
+        &#34;keyAgreement&#34;: [],
+    }
+
+
+DID_KEY_RESOLVERS = {
+    KeyType.ED25519: construct_did_key_ed25519,
+}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.construct_did_key_ed25519"><code class="name flex">
+<span>def <span class="ident">construct_did_key_ed25519</span></span>(<span>did_key: <a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a>) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Construct Ed25519 did:mydata.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>did_key</code></strong> :&ensp;<code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></code></dt>
+<dd>DID MyData instance to parse ed25519 did:mydata document from</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>The ed25519 did:mydata did document</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def construct_did_key_ed25519(did_key: &#34;DIDMyData&#34;) -&gt; dict:
+    &#34;&#34;&#34;Construct Ed25519 did:mydata.
+
+    Args:
+        did_key (DIDMyData): DID MyData instance to parse ed25519 did:mydata document from
+
+    Returns:
+        dict: The ed25519 did:mydata did document
+
+    &#34;&#34;&#34;
+    curve25519 = ed25519_pk_to_curve25519(did_key.public_key)
+    x25519 = DIDMyData.from_public_key(curve25519, KeyType.X25519)
+
+    did_doc = construct_did_signature_key_base(
+        id=did_key.did,
+        key_id=did_key.key_id,
+        verification_method={
+            &#34;id&#34;: did_key.key_id,
+            &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
+            &#34;controller&#34;: did_key.did,
+            &#34;publicKeyBase58&#34;: did_key.public_key_b58,
+        },
+    )
+
+    # Ed25519 has pair with X25519
+    did_doc[&#34;keyAgreement&#34;].append(
+        {
+            &#34;id&#34;: f&#34;{did_key.did}#{x25519.fingerprint}&#34;,
+            &#34;type&#34;: &#34;X25519KeyAgreementKey2019&#34;,
+            &#34;controller&#34;: did_key.did,
+            &#34;publicKeyBase58&#34;: bytes_to_b58(curve25519),
+        }
+    )
+
+    return did_doc</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.construct_did_signature_key_base"><code class="name flex">
+<span>def <span class="ident">construct_did_signature_key_base</span></span>(<span>*, id: str, key_id: str, verification_method: dict)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create base DID MyData structure to use for most signature keys.</p>
+<p>May not be suitable for all DID MyData types</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def construct_did_signature_key_base(
+    *, id: str, key_id: str, verification_method: dict
+):
+    &#34;&#34;&#34;Create base DID MyData structure to use for most signature keys.
+
+    May not be suitable for all DID MyData types
+
+    &#34;&#34;&#34;
+
+    return {
+        &#34;@context&#34;: DIDDoc.CONTEXT,
+        &#34;id&#34;: id,
+        &#34;verificationMethod&#34;: [verification_method],
+        &#34;authentication&#34;: [key_id],
+        &#34;assertionMethod&#34;: [key_id],
+        &#34;capabilityDelegation&#34;: [key_id],
+        &#34;capabilityInvocation&#34;: [key_id],
+        &#34;keyAgreement&#34;: [],
+    }</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData"><code class="flex name class">
+<span>class <span class="ident">DIDMyData</span></span>
+<span>(</span><span>public_key: bytes, key_type: <a title="mydata_did.v1_0.utils.wallet.key_type.KeyType" href="../wallet/key_type.html#mydata_did.v1_0.utils.wallet.key_type.KeyType">KeyType</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>DID MyData parser and resolver.</p>
+<p>Initialize new DIDMyData instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DIDMyData:
+    &#34;&#34;&#34;DID MyData parser and resolver.&#34;&#34;&#34;
+
+    _key_type: KeyType
+    _public_key: bytes
+
+    def __init__(self, public_key: bytes, key_type: KeyType) -&gt; None:
+        &#34;&#34;&#34;Initialize new DIDMyData instance.&#34;&#34;&#34;
+        self._public_key = public_key
+        self._key_type = key_type
+
+    @classmethod
+    def from_public_key(cls, public_key: bytes, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from public key and key type.&#34;&#34;&#34;
+
+        return cls(public_key, key_type)
+
+    @classmethod
+    def from_public_key_b58(cls, public_key: str, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from base58 encoded public key and key type.&#34;&#34;&#34;
+        public_key_bytes = b58_to_bytes(public_key)
+        return cls.from_public_key(public_key_bytes, key_type)
+
+    @classmethod
+    def from_fingerprint(cls, fingerprint: str) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize new DIDMyData instance from multibase encoded fingerprint.
+
+        The fingerprint contains both the public key and key type.
+        &#34;&#34;&#34;
+        # Assert fingerprint is in multibase format
+        assert fingerprint[0] == &#34;z&#34;
+
+        # Get key bytes, remove multicodec prefix
+        key_bytes_with_prefix = b58_to_bytes(fingerprint[1:])
+
+        # Get associated key type with prefixed bytes
+        key_type = KeyType.from_prefixed_bytes(key_bytes_with_prefix)
+
+        if not key_type:
+            raise Exception(
+                f&#34;No key type for prefixed public key &#39;{key_bytes_with_prefix}&#39; found.&#34;
+            )
+
+        # Remove the prefix bytes to get the public key
+        prefix_len = len(key_type.multicodec_prefix)
+        public_key_bytes = key_bytes_with_prefix[prefix_len:]
+
+        return cls(public_key_bytes, key_type)
+
+    @classmethod
+    def from_did(cls, did: str) -&gt; &#34;DIDMyData&#34;:
+        &#34;&#34;&#34;Initialize a new DIDMyData instance from a fully qualified did:mydata string.
+
+        Extracts the fingerprint from the did:mydata and uses that to constrcut the did:mydata.
+        &#34;&#34;&#34;
+        did_parts = did.split(&#34;#&#34;)
+        _, fingerprint = did_parts[0].split(&#34;did:mydata:&#34;)
+
+        return cls.from_fingerprint(fingerprint)
+
+    @property
+    def prefixed_public_key(self) -&gt; bytes:
+        &#34;&#34;&#34;Getter for multicodec prefixed public key.&#34;&#34;&#34;
+        return b&#34;&#34;.join([self.key_type.multicodec_prefix, self.public_key])
+
+    @property
+    def fingerprint(self) -&gt; str:
+        &#34;&#34;&#34;Getter for DID MyData fingerprint.&#34;&#34;&#34;
+        return f&#34;z{bytes_to_b58(self.prefixed_public_key)}&#34;
+
+    @property
+    def did(self) -&gt; str:
+        &#34;&#34;&#34;Getter for full did:mydata string.&#34;&#34;&#34;
+        return f&#34;did:mydata:{self.fingerprint}&#34;
+
+    @property
+    def did_doc(self) -&gt; dict:
+        &#34;&#34;&#34;Getter for did document associated with did:mydata.&#34;&#34;&#34;
+        resolver = DID_KEY_RESOLVERS[self.key_type]
+        return resolver(self)
+
+    @property
+    def public_key(self) -&gt; bytes:
+        &#34;&#34;&#34;Getter for public key.&#34;&#34;&#34;
+        return self._public_key
+
+    @property
+    def public_key_b58(self) -&gt; str:
+        &#34;&#34;&#34;Getter for base58 encoded public key.&#34;&#34;&#34;
+        return bytes_to_b58(self.public_key)
+
+    @property
+    def key_type(self) -&gt; KeyType:
+        &#34;&#34;&#34;Getter for key type.&#34;&#34;&#34;
+        return self._key_type
+
+    @property
+    def key_id(self) -&gt; str:
+        &#34;&#34;&#34;Getter for key id.&#34;&#34;&#34;
+        return f&#34;{self.did}#{self.fingerprint}&#34;</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_did"><code class="name flex">
+<span>def <span class="ident">from_did</span></span>(<span>did: str) ‑> <a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialize a new DIDMyData instance from a fully qualified did:mydata string.</p>
+<p>Extracts the fingerprint from the did:mydata and uses that to constrcut the did:mydata.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_did(cls, did: str) -&gt; &#34;DIDMyData&#34;:
+    &#34;&#34;&#34;Initialize a new DIDMyData instance from a fully qualified did:mydata string.
+
+    Extracts the fingerprint from the did:mydata and uses that to constrcut the did:mydata.
+    &#34;&#34;&#34;
+    did_parts = did.split(&#34;#&#34;)
+    _, fingerprint = did_parts[0].split(&#34;did:mydata:&#34;)
+
+    return cls.from_fingerprint(fingerprint)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_fingerprint"><code class="name flex">
+<span>def <span class="ident">from_fingerprint</span></span>(<span>fingerprint: str) ‑> <a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialize new DIDMyData instance from multibase encoded fingerprint.</p>
+<p>The fingerprint contains both the public key and key type.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_fingerprint(cls, fingerprint: str) -&gt; &#34;DIDMyData&#34;:
+    &#34;&#34;&#34;Initialize new DIDMyData instance from multibase encoded fingerprint.
+
+    The fingerprint contains both the public key and key type.
+    &#34;&#34;&#34;
+    # Assert fingerprint is in multibase format
+    assert fingerprint[0] == &#34;z&#34;
+
+    # Get key bytes, remove multicodec prefix
+    key_bytes_with_prefix = b58_to_bytes(fingerprint[1:])
+
+    # Get associated key type with prefixed bytes
+    key_type = KeyType.from_prefixed_bytes(key_bytes_with_prefix)
+
+    if not key_type:
+        raise Exception(
+            f&#34;No key type for prefixed public key &#39;{key_bytes_with_prefix}&#39; found.&#34;
+        )
+
+    # Remove the prefix bytes to get the public key
+    prefix_len = len(key_type.multicodec_prefix)
+    public_key_bytes = key_bytes_with_prefix[prefix_len:]
+
+    return cls(public_key_bytes, key_type)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key"><code class="name flex">
+<span>def <span class="ident">from_public_key</span></span>(<span>public_key: bytes, key_type: <a title="mydata_did.v1_0.utils.wallet.key_type.KeyType" href="../wallet/key_type.html#mydata_did.v1_0.utils.wallet.key_type.KeyType">KeyType</a>) ‑> <a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialize new DIDMyData instance from public key and key type.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_public_key(cls, public_key: bytes, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+    &#34;&#34;&#34;Initialize new DIDMyData instance from public key and key type.&#34;&#34;&#34;
+
+    return cls(public_key, key_type)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key_b58"><code class="name flex">
+<span>def <span class="ident">from_public_key_b58</span></span>(<span>public_key: str, key_type: <a title="mydata_did.v1_0.utils.wallet.key_type.KeyType" href="../wallet/key_type.html#mydata_did.v1_0.utils.wallet.key_type.KeyType">KeyType</a>) ‑> <a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialize new DIDMyData instance from base58 encoded public key and key type.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_public_key_b58(cls, public_key: str, key_type: KeyType) -&gt; &#34;DIDMyData&#34;:
+    &#34;&#34;&#34;Initialize new DIDMyData instance from base58 encoded public key and key type.&#34;&#34;&#34;
+    public_key_bytes = b58_to_bytes(public_key)
+    return cls.from_public_key(public_key_bytes, key_type)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did"><code class="name">var <span class="ident">did</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Getter for full did:mydata string.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def did(self) -&gt; str:
+    &#34;&#34;&#34;Getter for full did:mydata string.&#34;&#34;&#34;
+    return f&#34;did:mydata:{self.fingerprint}&#34;</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did_doc"><code class="name">var <span class="ident">did_doc</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Getter for did document associated with did:mydata.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def did_doc(self) -&gt; dict:
+    &#34;&#34;&#34;Getter for did document associated with did:mydata.&#34;&#34;&#34;
+    resolver = DID_KEY_RESOLVERS[self.key_type]
+    return resolver(self)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.fingerprint"><code class="name">var <span class="ident">fingerprint</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Getter for DID MyData fingerprint.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def fingerprint(self) -&gt; str:
+    &#34;&#34;&#34;Getter for DID MyData fingerprint.&#34;&#34;&#34;
+    return f&#34;z{bytes_to_b58(self.prefixed_public_key)}&#34;</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_id"><code class="name">var <span class="ident">key_id</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Getter for key id.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def key_id(self) -&gt; str:
+    &#34;&#34;&#34;Getter for key id.&#34;&#34;&#34;
+    return f&#34;{self.did}#{self.fingerprint}&#34;</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_type"><code class="name">var <span class="ident">key_type</span> : <a title="mydata_did.v1_0.utils.wallet.key_type.KeyType" href="../wallet/key_type.html#mydata_did.v1_0.utils.wallet.key_type.KeyType">KeyType</a></code></dt>
+<dd>
+<div class="desc"><p>Getter for key type.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def key_type(self) -&gt; KeyType:
+    &#34;&#34;&#34;Getter for key type.&#34;&#34;&#34;
+    return self._key_type</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.prefixed_public_key"><code class="name">var <span class="ident">prefixed_public_key</span> : bytes</code></dt>
+<dd>
+<div class="desc"><p>Getter for multicodec prefixed public key.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def prefixed_public_key(self) -&gt; bytes:
+    &#34;&#34;&#34;Getter for multicodec prefixed public key.&#34;&#34;&#34;
+    return b&#34;&#34;.join([self.key_type.multicodec_prefix, self.public_key])</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key"><code class="name">var <span class="ident">public_key</span> : bytes</code></dt>
+<dd>
+<div class="desc"><p>Getter for public key.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def public_key(self) -&gt; bytes:
+    &#34;&#34;&#34;Getter for public key.&#34;&#34;&#34;
+    return self._public_key</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key_b58"><code class="name">var <span class="ident">public_key_b58</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Getter for base58 encoded public key.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def public_key_b58(self) -&gt; str:
+    &#34;&#34;&#34;Getter for base58 encoded public key.&#34;&#34;&#34;
+    return bytes_to_b58(self.public_key)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.utils.did" href="index.html">mydata_did.v1_0.utils.did</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.construct_did_key_ed25519" href="#mydata_did.v1_0.utils.did.mydata_did.construct_did_key_ed25519">construct_did_key_ed25519</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.construct_did_signature_key_base" href="#mydata_did.v1_0.utils.did.mydata_did.construct_did_signature_key_base">construct_did_signature_key_base</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData">DIDMyData</a></code></h4>
+<ul class="two-column">
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did">did</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did_doc" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.did_doc">did_doc</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.fingerprint" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.fingerprint">fingerprint</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_did" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_did">from_did</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_fingerprint" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_fingerprint">from_fingerprint</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key">from_public_key</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key_b58" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.from_public_key_b58">from_public_key_b58</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_id" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_id">key_id</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_type" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.key_type">key_type</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.prefixed_public_key" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.prefixed_public_key">prefixed_public_key</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key">public_key</a></code></li>
+<li><code><a title="mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key_b58" href="#mydata_did.v1_0.utils.did.mydata_did.DIDMyData.public_key_b58">public_key_b58</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
