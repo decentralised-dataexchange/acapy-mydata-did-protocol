@@ -44,7 +44,7 @@ class CredentialIssue(AgentMessage):
             credentials_attach: credentials attachments
 
         """
-        super().__init__(_id=_id, _decorators = PatchedDecoratorSet(), **kwargs)
+        super().__init__(_id=_id, _decorators=PatchedDecoratorSet(), **kwargs)
         self.comment = comment
         self.credentials_attach = list(credentials_attach) if credentials_attach else []
 

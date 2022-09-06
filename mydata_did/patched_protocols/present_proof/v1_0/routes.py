@@ -39,9 +39,9 @@ from aries_cloudagent.messaging.valid import (
 from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
 from aries_cloudagent.utils.tracing import trace_event, get_timer, AdminAPIMessageTracingSchema
 from aries_cloudagent.wallet.error import WalletNotFoundError
-
 from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
-
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from dexa_sdk.agreements.da.v1_0.records.da_template_record import DataAgreementTemplateRecord
 from .manager import PresentationManager
 from .message_types import ATTACH_DECO_IDS, PRESENTATION_REQUEST, SPEC_URI
 from .messages.inner.presentation_preview import (
@@ -57,11 +57,18 @@ from .models.presentation_exchange import (
 
 from ....v1_0.decorators.data_agreement_context_decorator import DataAgreementContextDecorator
 from ....v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
-from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
+from ....v1_0.models.data_agreement_negotiation_offer_model import (
+    DataAgreementNegotiationOfferBody,
+    DataAgreementNegotiationOfferBodySchema
+)
 from ....v1_0.manager import ADAManager, ADAManagerError
-from ....v1_0.models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementNegotiationOfferBodySchema
-from ....v1_0.models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
-from ....patched_protocols.issue_credential.v1_0.routes import SendDataAgreementNegotiationProblemReportRequestSchema
+from ....v1_0.models.data_agreement_instance_model import (
+    DataAgreementInstance,
+    DataAgreementInstanceSchema
+)
+from ....patched_protocols.issue_credential.v1_0.routes import (
+    SendDataAgreementNegotiationProblemReportRequestSchema
+)
 from ....v1_0.utils.did.mydata_did import DIDMyData
 from ....v1_0.utils.wallet.key_type import KeyType
 from ....v1_0.utils.util import comma_separated_str_to_list, get_slices
@@ -104,39 +111,6 @@ class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
                 if m.startswith("STATE_")
             ]
         ),
-    )
-
-    # Data Agreement identifier
-    data_agreement_id = fields.Str(
-        required=False,
-        description="Data agreement identifier",
-        example=UUIDFour.EXAMPLE,
-    )
-
-    # Data Agreement template identifier
-    data_agreement_template_id = fields.Str(
-        required=False,
-        description="Data agreement template identifier",
-        example=UUIDFour.EXAMPLE,
-    )
-
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description="Comma separated fields to be included in the response.",
-        example="connection_id,state,presentation_exchange_id",
-    )
-
-    page = fields.Int(
-        required=False,
-        description="Page number",
-        example=1,
-    )
-
-    page_size = fields.Int(
-        required=False,
-        description="Page size",
-        example=10,
     )
 
 
@@ -485,14 +459,11 @@ class PresExIdMatchInfoSchema(OpenAPISchema):
 class SendPresentationRequestForDataAgreementRequestSchema(OpenAPISchema):
     """Request schema for sending a presentation request for a data agreement."""
 
-    connection_id = fields.UUID(
-        description="Connection identifier", required=True, example=UUIDFour.EXAMPLE
-    )
+    # Connection identifier
+    connection_id = fields.UUID(required=True)
 
-    # Data agreement identifier
-    data_agreement_id = fields.Str(
-        description="Data agreement identifier", required=True, **UUID4
-    )
+    # Data agreement template identifier
+    template_id = fields.Str(required=True)
 
 
 @docs(tags=["present-proof"], summary="Fetch all present-proof exchange records")
@@ -509,73 +480,23 @@ async def presentation_exchange_list(request: web.BaseRequest):
         The presentation exchange list response
 
     """
-
     context = request.app["request_context"]
-
     tag_filter = {}
-
     if "thread_id" in request.query and request.query["thread_id"] != "":
         tag_filter["thread_id"] = request.query["thread_id"]
-
     post_filter = {
         k: request.query[k]
-        for k in ("connection_id", "role", "state", "data_agreement_id", "data_agreement_template_id")
+        for k in ("connection_id", "role", "state")
         if request.query.get(k, "") != ""
     }
 
-    # Pagination parameters
-    pagination = {
-        "totalCount": 0,
-        "page": 0,
-        "pageSize": PAGINATION_PAGE_SIZE,
-        "totalPages": 0,
-    }
-
     try:
-
         records = await V10PresentationExchange.query(context, tag_filter, post_filter)
-
-        # Page size from request.
-        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
-        pagination["pageSize"] = page_size
-
-        # Total number of records
-        pagination["totalCount"] = len(records)
-
-        # Total number of pages.
-        pagination["totalPages"] = math.ceil(
-            pagination["totalCount"] / pagination["pageSize"])
-
-        # Fields to be included in the response.
-        include_fields = request.query.get("include_fields")
-        include_fields = comma_separated_str_to_list(
-            include_fields) if include_fields else None
-
-        # Serialise presentation exchange records and customize it based on include_fields.
-        results = ADAManager.serialize_presentation_exchange_records(
-            records, True, include_fields)
-
-        # Pagination parameters
-        page = request.query.get("page")
-
-        if page:
-            page = int(page)
-            pagination["page"] = page
-
-            lower, upper = get_slices(page, pagination["pageSize"])
-
-            results = results[lower:upper]
-
-    except (StorageError, BaseModelError, ValueError) as err:
-
+        results = [record.serialize() for record in records]
+    except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(
-        {
-            "results": results,
-            "pagination": pagination if page else {},
-        }
-    )
+    return web.json_response({"results": results})
 
 
 @docs(tags=["present-proof"], summary="Fetch a single presentation exchange record")
@@ -1058,42 +979,23 @@ async def presentation_exchange_send_presentation(request: web.BaseRequest):
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        manager = V2ADAManager(context)
 
-        try:
-            if pres_ex_record.data_agreement:
+        # Initialize ADA manager.
+        manager = V2ADAManager(context)
 
-                if pres_ex_record.data_agreement_status == V10PresentationExchange.DATA_AGREEMENT_OFFER:
-                    # Check if data agreement is present in presentation exchange record and it is in offer state
-                    # If so, then accept the data agreement and attach it to the presentation message
+        # Create data agreement accept message.
+        accept_message = await manager.build_data_agreement_accept_for_data_ex_record(
+            connection_record,
+            pres_ex_record
+        )
 
-                    # Load data agreement offer
-                    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
-                        pres_ex_record.data_agreement
-                    )
-
-                    (data_agreement_instance, data_agreement_negotiation_accept_message) = await ada_manager.construct_data_agreement_negotiation_accept_message(
-                        data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
-                        connection_record=connection_record,
-                    )
-
-                    # Update presentation message with data agreement context decorator
-                    presentation_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
-                        message_type="protocol",
-                        message=data_agreement_negotiation_accept_message.serialize()
-                    )
-
-                    # Update credential exchange record with data agreement
-                    pres_ex_record.data_agreement = data_agreement_instance.serialize()
-                    pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_ACCEPT
-
-                    await pres_ex_record.save(context)
-                else:
-                    raise web.HTTPBadRequest(
-                        reason="Data agreement is not in offer state.")
-
-        except ADAManagerError as err:
-            raise web.HTTPBadRequest(reason=err.roll_up) from err
+        # Update presentation message with data agreement context decorator
+        presentation_message._decorators["data-agreement-context"] = \
+            DataAgreementContextDecorator(
+            message_type="protocol",
+            message=accept_message.serialize()
+        )
 
         result = pres_ex_record.serialize()
     except (
@@ -1211,14 +1113,10 @@ async def presentation_exchange_remove(request: web.BaseRequest):
         await pres_ex_record.delete_record(context)
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        manager = V2ADAManager(context)
 
-        # Delete data agreement instance metadata
-        await ada_manager.delete_data_agreement_instance_metadata(
-            tag_query={
-                "data_exchange_record_id": presentation_exchange_id
-            }
-        )
+        # Delete data agreement instance
+        await manager.delete_da_instance_by_data_ex_id(pres_ex_record.presentation_exchange_id)
 
     except StorageNotFoundError as err:
         await internal_error(err, web.HTTPNotFound, pres_ex_record, outbound_handler)
@@ -1228,11 +1126,12 @@ async def presentation_exchange_remove(request: web.BaseRequest):
     return web.json_response({})
 
 
-@docs(tags=["present-proof"], summary="Send a presentation request in reference to a data agreement")
+@docs(tags=["present-proof"],
+      summary="Send a presentation request in reference to a data agreement")
 @request_schema(SendPresentationRequestForDataAgreementRequestSchema())
 async def send_presentation_request_for_data_agreement(request: web.BaseRequest):
     """
-    Request handler to sent a presentation request in reference to a data agreement.
+    Sent a presentation request in reference to a data agreement.
 
     Args:
         request: aiohttp request object
@@ -1246,364 +1145,92 @@ async def send_presentation_request_for_data_agreement(request: web.BaseRequest)
 
     # Request payload
     body = await request.json()
-    data_agreement_id = body.get("data_agreement_id")
+
+    # Data agreement template identifier
+    template_id = body.get("template_id")
+
+    # Connection identifier
     connection_id = body.get("connection_id")
 
     # Fetch the connection record
+    connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+        context,
+        connection_id
+    )
 
-    connection_record = None
+    if not connection_record.is_ready:
+        raise web.HTTPForbidden(reason=f"Connection {connection_id} not ready")
+
+    # Initialise ADA manager
+    manager = V2ADAManager(context)
+
+    # Fetch data agreement template
+    template: DataAgreementTemplateRecord = \
+        await DataAgreementTemplateRecord.latest_published_template_by_id(
+            context, template_id
+        )
+
+    if not template:
+        raise web.HTTPException(reason="Data agreement template not found.")
+
+    if template.method_of_use != DataAgreementTemplateRecord.METHOD_OF_USE_DATA_USING_SERVICE:
+        raise web.HTTPException(reason="Data agreement method of use must be data-using-service.")
+
+    # Construct presentation request
+    preset_presentation_request = template.presentation_request
+    comment = preset_presentation_request.pop("comment")
+    if not preset_presentation_request.get("nonce"):
+        preset_presentation_request["nonce"] = await generate_pr_nonce()
+
+    presentation_request = PresentationRequest(
+        comment=comment,
+        request_presentations_attach=[
+            AttachDecorator.from_indy_dict(
+                indy_dict=preset_presentation_request,
+                ident=ATTACH_DECO_IDS[PRESENTATION_REQUEST],
+            )
+        ],
+    )
+
+    # Construct presentation exchange record
+    presentation_manager = PresentationManager(context)
+    pres_ex_record = None
     try:
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
+        (pres_ex_record) = await presentation_manager.create_exchange_for_request(
+            connection_id=connection_id,
+            presentation_request_message=presentation_request,
         )
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f"Connection {connection_id} not ready")
-    except (
-        StorageNotFoundError,
-        BaseModelError,
-    ) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    # Fetch data agreement
-
-    # Tag filter
-    tag_filter = {
-        "data_agreement_id": data_agreement_id,
-        "publish_flag": "true",
-        "delete_flag": "false",
-    }
-
-    try:
-
-        # Query for the old data agreement record by id
-        old_data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_by_tag_filter(
-            context,
-            tag_filter=tag_filter
-        )
-
-        # Check if data agreement method-of-use is data-using-service
-        if old_data_agreement_record.method_of_use != DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
-            raise web.HTTPBadRequest(
-                reason=f"Data agreement method-of-use must be {DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE}"
-            )
-
-        # Construct presentation request message.
-
-        indy_proof_request = old_data_agreement_record.data_agreement_proof_presentation_request
-        comment = indy_proof_request.pop("comment")
-
-        if not indy_proof_request.get("nonce"):
-            indy_proof_request["nonce"] = await generate_pr_nonce()
-
-        presentation_request_message = PresentationRequest(
-            comment=comment,
-            request_presentations_attach=[
-                AttachDecorator.from_indy_dict(
-                    indy_dict=indy_proof_request,
-                    ident=ATTACH_DECO_IDS[PRESENTATION_REQUEST],
-                )
-            ],
-        )
-
-        # Construct presentation exchange record
-
-        presentation_manager = PresentationManager(context)
-        pres_ex_record = None
-        try:
-            (pres_ex_record) = await presentation_manager.create_exchange_for_request(
-                connection_id=connection_id,
-                presentation_request_message=presentation_request_message,
-            )
-            result = pres_ex_record.serialize()
-        except (BaseModelError, StorageError) as err:
-            await internal_error(
-                err,
-                web.HTTPBadRequest,
-                pres_ex_record or connection_record,
-                outbound_handler,
-            )
-
-        # Initialize ADA manager
-        ada_manager = ADAManager(context)
-
-        # Construct data agreement offer message.
-        data_agreement_offer_message = await ada_manager.construct_data_agreement_offer_message(
-            connection_record=connection_record,
-            data_agreement_template_record=old_data_agreement_record,
-        )
-
-        # Add data agreement context decorator
-        presentation_request_message._decorators["data-agreement-context"] = DataAgreementContextDecorator(
-            message_type="protocol",
-            message=data_agreement_offer_message.serialize()
-        )
-
-        pres_ex_record.presentation_request_dict = presentation_request_message.serialize()
-        pres_ex_record.data_agreement = data_agreement_offer_message.body.serialize()
-        pres_ex_record.data_agreement_id = data_agreement_offer_message.body.data_agreement_id
-        pres_ex_record.data_agreement_template_id = data_agreement_offer_message.body.data_agreement_template_id
-        pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_OFFER
-        await pres_ex_record.save(context)
-
-        # Save data agreement instance metadata
-        await ada_manager.store_data_agreement_instance_metadata(
-            data_agreement_id=data_agreement_offer_message.body.data_agreement_id,
-            data_agreement_template_id=data_agreement_offer_message.body.data_agreement_template_id,
-            data_exchange_record_id=pres_ex_record.presentation_exchange_id,
-            method_of_use=data_agreement_offer_message.body.method_of_use
-        )
-
         result = pres_ex_record.serialize()
+    except (BaseModelError, StorageError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            pres_ex_record or connection_record,
+            outbound_handler,
+        )
 
-    except StorageError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    # Build data agreement offer message
+    da_offer_message = await manager.build_data_agreement_offer_for_presentation_exchange(
+        template_id,
+        connection_record,
+        pres_ex_record
+    )
 
-    await outbound_handler(presentation_request_message, connection_id=connection_id)
+    # Add data agreement context decorator
+    presentation_request._decorators["data-agreement-context"] = \
+        DataAgreementContextDecorator(
+        message_type="protocol",
+        message=da_offer_message.serialize()
+    )
+
+    pres_ex_record.presentation_request_dict = presentation_request.serialize()
+    await pres_ex_record.save(context)
+
+    result = pres_ex_record.serialize()
+
+    await outbound_handler(presentation_request, connection_id=connection_id)
 
     return web.json_response(result)
-
-
-@docs(
-    tags=["present-proof"], summary="Send data agreement reject message for a presentation request"
-)
-@match_info_schema(PresExIdMatchInfoSchema())
-@response_schema(V10PresentationExchangeSchema(), 200)
-async def send_data_agreement_reject_message_for_presentation_request(request: web.BaseRequest):
-    """
-    Request handler for sending data agreement reject message for presentation request
-
-    Args:
-        request: aiohttp request object
-
-    """
-
-    # Initialize request context
-    context = request.app["request_context"]
-
-    # Initialize outbound handler
-    outbound_handler = request.app["outbound_message_router"]
-
-    # Path parameters
-    presentation_exchange_id = request.match_info["pres_ex_id"]
-
-    pres_ex_record = None
-    try:
-        # Fetch presentation exchange record
-        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
-            context, presentation_exchange_id
-        )
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-
-    if not pres_ex_record.state == V10PresentationExchange.STATE_REQUEST_RECEIVED:
-        raise web.HTTPBadRequest(
-            reason=f"Presentation exchange must be in {V10PresentationExchange.STATE_REQUEST_RECEIVED} state in order to reject the offer.")
-
-    if not pres_ex_record.data_agreement:
-        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
-
-    if not pres_ex_record.data_agreement_status == V10PresentationExchange.DATA_AGREEMENT_OFFER:
-        raise web.HTTPBadRequest(
-            reason=f"Data agreement must be in offer state to reject it."
-        )
-
-    # Send data agreement reject message
-
-    data_agreement_negotiation_offer_body: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
-        pres_ex_record.data_agreement
-    )
-
-    # Initialize ADA manager
-    ada_manager = ADAManager(context)
-
-    connection_record = None
-    connection_id = pres_ex_record.connection_id
-    try:
-        connection_record = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
-        )
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f"Connection {connection_id} not ready")
-
-        (data_agreement_instance, data_agreement_negotiation_reject_message) = await ada_manager.construct_data_agreement_negotiation_reject_message(
-            data_agreement_negotiation_offer_body=data_agreement_negotiation_offer_body,
-            connection_record=connection_record,
-        )
-
-        # Update presentation exchange record with data agreement
-        pres_ex_record.data_agreement = data_agreement_instance.serialize()
-        pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_REJECT
-
-        await pres_ex_record.save(context)
-
-        await outbound_handler(data_agreement_negotiation_reject_message, connection_id=pres_ex_record.connection_id)
-
-    except (ADAManagerError, StorageError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(pres_ex_record.serialize())
-
-
-@docs(
-    tags=["present-proof"], summary="Send data agreement negotiation problem report message"
-)
-@match_info_schema(PresExIdMatchInfoSchema())
-@request_schema(SendDataAgreementNegotiationProblemReportRequestSchema())
-async def send_data_agreement_negotiation_problem_report(request: web.BaseRequest):
-    """
-    Request handler for sending data agreement negotiation problem report message
-
-    Args:
-        request: aiohttp request object
-    """
-
-    # Initialize request context
-    context = request.app["request_context"]
-
-    # Initialize outbound handler
-    outbound_handler = request.app["outbound_message_router"]
-
-    # Path parameters
-    presentation_exchange_id = request.match_info["pres_ex_id"]
-
-    # Request payload
-    body = await request.json()
-    explain = body.get("explain", "")
-    problem_code = body.get("problem_code", "")
-
-    pres_ex_record = None
-    try:
-        # Fetch presentation exchange record
-        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
-            context, presentation_exchange_id
-        )
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-
-    if not pres_ex_record.data_agreement:
-        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
-
-    # Initialize ADA manager
-    ada_manager = ADAManager(context)
-
-    connection_record = None
-    connection_id = pres_ex_record.connection_id
-    try:
-        connection_record = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
-        )
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f"Connection {connection_id} not ready")
-
-        data_agreement_negotiation_problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
-            connection_record=connection_record,
-            data_agreement_id=pres_ex_record.data_agreement_id,
-            problem_code=problem_code,
-            explain=explain,
-        )
-
-        await ada_manager.send_data_agreement_negotiation_problem_report_message(
-            connection_record=connection_record,
-            data_agreement_negotiation_problem_report_message=data_agreement_negotiation_problem_report,
-        )
-
-    except (ADAManagerError, StorageError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response({})
-
-
-@docs(
-    tags=["present-proof"], summary="Send data agreement termination message."
-)
-@match_info_schema(PresExIdMatchInfoSchema())
-@response_schema(V10PresentationExchangeSchema(), 200)
-async def send_data_agreement_termination_message(request: web.BaseRequest):
-    """
-    Request handler for sending data agreement termination message.
-
-    Args:
-        request: aiohttp request object
-
-    """
-
-    # Initialize request context
-    context = request.app["request_context"]
-
-    # Initialize outbound handler
-    outbound_handler = request.app["outbound_message_router"]
-
-    # Path parameters
-    presentation_exchange_id = request.match_info["pres_ex_id"]
-
-    pres_ex_record = None
-    try:
-        # Fetch presentation exchange record
-        pres_ex_record: V10PresentationExchange = await V10PresentationExchange.retrieve_by_id(
-            context, presentation_exchange_id
-        )
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-
-    if not pres_ex_record.data_agreement:
-        raise web.HTTPBadRequest(reason=f"Data agreement is not available.")
-
-    if not pres_ex_record.data_agreement_status == V10PresentationExchange.DATA_AGREEMENT_ACCEPT:
-        raise web.HTTPBadRequest(
-            reason=f"Data agreement must be in accept state to terminate it."
-        )
-
-    # Send data agreement terminate message
-
-    data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
-        pres_ex_record.data_agreement
-    )
-
-    # Initialize ADA manager
-    ada_manager = ADAManager(context)
-
-    connection_record = None
-    connection_id = pres_ex_record.connection_id
-    try:
-        connection_record = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
-        )
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f"Connection {connection_id} not ready")
-
-        # Fetch wallet from context
-        wallet: IndyWallet = await context.inject(BaseWallet)
-
-        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
-        principle_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-        if data_agreement_instance.principle_did != principle_did.did:
-            raise web.HTTPBadRequest(
-                reason=f"Only the principle can terminate the data agreement."
-            )
-
-        (data_agreement_instance, data_agreement_terminate_message) = await ada_manager.construct_data_agreement_termination_terminate_message(
-            data_agreement_instance=data_agreement_instance,
-            connection_record=connection_record,
-        )
-
-        # Update presentation exchange record with data agreement
-        pres_ex_record.data_agreement = data_agreement_instance.serialize()
-        pres_ex_record.data_agreement_status = V10PresentationExchange.DATA_AGREEMENT_TERMINATE
-
-        await pres_ex_record.save(context)
-
-        await outbound_handler(data_agreement_terminate_message, connection_id=pres_ex_record.connection_id)
-
-    except (ADAManagerError, StorageError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(pres_ex_record.serialize())
 
 
 async def register(app: web.Application):
@@ -1655,19 +1282,7 @@ async def register(app: web.Application):
             web.post(
                 "/present-proof/data-agreement-negotiation/offer",
                 send_presentation_request_for_data_agreement,
-            ),
-            web.post(
-                "/present-proof/records/{pres_ex_id}/data-agreement-negotiation/reject",
-                send_data_agreement_reject_message_for_presentation_request,
-            ),
-            web.post(
-                "/present-proof/records/{pres_ex_id}/data-agreement-negotiation/problem-report",
-                send_data_agreement_negotiation_problem_report,
-            ),
-            web.post(
-                "/present-proof/records/{pres_ex_id}/data-agreement-termination/terminate",
-                send_data_agreement_termination_message,
-            ),
+            )
         ]
     )
 

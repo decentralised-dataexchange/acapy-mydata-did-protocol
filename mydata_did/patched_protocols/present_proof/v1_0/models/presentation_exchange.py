@@ -8,7 +8,7 @@ from marshmallow import fields, validate
 from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
 from aries_cloudagent.messaging.valid import UUIDFour
 
-unencrypted_tags = environ.get("EXCH_UNENCRYPTED_TAGS", "false").upper() == "TRUE"
+unencrypted_tags = environ.get("EXCH_UNENCRYPTED_TAGS", "False").upper() == "TRUE"
 
 
 class V10PresentationExchange(BaseExchangeRecord):
@@ -39,12 +39,6 @@ class V10PresentationExchange(BaseExchangeRecord):
     STATE_VERIFIED = "verified"
     STATE_PRESENTATION_ACKED = "presentation_acked"
 
-    DATA_AGREEMENT_OFFER = "offer"
-    DATA_AGREEMENT_ACCEPT = "accept"
-    DATA_AGREEMENT_REJECT = "reject"
-    DATA_AGREEMENT_TERMINATE = "terminate"
-    DATA_AGREEMENT_PROBLEM_REPORT = "problem-report"
-
     def __init__(
         self,
         *,
@@ -62,11 +56,6 @@ class V10PresentationExchange(BaseExchangeRecord):
         auto_present: bool = False,
         error_msg: str = None,
         trace: bool = False,
-        data_agreement: dict = None,
-        data_agreement_id: str = None,
-        data_agreement_template_id: str = None,
-        data_agreement_status: str = None,
-        data_agreement_problem_report: dict = None,
         **kwargs
     ):
         """Initialize a new PresentationExchange."""
@@ -84,13 +73,6 @@ class V10PresentationExchange(BaseExchangeRecord):
         self.auto_present = auto_present
         self.error_msg = error_msg
         self.trace = trace
-
-        # Data agreement associated with the credential exchange
-        self.data_agreement = data_agreement
-        self.data_agreement_id = data_agreement_id
-        self.data_agreement_template_id = data_agreement_template_id
-        self.data_agreement_status = data_agreement_status
-        self.data_agreement_problem_report = data_agreement_problem_report
 
     @property
     def presentation_exchange_id(self) -> str:
@@ -115,11 +97,6 @@ class V10PresentationExchange(BaseExchangeRecord):
                 "error_msg",
                 "verified",
                 "trace",
-                "data_agreement",
-                "data_agreement_id",
-                "data_agreement_template_id",
-                "data_agreement_status",
-                "data_agreement_problem_report",
             )
         }
 
@@ -194,37 +171,4 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
     )
     error_msg = fields.Str(
         required=False, description="Error message", example="Invalid structure"
-    )
-
-    # Data Agreement
-    data_agreement = fields.Dict(
-        required=False,
-        description="Data agreement associated with the credential exchange",
-    )
-
-    # Data Agreement identifier
-    data_agreement_id = fields.Str(
-        required=False,
-        description="Data agreement identifier",
-        example=UUIDFour.EXAMPLE,
-    )
-
-    # Data Agreement template identifier
-    data_agreement_template_id = fields.Str(
-        required=False,
-        description="Data agreement template identifier",
-        example=UUIDFour.EXAMPLE,
-    )
-
-    # Data Agreement status
-    data_agreement_status = fields.Str(
-        required=False,
-        description="Data agreement status",
-        example="offer",
-    )
-
-    # Data Agreement problem report
-    data_agreement_problem_report = fields.Dict(
-        required=False,
-        description="Data agreement problem report",
     )

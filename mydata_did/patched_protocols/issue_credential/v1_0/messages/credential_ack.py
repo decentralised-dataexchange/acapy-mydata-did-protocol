@@ -26,7 +26,7 @@ class CredentialAck(Ack):
 
     def __init__(self, **kwargs):
         """Initialize credential object."""
-        super().__init__(_decorators = PatchedDecoratorSet(), **kwargs)
+        super().__init__(_decorators=PatchedDecoratorSet(), **kwargs)
 
 
 class CredentialAckSchema(AckSchema):

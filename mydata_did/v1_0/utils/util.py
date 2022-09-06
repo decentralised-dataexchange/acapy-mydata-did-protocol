@@ -156,6 +156,10 @@ def str_to_bool(s: str) -> bool:
     Returns: boolean value
 
     """
+
+    if not isinstance(s, str):
+        return False
+
     if s.lower() in ['true', 't', '1']:
         return True
     elif s.lower() in ['false', 'f', '0']:

@@ -57,7 +57,7 @@ class CredentialProposal(AgentMessage):
             cred_def_id: credential definition identifier
             issuer_did: credential issuer DID
         """
-        super().__init__(_id, _decorators = PatchedDecoratorSet(), **kwargs)
+        super().__init__(_id, _decorators=PatchedDecoratorSet(), **kwargs)
         self.comment = comment
         self.credential_proposal = credential_proposal
         self.schema_id = schema_id

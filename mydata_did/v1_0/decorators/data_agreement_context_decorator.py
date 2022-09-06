@@ -1,14 +1,5 @@
-import datetime
-
-import validators
-
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
-from marshmallow import fields, EXCLUDE, validate, validates
-from marshmallow.exceptions import ValidationError
-from typing import List
-
-from ..utils.regex import MYDATA_DID
+from marshmallow import fields, EXCLUDE, validate
 
 
 class DataAgreementContextDecorator(BaseModel):
@@ -20,7 +11,7 @@ class DataAgreementContextDecorator(BaseModel):
         """DataAgreementContextDecorator metadata."""
 
         schema_class = "DataAgreementContextDecoratorSchema"
-    
+
     def __init__(
         self,
         *,
@@ -40,6 +31,7 @@ class DataAgreementContextDecorator(BaseModel):
         super().__init__(**kwargs)
         self.message_type = message_type
         self.message = message
+
 
 class DataAgreementContextDecoratorSchema(BaseModelSchema):
     """

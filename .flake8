@@ -1,0 +1,6 @@
+[flake8]
+################### LINTING ################################
+
+########## Options ##########
+# Set the maximum length that any line (with some exceptions) may be.
+max-line-length = 100

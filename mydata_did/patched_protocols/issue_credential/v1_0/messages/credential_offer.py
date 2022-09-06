@@ -48,7 +48,7 @@ class CredentialOffer(AgentMessage):
             offers_attach: list of offer attachments
 
         """
-        super().__init__(_id=_id, _decorators = PatchedDecoratorSet(), **kwargs)
+        super().__init__(_id=_id, _decorators=PatchedDecoratorSet(), **kwargs)
         self.comment = comment
         self.credential_preview = credential_preview
         self.offers_attach = list(offers_attach) if offers_attach else []

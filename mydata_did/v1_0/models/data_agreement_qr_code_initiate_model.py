@@ -24,6 +24,7 @@ class DataAgreementQrCodeInitiateBody(BaseModel):
         # Set attributes
         self.qr_id = qr_id
 
+
 class DataAgreementQrCodeInitiateBodySchema(BaseModelSchema):
     """Data Agreement Qr Code Initiate Body schema"""
 

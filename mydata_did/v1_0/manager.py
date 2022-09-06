@@ -1,5 +1,4 @@
 import base64
-import datetime
 import logging
 import json
 import os
@@ -7,105 +6,119 @@ import time
 import uuid
 import typing
 
-import semver
 import aiohttp
-
-from asyncio import shield
-from marshmallow.exceptions import ValidationError
 
 from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.connections.models.connection_target import ConnectionTarget
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.responder import BaseResponder
-from aries_cloudagent.messaging.credential_definitions.util import CRED_DEF_SENT_RECORD_TYPE
 from aries_cloudagent.core.dispatcher import DispatcherResponder
 from aries_cloudagent.transport.inbound.receipt import MessageReceipt
 from aries_cloudagent.core.error import BaseError
 from aries_cloudagent.storage.base import BaseStorage, StorageRecord
 from aries_cloudagent.storage.indy import IndyStorage
-from aries_cloudagent.storage.error import StorageNotFoundError, StorageSearchError, StorageDuplicateError, StorageError
+from aries_cloudagent.storage.error import (
+    StorageNotFoundError,
+    StorageSearchError,
+    StorageDuplicateError,
+    StorageError
+)
 from aries_cloudagent.wallet.indy import IndyWallet
-from aries_cloudagent.wallet.base import BaseWallet, DIDInfo
+from aries_cloudagent.wallet.base import BaseWallet
 from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager
-from aries_cloudagent.ledger.base import BaseLedger
-from aries_cloudagent.ledger.error import LedgerError
-from aries_cloudagent.issuer.base import BaseIssuer, IssuerError
 from aries_cloudagent.messaging.decorators.default import DecoratorSet
 from aries_cloudagent.transport.pack_format import PackWireFormat
 from aries_cloudagent.transport.wire_format import BaseWireFormat
-from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator, TransportDecoratorSchema
-from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager, ConnectionManagerError
-from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import ConnectionInvitation
+from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
+from aries_cloudagent.protocols.connections.v1_0.manager import (
+    ConnectionManager,
+    ConnectionManagerError
+)
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
+    ConnectionInvitation
+)
 from aries_cloudagent.indy.util import generate_pr_nonce
 from aries_cloudagent.messaging.decorators.attach_decorator import AttachDecorator
 from aries_cloudagent.messaging.util import str_to_epoch
 
-from .messages.create_did import CreateDIDMessage
+
 from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
 from .messages.read_did_response import ReadDIDResponseMessage, ReadDIDResponseMessageSchema
-from .messages.delete_did import DeleteDIDMessage, DeleteDIDMessageBody
-from .messages.delete_did_response import DeleteDIDResponseMessage, DeleteDIDResponseMessageBody
-from .messages.create_did_response import CreateDIDResponseMessage
 from .messages.problem_report import (
     MyDataDIDProblemReportMessage,
     MyDataDIDProblemReportMessageReason,
-    DataAgreementNegotiationProblemReport,
-    DataAgreementProblemReport,
-    DataAgreementProblemReportReason
+    DataAgreementNegotiationProblemReport
 )
-from .messages.read_data_agreement import ReadDataAgreement
-from .messages.read_data_agreement_response import ReadDataAgreementResponse
-from .messages.data_agreement_offer import DataAgreementNegotiationOfferMessage, DataAgreementNegotiationOfferMessageSchema
-from .messages.data_agreement_accept import DataAgreementNegotiationAcceptMessage, DataAgreementNegotiationAcceptMessageSchema
-from .messages.data_agreement_reject import DataAgreementNegotiationRejectMessage, DataAgreementNegotiationRejectMessageSchema
-from .messages.data_agreement_terminate import DataAgreementTerminationTerminateMessage, DataAgreementTerminationTerminateMessageSchema
-from .messages.data_agreement_verify import DataAgreementVerify
+from .messages.data_agreement_offer import (
+    DataAgreementNegotiationOfferMessage,
+    DataAgreementNegotiationOfferMessageSchema
+)
+from .messages.data_agreement_accept import (
+    DataAgreementNegotiationAcceptMessage,
+    DataAgreementNegotiationAcceptMessageSchema
+)
+from .messages.data_agreement_reject import (
+    DataAgreementNegotiationRejectMessage,
+)
+from .messages.data_agreement_terminate import (
+    DataAgreementTerminationTerminateMessage,
+)
 from .messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
-from .messages.data_agreement_qr_code_problem_report import DataAgreementQrCodeProblemReport, DataAgreementQrCodeProblemReportReason
+from .messages.data_agreement_qr_code_problem_report import (
+    DataAgreementQrCodeProblemReport,
+    DataAgreementQrCodeProblemReportReason
+)
 from .messages.json_ld_processed import JSONLDProcessedMessage
 from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
 from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
-from .messages.read_all_data_agreement_template import ReadAllDataAgreementTemplateMessage
-from .messages.read_all_data_agreement_template_response import ReadAllDataAgreementTemplateResponseMessage
 from .messages.data_controller_details import DataControllerDetailsMessage
 from .messages.data_controller_details_response import DataControllerDetailsResponseMessage
 from .messages.existing_connections import ExistingConnectionsMessage
 
-from .models.data_agreement_model import DATA_AGREEMENT_V1_SCHEMA_CONTEXT, DataAgreementEventSchema, DataAgreementV1, DataAgreementPersonalData, DataAgreementV1Schema
-from .models.read_data_agreement_model import ReadDataAgreementBody
-from .models.diddoc_model import MyDataDIDBody, MyDataDIDResponseBody, MyDataDIDDoc, MyDataDIDDocService, MyDataDIDDocVerificationMethod, MyDataDIDDocAuthentication
-from .models.read_data_agreement_response_model import ReadDataAgreementResponseBody
-from .models.exchange_records.mydata_did_registry_didcomm_transaction_record import MyDataDIDRegistryDIDCommTransactionRecord
-from .models.exchange_records.data_agreement_didcomm_transaction_record import DataAgreementCRUDDIDCommTransaction
+from .models.data_agreement_model import (
+    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+    DataAgreementV1,
+    DataAgreementPersonalData,
+    DataAgreementV1Schema
+)
+from .models.diddoc_model import (
+    MyDataDIDResponseBody,
+    MyDataDIDDoc,
+)
 from .models.exchange_records.data_agreement_record import DataAgreementV1Record
-from .models.exchange_records.data_agreement_personal_data_record import DataAgreementPersonalDataRecord
-from .models.data_agreement_negotiation_offer_model import DataAgreementNegotiationOfferBody, DataAgreementEvent, DataAgreementProof, DataAgreementProofSchema
+from .models.exchange_records.data_agreement_personal_data_record import (
+    DataAgreementPersonalDataRecord
+)
+from .models.data_agreement_negotiation_offer_model import (
+    DataAgreementNegotiationOfferBody,
+    DataAgreementEvent,
+    DataAgreementProof,
+    DataAgreementProofSchema
+)
 from .models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
-from .models.data_agreement_negotiation_accept_model import DataAgreementNegotiationAcceptBody, DataAgreementNegotiationAcceptBodySchema
-from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody, DataAgreementNegotiationRejectBodySchema
-from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody, DataAgreementTerminationTerminateBodySchema
-from .models.data_agreement_verify_model import DataAgreementVerifyBody, DataAgreementVerifyBodySchema
+from .models.data_agreement_negotiation_accept_model import DataAgreementNegotiationAcceptBody
+from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody
+from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody
 from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeInitiateBody
 from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
 from .models.json_ld_processed_model import JSONLDProcessedBody
 from .models.data_controller_model import DataController, DataControllerSchema
 from .models.existing_connections_model import ExistingConnectionsBody
-
-from .utils.diddoc import DIDDoc
 from .utils.did.mydata_did import DIDMyData
 from .utils.wallet.key_type import KeyType
-from .utils.verification_method import PublicKeyType
 from .utils.jsonld import ED25519_2018_CONTEXT_URL
 from .utils.jsonld.data_agreement import sign_data_agreement
-from .utils.util import current_datetime_in_iso8601, bool_to_str, int_to_semver_str
+from .utils.util import current_datetime_in_iso8601
 from .utils.jsonld.create_verify_data import create_verify_data
 
-from .decorators.data_agreement_context_decorator import DataAgreementContextDecoratorSchema, DataAgreementContextDecorator
+from .decorators.data_agreement_context_decorator import (
+    DataAgreementContextDecoratorSchema,
+    DataAgreementContextDecorator
+)
 from .message_types import (
     DATA_AGREEMENT_NEGOTIATION_OFFER,
     DATA_AGREEMENT_NEGOTIATION_ACCEPT,
-    READ_DATA_AGREEMENT
 )
 
 from ..patched_protocols.issue_credential.v1_0.models.credential_exchange import (
@@ -115,9 +128,11 @@ from ..patched_protocols.present_proof.v1_0.models.presentation_exchange import 
     V10PresentationExchange
 )
 from ..patched_protocols.present_proof.v1_0.messages.presentation_request import PresentationRequest
-from ..patched_protocols.present_proof.v1_0.message_types import ATTACH_DECO_IDS, PRESENTATION_REQUEST
+from ..patched_protocols.present_proof.v1_0.message_types import (
+    ATTACH_DECO_IDS,
+    PRESENTATION_REQUEST
+)
 from ..patched_protocols.present_proof.v1_0.manager import PresentationManager
-from mydata_did.v1_0.utils.jsonld import data_agreement
 
 
 class ADAManagerError(BaseError):
@@ -163,388 +178,15 @@ class ADAManager:
     def context(self) -> InjectionContext:
         return self._context
 
-    async def process_mydata_did_problem_report_message(self, mydata_did_problem_report: MyDataDIDProblemReportMessage, receipt: MessageReceipt):
-        """
-        Process problem report DIDComm message for MyData DID protocol.
-        """
-        # Thread identifier
-        thread_id = mydata_did_problem_report._thread_id
-
-        mydata_did_registry_didcomm_transaction_record = None
-        try:
-
-            # Fetch MyData DID registry didcomm transaction record
-            mydata_did_registry_didcomm_transaction_record: MyDataDIDRegistryDIDCommTransactionRecord = await MyDataDIDRegistryDIDCommTransactionRecord.retrieve_by_tag_filter(
-                context=self.context,
-                tag_filter={"thread_id": thread_id}
-            )
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # No record found
-            self._logger.debug(
-                "Failed to process mydata-did/1.0/problem-report message; "
-                "No MyData DID registry didcomm transaction record found for thread_id: %s", thread_id
-            )
-            return
-
-        # Assert transaction record is not None
-        assert mydata_did_registry_didcomm_transaction_record is not None
-
-        mydata_did_registry_didcomm_transaction_record.messages_list.append(
-            mydata_did_problem_report.to_json()
-        )
-
-        # Update transaction record
-        await mydata_did_registry_didcomm_transaction_record.save(self.context)
-
-    async def process_create_did_response_message(self, create_did_response_message: CreateDIDResponseMessage, receipt: MessageReceipt):
-        """
-        Process create-did-response DIDComm message
-        """
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Thread identifier
-        thread_id = create_did_response_message._thread_id
-
-        mydata_did_registry_didcomm_transaction_record = None
-        try:
-
-            # Fetch MyData DID registry didcomm transaction record
-            mydata_did_registry_didcomm_transaction_record: MyDataDIDRegistryDIDCommTransactionRecord = await MyDataDIDRegistryDIDCommTransactionRecord.retrieve_by_tag_filter(
-                context=self.context,
-                tag_filter={"thread_id": thread_id}
-            )
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # No record found
-            self._logger.debug(
-                "Failed to process create-did-response message; "
-                "No MyData DID registry didcomm transaction record found for thread_id: %s", thread_id
-            )
-            return
-
-        # Assert transaction record is not None
-        assert mydata_did_registry_didcomm_transaction_record is not None
-
-        mydata_did_registry_didcomm_transaction_record.messages_list.append(
-            create_did_response_message.to_json()
-        )
-
-        # Update transaction record
-        await mydata_did_registry_didcomm_transaction_record.save(self.context)
-
-        # Mark MyData DID as remote i.e. registered in the DID registry
-        mydata_did_remote_record = StorageRecord(
-            type=self.RECORD_TYPE_MYDATA_DID_REMOTE,
-            value=create_did_response_message.body.did_doc.to_json(),
-            tags={
-                "did": create_did_response_message.body.did_doc.diddoc_id,
-                "sov_verkey": DIDMyData.from_did(create_did_response_message.body.did_doc.diddoc_id).public_key_b58,
-                "status": "active"
-            }
-        )
-
-        # Save record
-        await storage.add_record(mydata_did_remote_record)
-
-    async def process_create_did_message(self, create_did_message: CreateDIDMessage, receipt: MessageReceipt):
-        """
-        Process create-did DIDComm message
-        """
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Wallet instance
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # From and To DIDs of the recieved message
-        create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
-        create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-        # From and To DIDs for the response messages
-        response_message_from_did = create_did_message_to_did
-        response_message_to_did = create_did_message_from_did
-
-        mydata_did_registry_did_info_record = None
-        try:
-            # Check if DID is already registered
-            mydata_did_registry_did_info_record = await storage.search_records(
-                type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-                tag_query={"did": create_did_message.body.diddoc_id}
-            ).fetch_single()
-
-            # Send problem-report message.
-            mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.DID_EXISTS.value,
-                explain="DID already registered in the DID registry",
-                from_did=response_message_from_did.did,
-                to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=create_did_message._id)
-
-            if responder:
-                await responder.send_reply(mydata_did_problem_report, connection_id=self.context.connection_record.connection_id)
-
-            return
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            pass
-
-        try:
-
-            # Validate the ownership of the did by verifying the signature
-            await create_did_message.verify_signed_field(
-                field_name="body",
-                wallet=wallet,
-                signer_verkey=DIDMyData.from_did(
-                    create_did_message.body.diddoc_id).public_key_b58
-            )
-        except BaseModelError as e:
-            self._logger.error(
-                f"Create DID message signature validation failed: {e}")
-
-            # Send problem-report message.
-            mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED.value,
-                explain="DID document signature verification failed",
-                from_did=response_message_from_did.did,
-                to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=create_did_message._id)
-
-            if responder:
-                await responder.send_reply(mydata_did_problem_report, connection_id=self.context.connection_record.connection_id)
-
-            return
-
-        # Create a record for the registered DID
-        mydata_did_registry_did_info_record_tags = {
-            "did": create_did_message.body.diddoc_id,
-            "connection_id": self.context.connection_record.connection_id,
-            "version": "1",
-            "status": "active"
-        }
-
-        mydata_did_registry_did_info_record = StorageRecord(
-            type=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-            value=create_did_message.body.to_json(),
-            tags=mydata_did_registry_did_info_record_tags
-        )
-
-        await storage.add_record(mydata_did_registry_did_info_record)
-
-        # Send create-did-response message
-        create_did_response_message = CreateDIDResponseMessage(
-            from_did=response_message_from_did.did,
-            to_did=response_message_to_did.did,
-            created_time=round(time.time() * 1000),
-            body=MyDataDIDResponseBody(
-                did_doc=create_did_message.body,
-                version=mydata_did_registry_did_info_record_tags.get(
-                    "version"),
-                status=mydata_did_registry_did_info_record_tags.get("status")
-            )
-        )
-
-        # Assign thread id
-        create_did_response_message.assign_thread_id(
-            thid=create_did_message._id)
-
-        # Create transaction record to keep track of didcomm messages
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=create_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_CREATE_DID,
-            messages_list=[create_did_message.to_json(
-            ), create_did_response_message.to_json()],
-            connection_id=self.context.connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context)
-
-        if responder:
-            await responder.send_reply(create_did_response_message, connection_id=self.context.connection_record.connection_id)
-
-    async def fetch_mydata_did_registry_connection_record(self) -> typing.Tuple[typing.Union[ConnectionRecord, None], typing.Union[None, Exception]]:
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        mydata_did_registry_connection_record = None
-
-        try:
-
-            # Search for existing connection_id marked as MyData DID registry
-            mydata_did_registry_connection_record: StorageRecord = await storage.search_records(
-                self.RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION,
-            ).fetch_single()
-
-            # MyData DID Registry connection identifier
-            mydata_did_registry_connection_id = mydata_did_registry_connection_record.value
-
-            # Fetch connection record from storage
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(self.context, mydata_did_registry_connection_id)
-
-            return connection_record, None
-
-        except (StorageError, StorageNotFoundError, StorageDuplicateError) as e:
-            return None, e
-
-    async def fetch_auditor_connection_record(self) -> typing.Tuple[typing.Union[ConnectionRecord, None], typing.Union[None, Exception]]:
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        auditor_connection_record = None
-
-        try:
-
-            # Search for existing connection_id marked as Auditor
-            auditor_connection_record: StorageRecord = await storage.search_records(
-                self.RECORD_TYPE_AUDITOR_CONNECTION,
-            ).fetch_single()
-
-            # Auditor connection identifier
-            auditor_connection_id = auditor_connection_record.value
-
-            # Fetch connection record from storage
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(self.context, auditor_connection_id)
-
-            return connection_record, None
-
-        except (StorageError, StorageNotFoundError, StorageDuplicateError) as e:
-            return None, e
-
-    async def send_create_did_message(self, did: str) -> MyDataDIDRegistryDIDCommTransactionRecord:
-        """
-        Send create-did didcomm message to MyData DID Registry.
-
-        Args:
-            did: The did to be created.
-
-        Returns:
-            The transaction record.
-        """
-
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
-        if err:
-            raise ADAManagerError(
-                f"Failed to send create-did message. "
-                f"Reason: {err}"
-            )
-
-        # from_did
-        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
-        from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-        # to_did
-        to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
-
-        # to be created did
-        # Fetch local did record for verkey provided.
-        local_did_record: DIDInfo = await wallet.get_local_did(did)
-        mydata_did = DIDMyData.from_public_key_b58(
-            local_did_record.verkey, key_type=KeyType.ED25519)
-
-        # Create DIDDoc
-        did_doc = MyDataDIDDoc(
-            context=DIDDoc.CONTEXT,
-            diddoc_id=mydata_did.did,
-            verification_method=[
-                MyDataDIDDocVerificationMethod(
-                    verification_method_id=f"{mydata_did.did}#1",
-                    verification_method_type=PublicKeyType.ED25519_SIG_2018.ver_type,
-                    controller=mydata_did.did,
-                    public_key_base58=mydata_did.fingerprint
-                )
-            ],
-            authentication=[
-                MyDataDIDDocAuthentication(
-                    authentication_type=PublicKeyType.ED25519_SIG_2018.authn_type,
-                    public_key=f"{mydata_did.did}#1"
-                )
-            ],
-            service=[
-                MyDataDIDDocService(
-                    service_id=f"{mydata_did.did};didcomm",
-                    service_type="DIDComm",
-                    service_priority=0,
-                    recipient_keys=[
-                        mydata_did.fingerprint
-                    ],
-                    service_endpoint=self.context.settings.get(
-                        "default_endpoint")
-                )
-
-            ],
-        )
-
-        # Create create-did message
-        create_did_message = CreateDIDMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=did_doc
-        )
-
-        # Sign did doc using local did verkey to prove ownership
-        await create_did_message.sign_field("body", local_did_record.verkey, wallet, timestamp=time.time())
-
-        # Create transaction record
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=create_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_CREATE_DID,
-            messages_list=[create_did_message.to_json()],
-            connection_id=connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context, reason="Sending create-did message to MyData DID Registry")
-
-        # Send create-did message to MyData DID Registry
-        responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
-        if responder:
-            await responder.send(create_did_message, connection_id=connection_record.connection_id)
-
-        return transaction_record
-
-    async def process_read_did_message(self, read_did_message: ReadDIDMessage, receipt: MessageReceipt):
+    async def process_read_did_message(self,
+                                       read_did_message: ReadDIDMessage,
+                                       receipt: MessageReceipt):
         """
         Process read-did DIDComm message
         """
 
         # Storage instance from context
         storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
 
         # Responder instance from context
         responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
@@ -568,7 +210,7 @@ class ADAManager:
                 tag_query={"did": read_did_message.body.did}
             ).fetch_single()
 
-        except (StorageNotFoundError, StorageDuplicateError) as e:
+        except (StorageNotFoundError, StorageDuplicateError):
             # Send problem-report message.
 
             mydata_did_problem_report = MyDataDIDProblemReportMessage(
@@ -606,859 +248,33 @@ class ADAManager:
         read_did_response_message.assign_thread_id(
             thid=read_did_message._id)
 
-        # Create transaction record to keep track of didcomm messages
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=read_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_READ_DID,
-            messages_list=[read_did_message.to_json(
-            ), read_did_response_message.to_json()],
-            connection_id=self.context.connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context)
-
         if responder:
             await responder.send_reply(read_did_response_message)
 
-    async def process_read_did_response_message(self, read_did_response_message: ReadDIDResponseMessage, receipt: MessageReceipt):
+    async def process_read_did_response_message(
+        self,
+        read_did_response_message: ReadDIDResponseMessage,
+        receipt: MessageReceipt
+    ):
         """
         Process read-did-response DIDComm message
         """
 
-        # Thread identifier
-        thread_id = read_did_response_message._thread_id
+        pass
 
-        mydata_did_registry_didcomm_transaction_record = None
-        try:
-
-            # Fetch MyData DID registry didcomm transaction record
-            mydata_did_registry_didcomm_transaction_record: MyDataDIDRegistryDIDCommTransactionRecord = await MyDataDIDRegistryDIDCommTransactionRecord.retrieve_by_tag_filter(
-                context=self.context,
-                tag_filter={"thread_id": thread_id}
-            )
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # No record found
-            self._logger.debug(
-                "Failed to process read-did-response message; "
-                "No MyData DID registry didcomm transaction record found for thread_id: %s", thread_id
-            )
-            return
-
-        # Assert transaction record is not None
-        assert mydata_did_registry_didcomm_transaction_record is not None
-
-        mydata_did_registry_didcomm_transaction_record.messages_list.append(
-            read_did_response_message.to_json()
-        )
-
-        # Update transaction record
-        await mydata_did_registry_didcomm_transaction_record.save(self.context)
-
-    async def send_read_did_message(self, did: str) -> MyDataDIDRegistryDIDCommTransactionRecord:
+    async def send_read_did_message(self, did: str):
         """
         Send read-did DIDComm message
         """
 
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
-        if err:
-            raise ADAManagerError(
-                f"Failed to send read-did message. "
-                f"Reason: {err}"
-            )
-
-        # from_did
-        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
-        from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-        # to_did
-        to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
-
-        # Create read-did message
-        read_did_message = ReadDIDMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=ReadDIDMessageBody(
-                did=did
-            )
-        )
-
-        # Create transaction record
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=read_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_READ_DID,
-            messages_list=[read_did_message.to_json()],
-            connection_id=connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context, reason="Send read-did message")
-
-        # Send read-did message to MyData DID Registry
-        responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
-        if responder:
-            await responder.send(read_did_message, connection_id=connection_record.connection_id)
-
-        return transaction_record
-
-    async def process_delete_did_message(self, delete_did_message: DeleteDIDMessage, receipt: MessageReceipt):
-        """
-        Process delete-did DIDComm message
-        """
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Wallet instance
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # From and To DIDs of the recieved message
-        create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
-        create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-        # From and To DIDs for the response messages
-        response_message_from_did = create_did_message_to_did
-        response_message_to_did = create_did_message_from_did
-
-        mydata_did_registry_did_info_record = None
-        try:
-
-            # Fetch DID from wallet
-            mydata_did_registry_did_info_record = await storage.search_records(
-                type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-                tag_query={"did": delete_did_message.body.did}
-            ).fetch_single()
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # Send problem-report message.
-
-            mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
-                explain="DID not found.",
-                from_did=response_message_from_did.did,
-                to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=delete_did_message._id)
-
-            if responder:
-                await responder.send_reply(mydata_did_problem_report, connection_id=self.context.connection_record.connection_id)
-
-            return
-
-        try:
-
-            # Verify signature
-            await delete_did_message.verify_signed_field(
-                field_name="body",
-                wallet=wallet,
-                signer_verkey=DIDMyData.from_did(
-                    delete_did_message.body.did).public_key_b58
-            )
-        except BaseModelError as e:
-            # Send problem-report message.
-
-            mydata_did_problem_report = MyDataDIDProblemReportMessage(
-                problem_code=MyDataDIDProblemReportMessageReason.MESSAGE_BODY_SIGNATURE_VERIFICATION_FAILED.value,
-                explain="Invalid signature.",
-                from_did=response_message_from_did.did,
-                to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=delete_did_message._id)
-
-            if responder:
-                await responder.send_reply(mydata_did_problem_report, connection_id=self.context.connection_record.connection_id)
-
-            return
-
-        # Update MyData DID Registry DID info record with revoked status
-        mydata_did_registry_did_info_record.tags["status"] = "revoked"
-        await storage.update_record_tags(
-            record=mydata_did_registry_did_info_record,
-            tags=mydata_did_registry_did_info_record.tags,
-        )
-
-        # Send delete-did-response message
-        delete_did_response_message = DeleteDIDResponseMessage(
-            from_did=response_message_from_did.did,
-            to_did=response_message_to_did.did,
-            created_time=round(time.time() * 1000),
-            body=DeleteDIDResponseMessageBody(
-                did=mydata_did_registry_did_info_record.tags.get("did"),
-                status=mydata_did_registry_did_info_record.tags.get("status"),
-            )
-        )
-
-        # Assign thread id
-        delete_did_response_message.assign_thread_id(
-            thid=delete_did_message._id)
-
-        # Create transaction record to keep track of didcomm messages
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=delete_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_DELETE_DID,
-            messages_list=[delete_did_message.to_json(
-            ), delete_did_response_message.to_json()],
-            connection_id=self.context.connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context)
-
-        if responder:
-            await responder.send_reply(delete_did_response_message, connection_id=self.context.connection_record.connection_id)
-
-    async def process_delete_did_response_message(self, delete_did_response_message: DeleteDIDResponseMessage, receipt: MessageReceipt):
-        """
-        Process delete-did-response DIDComm message
-        """
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        # Thread identifier
-        thread_id = delete_did_response_message._thread_id
-
-        mydata_did_registry_didcomm_transaction_record = None
-        try:
-
-            # Fetch MyData DID registry didcomm transaction record
-            mydata_did_registry_didcomm_transaction_record: MyDataDIDRegistryDIDCommTransactionRecord = await MyDataDIDRegistryDIDCommTransactionRecord.retrieve_by_tag_filter(
-                context=self.context,
-                tag_filter={"thread_id": thread_id}
-            )
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # No record found
-            self._logger.debug(
-                "Failed to process delete-did-response message; "
-                "No MyData DID registry didcomm transaction record found for thread_id: %s", thread_id
-            )
-            return
-
-        # Assert transaction record is not None
-        assert mydata_did_registry_didcomm_transaction_record is not None
-
-        mydata_did_registry_didcomm_transaction_record.messages_list.append(
-            delete_did_response_message.to_json()
-        )
-
-        # Update transaction record
-        await mydata_did_registry_didcomm_transaction_record.save(self.context)
-
-        try:
-            # Mark remote did status as revoked
-            mydata_did_remote_record = await storage.search_records(
-                type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REMOTE,
-                tag_query={"did": delete_did_response_message.body.did}
-            ).fetch_single()
-
-            mydata_did_remote_record.tags["status"] = "revoked"
-
-            await storage.update_record_tags(
-                record=mydata_did_remote_record,
-                tags=mydata_did_remote_record.tags,
-            )
-
-        except (StorageNotFoundError, StorageDuplicateError) as e:
-            # No record found
-            self._logger.debug(
-                "Failed to process delete-did-response message; "
-                "No MyData DID remote record found for did: %s", delete_did_response_message.body.did
-            )
-            return
-
-    async def send_delete_did_message(self, did: str) -> MyDataDIDRegistryDIDCommTransactionRecord:
-        """
-        Send delete-did DIDComm message
-        """
-
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
-        if err:
-            raise ADAManagerError(
-                f"Failed to send read-did message. "
-                f"Reason: {err}"
-            )
-
-        # from_did
-        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
-        from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-        # to_did
-        to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
-
-        # To be deleted did
-
-        # Fetch did:sov local did record for to deleted mydata did
-        to_be_deleted_sov_did = await wallet.get_local_did_for_verkey(
-            verkey=DIDMyData.from_did(did).public_key_b58
-        )
-
-        # Create delete-did message
-        delete_did_message = DeleteDIDMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=DeleteDIDMessageBody(
-                did=did
-            )
-        )
-
-        # Sign message
-        await delete_did_message.sign_field(
-            field_name="body",
-            signer_verkey=to_be_deleted_sov_did.verkey,
-            wallet=wallet,
-            timestamp=time.time()
-        )
-
-        # Create transaction record
-        transaction_record = MyDataDIDRegistryDIDCommTransactionRecord(
-            thread_id=delete_did_message._id,
-            message_type=MyDataDIDRegistryDIDCommTransactionRecord.MESSAGE_TYPE_DELETE_DID,
-            messages_list=[delete_did_message.to_json()],
-            connection_id=connection_record.connection_id,
-        )
-
-        # Save transaction record
-        await transaction_record.save(self.context, reason="Send delete-did message")
-
-        # Send delete-did message to MyData DID Registry
-        responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
-        if responder:
-            await responder.send(delete_did_message, connection_id=connection_record.connection_id)
-
-        return transaction_record
-
-    async def send_read_data_agreement_message(self, connection_record: ConnectionRecord, data_agreement_id: str) -> DataAgreementCRUDDIDCommTransaction:
-        """
-        Send a read-data-agreement message to the remote agent.
-        """
-
-        # Fetch context objects
-        # Fetch the wallet instance from the context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-        # Fetch the storage instance from the context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        try:
-            # from_did
-            pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
-            from_did = DIDMyData.from_public_key_b58(
-                pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-            # to_did
-            to_did = DIDMyData.from_public_key_b58(
-                connection_record.their_did, key_type=KeyType.ED25519)
-        except StorageError as err:
-            raise ADAManagerError(
-                f"Failed to send read-data-agreement message: {err}"
-            )
-
-        # Create the read-data-agreement message
-        data_agreement_message = ReadDataAgreement(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=ReadDataAgreementBody(
-                data_agreement_id=data_agreement_id,
-            )
-        )
-
-        # Create transaction record to keep track of read-data-agreement message lifecycle
-        transaction_record = DataAgreementCRUDDIDCommTransaction(
-            thread_id=data_agreement_message._id,
-            message_type=DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT,
-            messages_list=[data_agreement_message.serialize()],
-            connection_id=connection_record.connection_id,
-        )
-        # Add the transaction record to the storage
-        await transaction_record.save(self.context)
-
-        responder: BaseResponder = await self.context.inject(BaseResponder, required=False)
-
-        if responder:
-            await responder.send(data_agreement_message, connection_id=connection_record.connection_id)
-
-        return transaction_record
-
-    async def process_data_agreement_problem_report_message(self, *, data_agreement_problem_report_message: DataAgreementProblemReport, receipt: MessageReceipt):
-        """Process data agreement problem report message"""
-
-        thread_id = data_agreement_problem_report_message._thread_id
-
-        # Fetch data agreement didcomm crud transaction record
-        transaction_records = await DataAgreementCRUDDIDCommTransaction.query(
-            context=self.context,
-            tag_filter={"thread_id": thread_id},
-        )
-
-        if len(transaction_records) == 1:
-            transaction_record: DataAgreementCRUDDIDCommTransaction = transaction_records[0]
-
-            # Update transaction record with problem report
-            transaction_record.messages_list.append(
-                data_agreement_problem_report_message.serialize()
-            )
-
-            await transaction_record.save(self.context)
-
-    async def process_read_data_agreement_message(self, *, read_data_agreement_message: ReadDataAgreement, receipt: MessageReceipt):
-
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # fetch the data agreement record from the wallet
-        # create data agreement didcomm crud transaction record
-        # save request and response messages
-        # send the response message.
-
-        # Create data agreement didcomm crud transaction record
-        data_agreement_crud_didcomm_transaction_record = DataAgreementCRUDDIDCommTransaction(
-            thread_id=read_data_agreement_message._thread_id,
-            message_type=DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT,
-            messages_list=[read_data_agreement_message.serialize()],
-            connection_id=self.context.connection_record.connection_id,
-        )
-
-        await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-        try:
-
-            # Fetch the data agreement instance metadata
-            data_agreement_instance_metadata_records = await self.query_data_agreement_instance_metadata(
-                tag_query={
-                    'data_agreement_id': read_data_agreement_message.body.data_agreement_id,
-                }
-            )
-
-            # Check if there is a data agreement instance metadata record
-            if not data_agreement_instance_metadata_records:
-                self._logger.info(
-                    "Data agreement not found; Failed to process read-data-agreement message data agreement: %s",
-                    read_data_agreement_message.body.data_agreement_id,
-                )
-
-                # send problem report
-                problem_report = DataAgreementProblemReport(
-                    from_did=read_data_agreement_message.to_did,
-                    to_did=read_data_agreement_message.from_did,
-                    created_time=str(
-                        int(datetime.datetime.utcnow().timestamp())),
-                    problem_code=DataAgreementProblemReportReason.DATA_AGREEMENT_NOT_FOUND.value,
-                    explain=f"Data agreement not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                )
-
-                problem_report.assign_thread_id(
-                    thid=read_data_agreement_message._thread_id
-                )
-
-                # Update data agreement crud diddcomm transaction record with response message
-                data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                    problem_report.serialize()
-                )
-                await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                if responder:
-                    await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                return None
-
-            if len(data_agreement_instance_metadata_records) > 1:
-                self._logger.info(
-                    "Duplicate data agreement records found; Failed to process read-data-agreement message data agreement: %s",
-                    read_data_agreement_message.body.data_agreement_id,
-                )
-
-                # send problem report
-                problem_report = DataAgreementProblemReport(
-                    from_did=read_data_agreement_message.to_did,
-                    to_did=read_data_agreement_message.from_did,
-                    created_time=str(
-                        int(datetime.datetime.utcnow().timestamp())),
-                    problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                    explain=f"Duplicate data agreement records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                )
-
-                problem_report.assign_thread_id(
-                    thid=read_data_agreement_message._thread_id
-                )
-
-                # Update data agreement crud diddcomm transaction record with response message
-                data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                    problem_report.serialize()
-                )
-                await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                if responder:
-                    await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                return None
-
-            data_agreement_instance_metadata_record: StorageRecord = data_agreement_instance_metadata_records[
-                0]
-
-            # Identify the method of use
-
-            if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
-
-                # If method of use is data-source
-
-                # Fetch exchante record (credential exchange if method of use is "data-source")
-                tag_filter = {}
-                post_filter = {
-                    "data_agreement_id": read_data_agreement_message.body.data_agreement_id
-                }
-                records = await V10CredentialExchange.query(self.context, tag_filter, post_filter)
-
-                if not records:
-                    self._logger.info(
-                        "Credential exchange record not found; Failed to process read-data-agreement message data agreement: %s",
-                        read_data_agreement_message.body.data_agreement_id,
-                    )
-
-                    # send problem report
-                    problem_report = DataAgreementProblemReport(
-                        from_did=read_data_agreement_message.to_did,
-                        to_did=read_data_agreement_message.from_did,
-                        created_time=str(
-                            int(datetime.datetime.utcnow().timestamp())),
-                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                        explain=f"Credential exchange record not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                    )
-
-                    problem_report.assign_thread_id(
-                        thid=read_data_agreement_message._thread_id
-                    )
-
-                    # Update data agreement crud diddcomm transaction record with response message
-                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                        problem_report.serialize()
-                    )
-                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                    if responder:
-                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                    return None
-
-                if len(records) > 1:
-                    self._logger.info(
-                        "Duplicate credential exchange records found; Failed to process read-data-agreement message data agreement: %s",
-                        read_data_agreement_message.body.data_agreement_id,
-                    )
-
-                    # send problem report
-                    problem_report = DataAgreementProblemReport(
-                        from_did=read_data_agreement_message.to_did,
-                        to_did=read_data_agreement_message.from_did,
-                        created_time=str(
-                            int(datetime.datetime.utcnow().timestamp())),
-                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                        explain=f"Duplicate credential exchange records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                    )
-
-                    problem_report.assign_thread_id(
-                        thid=read_data_agreement_message._thread_id
-                    )
-
-                    # Update data agreement crud diddcomm transaction record with response message
-                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                        problem_report.serialize()
-                    )
-                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                    if responder:
-                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                    return None
-
-                cred_ex_record: V10CredentialExchange = records[0]
-
-                # Construct data agreement instance
-
-                data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema(
-                ).load(cred_ex_record.data_agreement)
-
-                # Construct response message
-                read_data_agreement_response_message = ReadDataAgreementResponse(
-                    from_did=read_data_agreement_message.to_did,
-                    to_did=read_data_agreement_message.from_did,
-                    created_time=str(
-                        int(datetime.datetime.utcnow().timestamp())),
-                    body=ReadDataAgreementResponseBody(
-                        data_agreement=data_agreement_instance
-                    )
-                )
-
-                read_data_agreement_response_message.assign_thread_id(
-                    thid=read_data_agreement_message._thread_id
-                )
-
-                # Update data agreement crud diddcomm transaction record with response message
-                data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                    read_data_agreement_response_message.serialize()
-                )
-                await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                if responder:
-                    await responder.send_reply(read_data_agreement_response_message, connection_id=receipt.connection_id)
-
-                return None
-
-            if data_agreement_instance_metadata_record.tags.get("method_of_use") == DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE:
-
-                # If method of use is data-using-service
-
-                # Fetch exchange record (presentation exchange if method of use is "data-using-service")
-                tag_filter = {}
-                post_filter = {
-                    "data_agreement_id": read_data_agreement_message.body.data_agreement_id
-                }
-                records = await V10PresentationExchange.query(self.context, tag_filter, post_filter)
-
-                if not records:
-                    self._logger.info(
-                        "Presentation exchange record not found; Failed to process read-data-agreement message data agreement: %s",
-                        read_data_agreement_message.body.data_agreement_id,
-                    )
-
-                    # send problem report
-                    problem_report = DataAgreementProblemReport(
-                        from_did=read_data_agreement_message.to_did,
-                        to_did=read_data_agreement_message.from_did,
-                        created_time=str(
-                            int(datetime.datetime.utcnow().timestamp())),
-                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                        explain=f"Presentation exchange record not found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                    )
-
-                    problem_report.assign_thread_id(
-                        thid=read_data_agreement_message._thread_id
-                    )
-
-                    # Update data agreement crud diddcomm transaction record with response message
-                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                        problem_report.serialize()
-                    )
-                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                    if responder:
-                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                    return None
-
-                if len(records) > 1:
-                    self._logger.info(
-                        "Duplicate presentation exchange records found; Failed to process read-data-agreement message data agreement: %s",
-                        read_data_agreement_message.body.data_agreement_id,
-                    )
-
-                    # send problem report
-                    problem_report = DataAgreementProblemReport(
-                        from_did=read_data_agreement_message.to_did,
-                        to_did=read_data_agreement_message.from_did,
-                        created_time=str(
-                            int(datetime.datetime.utcnow().timestamp())),
-                        problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                        explain=f"Duplicate presentation exchange records found; Failed to process read-data-agreement message data agreement: {read_data_agreement_message.body.data_agreement_id}",
-                    )
-
-                    problem_report.assign_thread_id(
-                        thid=read_data_agreement_message._thread_id
-                    )
-
-                    # Update data agreement crud diddcomm transaction record with response message
-                    data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                        problem_report.serialize()
-                    )
-                    await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                    if responder:
-                        await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-                    return None
-
-                pres_ex_record: V10PresentationExchange = records[0]
-
-                # Construct data agreement instance
-
-                data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema(
-                ).load(pres_ex_record.data_agreement)
-
-                # Construct response message
-                read_data_agreement_response_message = ReadDataAgreementResponse(
-                    from_did=read_data_agreement_message.to_did,
-                    to_did=read_data_agreement_message.from_did,
-                    created_time=str(
-                        int(datetime.datetime.utcnow().timestamp())),
-                    body=ReadDataAgreementResponseBody(
-                        data_agreement=data_agreement_instance
-                    )
-                )
-
-                read_data_agreement_response_message.assign_thread_id(
-                    thid=read_data_agreement_message._thread_id
-                )
-
-                # Update data agreement crud diddcomm transaction record with response message
-                data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                    read_data_agreement_response_message.serialize()
-                )
-                await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-                if responder:
-                    await responder.send_reply(read_data_agreement_response_message, connection_id=receipt.connection_id)
-
-                return None
-
-        except (ADAManagerError, StorageError) as e:
-            # send problem report
-            problem_report = DataAgreementProblemReport(
-                from_did=read_data_agreement_message.to_did,
-                to_did=read_data_agreement_message.from_did,
-                created_time=str(
-                    int(datetime.datetime.utcnow().timestamp())),
-                problem_code=DataAgreementProblemReportReason.READ_DATA_AGREEMENT_FAILED.value,
-                explain=str(e)
-            )
-
-            problem_report.assign_thread_id(
-                thid=read_data_agreement_message._thread_id
-            )
-
-            # Update data agreement crud diddcomm transaction record with response message
-            data_agreement_crud_didcomm_transaction_record.messages_list.append(
-                problem_report.serialize()
-            )
-            await data_agreement_crud_didcomm_transaction_record.save(self.context)
-
-            if responder:
-                await responder.send_reply(problem_report, connection_id=receipt.connection_id)
-
-    async def fetch_data_agreement_crud_didcomm_transactions_from_wallet(self):
-        try:
-            return await DataAgreementCRUDDIDCommTransaction.query(
-                self.context,
-            )
-        except StorageSearchError as e:
-            raise ADAManagerError(
-                f"Failed to fetch data agreement CRUD DIDComm transactions from wallet: {e}"
-            )
-
-    async def process_read_data_agreement_response_message(self, read_data_agreement_response_message: ReadDataAgreementResponse, receipt: MessageReceipt):
-        try:
-            # Fetch Data Agreement crud txn from wallet using the thread_id of the message
-            da_crud_didcomm_txn = await DataAgreementCRUDDIDCommTransaction.retrieve_by_tag_filter(
-                self.context,
-                {"thread_id": read_data_agreement_response_message._thread_id}
-            )
-            # Update the txn record with response message
-            da_crud_didcomm_txn.messages_list.append(
-                read_data_agreement_response_message.to_json())
-            await da_crud_didcomm_txn.save(self.context)
-
-        except (StorageNotFoundError, StorageDuplicateError):
-            pass
-
-    async def query_data_agreements_in_wallet(self, tag_filter: dict = None, include_fields: typing.List[str] = []) -> typing.List[DataAgreementV1Record]:
-        """
-        Query data agreements in the wallet.
-        """
-
-        try:
-
-            # If template_version is provided, then data agreements with that version will be returned
-            # publish_flag flag is not required for this query
-            template_version = None
-            if "template_version" in tag_filter:
-                template_version = tag_filter["template_version"]
-
-                tag_filter.pop("template_version", None)
-
-            # If delete_flag is not provided, then it defaults to false
-            # This would ensure the data agreements returned are the current version of the same. (draft or not)
-            # i.e. version (1) of a data agreement won't be returned if version (2) is available.
-            if "delete_flag" not in tag_filter:
-                tag_filter["delete_flag"] = bool_to_str(False)
-
-            self._logger.info(
-                f"Query data agreements in wallet with tag_filter: {tag_filter}")
-
-            # Query data agreements from the wallet
-            data_agreement_v1_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.query(
-                self.context,
-                tag_filter=tag_filter
-            )
-
-            # Filter data agreements by template_version
-            if template_version:
-                data_agreement_v1_records = [
-                    data_agreement_v1_record for data_agreement_v1_record in data_agreement_v1_records
-                    if data_agreement_v1_record.data_agreement.get("template_version") == int(template_version)
-                ]
-
-            return data_agreement_v1_records, [] if not data_agreement_v1_records else self.serialize_data_agreement_record(data_agreement_records=data_agreement_v1_records, is_list=True, include_fields=include_fields)
-        except StorageSearchError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch all data agreements from wallet: {e}"
-            )
-
-    async def delete_data_agreement_in_wallet(self, data_agreement_id: str):
-        """
-        Delete data agreement in wallet
-        """
-
-        try:
-
-            # Query for the data agreement by id
-            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                self.context,
-                data_agreement_id
-            )
-
-            # Mark the data agreement as deleted
-            data_agreement_record._delete_flag = True
-
-            # Save the data agreement record
-            await data_agreement_record.save(self.context)
-        except StorageError as err:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to delete data agreement; Reason: {err.roll_up}"
-            )
-
-    async def create_and_store_da_personal_data_in_wallet(self, personal_data: DataAgreementPersonalData, da_template_id: str, da_template_version: int) -> DataAgreementPersonalDataRecord:
+        pass
+
+    async def create_and_store_da_personal_data_in_wallet(
+        self,
+        personal_data: DataAgreementPersonalData,
+        da_template_id: str,
+        da_template_version: int
+    ) -> DataAgreementPersonalDataRecord:
         """
         Create and store personal data in the wallet.
         """
@@ -1509,248 +325,6 @@ class ADAManager:
                 f"Failed to fetch all data agreements from wallet: {e}"
             )
 
-    async def mark_connection_id_as_auditor(self, connection_record: ConnectionRecord):
-        """Associate the connection with Auditor"""
-
-        assert connection_record.connection_id, "Connection ID is required"
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as Auditor
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_AUDITOR_CONNECTION,
-                {"connection_id": connection_record.connection_id},
-            ).fetch_all()
-
-            # If no record found, create a new one
-            if not connection_record_list:
-                record = StorageRecord(
-                    self.RECORD_TYPE_AUDITOR_CONNECTION,
-                    connection_record.connection_id,
-                    {"connection_id": connection_record.connection_id},
-                )
-
-                await storage.add_record(record)
-            else:
-                # Update the existing record with the new connection_id
-                record = connection_record_list[0]
-
-                await storage.update_record_value(record=record, value=connection_record.connection_id)
-                await storage.update_record_tags(record=record, tags={"connection_id": connection_record.connection_id})
-
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to mark connection as Auditor: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to mark connection as Auditor: {e}"
-            )
-
-    async def fetch_current_auditor_connection_id(self) -> typing.Union[None, str]:
-        """
-        Fetch current Auditor connection id.
-        """
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as Auditor
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_AUDITOR_CONNECTION,
-            ).fetch_all()
-
-            if len(connection_record_list) > 1:
-                # Raise an error
-                raise ADAManagerError(
-                    f"More than one connection marked as Auditor"
-                )
-
-            if not connection_record_list:
-                # if no record found
-                return None
-            else:
-                # if record found
-                record = connection_record_list[0]
-
-                return record.value
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch current Auditor connection id: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch current Auditor connection id: {e}"
-            )
-
-    async def unmark_connection_id_as_auditor(self) -> bool:
-        """
-        Disassociate the connection with Auditor.
-        """
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as Auditor
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_AUDITOR_CONNECTION,
-            ).fetch_all()
-
-            if not connection_record_list:
-                # if no record found
-                return False
-            else:
-                # if record found
-                record = connection_record_list[0]
-
-                await storage.delete_record(record)
-
-                return True
-
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to unmark connection as Auditor: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to unmark connection as Auditor: {e}"
-            )
-
-    async def mark_connection_id_as_mydata_did_registry(self, connection_record: ConnectionRecord):
-        """
-        Associate the connection with MyData DID registry.
-        """
-
-        assert connection_record.connection_id, "Connection ID is required"
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as MyData DID registry
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION,
-                {"connection_id": connection_record.connection_id},
-            ).fetch_all()
-
-            # If no record found, create a new one
-            if not connection_record_list:
-                record = StorageRecord(
-                    self.RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION,
-                    connection_record.connection_id,
-                    {"connection_id": connection_record.connection_id},
-                )
-
-                await storage.add_record(record)
-            else:
-                # Update the existing record with the new connection_id
-                record = connection_record_list[0]
-
-                await storage.update_record_value(record=record, value=connection_record.connection_id)
-                await storage.update_record_tags(record=record, tags={"connection_id": connection_record.connection_id})
-
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to mark connection as MyData DID registry: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to mark connection as MyData DID registry: {e}"
-            )
-
-    async def fetch_current_mydata_did_registry_connection_id(self) -> typing.Union[None, str]:
-        """
-        Fetch current MyData DID registry connection id.
-        """
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as MyData DID registry
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION,
-            ).fetch_all()
-
-            if len(connection_record_list) > 1:
-                # Raise an error
-                raise ADAManagerError(
-                    f"More than one connection marked as MyData DID registry"
-                )
-
-            if not connection_record_list:
-                # if no record found
-                return None
-            else:
-                # if record found
-                record = connection_record_list[0]
-
-                return record.value
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch current MyData DID registry connection id: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch current MyData DID registry connection id: {e}"
-            )
-
-    async def unmark_connection_id_as_mydata_did_registry(self) -> bool:
-        """
-        Disassociate the connection with MyData DID registry.
-        """
-
-        try:
-
-            # Fetch storage from context
-            storage: IndyStorage = await self.context.inject(BaseStorage)
-
-            # Search for existing connection_id marked as MyData DID registry
-            connection_record_list = await storage.search_records(
-                self.RECORD_TYPE_MYDATA_DID_REGISTRY_CONNECTION,
-            ).fetch_all()
-
-            if not connection_record_list:
-                # if no record found
-                return False
-            else:
-                # if record found
-                record = connection_record_list[0]
-
-                await storage.delete_record(record)
-
-                return True
-
-        except StorageError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to unmark connection as MyData DID registry: {e}"
-            )
-        except StorageDuplicateError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to unmark connection as MyData DID registry: {e}"
-            )
-
     async def transform_sovrin_did_to_mydata_did(self, sovrin_did: str) -> str:
         """
         Transform Sovrin DID to MyData DID.
@@ -1775,25 +349,10 @@ class ADAManager:
         # Fetch wallet from context
         wallet: IndyWallet = await self.context.inject(BaseWallet)
 
-        # From DID
-        remote_records: StorageRecord = await storage.search_records(
-            type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REMOTE,
-            tag_query={
-                "status": "active"
-            }
-        ).fetch_all()
-
-        if len(remote_records) < 1:
-            raise ADAManagerError(
-                f"Failed to construct data agreement offer; "
-                f"No active remote MyData DID found"
-            )
-        controller_mydata_did = DIDMyData.from_did(
-            remote_records[0].tags.get("did"))
+        controller_did = await wallet.get_local_did(connection_record.my_did)
 
         # Principle DID from connection record
-        principle_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
+        principle_did = f"did:sov:{connection_record.their_did}"
 
         # Construct data agreement negotiation offer message
 
@@ -1815,14 +374,14 @@ class ADAManager:
             usage_purpose_description=data_agreement_body.usage_purpose_description,
             legal_basis=data_agreement_body.legal_basis,
             method_of_use=data_agreement_body.method_of_use,
-            principle_did=principle_did.did,
+            principle_did=f"did:sov:{principle_did}",
             data_policy=data_agreement_body.data_policy,
             personal_data=data_agreement_body.personal_data,
             dpia=data_agreement_body.dpia,
             event=[DataAgreementEvent(
-                event_id=f"{controller_mydata_did.did}#1",
+                event_id=f"did:sov:{controller_did.did}#1",
                 time_stamp=current_datetime_in_iso8601(),
-                did=controller_mydata_did.did,
+                did=f"did:sov:{controller_did.did}",
                 state=DataAgreementEvent.STATE_OFFER
             )]
         )
@@ -1830,17 +389,17 @@ class ADAManager:
         data_agreement_negotiation_offer_body_dict = data_agreement_negotiation_offer_body.serialize()
 
         signature_options = {
-            "id": f"{controller_mydata_did.did}#1",
+            "id": f"did:sov:{controller_did.did}#1",
             "type": "Ed25519Signature2018",
             "created": current_datetime_in_iso8601(),
-            "verificationMethod": f"{controller_mydata_did.did}",
+            "verificationMethod": f"{controller_did.verkey}",
             "proofPurpose": "contractAgreement",
         }
 
         # Generate proofs
         document_with_proof: dict = await sign_data_agreement(
             data_agreement_negotiation_offer_body_dict.copy(
-            ), signature_options, controller_mydata_did.public_key_b58, wallet
+            ), signature_options, controller_did.verkey, wallet
         )
 
         data_agreement_offer_proof: DataAgreementProof = DataAgreementProofSchema().load(
@@ -1851,8 +410,8 @@ class ADAManager:
 
         # Construct data agreement negotiation offer message
         data_agreement_negotiation_offer_message = DataAgreementNegotiationOfferMessage(
-            from_did=controller_mydata_did.did,
-            to_did=principle_did.did,
+            from_did=controller_did.did,
+            to_did=principle_did,
             created_time=round(time.time() * 1000),
             body=data_agreement_negotiation_offer_body
         )
@@ -2469,61 +1028,6 @@ class ADAManager:
 
         return data_agreement_instances
 
-    async def construct_data_agreement_verify_request(self, *, data_agreement_id: str) -> DataAgreementVerify:
-        """Construct data agreement verify request message"""
-
-        # Wallet instance from context
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
-
-        # Storage instance from context
-        storage: BaseStorage = await self.context.inject(BaseStorage)
-
-        # Fetch auditor connection record
-        auditor_connection_record, err = await self.fetch_auditor_connection_record()
-        if err:
-            raise ADAManagerError(
-                f"Failed to construct data agreement verify request message: {err}"
-            )
-
-        # from_did
-        pairwise_local_did_record = await wallet.get_local_did(auditor_connection_record.my_did)
-        from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
-
-        # to_did
-        to_did = DIDMyData.from_public_key_b58(
-            auditor_connection_record.their_did, key_type=KeyType.ED25519)
-
-        # Fetch data agreement instance
-        data_agreement_instances = await self.query_data_agreement_instances(
-            {
-                "data_agreement_id": data_agreement_id
-            }
-        )
-
-        if len(data_agreement_instances) != 1:
-            raise ADAManagerError(
-                f"Failed to construct data agreement verify request message: "
-                f"{len(data_agreement_instances)} data agreement instances found for data agreement id: {data_agreement_id}"
-            )
-
-        data_agreement_instance: DataAgreementInstance = DataAgreementInstanceSchema().load(
-            data_agreement_instances[0].get("data_agreement")
-        )
-
-        # Construct data agreement verify message
-
-        data_agreement_verify = DataAgreementVerify(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=DataAgreementVerifyBody(
-                data_agreement=data_agreement_instance
-            )
-        )
-
-        return data_agreement_verify
-
     async def construct_data_agreement_qr_code_payload(self,
                                                        *,
                                                        data_agreement_id: str,
@@ -3069,7 +1573,7 @@ class ADAManager:
             raise ADAManagerError(
                 "Failed to retrieve igrantio endpoint url from os environ")
 
-        return{
+        return {
             "igrantio_org_id": igrantio_org_id,
             "igrantio_org_api_key": igrantio_org_api_key,
             "igrantio_org_api_key_secret": igrantio_org_api_key_secret,
@@ -3471,94 +1975,6 @@ class ADAManager:
 
         return jresp["shortLink"]
 
-    async def process_read_all_data_agreement_template_message(self, read_all_data_agreement_template_message: ReadAllDataAgreementTemplateMessage, receipt: MessageReceipt) -> None:
-        """
-        Process read all data agreement template message.
-
-        Respond with all the data agreement templates available for an organisation.
-        """
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # From and To MyData DIDs
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-        results = []
-
-        # Query all the data agreement templates.
-
-        tag_filter = {
-            "publish_flag": "true",
-            "delete_flag": "false",
-        }
-        data_agreement_v1_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.query(
-            self.context,
-            tag_filter=tag_filter
-        )
-
-        if data_agreement_v1_records:
-            for data_agreement_v1_record in data_agreement_v1_records:
-                data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(
-                    data_agreement_v1_record.data_agreement)
-                results.append(data_agreement)
-
-        # Construct ReadAllDataAgreementTemplateResponse message
-
-        read_all_data_agreement_template_response: ReadAllDataAgreementTemplateResponseMessage = ReadAllDataAgreementTemplateResponseMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=results
-        )
-
-        # Send ReadAllDataAgreementTemplateResponse message to the requester.
-
-        if responder:
-            await responder.send_reply(read_all_data_agreement_template_response)
-
-    async def send_read_all_data_agreement_template_message(self, conn_id: str) -> None:
-        """Send read all data agreement template message to the remote agent."""
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        try:
-
-            # Retrieve connection record by id
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                conn_id
-            )
-
-        except StorageError as err:
-
-            raise ADAManagerError(
-                f"Failed to retrieve connection record: {err}"
-            )
-
-        # From and to mydata dids
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.my_did, key_type=KeyType.ED25519
-        )
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519
-        )
-
-        # Construct ReadAllDataAgreementTemplate Message
-        read_all_data_agreement_template_message = ReadAllDataAgreementTemplateMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000)
-        )
-
-        # Send JSONLD Processed Message
-        if responder:
-            await responder.send_reply(read_all_data_agreement_template_message, connection_id=connection_record.connection_id)
-
     async def fetch_org_details_from_igrantio(self) -> str:
         """
         Fetch org details from iGrant.io.
@@ -3856,141 +2272,6 @@ class ADAManager:
         else:
             return {}
 
-    async def create_cred_def_and_anchor_to_ledger(self, *, schema_id: str, tag: str = "default", support_revocation: bool = False) -> typing.Tuple[str, dict, bool]:
-        """
-        Create credential definition and anchor to ledger.
-
-        Args:
-            schema_id: Schema id.
-            tag: Tag.
-            support_revocation: Support revocation.
-
-        Returns:
-            :rtype: tuple: (credential definition id, credential definition json, support revocation)
-        """
-
-        # Ledger instance from context
-        ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
-        if not ledger:
-            reason = "No ledger available"
-            if not self.context.settings.get_value("wallet.type"):
-                reason += ": missing wallet-type?"
-
-            raise ADAManagerError(
-                f"{reason}"
-            )
-
-        # Issuer instance from context
-        issuer: BaseIssuer = await self.context.inject(BaseIssuer)
-
-        tag = "default"
-        support_revocation = False
-
-        async with ledger:
-            try:
-
-                (cred_def_id, cred_def, novel) = await shield(
-                    ledger.create_and_send_credential_definition(
-                        issuer,
-                        schema_id,
-                        signature_type=None,
-                        tag=tag,
-                        support_revocation=support_revocation,
-                    )
-                )
-
-                return cred_def_id, cred_def, novel
-
-            except (IssuerError, LedgerError) as err:
-                raise ADAManagerError(
-                    f"{err.roll_up}"
-                )
-
-    async def create_schema_def_and_anchor_to_ledger(self, *, schema_name: str, schema_version: int, attributes: typing.List[str]) -> typing.Tuple[str, dict]:
-        """
-        Create scheme definition and anchor to ledger.
-
-        Args:
-            schema_name: Schema name.
-            schema_version: Schema version.
-            attributes: List of attributes.
-
-        :return: (schema_id, schema_def)
-        """
-
-        # Ledger instance from context
-        ledger: BaseLedger = await self.context.inject(BaseLedger, required=False)
-        if not ledger:
-            reason = "No ledger available"
-            if not self.context.settings.get_value("wallet.type"):
-                reason += ": missing wallet-type?"
-
-            raise ADAManagerError(
-                f"{reason}"
-            )
-
-        # Issuer instance from context
-        issuer: BaseIssuer = await self.context.inject(BaseIssuer)
-
-        async with ledger:
-            try:
-
-                # Create schema
-
-                schema_name = schema_name
-                schema_version = int_to_semver_str(schema_version)
-                attributes = attributes
-
-                schema_id, schema_def = await shield(
-                    ledger.create_and_send_schema(
-                        issuer, schema_name, schema_version, attributes
-                    )
-                )
-
-                return schema_id, schema_def
-
-            except (IssuerError, LedgerError) as err:
-                raise ADAManagerError(
-                    f"{err.roll_up}"
-                )
-
-    def construct_proof_request_from_personal_data(self, *, usage_purpose: str, usage_purpose_description: str, data_agreement_template_version: str, personal_data: typing.List[DataAgreementPersonalDataRecord]) -> dict:
-        """
-        Construct proof request from personal data.
-
-        Args:
-            usage_purpose: Usage purpose.
-            usage_purpose_description: Usage purpose description.
-            data_agreement_template_version: Data agreement template version.
-            personal_data: List of personal data.
-
-        Returns:
-            :rtype: dict: Proof request
-
-        """
-
-        proof_presentation_request_dict: dict = {
-            "name": usage_purpose,
-            "comment": usage_purpose_description,
-            "version": data_agreement_template_version,
-            "requested_attributes": {},
-            "requested_predicates": {}
-        }
-
-        index = 1
-        requested_attributes = {}
-        for pd in personal_data:
-
-            requested_attributes["additionalProp" + str(index)] = {
-                "name": pd.attribute_name,
-                "restrictions": pd.restrictions if pd.restrictions else []
-            }
-            index += 1
-
-        proof_presentation_request_dict["requested_attributes"] = requested_attributes
-
-        return proof_presentation_request_dict
-
     def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True, include_fields: typing.List[str] = []) -> typing.Union[typing.List[dict], dict]:
         """
         Serialize data agreement record.
@@ -4044,481 +2325,6 @@ class ADAManager:
             data_agreement_record_list, key=lambda k: k['created_at'], reverse=True)
 
         return data_agreement_record_list if is_list else data_agreement_record_list[0]
-
-    async def create_data_agreement_and_personal_data_records(self, *, data_agreement: dict, existing_schema_id: str = None, draft: bool = False, existing_version: int = None, existing_data_agreement_id: str = None, update_ssi_payload: bool = True, existing_data_agreement_record: DataAgreementV1Record = None) -> typing.Tuple[DataAgreementV1Record, dict]:
-        """
-        Create data agreement and personal data records.
-
-        Args:
-
-            data_agreement: Data agreement.
-            schema_id: Schema id.
-            draft: Draft.
-
-        Returns:
-            :rtype: DataAgreementV1Record
-        """
-
-        is_existing_schema = True if existing_schema_id else False
-        schema_id = existing_schema_id
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        try:
-            # Serialise data agreement and perform basic validation.
-            data_agreement: DataAgreementV1 = DataAgreementV1Schema().load(data_agreement)
-        except ValidationError as err:
-            raise ADAManagerError(
-                f"Failed to create data agreement; Reason: {err}")
-
-        # Set data agreement version
-        data_agreement.data_agreement_template_version = 1 if not existing_version else existing_version + 1
-
-        # Set data agreement identifier
-        data_agreement.data_agreement_template_id = str(
-            uuid.uuid4()) if not existing_data_agreement_id else existing_data_agreement_id
-
-        # Create and store da personal data records
-        personal_data = data_agreement.personal_data
-
-        # Personal data list for data agreement.
-        temp_personal_data = []
-
-        # Personal data "record" list for generating proof request.
-        temp_personal_data_records = []
-
-        for pd in personal_data:
-
-            # Create personal data record
-            temp_pd_record: DataAgreementPersonalDataRecord = await self.create_and_store_da_personal_data_in_wallet(
-                personal_data=pd,
-                da_template_id=data_agreement.data_agreement_template_id,
-                da_template_version=data_agreement.data_agreement_template_version,
-            )
-
-            temp_personal_data_records.append(temp_pd_record)
-
-            # Personal data (with id)
-            temp_personal_data.append(
-                DataAgreementPersonalData(
-                    attribute_id=temp_pd_record.personal_data_id,
-                    attribute_name=pd.attribute_name,
-                    attribute_sensitive=pd.attribute_sensitive,
-                    attribute_category=pd.attribute_category,
-                    attribute_description=pd.attribute_description,
-                )
-            )
-        # Replace personal data with updated personal data (with id)
-        data_agreement.personal_data = temp_personal_data
-
-        # Create the data agreement record
-        data_agreement_v1_record = DataAgreementV1Record(
-            data_agreement_id=data_agreement.data_agreement_template_id,
-            method_of_use=data_agreement.method_of_use,
-            state=DataAgreementV1Record.STATE_PREPARATION,
-            data_agreement=data_agreement.serialize(),
-            publish_flag=bool_to_str(not draft)
-        )
-
-        # Check if data agreement is created in draft mode.
-        if not draft:
-            if data_agreement.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
-
-                # Check if SSI payload needs update.
-                if update_ssi_payload:
-                    # If method-of-use is "data-source", then create a schema and credential defintion
-
-                    schema_name = data_agreement.usage_purpose
-                    schema_version = data_agreement.data_agreement_template_version
-                    attributes = [
-                        personal_data.attribute_name
-                        for personal_data in data_agreement.personal_data
-                    ]
-
-                    # Create schema and credential definition
-
-                    if not is_existing_schema:
-                        (schema_id, schema_def) = await self.create_schema_def_and_anchor_to_ledger(
-                            schema_name=schema_name,
-                            schema_version=schema_version,
-                            attributes=attributes
-                        )
-
-                    # Create credential definition and anchor to ledger
-
-                    (cred_def_id, cred_def, novel) = await self.create_cred_def_and_anchor_to_ledger(
-                        schema_id=schema_id
-                    )
-
-                    # Update the data agreement record with schema and credential definition
-                    data_agreement_v1_record.schema_id = schema_id
-                    data_agreement_v1_record.cred_def_id = cred_def_id
-                    data_agreement_v1_record._is_existing_schema = is_existing_schema
-                else:
-                    if existing_data_agreement_record:
-                        data_agreement_v1_record.schema_id = existing_data_agreement_record.schema_id
-                        data_agreement_v1_record.cred_def_id = existing_data_agreement_record.cred_def_id
-                        data_agreement_v1_record._is_existing_schema = existing_data_agreement_record._is_existing_schema
-            else:
-                # Check if SSI payload needs update.
-                if update_ssi_payload:
-                    # If method-of-use is "data-using-service"
-
-                    # Update data agreement with proof presentation request
-                    proof_request_dict = self.construct_proof_request_from_personal_data(
-                        usage_purpose=data_agreement.usage_purpose,
-                        usage_purpose_description=data_agreement.usage_purpose_description,
-                        data_agreement_template_version=int_to_semver_str(
-                            data_agreement.data_agreement_template_version),
-                        personal_data=temp_personal_data_records
-
-                    )
-
-                    data_agreement_v1_record.data_agreement_proof_presentation_request = proof_request_dict
-        else:
-            # Save existing schema id, existing schema flag.
-            # When the draft is published, a new schema id won't be created.
-            # Instead the existing schema id will be used if present.
-            data_agreement_v1_record._is_existing_schema = is_existing_schema
-            data_agreement_v1_record.schema_id = existing_schema_id
-
-        # Save the data agreement record
-        await data_agreement_v1_record.save(self.context)
-
-        return data_agreement_v1_record, self.serialize_data_agreement_record(data_agreement_records=[data_agreement_v1_record], is_list=False)
-
-    async def update_data_agreement_and_personal_data_records(self, *, data_agreement_id: str, data_agreement: dict, existing_schema_id: str = None, draft: bool = False) -> typing.Tuple[DataAgreementV1Record, dict]:
-
-        schema_id = existing_schema_id
-
-        # Error string when an exception occurs.
-        err_string = "Failed to update data agreement; Reason: {err}"
-
-        try:
-            # Query data agreement record
-            existing_data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                self.context,
-                data_agreement_id
-            )
-
-            # Existing data agreement
-            existing_data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                existing_data_agreement_record.data_agreement)
-
-            # Mark the existing data agreement record as deleted.
-            existing_data_agreement_record.delete_flag = bool_to_str(True)
-            # Mark the existing data agreement record as unpublished.
-            existing_data_agreement_record.publish_flag = bool_to_str(False)
-            await existing_data_agreement_record.save(self.context)
-
-            # Create new data agreement record with updated details.
-            (new_data_agreement_record, new_data_agreement_dict) = await self.create_data_agreement_and_personal_data_records(
-                data_agreement=data_agreement,
-                existing_schema_id=schema_id,
-                draft=draft,
-                existing_version=existing_data_agreement_record.data_agreement.get(
-                    "template_version", None),
-                existing_data_agreement_id=existing_data_agreement_dict.data_agreement_template_id
-            )
-
-            return new_data_agreement_record, new_data_agreement_dict
-
-        except (StorageNotFoundError, StorageDuplicateError, ValidationError) as err:
-            raise ADAManagerError(err_string.format(err=err)) from err
-
-    async def publish_data_agreement_in_wallet(self, data_agreement_id: str) -> typing.Tuple[DataAgreementV1Record, dict]:
-        """
-        Publish a data agreement in the wallet.
-        """
-
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        try:
-            # Retrieve the data agreement record
-            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                self.context,
-                data_agreement_id
-            )
-
-            # Check if the data agreement is already published
-            if data_agreement_record._publish_flag:
-                raise ADAManagerError(
-                    f"Failed to publish data agreement; Reason: Data agreement with id {data_agreement_id} is already published"
-                )
-
-            # Set the data agreement record to published
-            data_agreement_record._publish_flag = True
-
-            # Data agreement (dict)
-            data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                data_agreement_record.data_agreement)
-
-            # Personal data "record" list for generating proof request.
-            temp_personal_data_records = []
-
-            for pd in data_agreement_dict.personal_data:
-
-                # Retrieve the personal data record
-                temp_pd_record: DataAgreementPersonalDataRecord = await DataAgreementPersonalDataRecord.retrieve_by_id(
-                    self.context,
-                    pd.attribute_id
-                )
-
-                temp_personal_data_records.append(temp_pd_record)
-
-            if data_agreement_dict.method_of_use == DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE:
-                # If method-of-use is "data-source", then create a schema and credential defintion
-
-                schema_name = data_agreement_dict.usage_purpose
-                schema_version = data_agreement_dict.data_agreement_template_version
-                attributes = [
-                    personal_data.attribute_name
-                    for personal_data in data_agreement_dict.personal_data
-                ]
-
-                # Create schema and credential definition
-
-                if not data_agreement_record._is_existing_schema:
-                    (schema_id, schema_def) = await self.create_schema_def_and_anchor_to_ledger(
-                        schema_name=schema_name,
-                        schema_version=schema_version,
-                        attributes=attributes
-                    )
-                else:
-                    schema_id = data_agreement_record.schema_id
-
-                # Create credential definition and anchor to ledger
-
-                (cred_def_id, cred_def, novel) = await self.create_cred_def_and_anchor_to_ledger(
-                    schema_id=schema_id
-                )
-
-                # Update the data agreement record with schema and credential definition
-                data_agreement_record.schema_id = schema_id
-                data_agreement_record.cred_def_id = cred_def_id
-            else:
-                # If method-of-use is "data-using-service"
-
-                # Update data agreement with proof presentation request
-                proof_request_dict = self.construct_proof_request_from_personal_data(
-                    usage_purpose=data_agreement_dict.usage_purpose,
-                    usage_purpose_description=data_agreement_dict.usage_purpose_description,
-                    data_agreement_template_version=int_to_semver_str(
-                        data_agreement_dict.data_agreement_template_version),
-                    personal_data=temp_personal_data_records
-
-                )
-
-                data_agreement_record.data_agreement_proof_presentation_request = proof_request_dict
-
-            # Save the data agreement record
-            await data_agreement_record.save(self.context)
-
-            return data_agreement_record, self.serialize_data_agreement_record(data_agreement_records=[data_agreement_record], is_list=False)
-
-        except (StorageError, ValidationError) as err:
-            raise ADAManagerError(
-                f"Failed to publish data agreement; Reason: {err}") from err
-
-    async def query_data_agreement_version_history(self, data_agreement_id: str) -> typing.Tuple[DataAgreementV1Record, typing.List[dict]]:
-        """
-        Query data agreements in the wallet.
-        """
-
-        try:
-            # Tag filter
-            tag_filter = {
-                "data_agreement_id": data_agreement_id,
-            }
-
-            # Query for the old data agreement record by id
-            data_agreement_v1_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.query(
-                self.context,
-                tag_filter=tag_filter
-            )
-
-            return data_agreement_v1_records, self.serialize_data_agreement_record(data_agreement_records=data_agreement_v1_records, is_list=True)
-        except StorageSearchError as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch all data agreements from wallet; Reason: {e.roll_up}"
-            )
-
-    def serialize_personal_data_record(self, *, personal_data_records: typing.List[dict], is_list: bool = True) -> typing.List[dict]:
-        """
-        Serialize personal data records.
-
-        Args:
-            personal_data_records: Personal data records to serialize.
-            is_list: Whether the personal data records are a list or not.
-
-        Returns:
-            Serialized personal data records.
-        """
-
-        # Sort personal data list by created_at in descending order
-        personal_data_records = sorted(
-            personal_data_records, key=lambda k: k['created_at'], reverse=True)
-
-        return personal_data_records if is_list else personal_data_records[0]
-
-    async def update_personal_data_description(self, personal_data_id: str, updated_description: str) -> typing.Tuple[DataAgreementPersonalDataRecord, dict]:
-
-        # Error string when an exception occurs.
-        err_string = "Failed to update data agreement; Reason: {err}"
-
-        try:
-            # Query for the personal data record.
-            personal_data_record: DataAgreementPersonalDataRecord = await DataAgreementPersonalDataRecord.retrieve_by_id(
-                self.context,
-                personal_data_id
-            )
-
-            # Query data agreement template.
-            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                self.context,
-                personal_data_record.da_template_id
-            )
-
-            data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                data_agreement_record.data_agreement)
-
-            # Update personal data with description
-            personal_data = data_agreement_dict.personal_data
-            for pd_index, pd in enumerate(personal_data):
-                if pd.attribute_id == personal_data_id:
-                    pd.attribute_description = updated_description
-                    break
-
-            # Update data agreement
-            data_agreement_dict.personal_data = personal_data
-
-            (new_data_agreement, new_data_agreement_dict) = await self.create_data_agreement_and_personal_data_records(
-                data_agreement=data_agreement_dict.serialize(),
-                draft=data_agreement_record.is_draft,
-                existing_version=data_agreement_dict.data_agreement_template_version,
-                existing_data_agreement_id=data_agreement_dict.data_agreement_template_id,
-                update_ssi_payload=False,
-                existing_data_agreement_record=data_agreement_record
-            )
-
-            # Mark the old data agreement record as deleted
-            data_agreement_record._delete_flag = True
-            data_agreement_record._publish_flag = False
-            await data_agreement_record.save(self.context)
-
-            new_data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                new_data_agreement.data_agreement
-            )
-
-            new_pd = new_data_agreement_dict.personal_data[pd_index]
-
-            new_personal_data_record: DataAgreementPersonalDataRecord = await DataAgreementPersonalDataRecord.retrieve_by_id(
-                self.context,
-                new_pd.attribute_id
-            )
-
-            return new_personal_data_record, self.serialize_personal_data_record(personal_data_records=[new_personal_data_record], is_list=False)
-
-        except (StorageError, ValidationError) as err:
-            raise ADAManagerError(err_string.format(err=err)) from err
-
-    async def query_da_personal_data_in_wallet(self, personal_data_id: str = None, method_of_use: str = None) -> typing.List[dict]:
-        """
-        Query personal data in the wallet.
-        """
-
-        try:
-
-            # Query all data agreements (non-deleted)
-            data_agreement_records: typing.List[DataAgreementV1Record] = await DataAgreementV1Record.retrieve_all_non_deleted_data_agreements(self.context)
-
-            personal_data = []
-
-            for data_agreement_record in data_agreement_records:
-                data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                    data_agreement_record.data_agreement)
-
-                # Query personal data
-                for pd in data_agreement_dict.personal_data:
-
-                    temp_pd = {
-                        "attribute_id": pd.attribute_id,
-                        "attribute_name": pd.attribute_name,
-                        "attribute_description": pd.attribute_description,
-                        "data_agreement": {
-                            "data_agreement_id": data_agreement_record.data_agreement_record_id,
-                            "method_of_use": data_agreement_record.method_of_use,
-                            "data_agreement_usage_purpose": data_agreement_dict.usage_purpose,
-                            "publish_flag": data_agreement_record.is_published
-                        },
-                        "created_at": str_to_epoch(data_agreement_record.created_at),
-                        "updated_at": str_to_epoch(data_agreement_record.updated_at),
-                    }
-                    if method_of_use:
-                        if data_agreement_record.method_of_use == method_of_use:
-                            personal_data.append(temp_pd)
-                    else:
-                        personal_data.append(temp_pd)
-
-
-            return self.serialize_personal_data_record(
-                personal_data_records=personal_data,
-                is_list=True
-            )
-
-        except (StorageSearchError, StorageNotFoundError, StorageDuplicateError) as e:
-            # Raise an error
-            raise ADAManagerError(
-                f"Failed to fetch all data agreements from wallet: {e}"
-            )
-
-    async def delete_da_personal_data_in_wallet(self, *, personal_data_id: str) -> None:
-
-        try:
-
-            # Query personal data record
-            personal_data_record: DataAgreementPersonalDataRecord = await DataAgreementPersonalDataRecord.retrieve_by_id(
-                self.context,
-                personal_data_id
-            )
-
-            # Query data agreement record
-            data_agreement_record: DataAgreementV1Record = await DataAgreementV1Record.retrieve_non_deleted_data_agreement_by_id(
-                self.context,
-                personal_data_record.da_template_id
-            )
-
-            data_agreement_dict: DataAgreementV1 = DataAgreementV1Schema().load(
-                data_agreement_record.data_agreement)
-
-            # Remove personal data from data agreement
-            personal_data = data_agreement_dict.personal_data
-            for pd in personal_data:
-                if pd.attribute_id == personal_data_id:
-                    personal_data.remove(pd)
-                    break
-            data_agreement_dict.personal_data = personal_data
-
-            if len(personal_data) != 0:
-                # Create new data agreement with incremented version
-                await self.create_data_agreement_and_personal_data_records(
-                    data_agreement=data_agreement_dict.serialize(),
-                    draft=data_agreement_record.is_draft,
-                    existing_version=data_agreement_dict.data_agreement_template_version,
-                    existing_data_agreement_id=data_agreement_dict.data_agreement_template_id
-                )
-
-            # Mark the old data agreement record as deleted
-            data_agreement_record._delete_flag = True
-            data_agreement_record._publish_flag = False
-            await data_agreement_record.save(self.context)
-
-        except StorageError as e:
-            raise ADAManagerError(
-                f"Failed to delete data agreement; Reason: {e.roll_up}"
-            )
 
     @classmethod
     def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True, include_fields: typing.List[str] = []) -> dict:

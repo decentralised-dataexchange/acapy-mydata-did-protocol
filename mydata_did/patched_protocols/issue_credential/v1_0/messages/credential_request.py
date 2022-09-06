@@ -45,7 +45,7 @@ class CredentialRequest(AgentMessage):
             comment: optional comment
 
         """
-        super().__init__(_id=_id, _decorators = PatchedDecoratorSet(), **kwargs)
+        super().__init__(_id=_id, _decorators=PatchedDecoratorSet(), **kwargs)
         self.comment = comment
         self.requests_attach = list(requests_attach) if requests_attach else []
 

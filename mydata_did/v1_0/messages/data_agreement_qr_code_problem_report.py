@@ -8,9 +8,9 @@ from ..message_types import (
     PROTOCOL_PACKAGE,
     DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT
 )
-from ..utils.regex import MYDATA_DID
 
-# Handler class path for Data Agreement Qr code workflow Problem Report (data-agreement-qr-code/1.0/problem-report) message
+# Handler class path for Data Agreement Qr code workflow
+# Problem Report (data-agreement-qr-code/1.0/problem-report) message
 DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT_HANDLER_CLASS = (
     f"{PROTOCOL_PACKAGE}.handlers"
     ".data_agreement_qr_code_problem_report_handler.DataAgreementQrCodeProblemReportHandler"
@@ -45,9 +45,6 @@ class DataAgreementQrCodeProblemReport(AgentMessage):
         *,
         problem_code: str = None,
         explain: str = None,
-        from_did: str = None,
-        to_did: str = None,
-        created_time: str = None,
         qr_id: str = None,
         **kwargs
     ):
@@ -65,9 +62,6 @@ class DataAgreementQrCodeProblemReport(AgentMessage):
         super().__init__(**kwargs)
         self.explain = explain
         self.problem_code = problem_code
-        self.from_did = from_did
-        self.to_did = to_did
-        self.created_time = created_time
         self.qr_id = qr_id
 
 
@@ -81,9 +75,6 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
         model_class = DataAgreementQrCodeProblemReport
         unknown = EXCLUDE
 
-    from_did = fields.Str(data_key="from", **MYDATA_DID)
-    to_did = fields.Str(data_key="to", **MYDATA_DID)
-    created_time = fields.Str(data_key="created_time")
     explain = fields.Str(
         required=False,
         description="Localized error explanation",
