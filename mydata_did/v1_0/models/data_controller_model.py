@@ -1,12 +1,5 @@
-import datetime
-
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
 from marshmallow import fields, EXCLUDE
-from marshmallow.exceptions import ValidationError
-from typing import List
-
-from ..utils.regex import MYDATA_DID
 
 
 class DataController(BaseModel):
@@ -18,19 +11,19 @@ class DataController(BaseModel):
 
     def __init__(self,
                  *,
-                 organisation_id: str=None,
-                 organisation_name: str=None,
-                 cover_image_url: str=None,
-                 logo_image_url: str=None,
-                 location: str=None,
-                 organisation_type: str=None,
-                 description: str=None,
-                 policy_url: str=None,
-                 eula_url: str=None,
+                 organisation_did: str = None,
+                 organisation_name: str = None,
+                 cover_image_url: str = None,
+                 logo_image_url: str = None,
+                 location: str = None,
+                 organisation_type: str = None,
+                 description: str = None,
+                 policy_url: str = None,
+                 eula_url: str = None,
                  **kwargs):
         super().__init__(**kwargs)
 
-        self.organisation_id = organisation_id
+        self.organisation_did = organisation_did
         self.organisation_name = organisation_name
         self.cover_image_url = cover_image_url
         self.logo_image_url = logo_image_url
@@ -40,6 +33,7 @@ class DataController(BaseModel):
         self.policy_url = policy_url
         self.eula_url = eula_url
 
+
 class DataControllerSchema(BaseModelSchema):
     """
     Data controller schema class
@@ -48,7 +42,7 @@ class DataControllerSchema(BaseModelSchema):
         model_class = DataController
         unknown = EXCLUDE
 
-    organisation_id = fields.Str()
+    organisation_did = fields.Str()
     organisation_name = fields.Str()
     cover_image_url = fields.Str()
     logo_image_url = fields.Str()

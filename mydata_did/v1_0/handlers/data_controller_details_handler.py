@@ -1,17 +1,15 @@
-from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
-from ..messages.data_controller_details import DataControllerDetailsMessage
-from ..manager import ADAManager
-
 import json
+from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from ..messages.data_controller_details import DataControllerDetailsMessage
 
 
 class DataControllerDetailsHandler(BaseHandler):
-    """Handle for data-controller/1.0/details message"""
+    """Handle for controller details message"""
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         """
-        Message handler logic for data-controller/1.0/details message.
+        Handle function for controller details message.
         """
 
         # Assert if received message is of type DataControllerDetailsMessage
@@ -23,12 +21,10 @@ class DataControllerDetailsHandler(BaseHandler):
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_data_controller_details_message(
-            data_controller_details_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_data_controller_details_message(
+            context.message,
+            context.message_receipt,
         )
-

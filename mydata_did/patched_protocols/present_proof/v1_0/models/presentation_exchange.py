@@ -56,6 +56,7 @@ class V10PresentationExchange(BaseExchangeRecord):
         auto_present: bool = False,
         error_msg: str = None,
         trace: bool = False,
+        template_id: str = None,
         **kwargs
     ):
         """Initialize a new PresentationExchange."""
@@ -73,6 +74,7 @@ class V10PresentationExchange(BaseExchangeRecord):
         self.auto_present = auto_present
         self.error_msg = error_msg
         self.trace = trace
+        self.template_id = template_id
 
     @property
     def presentation_exchange_id(self) -> str:
@@ -97,6 +99,7 @@ class V10PresentationExchange(BaseExchangeRecord):
                 "error_msg",
                 "verified",
                 "trace",
+                "template_id"
             )
         }
 
@@ -172,3 +175,4 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
     error_msg = fields.Str(
         required=False, description="Error message", example="Invalid structure"
     )
+    template_id = fields.Str(required=False)

@@ -1,5 +1,4 @@
 from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
 from ..messages.data_controller_details_response import DataControllerDetailsResponseMessage
 
 import json

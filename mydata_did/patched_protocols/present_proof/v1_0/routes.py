@@ -1,7 +1,6 @@
 """Admin routes for presentations."""
 
 import json
-import math
 
 from aiohttp import web
 from aiohttp_apispec import (
@@ -11,8 +10,6 @@ from aiohttp_apispec import (
     request_schema,
     response_schema,
 )
-from aries_cloudagent.wallet.base import BaseWallet
-from aries_cloudagent.wallet.indy import IndyWallet
 from marshmallow import fields, validate, validates_schema
 from marshmallow.exceptions import ValidationError
 
@@ -42,6 +39,7 @@ from aries_cloudagent.wallet.error import WalletNotFoundError
 from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.agreements.da.v1_0.records.da_template_record import DataAgreementTemplateRecord
+from dexa_sdk.utils import clean_and_get_field_from_dict, paginate_records
 from .manager import PresentationManager
 from .message_types import ATTACH_DECO_IDS, PRESENTATION_REQUEST, SPEC_URI
 from .messages.inner.presentation_preview import (
@@ -56,22 +54,6 @@ from .models.presentation_exchange import (
 )
 
 from ....v1_0.decorators.data_agreement_context_decorator import DataAgreementContextDecorator
-from ....v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
-from ....v1_0.models.data_agreement_negotiation_offer_model import (
-    DataAgreementNegotiationOfferBody,
-    DataAgreementNegotiationOfferBodySchema
-)
-from ....v1_0.manager import ADAManager, ADAManagerError
-from ....v1_0.models.data_agreement_instance_model import (
-    DataAgreementInstance,
-    DataAgreementInstanceSchema
-)
-from ....patched_protocols.issue_credential.v1_0.routes import (
-    SendDataAgreementNegotiationProblemReportRequestSchema
-)
-from ....v1_0.utils.did.mydata_did import DIDMyData
-from ....v1_0.utils.wallet.key_type import KeyType
-from ....v1_0.utils.util import comma_separated_str_to_list, get_slices
 
 
 PAGINATION_PAGE_SIZE = 10
@@ -112,6 +94,15 @@ class V10PresentationExchangeListQueryStringSchema(OpenAPISchema):
             ]
         ),
     )
+
+    # Template identifier
+    template_id = fields.Str(required=False)
+
+    # Page
+    page = fields.Int(required=False)
+
+    # Page size
+    page_size = fields.Int(required=False)
 
 
 class V10PresentationExchangeListSchema(OpenAPISchema):
@@ -486,17 +477,31 @@ async def presentation_exchange_list(request: web.BaseRequest):
         tag_filter["thread_id"] = request.query["thread_id"]
     post_filter = {
         k: request.query[k]
-        for k in ("connection_id", "role", "state")
+        for k in ("connection_id", "role", "state", "template_id")
         if request.query.get(k, "") != ""
     }
 
+    # Page query param
+    page = clean_and_get_field_from_dict(request.query, "page")
+    page = int(page) if page is not None else page
+
+    # Page size query param
+    page_size = clean_and_get_field_from_dict(request.query, "page_size")
+    page_size = int(page_size) if page_size is not None else page_size
+
     try:
         records = await V10PresentationExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Pagination.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({"results": results})
+    return web.json_response(pagination_result)
 
 
 @docs(tags=["present-proof"], summary="Fetch a single presentation exchange record")
@@ -1200,6 +1205,8 @@ async def send_presentation_request_for_data_agreement(request: web.BaseRequest)
             connection_id=connection_id,
             presentation_request_message=presentation_request,
         )
+        pres_ex_record.template_id = template_id
+        await pres_ex_record.save(context)
         result = pres_ex_record.serialize()
     except (BaseModelError, StorageError) as err:
         await internal_error(

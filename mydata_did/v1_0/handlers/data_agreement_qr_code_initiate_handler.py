@@ -1,17 +1,15 @@
-from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
-from ..messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
-from ..manager import ADAManager
-
 import json
+from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from ..messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
 
 
 class DataAgreementQrCodeInitiateHandler(BaseHandler):
-    """Handle for data-agreement-qr-code/1.0/initiate message"""
+    """Handler for qr code initiate message"""
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         """
-        Message handler logic for data-agreement-qr-code/1.0/initiate message.
+        Handler function for qr code initiate message.
         """
 
         # Assert if received message is of type DataAgreementQrCodeInitiateMessage
@@ -23,12 +21,10 @@ class DataAgreementQrCodeInitiateHandler(BaseHandler):
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_data_agreement_qr_code_initiate_message(
-            data_agreement_qr_code_initiate_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_data_agreement_qr_code_initiate_message(
+            context.message,
+            context.message_receipt,
         )
-

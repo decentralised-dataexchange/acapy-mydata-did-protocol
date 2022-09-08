@@ -37,7 +37,7 @@ from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
 from mydata_did.v1_0.messages.problem_report import DataAgreementNegotiationProblemReportReason
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.agreements.da.v1_0.records.da_template_record import DataAgreementTemplateRecord
-
+from dexa_sdk.utils import paginate_records, clean_and_get_field_from_dict
 from .manager import CredentialManager, CredentialManagerError
 from .message_types import SPEC_URI
 from .messages.credential_proposal import CredentialProposal
@@ -92,38 +92,14 @@ class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
         ),
     )
 
-    # Data Agreement identifier
-    data_agreement_id = fields.Str(
-        required=False,
-        description="Data agreement identifier",
-        example=UUIDFour.EXAMPLE,
-    )
-
     # Data Agreement template identifier
-    data_agreement_template_id = fields.Str(
-        required=False,
-        description="Data agreement template identifier",
-        example=UUIDFour.EXAMPLE,
-    )
+    template_id = fields.Str(required=False)
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description="Comma separated fields to be included in the response.",
-        example="connection_id,state,presentation_exchange_id",
-    )
+    # Page
+    page = fields.Int(required=False)
 
-    page = fields.Int(
-        required=False,
-        description="Page number",
-        example=1,
-    )
-
-    page_size = fields.Int(
-        required=False,
-        description="Page size",
-        example=10,
-    )
+    # Page size
+    page_size = fields.Int(required=False)
 
 
 class V10CredentialExchangeListResultSchema(OpenAPISchema):
@@ -417,17 +393,28 @@ async def credential_exchange_list(request: web.BaseRequest):
         tag_filter["thread_id"] = request.query["thread_id"]
     post_filter = {
         k: request.query[k]
-        for k in ("connection_id", "role", "state")
+        for k in ("connection_id", "role", "state", "template_id")
         if request.query.get(k, "") != ""
     }
 
+    page = clean_and_get_field_from_dict(request.query, "page")
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, "page_size")
+    page_size = int(page_size) if page_size is not None else page_size
+
     try:
         records = await V10CredentialExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Pagination result.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({"results": results})
+    return web.json_response(pagination_result._asdict())
 
 
 @docs(tags=["issue-credential"], summary="Fetch a single credential exchange record")
@@ -980,6 +967,7 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
     )
 
     cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+    cred_ex_record.template_id = template_id
     await cred_ex_record.save(context)
 
     result = cred_ex_record.serialize()

@@ -1,7 +1,7 @@
 import json
+import typing
 import uuid
 import logging
-import math
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
@@ -11,7 +11,6 @@ from aiohttp_apispec import (
     match_info_schema,
 )
 from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.storage.error import StorageError
 from aries_cloudagent.connections.models.connection_record import (
     ConnectionRecord,
 )
@@ -19,12 +18,12 @@ from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManager,
     ConnectionManagerError,
 )
-from ..manager import ADAManager, ADAManagerError
-from ..utils.util import (
-    comma_separated_str_to_list,
-    get_slices,
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from dexa_sdk.data_controller.records.connection_controller_details_record import (
+    ConnectionControllerDetailsRecord
 )
-
+from dexa_sdk.utils import clean_and_get_field_from_dict, paginate
+from ..manager import ADAManager, ADAManagerError
 from .openapi import (
     V2CreateInvitationQueryStringSchema,
     V2InvitationResultSchema,
@@ -110,9 +109,9 @@ async def v2_connections_create_invitation(request: web.BaseRequest):
     base_url = context.settings.get("invite_base_url")
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
     try:
-        (connection, invitation) = await mydata_did_manager.create_invitation(
+        (connection, invitation) = await mgr.create_invitation(
             auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
         )
 
@@ -277,52 +276,41 @@ async def connections_list_v2(request: web.BaseRequest):
             post_filter[param_name] = request.query[param_name]
 
     # Pagination parameters
-    pagination = {
-        "totalCount": 0,
-        "page": 0,
-        "pageSize": PAGINATION_PAGE_SIZE,
-        "totalPages": 0,
-    }
+    page = clean_and_get_field_from_dict(request.query, "page")
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, "page_size")
+    page_size = int(page_size) if page_size is not None else page_size
 
-    try:
-
-        records = await ConnectionRecord.query(context, tag_filter, post_filter)
-
-        # Page size from request.
-        page_size = int(request.query.get("page_size", PAGINATION_PAGE_SIZE))
-        pagination["pageSize"] = page_size
-
-        # Total number of records
-        pagination["totalCount"] = len(records)
-
-        # Total number of pages.
-        pagination["totalPages"] = math.ceil(
-            pagination["totalCount"] / pagination["pageSize"]
-        )
-
-        # Fields to be included in the response.
-        include_fields = request.query.get("include_fields")
-        include_fields = (
-            comma_separated_str_to_list(include_fields) if include_fields else None
-        )
-
-        results = ADAManager.serialize_connection_record(records, True, include_fields)
-
-        # Pagination parameters
-        page = request.query.get("page")
-        if page:
-            page = int(page)
-            pagination["page"] = page
-
-            lower, upper = get_slices(page, pagination["pageSize"])
-
-            results = results[lower:upper]
-
-    except (StorageError, BaseModelError, ValueError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-    return web.json_response(
-        {
-            "results": results,
-            "pagination": pagination if page else {},
-        }
+    records: typing.List[ConnectionRecord] = await ConnectionRecord.query(
+        context,
+        tag_filter,
+        post_filter
     )
+    records = sorted(
+        records,
+        key=lambda k: k.created_at,
+        reverse=True
+    )
+
+    res = []
+    for record in records:
+        tag_filter = {"connection_id": record.connection_id}
+
+        controller_details: typing.List[ConnectionControllerDetailsRecord] = \
+            await ConnectionControllerDetailsRecord.query(
+            context,
+            tag_filter
+        )
+        connection = record.serialize()
+        if controller_details:
+            connection.update({
+                "controller_details": controller_details[0].controller_details
+            })
+        else:
+            connection.update({"controller_details": {}})
+
+        res.append(connection)
+
+    pagination_result = paginate(res, page if page else 1, page_size if page_size else 10)
+
+    return web.json_response(pagination_result._asdict())

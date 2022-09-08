@@ -511,11 +511,7 @@ class DataAgreementQRCodeMatchInfoSchema(OpenAPISchema):
     Schema for data agreement QR code match info
     """
 
-    data_agreement_id = fields.Str(
-        description="Data agreement identifier",
-        required=True,
-        example=UUIDFour.EXAMPLE,
-    )
+    template_id = fields.Str(required=True)
 
 
 class DataAgreementQRCodeInvitationSchema(OpenAPISchema):
@@ -678,8 +674,8 @@ class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
 class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
     """Schema to validate path parameters for query data agreement qr code metadata records."""
 
-    data_agreement_id = fields.Str(
-        description="Data Agreement identifier",
+    template_id = fields.Str(
+        description="Template identifier",
         example=UUIDFour.EXAMPLE,
         required=False,
     )
@@ -716,14 +712,8 @@ class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
 
 
 class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
-
-    data_agreement_id = fields.Str(
-        description="Data Agreement identifier", example=UUIDFour.EXAMPLE, required=True
-    )
-
-    qr_id = fields.Str(
-        description="QR code identifier", example=UUIDFour.EXAMPLE, required=True
-    )
+    template_id = fields.Str()
+    qr_id = fields.Str()
 
 
 class Base64EncodeDataAgreementQrCodeMatchInfoSchema(OpenAPISchema):
@@ -937,3 +927,16 @@ class ConnectionListSchema(OpenAPISchema):
         fields.Nested(ConnectionRecordSchema()),
         description="List of connection records",
     )
+
+
+class UpdateControllerDetailsRequestSchema(OpenAPISchema):
+    """Update controller details request schema"""
+    organisation_did = fields.Str(required=False)
+    organisation_name = fields.Str(required=False)
+    cover_image_url = fields.Str(required=False)
+    logo_image_url = fields.Str(required=False)
+    location = fields.Str(required=False)
+    organisation_type = fields.Str(required=False)
+    description = fields.Str(required=False)
+    policy_url = fields.Str(required=False)
+    eula_url = fields.Str(required=False)

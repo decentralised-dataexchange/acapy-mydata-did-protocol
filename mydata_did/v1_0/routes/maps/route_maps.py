@@ -3,9 +3,6 @@ from ..data_agreement_auditor_functions_routes import (
     query_data_agreement_instances
 )
 from ..data_agreement_core_functions_routes import (
-    send_read_data_agreement,
-    list_data_agreements_crud_didcomm_transactions,
-    data_agreement_crud_didcomm_transaction_records_delete_by_id,
     create_and_store_data_agreement_in_wallet_v2,
     publish_data_agreement_handler,
     query_data_agreements_in_wallet,
@@ -17,14 +14,12 @@ from ..data_agreement_core_functions_routes import (
     generate_data_agreement_qr_code_payload,
     query_data_agreement_qr_code_metadata_records_handler,
     remove_data_agreement_qr_code_metadata_record_handler,
-    base64_encode_data_agreement_qr_code_payload_handler,
-    send_data_agreements_qr_code_workflow_initiate_handler,
-    generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler,
-    send_read_all_data_agreement_template_message_handler
+    send_data_agreements_qr_code_workflow_initiate_handler
 )
 
 from ..data_controller_functions_routes import (
-    send_data_controller_details_message_handler
+    send_data_controller_details_message_handler,
+    update_data_controller_details
 )
 
 from ..jsonld_routes import (
@@ -56,19 +51,6 @@ ROUTES_ADA = [
         "/v1/mydata-did/remote",
         mydata_did_remote_records_list,
         allow_head=False,
-    ),
-    web.post(
-        "/v1/data-agreements/didcomm/read-data-agreement",
-        send_read_data_agreement,
-    ),
-    web.get(
-        "/v1/data-agreements/didcomm/transactions",
-        list_data_agreements_crud_didcomm_transactions,
-        allow_head=False,
-    ),
-    web.delete(
-        "/v1/data-agreements/didcomm/transactions/{da_crud_didcomm_tx_id}",
-        data_agreement_crud_didcomm_transaction_records_delete_by_id,
     ),
     web.post(
         "/v1/data-agreements",
@@ -113,25 +95,16 @@ ROUTES_ADA = [
         allow_head=False,
     ),
     web.post(
-        "/v1/data-agreements/{data_agreement_id}/qr",
+        "/v1/data-agreements/{template_id}/qr",
         generate_data_agreement_qr_code_payload,
     ),
     web.get(
-        "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}/base64",
-        base64_encode_data_agreement_qr_code_payload_handler,
-        allow_head=False,
-    ),
-    web.post(
-        "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}/firebase",
-        generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler,
-    ),
-    web.get(
-        "/v1/data-agreements/{data_agreement_id}/qr",
+        "/v1/data-agreements/{template_id}/qr",
         query_data_agreement_qr_code_metadata_records_handler,
         allow_head=False,
     ),
     web.delete(
-        "/v1/data-agreements/{data_agreement_id}/qr/{qr_id}",
+        "/v1/data-agreements/{template_id}/qr/{qr_id}",
         remove_data_agreement_qr_code_metadata_record_handler,
     ),
     web.post(
@@ -150,10 +123,6 @@ ROUTES_ADA = [
         generate_firebase_dynamic_link_for_connection_invitation_handler,
     ),
     web.post(
-        "/v1/data-agreements/didcomm/read-all-template/connections/{connection_id}",
-        send_read_all_data_agreement_template_message_handler,
-    ),
-    web.post(
         "/v1/data-controller/didcomm/details/connections/{connection_id}",
         send_data_controller_details_message_handler,
     ),
@@ -166,5 +135,13 @@ ROUTES_ADA = [
         get_existing_connections_handler,
         allow_head=False,
     ),
-    web.get("/v2/connections", connections_list_v2, allow_head=False),
+    web.get(
+        "/v2/connections",
+        connections_list_v2,
+        allow_head=False
+    ),
+    web.post(
+        "/v1/data-controller",
+        update_data_controller_details
+    )
 ]
