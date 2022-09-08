@@ -26,9 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import json
-import typing
-import logging
+<pre><code class="python">import logging
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
@@ -37,25 +35,11 @@ from aiohttp_apispec import (
     response_schema,
     match_info_schema,
 )
-from marshmallow import fields
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.storage.error import StorageNotFoundError, StorageError
-from aries_cloudagent.messaging.valid import (
-    UUIDFour,
-)
-from aries_cloudagent.connections.models.connection_record import (
-    ConnectionRecord,
-)
-from aries_cloudagent.protocols.connections.v1_0.manager import (
-    ConnectionManagerError,
-)
+from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
-from ..manager import ADAManager, ADAManagerError
-from ..models.exchange_records.data_agreement_didcomm_transaction_record import (
-    DataAgreementCRUDDIDCommTransaction,
-)
+from ..manager import ADAManagerError
 from ..models.exchange_records.data_agreement_personal_data_record import (
     DataAgreementPersonalDataRecordSchema,
 )
@@ -67,10 +51,6 @@ from ..routes.maps.tag_maps import (
 )
 
 from .openapi import (
-    ReadDataAgreementRequestSchema,
-    DataAgreementCRUDDIDCommTransactionResponseSchema,
-    DACRUDDIDCommTransactionRecordListQueryStringSchema,
-    DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema,
     DataAgreementV1RecordResponseSchema,
     DataAgreementQueryStringSchema,
     UpdateDataAgreementMatchInfoSchema,
@@ -85,12 +65,9 @@ from .openapi import (
     UpdateDaPersonalDataInWalletResponseSchema,
     DeleteDaPersonalDataInWalletMatchInfoSchema,
     QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema,
-    QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema,
     QueryDataAgreementQRCodeMetadataRecordsResponseSchema,
     RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema,
-    Base64EncodeDataAgreementQrCodeMatchInfoSchema,
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
-    SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema,
     GenerateDataAgreementQrCodePayloadQueryStringSchema,
     CreateOrUpdateDataAgreementInWalletRequestSchema,
     UpdateDataAgreementTemplateOpenAPISchema
@@ -99,169 +76,6 @@ from .openapi import (
 LOGGER = logging.getLogger(__name__)
 
 PAGINATION_PAGE_SIZE = 10
-
-
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Send read data agreement message to Data Controller (remote agent)&#34;,
-)
-@request_schema(ReadDataAgreementRequestSchema())
-@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(), 200)
-async def send_read_data_agreement(request: web.BaseRequest):
-    &#34;&#34;&#34;
-    Send read-data-agreement message to the connection
-    &#34;&#34;&#34;
-
-    # Request context
-    context = request.app[&#34;request_context&#34;]
-
-    # Request payload
-    body = await request.json()
-
-    # Data agreement ID
-    data_agreement_id = body.get(&#34;data_agreement_id&#34;)
-    # Connection ID
-    connection_id = body.get(&#34;connection_id&#34;)
-
-    # Check if data agreement ID is provided
-    if not data_agreement_id:
-        raise web.HTTPBadRequest(reason=&#34;Data Agreement ID missing&#34;)
-    # Check if connection ID is provided
-    if not connection_id:
-        raise web.HTTPBadRequest(reason=&#34;Connection ID missing&#34;)
-
-    # API Response
-    result = {}
-
-    try:
-        # Fetch connection record
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
-        )
-
-        # Check if connection is ready
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f&#34;ADA registry connection {connection_id} not ready&#34;
-            )
-
-        # Initialise MyData DID Manager
-        mydata_did_manager = ADAManager(context=context)
-        # Send read-data-agreement message
-        transaction_record: DataAgreementCRUDDIDCommTransaction = (
-            await mydata_did_manager.send_read_data_agreement_message(
-                connection_record=connection_record, data_agreement_id=data_agreement_id
-            )
-        )
-
-        result = {
-            &#34;da_crud_didcomm_tx_id&#34;: transaction_record.da_crud_didcomm_tx_id,
-            &#34;thread_id&#34;: transaction_record.thread_id,
-            &#34;message_type&#34;: transaction_record.message_type,
-            &#34;messages_list&#34;: [
-                json.loads(message) if isinstance(message, str) else message
-                for message in transaction_record.messages_list
-            ],
-            &#34;connection_id&#34;: transaction_record.connection_id,
-        }
-
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-
-    return web.json_response(result)
-
-
-# List data agreement crud didcomm transactions from the wallet
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;List data agreements crud didcomm transactions from the wallet&#34;,
-)
-@querystring_schema(DACRUDDIDCommTransactionRecordListQueryStringSchema())
-@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(many=True), 200)
-async def list_data_agreements_crud_didcomm_transactions(request: web.BaseRequest):
-    &#34;&#34;&#34;
-    List data agreements crud didcomm transactions from the wallet
-    &#34;&#34;&#34;
-    # Request context
-    context = request.app[&#34;request_context&#34;]
-
-    # Get query string parameters
-    tag_filter = {}
-
-    # Thread ID
-    if &#34;thread_id&#34; in request.query and request.query[&#34;thread_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
-
-    # Connection ID
-    if &#34;connection_id&#34; in request.query and request.query[&#34;connection_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;connection_id&#34;] = request.query[&#34;connection_id&#34;]
-
-    # Message type
-    if &#34;message_type&#34; in request.query and request.query[&#34;message_type&#34;] != &#34;&#34;:
-        tag_filter[&#34;message_type&#34;] = request.query[&#34;message_type&#34;]
-
-    # Transactions list to be returned
-    transactions = []
-    try:
-
-        # Fetch data agreements crud didcomm transactions from the wallet
-        transactions: typing.List[
-            DataAgreementCRUDDIDCommTransaction
-        ] = await DataAgreementCRUDDIDCommTransaction.query(context, tag_filter)
-
-        # Serialize transactions
-        transactions = [
-            {
-                &#34;da_crud_didcomm_tx_id&#34;: transaction.da_crud_didcomm_tx_id,
-                &#34;thread_id&#34;: transaction.thread_id,
-                &#34;message_type&#34;: transaction.message_type,
-                &#34;messages_list&#34;: [
-                    json.loads(message) if isinstance(message, str) else message
-                    for message in transaction.messages_list
-                ],
-                &#34;connection_id&#34;: transaction.connection_id,
-            }
-            for transaction in transactions
-        ]
-    except (StorageError, BaseModelError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(transactions)
-
-
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Remove data agreement CRUD DIDComm transaction record by ID&#34;,
-    responses={
-        204: {&#34;description&#34;: &#34;Data agreement CRUD DIDComm transaction record removed&#34;}
-    },
-)
-@match_info_schema(DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema())
-async def data_agreement_crud_didcomm_transaction_records_delete_by_id(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;
-    Request handler for removing data agreement CRUD DIDComm transaction record by ID
-    &#34;&#34;&#34;
-
-    # Context
-    context = request.app[&#34;request_context&#34;]
-
-    # Get path parameters
-    da_crud_didcomm_tx_id = request.match_info[&#34;da_crud_didcomm_tx_id&#34;]
-
-    try:
-        # Get the DIDComm transaction record
-        transaction_record = await DataAgreementCRUDDIDCommTransaction.retrieve_by_id(
-            context=context, record_id=da_crud_didcomm_tx_id
-        )
-
-        # Delete the DIDComm transaction record
-        await transaction_record.delete_record(context)
-    except StorageError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(None, status=204)
 
 
 @docs(
@@ -587,24 +401,24 @@ async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
 @response_schema(GenerateDataAgreementQrCodePayloadResponseSchema(), 201)
 async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
     # Get path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
+    template_id = request.match_info[&#34;template_id&#34;]
 
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    multi_use = (
-        False if &#34;multi_use&#34; not in request.query else request.query[&#34;multi_use&#34;]
-    )
+    # Query string params
+    multi_use_flag = clean_and_get_field_from_dict(request.query, &#34;multi_use&#34;)
+    multi_use_flag = str_to_bool(multi_use_flag)
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    manager = V2ADAManager(context)
 
     try:
 
         # Call the function.
-
-        result = await mydata_did_manager.construct_data_agreement_qr_code_payload(
-            data_agreement_id=data_agreement_id, multi_use=multi_use
+        result = await manager.create_data_agreement_qr_code(
+            template_id,
+            multi_use_flag
         )
 
     except ADAManagerError as err:
@@ -618,7 +432,6 @@ async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
     summary=&#34;Query Data Agreement QR code metadata records&#34;,
 )
 @match_info_schema(QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema())
-@querystring_schema(QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema())
 @response_schema(QueryDataAgreementQRCodeMetadataRecordsResponseSchema(many=True))
 async def query_data_agreement_qr_code_metadata_records_handler(
     request: web.BaseRequest,
@@ -626,27 +439,20 @@ async def query_data_agreement_qr_code_metadata_records_handler(
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    tag_filter = {&#34;data_agreement_id&#34;: request.match_info[&#34;data_agreement_id&#34;]}
-
-    # qr id
-    if &#34;qr_id&#34; in request.query and request.query[&#34;qr_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;qr_id&#34;] = request.query[&#34;qr_id&#34;]
+    # Path parameters
+    template_id = request.match_info[&#34;template_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
-
         # Call the function.
-
-        result = await mydata_did_manager.query_data_agreement_qr_metadata_records(
-            query_string=tag_filter
-        )
+        result = await mgr.query_data_agreement_qr_codes(template_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(result)
+    return web.json_response(result._asdict())
 
 
 @docs(
@@ -665,62 +471,20 @@ async def remove_data_agreement_qr_code_metadata_record_handler(
     context = request.app[&#34;request_context&#34;]
 
     # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
+    template_id = request.match_info[&#34;template_id&#34;]
     qr_id = request.match_info[&#34;qr_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
-
         # Call the function.
-
-        await mydata_did_manager.delete_data_agreement_qr_metadata_record(
-            data_agreement_id=data_agreement_id, qr_id=qr_id
-        )
+        await mgr.delete_data_agreement_qr_code(template_id, qr_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({}, status=204)
-
-
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Base64 encode data agreement qr code payload&#34;,
-)
-@match_info_schema(Base64EncodeDataAgreementQrCodeMatchInfoSchema())
-async def base64_encode_data_agreement_qr_code_payload_handler(
-    request: web.BaseRequest,
-):
-
-    # Context.
-    context = request.app[&#34;request_context&#34;]
-
-    # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
-    qr_id = request.match_info[&#34;qr_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-
-    result = {}
-    try:
-
-        # Call the function.
-
-        base64_string = (
-            await mydata_did_manager.base64_encode_data_agreement_qr_code_payload(
-                data_agreement_id=data_agreement_id, qr_id=qr_id
-            )
-        )
-
-        result = {&#34;base64_string&#34;: base64_string}
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(result)
 
 
 @docs(
@@ -741,124 +505,20 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
     qr_id = request.match_info[&#34;qr_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
 
         # Call the function.
-
-        await mydata_did_manager.send_data_agreement_qr_code_workflow_initiate_message(
-            connection_id=connection_id, qr_id=qr_id
-        )
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response({}, status=204)
-
-
-class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema(
-    OpenAPISchema
-):
-    &#34;&#34;&#34;Schema to match URL path parameters in generate firebase dynamic link for
-    data agreement qr endpoint&#34;&#34;&#34;
-
-    # Data agreement identifier.
-    data_agreement_id = fields.Str(
-        description=&#34;Data agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
-
-    # Qr code identifier
-    qr_id = fields.Str(
-        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
-
-
-class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(
-    OpenAPISchema
-):
-    &#34;&#34;&#34;Response schema for generate firebase dynamic link for data agreement qr endpoint&#34;&#34;&#34;
-
-    # Firebase dynamic link
-    firebase_dynamic_link = fields.Str(
-        description=&#34;Firebase dynamic link&#34;,
-        example=&#34;https://example.page.link/UVWXYZuvwxyz12345&#34;,
-    )
-
-
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Generate firebase dynamic link for data agreement qr code payload.&#34;,
-)
-@match_info_schema(
-    GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema()
-)
-@response_schema(
-    GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(), 200
-)
-async def generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;Generate firebase dynamic link for data agreement qr code payload.&#34;&#34;&#34;
-
-    # Context.
-    context = request.app[&#34;request_context&#34;]
-
-    # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
-    qr_id = request.match_info[&#34;qr_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-
-    result = {}
-    try:
-
-        # Call the function.
-
-        firebase_dynamic_link = \
-            await mydata_did_manager.generate_firebase_dynamic_link_for_data_agreement_qr_payload(
-                data_agreement_id=data_agreement_id, qr_id=qr_id
-            )
-
-        result = {&#34;firebase_dynamic_link&#34;: firebase_dynamic_link}
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(result)
-
-
-@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Send read all data agreement template message to remote agent.&#34;,
-    responses={
-        200: {
-            &#34;description&#34;: &#34;Success&#34;,
-        }
-    },
-)
-@match_info_schema(SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema())
-async def send_read_all_data_agreement_template_message_handler(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;Send read all data agreement template message to remote agent.&#34;&#34;&#34;
-
-    context = request.app[&#34;request_context&#34;]
-    connection_id = request.match_info[&#34;connection_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-    try:
-        # Call the function
-        await mydata_did_manager.send_read_all_data_agreement_template_message(
+        await mgr.send_qr_code_initiate_message(
+            qr_id,
             connection_id
         )
 
-    except (ConnectionManagerError, BaseModelError) as err:
+    except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({}, status=200)</code></pre>
+    return web.json_response({}, status=204)</code></pre>
 </details>
 </section>
 <section>
@@ -868,53 +528,6 @@ async def send_read_all_data_agreement_template_message_handler(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.base64_encode_data_agreement_qr_code_payload_handler"><code class="name flex">
-<span>async def <span class="ident">base64_encode_data_agreement_qr_code_payload_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Base64 encode data agreement qr code payload&#34;,
-)
-@match_info_schema(Base64EncodeDataAgreementQrCodeMatchInfoSchema())
-async def base64_encode_data_agreement_qr_code_payload_handler(
-    request: web.BaseRequest,
-):
-
-    # Context.
-    context = request.app[&#34;request_context&#34;]
-
-    # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
-    qr_id = request.match_info[&#34;qr_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-
-    result = {}
-    try:
-
-        # Call the function.
-
-        base64_string = (
-            await mydata_did_manager.base64_encode_data_agreement_qr_code_payload(
-                data_agreement_id=data_agreement_id, qr_id=qr_id
-            )
-        )
-
-        result = {&#34;base64_string&#34;: base64_string}
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(result)</code></pre>
-</details>
-</dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2"><code class="name flex">
 <span>async def <span class="ident">create_and_store_data_agreement_in_wallet_v2</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
 </code></dt>
@@ -964,50 +577,6 @@ async def create_and_store_data_agreement_in_wallet_v2(request: web.BaseRequest)
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(da_record.serialize(), status=201)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.data_agreement_crud_didcomm_transaction_records_delete_by_id"><code class="name flex">
-<span>async def <span class="ident">data_agreement_crud_didcomm_transaction_records_delete_by_id</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Request handler for removing data agreement CRUD DIDComm transaction record by ID</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Remove data agreement CRUD DIDComm transaction record by ID&#34;,
-    responses={
-        204: {&#34;description&#34;: &#34;Data agreement CRUD DIDComm transaction record removed&#34;}
-    },
-)
-@match_info_schema(DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema())
-async def data_agreement_crud_didcomm_transaction_records_delete_by_id(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;
-    Request handler for removing data agreement CRUD DIDComm transaction record by ID
-    &#34;&#34;&#34;
-
-    # Context
-    context = request.app[&#34;request_context&#34;]
-
-    # Get path parameters
-    da_crud_didcomm_tx_id = request.match_info[&#34;da_crud_didcomm_tx_id&#34;]
-
-    try:
-        # Get the DIDComm transaction record
-        transaction_record = await DataAgreementCRUDDIDCommTransaction.retrieve_by_id(
-            context=context, record_id=da_crud_didcomm_tx_id
-        )
-
-        # Delete the DIDComm transaction record
-        await transaction_record.delete_record(context)
-    except StorageError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(None, status=204)</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_da_personal_data_in_wallet"><code class="name flex">
@@ -1113,148 +682,30 @@ async def delete_data_agreement_in_wallet(request: web.BaseRequest):
 @response_schema(GenerateDataAgreementQrCodePayloadResponseSchema(), 201)
 async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
     # Get path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
+    template_id = request.match_info[&#34;template_id&#34;]
 
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    multi_use = (
-        False if &#34;multi_use&#34; not in request.query else request.query[&#34;multi_use&#34;]
-    )
+    # Query string params
+    multi_use_flag = clean_and_get_field_from_dict(request.query, &#34;multi_use&#34;)
+    multi_use_flag = str_to_bool(multi_use_flag)
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    manager = V2ADAManager(context)
 
     try:
 
         # Call the function.
-
-        result = await mydata_did_manager.construct_data_agreement_qr_code_payload(
-            data_agreement_id=data_agreement_id, multi_use=multi_use
+        result = await manager.create_data_agreement_qr_code(
+            template_id,
+            multi_use_flag
         )
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response(result, status=201)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler"><code class="name flex">
-<span>async def <span class="ident">generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Generate firebase dynamic link for data agreement qr code payload.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Generate firebase dynamic link for data agreement qr code payload.&#34;,
-)
-@match_info_schema(
-    GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema()
-)
-@response_schema(
-    GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(), 200
-)
-async def generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;Generate firebase dynamic link for data agreement qr code payload.&#34;&#34;&#34;
-
-    # Context.
-    context = request.app[&#34;request_context&#34;]
-
-    # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
-    qr_id = request.match_info[&#34;qr_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-
-    result = {}
-    try:
-
-        # Call the function.
-
-        firebase_dynamic_link = \
-            await mydata_did_manager.generate_firebase_dynamic_link_for_data_agreement_qr_payload(
-                data_agreement_id=data_agreement_id, qr_id=qr_id
-            )
-
-        result = {&#34;firebase_dynamic_link&#34;: firebase_dynamic_link}
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(result)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.list_data_agreements_crud_didcomm_transactions"><code class="name flex">
-<span>async def <span class="ident">list_data_agreements_crud_didcomm_transactions</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>List data agreements crud didcomm transactions from the wallet</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;List data agreements crud didcomm transactions from the wallet&#34;,
-)
-@querystring_schema(DACRUDDIDCommTransactionRecordListQueryStringSchema())
-@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(many=True), 200)
-async def list_data_agreements_crud_didcomm_transactions(request: web.BaseRequest):
-    &#34;&#34;&#34;
-    List data agreements crud didcomm transactions from the wallet
-    &#34;&#34;&#34;
-    # Request context
-    context = request.app[&#34;request_context&#34;]
-
-    # Get query string parameters
-    tag_filter = {}
-
-    # Thread ID
-    if &#34;thread_id&#34; in request.query and request.query[&#34;thread_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
-
-    # Connection ID
-    if &#34;connection_id&#34; in request.query and request.query[&#34;connection_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;connection_id&#34;] = request.query[&#34;connection_id&#34;]
-
-    # Message type
-    if &#34;message_type&#34; in request.query and request.query[&#34;message_type&#34;] != &#34;&#34;:
-        tag_filter[&#34;message_type&#34;] = request.query[&#34;message_type&#34;]
-
-    # Transactions list to be returned
-    transactions = []
-    try:
-
-        # Fetch data agreements crud didcomm transactions from the wallet
-        transactions: typing.List[
-            DataAgreementCRUDDIDCommTransaction
-        ] = await DataAgreementCRUDDIDCommTransaction.query(context, tag_filter)
-
-        # Serialize transactions
-        transactions = [
-            {
-                &#34;da_crud_didcomm_tx_id&#34;: transaction.da_crud_didcomm_tx_id,
-                &#34;thread_id&#34;: transaction.thread_id,
-                &#34;message_type&#34;: transaction.message_type,
-                &#34;messages_list&#34;: [
-                    json.loads(message) if isinstance(message, str) else message
-                    for message in transaction.messages_list
-                ],
-                &#34;connection_id&#34;: transaction.connection_id,
-            }
-            for transaction in transactions
-        ]
-    except (StorageError, BaseModelError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response(transactions)</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.publish_data_agreement_handler"><code class="name flex">
@@ -1364,7 +815,6 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
     summary=&#34;Query Data Agreement QR code metadata records&#34;,
 )
 @match_info_schema(QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema())
-@querystring_schema(QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema())
 @response_schema(QueryDataAgreementQRCodeMetadataRecordsResponseSchema(many=True))
 async def query_data_agreement_qr_code_metadata_records_handler(
     request: web.BaseRequest,
@@ -1372,27 +822,20 @@ async def query_data_agreement_qr_code_metadata_records_handler(
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    tag_filter = {&#34;data_agreement_id&#34;: request.match_info[&#34;data_agreement_id&#34;]}
-
-    # qr id
-    if &#34;qr_id&#34; in request.query and request.query[&#34;qr_id&#34;] != &#34;&#34;:
-        tag_filter[&#34;qr_id&#34;] = request.query[&#34;qr_id&#34;]
+    # Path parameters
+    template_id = request.match_info[&#34;template_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
-
         # Call the function.
-
-        result = await mydata_did_manager.query_data_agreement_qr_metadata_records(
-            query_string=tag_filter
-        )
+        result = await mgr.query_data_agreement_qr_codes(template_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response(result)</code></pre>
+    return web.json_response(result._asdict())</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_data_agreements_in_wallet"><code class="name flex">
@@ -1480,19 +923,15 @@ async def remove_data_agreement_qr_code_metadata_record_handler(
     context = request.app[&#34;request_context&#34;]
 
     # Fetch path parameters.
-    data_agreement_id = request.match_info[&#34;data_agreement_id&#34;]
+    template_id = request.match_info[&#34;template_id&#34;]
     qr_id = request.match_info[&#34;qr_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
-
         # Call the function.
-
-        await mydata_did_manager.delete_data_agreement_qr_metadata_record(
-            data_agreement_id=data_agreement_id, qr_id=qr_id
-        )
+        await mgr.delete_data_agreement_qr_code(template_id, qr_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -1527,140 +966,20 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
     qr_id = request.match_info[&#34;qr_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
     try:
 
         # Call the function.
-
-        await mydata_did_manager.send_data_agreement_qr_code_workflow_initiate_message(
-            connection_id=connection_id, qr_id=qr_id
+        await mgr.send_qr_code_initiate_message(
+            qr_id,
+            connection_id
         )
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({}, status=204)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_all_data_agreement_template_message_handler"><code class="name flex">
-<span>async def <span class="ident">send_read_all_data_agreement_template_message_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Send read all data agreement template message to remote agent.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Send read all data agreement template message to remote agent.&#34;,
-    responses={
-        200: {
-            &#34;description&#34;: &#34;Success&#34;,
-        }
-    },
-)
-@match_info_schema(SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema())
-async def send_read_all_data_agreement_template_message_handler(
-    request: web.BaseRequest,
-):
-    &#34;&#34;&#34;Send read all data agreement template message to remote agent.&#34;&#34;&#34;
-
-    context = request.app[&#34;request_context&#34;]
-    connection_id = request.match_info[&#34;connection_id&#34;]
-
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-    try:
-        # Call the function
-        await mydata_did_manager.send_read_all_data_agreement_template_message(
-            connection_id
-        )
-
-    except (ConnectionManagerError, BaseModelError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-
-    return web.json_response({}, status=200)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_data_agreement"><code class="name flex">
-<span>async def <span class="ident">send_read_data_agreement</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Send read-data-agreement message to the connection</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@docs(
-    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
-    summary=&#34;Send read data agreement message to Data Controller (remote agent)&#34;,
-)
-@request_schema(ReadDataAgreementRequestSchema())
-@response_schema(DataAgreementCRUDDIDCommTransactionResponseSchema(), 200)
-async def send_read_data_agreement(request: web.BaseRequest):
-    &#34;&#34;&#34;
-    Send read-data-agreement message to the connection
-    &#34;&#34;&#34;
-
-    # Request context
-    context = request.app[&#34;request_context&#34;]
-
-    # Request payload
-    body = await request.json()
-
-    # Data agreement ID
-    data_agreement_id = body.get(&#34;data_agreement_id&#34;)
-    # Connection ID
-    connection_id = body.get(&#34;connection_id&#34;)
-
-    # Check if data agreement ID is provided
-    if not data_agreement_id:
-        raise web.HTTPBadRequest(reason=&#34;Data Agreement ID missing&#34;)
-    # Check if connection ID is provided
-    if not connection_id:
-        raise web.HTTPBadRequest(reason=&#34;Connection ID missing&#34;)
-
-    # API Response
-    result = {}
-
-    try:
-        # Fetch connection record
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            context, connection_id
-        )
-
-        # Check if connection is ready
-        if not connection_record.is_ready:
-            raise web.HTTPForbidden(
-                reason=f&#34;ADA registry connection {connection_id} not ready&#34;
-            )
-
-        # Initialise MyData DID Manager
-        mydata_did_manager = ADAManager(context=context)
-        # Send read-data-agreement message
-        transaction_record: DataAgreementCRUDDIDCommTransaction = (
-            await mydata_did_manager.send_read_data_agreement_message(
-                connection_record=connection_record, data_agreement_id=data_agreement_id
-            )
-        )
-
-        result = {
-            &#34;da_crud_didcomm_tx_id&#34;: transaction_record.da_crud_didcomm_tx_id,
-            &#34;thread_id&#34;: transaction_record.thread_id,
-            &#34;message_type&#34;: transaction_record.message_type,
-            &#34;messages_list&#34;: [
-                json.loads(message) if isinstance(message, str) else message
-                for message in transaction_record.messages_list
-            ],
-            &#34;connection_id&#34;: transaction_record.connection_id,
-        }
-
-    except StorageNotFoundError as err:
-        raise web.HTTPNotFound(reason=err.roll_up) from err
-
-    return web.json_response(result)</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_da_personal_data_in_wallet"><code class="name flex">
@@ -1763,85 +1082,6 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
 </dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema"><code class="flex name class">
-<span>class <span class="ident">GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Schema to match URL path parameters in generate firebase dynamic link for
-data agreement qr endpoint</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema(
-    OpenAPISchema
-):
-    &#34;&#34;&#34;Schema to match URL path parameters in generate firebase dynamic link for
-    data agreement qr endpoint&#34;&#34;&#34;
-
-    # Data agreement identifier.
-    data_agreement_id = fields.Str(
-        description=&#34;Data agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
-
-    # Qr code identifier
-    qr_id = fields.Str(
-        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
-<li>marshmallow.schema.Schema</li>
-<li>marshmallow.base.SchemaABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema"><code class="flex name class">
-<span>class <span class="ident">GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Response schema for generate firebase dynamic link for data agreement qr endpoint</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema(
-    OpenAPISchema
-):
-    &#34;&#34;&#34;Response schema for generate firebase dynamic link for data agreement qr endpoint&#34;&#34;&#34;
-
-    # Firebase dynamic link
-    firebase_dynamic_link = fields.Str(
-        description=&#34;Firebase dynamic link&#34;,
-        example=&#34;https://example.page.link/UVWXYZuvwxyz12345&#34;,
-    )</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
-<li>marshmallow.schema.Schema</li>
-<li>marshmallow.base.SchemaABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -1857,40 +1097,18 @@ data agreement qr endpoint</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.base64_encode_data_agreement_qr_code_payload_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.base64_encode_data_agreement_qr_code_payload_handler">base64_encode_data_agreement_qr_code_payload_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2">create_and_store_data_agreement_in_wallet_v2</a></code></li>
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.data_agreement_crud_didcomm_transaction_records_delete_by_id" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.data_agreement_crud_didcomm_transaction_records_delete_by_id">data_agreement_crud_didcomm_transaction_records_delete_by_id</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_da_personal_data_in_wallet">delete_da_personal_data_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_data_agreement_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_data_agreement_in_wallet">delete_data_agreement_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_data_agreement_qr_code_payload" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_data_agreement_qr_code_payload">generate_data_agreement_qr_code_payload</a></code></li>
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler">generate_firebase_dynamic_link_for_data_agreement_qr_code_payload_handler</a></code></li>
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.list_data_agreements_crud_didcomm_transactions" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.list_data_agreements_crud_didcomm_transactions">list_data_agreements_crud_didcomm_transactions</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.publish_data_agreement_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.publish_data_agreement_handler">publish_data_agreement_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_da_personal_data_in_wallet">query_da_personal_data_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_data_agreement_qr_code_metadata_records_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_data_agreement_qr_code_metadata_records_handler">query_data_agreement_qr_code_metadata_records_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_data_agreements_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_data_agreements_in_wallet">query_data_agreements_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.remove_data_agreement_qr_code_metadata_record_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.remove_data_agreement_qr_code_metadata_record_handler">remove_data_agreement_qr_code_metadata_record_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_data_agreements_qr_code_workflow_initiate_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_data_agreements_qr_code_workflow_initiate_handler">send_data_agreements_qr_code_workflow_initiate_handler</a></code></li>
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_all_data_agreement_template_message_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_all_data_agreement_template_message_handler">send_read_all_data_agreement_template_message_handler</a></code></li>
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_data_agreement" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_read_data_agreement">send_read_data_agreement</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_da_personal_data_in_wallet">update_da_personal_data_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_data_agreement_in_wallet_v2" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_data_agreement_in_wallet_v2">update_data_agreement_in_wallet_v2</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema">GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema</a></code></h4>
-<ul class="">
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadMatchInfoSchema.opts">opts</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema">GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema</a></code></h4>
-<ul class="">
-<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema.opts" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.GenerateFirebaseDynamicLinkForDataAgreementQRCodePayloadResponseSchema.opts">opts</a></code></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

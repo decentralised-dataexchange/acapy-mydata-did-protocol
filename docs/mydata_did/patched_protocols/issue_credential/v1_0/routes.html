@@ -66,7 +66,7 @@ from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
 from mydata_did.v1_0.messages.problem_report import DataAgreementNegotiationProblemReportReason
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.agreements.da.v1_0.records.da_template_record import DataAgreementTemplateRecord
-
+from dexa_sdk.utils import paginate_records, clean_and_get_field_from_dict
 from .manager import CredentialManager, CredentialManagerError
 from .message_types import SPEC_URI
 from .messages.credential_proposal import CredentialProposal
@@ -121,38 +121,14 @@ class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
         ),
     )
 
-    # Data Agreement identifier
-    data_agreement_id = fields.Str(
-        required=False,
-        description=&#34;Data agreement identifier&#34;,
-        example=UUIDFour.EXAMPLE,
-    )
-
     # Data Agreement template identifier
-    data_agreement_template_id = fields.Str(
-        required=False,
-        description=&#34;Data agreement template identifier&#34;,
-        example=UUIDFour.EXAMPLE,
-    )
+    template_id = fields.Str(required=False)
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description=&#34;Comma separated fields to be included in the response.&#34;,
-        example=&#34;connection_id,state,presentation_exchange_id&#34;,
-    )
+    # Page
+    page = fields.Int(required=False)
 
-    page = fields.Int(
-        required=False,
-        description=&#34;Page number&#34;,
-        example=1,
-    )
-
-    page_size = fields.Int(
-        required=False,
-        description=&#34;Page size&#34;,
-        example=10,
-    )
+    # Page size
+    page_size = fields.Int(required=False)
 
 
 class V10CredentialExchangeListResultSchema(OpenAPISchema):
@@ -446,17 +422,28 @@ async def credential_exchange_list(request: web.BaseRequest):
         tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
     post_filter = {
         k: request.query[k]
-        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;)
+        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;, &#34;template_id&#34;)
         if request.query.get(k, &#34;&#34;) != &#34;&#34;
     }
 
+    page = clean_and_get_field_from_dict(request.query, &#34;page&#34;)
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, &#34;page_size&#34;)
+    page_size = int(page_size) if page_size is not None else page_size
+
     try:
         records = await V10CredentialExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Pagination result.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({&#34;results&#34;: results})
+    return web.json_response(pagination_result._asdict())
 
 
 @docs(tags=[&#34;issue-credential&#34;], summary=&#34;Fetch a single credential exchange record&#34;)
@@ -1009,6 +996,7 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
     )
 
     cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+    cred_ex_record.template_id = template_id
     await cred_ex_record.save(context)
 
     result = cred_ex_record.serialize()
@@ -1812,17 +1800,28 @@ async def credential_exchange_list(request: web.BaseRequest):
         tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
     post_filter = {
         k: request.query[k]
-        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;)
+        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;, &#34;template_id&#34;)
         if request.query.get(k, &#34;&#34;) != &#34;&#34;
     }
 
+    page = clean_and_get_field_from_dict(request.query, &#34;page&#34;)
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, &#34;page_size&#34;)
+    page_size = int(page_size) if page_size is not None else page_size
+
     try:
         records = await V10CredentialExchange.query(context, tag_filter, post_filter)
-        results = [record.serialize() for record in records]
+
+        # Pagination result.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
     except (StorageError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({&#34;results&#34;: results})</code></pre>
+    return web.json_response(pagination_result._asdict())</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_problem_report"><code class="name flex">
@@ -2334,6 +2333,7 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
     )
 
     cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+    cred_ex_record.template_id = template_id
     await cred_ex_record.save(context)
 
     result = cred_ex_record.serialize()
@@ -3046,38 +3046,14 @@ async def credential_exchange_store(request: web.BaseRequest):
         ),
     )
 
-    # Data Agreement identifier
-    data_agreement_id = fields.Str(
-        required=False,
-        description=&#34;Data agreement identifier&#34;,
-        example=UUIDFour.EXAMPLE,
-    )
-
     # Data Agreement template identifier
-    data_agreement_template_id = fields.Str(
-        required=False,
-        description=&#34;Data agreement template identifier&#34;,
-        example=UUIDFour.EXAMPLE,
-    )
+    template_id = fields.Str(required=False)
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description=&#34;Comma separated fields to be included in the response.&#34;,
-        example=&#34;connection_id,state,presentation_exchange_id&#34;,
-    )
+    # Page
+    page = fields.Int(required=False)
 
-    page = fields.Int(
-        required=False,
-        description=&#34;Page number&#34;,
-        example=1,
-    )
-
-    page_size = fields.Int(
-        required=False,
-        description=&#34;Page size&#34;,
-        example=10,
-    )</code></pre>
+    # Page size
+    page_size = fields.Int(required=False)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

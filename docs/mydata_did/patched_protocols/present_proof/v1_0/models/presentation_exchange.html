@@ -85,6 +85,7 @@ class V10PresentationExchange(BaseExchangeRecord):
         auto_present: bool = False,
         error_msg: str = None,
         trace: bool = False,
+        template_id: str = None,
         **kwargs
     ):
         &#34;&#34;&#34;Initialize a new PresentationExchange.&#34;&#34;&#34;
@@ -102,6 +103,7 @@ class V10PresentationExchange(BaseExchangeRecord):
         self.auto_present = auto_present
         self.error_msg = error_msg
         self.trace = trace
+        self.template_id = template_id
 
     @property
     def presentation_exchange_id(self) -&gt; str:
@@ -126,6 +128,7 @@ class V10PresentationExchange(BaseExchangeRecord):
                 &#34;error_msg&#34;,
                 &#34;verified&#34;,
                 &#34;trace&#34;,
+                &#34;template_id&#34;
             )
         }
 
@@ -200,7 +203,8 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
     )
     error_msg = fields.Str(
         required=False, description=&#34;Error message&#34;, example=&#34;Invalid structure&#34;
-    )</code></pre>
+    )
+    template_id = fields.Str(required=False)</code></pre>
 </details>
 </section>
 <section>
@@ -214,7 +218,7 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
 <dl>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.models.presentation_exchange.V10PresentationExchange"><code class="flex name class">
 <span>class <span class="ident">V10PresentationExchange</span></span>
-<span>(</span><span>*, presentation_exchange_id: str = None, connection_id: str = None, thread_id: str = None, initiator: str = None, role: str = None, state: str = None, presentation_proposal_dict: dict = None, presentation_request: dict = None, presentation_request_dict: dict = None, presentation: dict = None, verified: str = None, auto_present: bool = False, error_msg: str = None, trace: bool = False, **kwargs)</span>
+<span>(</span><span>*, presentation_exchange_id: str = None, connection_id: str = None, thread_id: str = None, initiator: str = None, role: str = None, state: str = None, presentation_proposal_dict: dict = None, presentation_request: dict = None, presentation_request_dict: dict = None, presentation: dict = None, verified: str = None, auto_present: bool = False, error_msg: str = None, trace: bool = False, template_id: str = None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an Aries#0037 v1.0 presentation exchange.</p>
@@ -268,6 +272,7 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
         auto_present: bool = False,
         error_msg: str = None,
         trace: bool = False,
+        template_id: str = None,
         **kwargs
     ):
         &#34;&#34;&#34;Initialize a new PresentationExchange.&#34;&#34;&#34;
@@ -285,6 +290,7 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
         self.auto_present = auto_present
         self.error_msg = error_msg
         self.trace = trace
+        self.template_id = template_id
 
     @property
     def presentation_exchange_id(self) -&gt; str:
@@ -309,6 +315,7 @@ class V10PresentationExchangeSchema(BaseExchangeSchema):
                 &#34;error_msg&#34;,
                 &#34;verified&#34;,
                 &#34;trace&#34;,
+                &#34;template_id&#34;
             )
         }
 
@@ -434,6 +441,7 @@ def record_value(self) -&gt; dict:
             &#34;error_msg&#34;,
             &#34;verified&#34;,
             &#34;trace&#34;,
+            &#34;template_id&#34;
         )
     }</code></pre>
 </details>
@@ -522,7 +530,8 @@ def record_value(self) -&gt; dict:
     )
     error_msg = fields.Str(
         required=False, description=&#34;Error message&#34;, example=&#34;Invalid structure&#34;
-    )</code></pre>
+    )
+    template_id = fields.Str(required=False)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

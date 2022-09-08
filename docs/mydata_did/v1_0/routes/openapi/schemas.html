@@ -539,11 +539,7 @@ class DataAgreementQRCodeMatchInfoSchema(OpenAPISchema):
     Schema for data agreement QR code match info
     &#34;&#34;&#34;
 
-    data_agreement_id = fields.Str(
-        description=&#34;Data agreement identifier&#34;,
-        required=True,
-        example=UUIDFour.EXAMPLE,
-    )
+    template_id = fields.Str(required=True)
 
 
 class DataAgreementQRCodeInvitationSchema(OpenAPISchema):
@@ -706,8 +702,8 @@ class DeleteDaPersonalDataInWalletMatchInfoSchema(OpenAPISchema):
 class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
     &#34;&#34;&#34;Schema to validate path parameters for query data agreement qr code metadata records.&#34;&#34;&#34;
 
-    data_agreement_id = fields.Str(
-        description=&#34;Data Agreement identifier&#34;,
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;,
         example=UUIDFour.EXAMPLE,
         required=False,
     )
@@ -744,14 +740,8 @@ class QueryDataAgreementQRCodeMetadataRecordsResponseSchema(OpenAPISchema):
 
 
 class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
-
-    data_agreement_id = fields.Str(
-        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
-
-    qr_id = fields.Str(
-        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
+    template_id = fields.Str()
+    qr_id = fields.Str()
 
 
 class Base64EncodeDataAgreementQrCodeMatchInfoSchema(OpenAPISchema):
@@ -964,7 +954,20 @@ class ConnectionListSchema(OpenAPISchema):
     results = fields.List(
         fields.Nested(ConnectionRecordSchema()),
         description=&#34;List of connection records&#34;,
-    )</code></pre>
+    )
+
+
+class UpdateControllerDetailsRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Update controller details request schema&#34;&#34;&#34;
+    organisation_did = fields.Str(required=False)
+    organisation_name = fields.Str(required=False)
+    cover_image_url = fields.Str(required=False)
+    logo_image_url = fields.Str(required=False)
+    location = fields.Str(required=False)
+    organisation_type = fields.Str(required=False)
+    description = fields.Str(required=False)
+    policy_url = fields.Str(required=False)
+    eula_url = fields.Str(required=False)</code></pre>
 </details>
 </section>
 <section>
@@ -1890,11 +1893,7 @@ def validate_attribute_name(self, attribute_name):
     Schema for data agreement QR code match info
     &#34;&#34;&#34;
 
-    data_agreement_id = fields.Str(
-        description=&#34;Data agreement identifier&#34;,
-        required=True,
-        example=UUIDFour.EXAMPLE,
-    )</code></pre>
+    template_id = fields.Str(required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2756,8 +2755,8 @@ dynamic link for connection invitation handler</p></div>
 <pre><code class="python">class QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema(OpenAPISchema):
     &#34;&#34;&#34;Schema to validate path parameters for query data agreement qr code metadata records.&#34;&#34;&#34;
 
-    data_agreement_id = fields.Str(
-        description=&#34;Data Agreement identifier&#34;,
+    template_id = fields.Str(
+        description=&#34;Template identifier&#34;,
         example=UUIDFour.EXAMPLE,
         required=False,
     )</code></pre>
@@ -2854,14 +2853,8 @@ dynamic link for connection invitation handler</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema(OpenAPISchema):
-
-    data_agreement_id = fields.Str(
-        description=&#34;Data Agreement identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )
-
-    qr_id = fields.Str(
-        description=&#34;QR code identifier&#34;, example=UUIDFour.EXAMPLE, required=True
-    )</code></pre>
+    template_id = fields.Str()
+    qr_id = fields.Str()</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -3096,6 +3089,42 @@ data agreement template message handler</p></div>
 <h3>Class variables</h3>
 <dl>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema"><code class="flex name class">
+<span>class <span class="ident">UpdateControllerDetailsRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update controller details request schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UpdateControllerDetailsRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Update controller details request schema&#34;&#34;&#34;
+    organisation_did = fields.Str(required=False)
+    organisation_name = fields.Str(required=False)
+    cover_image_url = fields.Str(required=False)
+    logo_image_url = fields.Str(required=False)
+    location = fields.Str(required=False)
+    organisation_type = fields.Str(required=False)
+    description = fields.Str(required=False)
+    policy_url = fields.Str(required=False)
+    eula_url = fields.Str(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -3679,6 +3708,12 @@ data agreement template message handler</p></div>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema">SendReadDIDMessageMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema">UpdateControllerDetailsRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema.opts">opts</a></code></li>
 </ul>
 </li>
 <li>

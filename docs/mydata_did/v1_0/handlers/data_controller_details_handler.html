@@ -26,20 +26,18 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
+<pre><code class="python">import json
+from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+from dexa_sdk.managers.ada_manager import V2ADAManager
 from ..messages.data_controller_details import DataControllerDetailsMessage
-from ..manager import ADAManager
-
-import json
 
 
 class DataControllerDetailsHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for data-controller/1.0/details message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for controller details message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for data-controller/1.0/details message.
+        Handle function for controller details message.
         &#34;&#34;&#34;
 
         # Assert if received message is of type DataControllerDetailsMessage
@@ -51,13 +49,12 @@ class DataControllerDetailsHandler(BaseHandler):
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_data_controller_details_message(
-            data_controller_details_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_data_controller_details_message(
+            context.message,
+            context.message_receipt,
         )</code></pre>
 </details>
 </section>
@@ -74,18 +71,18 @@ class DataControllerDetailsHandler(BaseHandler):
 <span>class <span class="ident">DataControllerDetailsHandler</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handle for data-controller/1.0/details message</p>
+<div class="desc"><p>Handle for controller details message</p>
 <p>Initialize a BaseHandler instance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataControllerDetailsHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for data-controller/1.0/details message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for controller details message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for data-controller/1.0/details message.
+        Handle function for controller details message.
         &#34;&#34;&#34;
 
         # Assert if received message is of type DataControllerDetailsMessage
@@ -97,13 +94,12 @@ class DataControllerDetailsHandler(BaseHandler):
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_data_controller_details_message(
-            data_controller_details_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_data_controller_details_message(
+            context.message,
+            context.message_receipt,
         )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -117,14 +113,14 @@ class DataControllerDetailsHandler(BaseHandler):
 <span>async def <span class="ident">handle</span></span>(<span>self, context: aries_cloudagent.messaging.request_context.RequestContext, responder: aries_cloudagent.messaging.responder.BaseResponder)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message handler logic for data-controller/1.0/details message.</p></div>
+<div class="desc"><p>Handle function for controller details message.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def handle(self, context: RequestContext, responder: BaseResponder):
     &#34;&#34;&#34;
-    Message handler logic for data-controller/1.0/details message.
+    Handle function for controller details message.
     &#34;&#34;&#34;
 
     # Assert if received message is of type DataControllerDetailsMessage
@@ -136,13 +132,12 @@ class DataControllerDetailsHandler(BaseHandler):
     )
 
     # Initialize ADA manager
-    ada_manager = ADAManager(context)
+    mgr = V2ADAManager(context)
 
     # Call the function
-
-    await ada_manager.process_data_controller_details_message(
-        data_controller_details_message=context.message,
-        receipt=context.message_receipt,
+    await mgr.process_data_controller_details_message(
+        context.message,
+        context.message_receipt,
     )</code></pre>
 </details>
 </dd>

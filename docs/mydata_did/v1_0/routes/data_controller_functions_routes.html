@@ -30,15 +30,16 @@
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
+    request_schema
 )
-from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.protocols.connections.v1_0.manager import (
-    ConnectionManagerError,
-)
-from ..manager import ADAManager, ADAManagerError
+from dexa_sdk.managers.ada_manager import V2ADAManager
 from ..routes.maps.tag_maps import (
     TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL,
 )
+from .openapi.schemas import (
+    UpdateControllerDetailsRequestSchema
+)
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,17 +62,43 @@ async def send_data_controller_details_message_handler(request: web.BaseRequest)
     connection_id = request.match_info[&#34;connection_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-    try:
-        # Call the function
-        await mydata_did_manager.send_data_controller_details_message(connection_id)
+    mgr = V2ADAManager(context=context)
 
-    except (ConnectionManagerError, BaseModelError, ADAManagerError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-    except Exception as err:
-        raise web.HTTPInternalServerError(reason=str(err)) from err
+    # Call the function
+    await mgr.send_data_controller_details_message(connection_id)
 
-    return web.json_response({}, status=200)</code></pre>
+    return web.json_response({}, status=200)
+
+
+@docs(
+    tags=[TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL],
+    summary=&#34;Update data controller details&#34;,
+)
+@request_schema(UpdateControllerDetailsRequestSchema())
+async def update_data_controller_details(request: web.BaseRequest):
+    &#34;&#34;&#34;Update data controller details&#34;&#34;&#34;
+    # Request context
+    context = request.app[&#34;request_context&#34;]
+
+    # Request body
+    controller_details = await request.json()
+
+    # Initialise MyData DID Manager.
+    mgr = V2ADAManager(context=context)
+
+    # Call the function
+    record = await mgr.update_controller_details(
+        organisation_name=controller_details.get(&#34;organisation_name&#34;),
+        cover_image_url=controller_details.get(&#34;cover_image_url&#34;),
+        logo_image_url=controller_details.get(&#34;logo_image_url&#34;),
+        location=controller_details.get(&#34;location&#34;),
+        organisation_type=controller_details.get(&#34;organisation_type&#34;),
+        description=controller_details.get(&#34;description&#34;),
+        policy_url=controller_details.get(&#34;policy_url&#34;),
+        eula_url=controller_details.get(&#34;eula_url&#34;)
+    )
+
+    return web.json_response(record.serialize())</code></pre>
 </details>
 </section>
 <section>
@@ -106,17 +133,52 @@ async def send_data_controller_details_message_handler(request: web.BaseRequest)
     connection_id = request.match_info[&#34;connection_id&#34;]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-    try:
-        # Call the function
-        await mydata_did_manager.send_data_controller_details_message(connection_id)
+    mgr = V2ADAManager(context=context)
 
-    except (ConnectionManagerError, BaseModelError, ADAManagerError) as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
-    except Exception as err:
-        raise web.HTTPInternalServerError(reason=str(err)) from err
+    # Call the function
+    await mgr.send_data_controller_details_message(connection_id)
 
     return web.json_response({}, status=200)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.data_controller_functions_routes.update_data_controller_details"><code class="name flex">
+<span>async def <span class="ident">update_data_controller_details</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update data controller details</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL],
+    summary=&#34;Update data controller details&#34;,
+)
+@request_schema(UpdateControllerDetailsRequestSchema())
+async def update_data_controller_details(request: web.BaseRequest):
+    &#34;&#34;&#34;Update data controller details&#34;&#34;&#34;
+    # Request context
+    context = request.app[&#34;request_context&#34;]
+
+    # Request body
+    controller_details = await request.json()
+
+    # Initialise MyData DID Manager.
+    mgr = V2ADAManager(context=context)
+
+    # Call the function
+    record = await mgr.update_controller_details(
+        organisation_name=controller_details.get(&#34;organisation_name&#34;),
+        cover_image_url=controller_details.get(&#34;cover_image_url&#34;),
+        logo_image_url=controller_details.get(&#34;logo_image_url&#34;),
+        location=controller_details.get(&#34;location&#34;),
+        organisation_type=controller_details.get(&#34;organisation_type&#34;),
+        description=controller_details.get(&#34;description&#34;),
+        policy_url=controller_details.get(&#34;policy_url&#34;),
+        eula_url=controller_details.get(&#34;eula_url&#34;)
+    )
+
+    return web.json_response(record.serialize())</code></pre>
 </details>
 </dd>
 </dl>
@@ -138,6 +200,7 @@ async def send_data_controller_details_message_handler(request: web.BaseRequest)
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.data_controller_functions_routes.send_data_controller_details_message_handler" href="#mydata_did.v1_0.routes.data_controller_functions_routes.send_data_controller_details_message_handler">send_data_controller_details_message_handler</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.data_controller_functions_routes.update_data_controller_details" href="#mydata_did.v1_0.routes.data_controller_functions_routes.update_data_controller_details">update_data_controller_details</a></code></li>
 </ul>
 </li>
 </ul>

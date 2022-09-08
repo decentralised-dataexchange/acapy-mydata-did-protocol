@@ -27,16 +27,15 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
-from marshmallow import EXCLUDE, fields
-
+from marshmallow import EXCLUDE
 from ..message_types import DATA_CONTROLLER_DETAILS, PROTOCOL_PACKAGE
-from ..utils.regex import MYDATA_DID
 
 # Handler class for data controller details
 HANDLER_CLASS = (
     f&#34;{PROTOCOL_PACKAGE}.handlers&#34;
     &#34;.data_controller_details_handler.DataControllerDetailsHandler&#34;
 )
+
 
 class DataControllerDetailsMessage(AgentMessage):
     &#34;&#34;&#34;
@@ -53,27 +52,11 @@ class DataControllerDetailsMessage(AgentMessage):
         # Message schema class
         schema_class = &#34;DataControllerDetailsMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        from_did,
-        to_did,
-        created_time,
-        **kwargs
-    ):
+    def __init__(self, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataControllerDetailsMessage message instance.
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-
-        # Sender DID
-        self.from_did = from_did
-
-        # Recipient DID
-        self.to_did = to_did
-
-        # The time the message was created
-        self.created_time = created_time
 
 
 class DataControllerDetailsMessageSchema(AgentMessageSchema):
@@ -86,16 +69,7 @@ class DataControllerDetailsMessageSchema(AgentMessageSchema):
         model_class = DataControllerDetailsMessage
 
         # Unknown fields to exclude from the schema (handled by marshmallow)
-        unknown = EXCLUDE
-
-    # From DID
-    from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
-
-    # To DID
-    to_did = fields.Str(data_key=&#34;to&#34;, **MYDATA_DID)
-
-    # Created time
-    created_time = fields.Str(data_key=&#34;created_time&#34;)</code></pre>
+        unknown = EXCLUDE</code></pre>
 </details>
 </section>
 <section>
@@ -109,7 +83,7 @@ class DataControllerDetailsMessageSchema(AgentMessageSchema):
 <dl>
 <dt id="mydata_did.v1_0.messages.data_controller_details.DataControllerDetailsMessage"><code class="flex name class">
 <span>class <span class="ident">DataControllerDetailsMessage</span></span>
-<span>(</span><span>*, from_did, to_did, created_time, **kwargs)</span>
+<span>(</span><span>**kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Message class for data controller details message.</p>
@@ -133,27 +107,11 @@ class DataControllerDetailsMessageSchema(AgentMessageSchema):
         # Message schema class
         schema_class = &#34;DataControllerDetailsMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        from_did,
-        to_did,
-        created_time,
-        **kwargs
-    ):
+    def __init__(self, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataControllerDetailsMessage message instance.
         &#34;&#34;&#34;
-        super().__init__(**kwargs)
-
-        # Sender DID
-        self.from_did = from_did
-
-        # Recipient DID
-        self.to_did = to_did
-
-        # The time the message was created
-        self.created_time = created_time</code></pre>
+        super().__init__(**kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -195,16 +153,7 @@ class DataControllerDetailsMessageSchema(AgentMessageSchema):
         model_class = DataControllerDetailsMessage
 
         # Unknown fields to exclude from the schema (handled by marshmallow)
-        unknown = EXCLUDE
-
-    # From DID
-    from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
-
-    # To DID
-    to_did = fields.Str(data_key=&#34;to&#34;, **MYDATA_DID)
-
-    # Created time
-    created_time = fields.Str(data_key=&#34;created_time&#34;)</code></pre>
+        unknown = EXCLUDE</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
