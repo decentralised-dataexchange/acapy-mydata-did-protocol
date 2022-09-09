@@ -719,57 +719,6 @@ class ADAManager:
 
         return data_controller
 
-    async def process_existing_connections_message(self, existing_connections_message: ExistingConnectionsMessage, receipt: MessageReceipt) -> None:
-        """Processing connections/1.0/exists message."""
-
-        # Storage instance
-        storage = await self.context.inject(BaseStorage)
-
-        invitation_key = receipt.recipient_verkey
-
-        # fetch current connection record using invitation key
-        connection = await ConnectionRecord.retrieve_by_invitation_key(
-            self.context, invitation_key)
-
-        # Fetch existing connections record for the current connection.
-
-        existing_connection = await storage.search_records(
-            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-            tag_query={
-                "connection_id": connection.connection_id
-            }
-        ).fetch_all()
-
-        if existing_connection:
-            # delete existing connections record
-            existing_connection = existing_connection[0]
-            await storage.delete_record(existing_connection)
-
-        existing_connection = None
-
-        # fetch the existing connection by did
-        existing_connection = await ConnectionRecord.retrieve_by_did(
-            self.context, their_did=None, my_did=existing_connections_message.body.theirdid)
-
-        # create existing_connections record with connection_id, did, connection_status available
-        record_tags = {
-            "existing_connection_id": existing_connection.connection_id,
-            "my_did": existing_connection.my_did,
-            "connection_status": "available",
-            "connection_id": connection.connection_id
-        }
-
-        record = StorageRecord(
-            self.RECORD_TYPE_EXISTING_CONNECTION,
-            connection.connection_id,
-            record_tags
-        )
-        await storage.add_record(record)
-
-        # updating the current connection invitation status to inactive
-        connection.state = ConnectionRecord.STATE_INACTIVE
-        await connection.save(context=self.context)
-
     async def send_existing_connections_message(self, theirdid: str, connection_id: str) -> None:
         """Send existing connections message."""
 

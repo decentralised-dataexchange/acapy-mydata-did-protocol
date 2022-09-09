@@ -1,6 +1,5 @@
 from marshmallow import fields
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
 
 
 class ExistingConnectionsBody(BaseModel):
@@ -23,6 +22,7 @@ class ExistingConnectionsBody(BaseModel):
 
         # Set attributes
         self.theirdid = theirdid
+
 
 class ExistingConnectionsBodySchema(BaseModelSchema):
     """Existing connections message body schema"""

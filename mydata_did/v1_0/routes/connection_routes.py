@@ -1,5 +1,4 @@
 import json
-import typing
 import uuid
 import logging
 from aiohttp import web
@@ -19,11 +18,9 @@ from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManagerError,
 )
 from dexa_sdk.managers.ada_manager import V2ADAManager
-from dexa_sdk.data_controller.records.connection_controller_details_record import (
-    ConnectionControllerDetailsRecord
-)
-from dexa_sdk.utils import clean_and_get_field_from_dict, paginate
-from ..manager import ADAManager, ADAManagerError
+from dexa_sdk.utils import clean_and_get_field_from_dict
+from ..utils.util import str_to_bool
+from ..manager import ADAManagerError
 from .openapi import (
     V2CreateInvitationQueryStringSchema,
     V2InvitationResultSchema,
@@ -151,21 +148,24 @@ async def generate_firebase_dynamic_link_for_connection_invitation_handler(
 
     """
 
+    # Request context.
     context = request.app["request_context"]
+
+    # Path params.
     conn_id = request.match_info["conn_id"]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
     try:
         # Call the function
-        firebase_dynamic_link = await mydata_did_manager.generate_firebase_dynamic_link_for_connection_invitation(
+        res = await mgr.create_connection_qr_code(
             conn_id
         )
 
     except (ConnectionManagerError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({"firebase_dynamic_link": firebase_dynamic_link})
+    return web.json_response(res)
 
 
 @docs(
@@ -187,13 +187,16 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 
     # Fetch request body
     body = await request.json()
+    theirdid = body.get("theirdid")
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
+
     try:
         # Call the function
-        await mydata_did_manager.send_existing_connections_message(
-            body["theirdid"], conn_id
+        await mgr.send_existing_connections_message(
+            theirdid,
+            conn_id
         )
 
     except ADAManagerError as err:
@@ -211,18 +214,20 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 async def get_existing_connections_handler(request: web.BaseRequest):
     """Fetch existing connection details if any for a current connection."""
 
+    # Request context
     context = request.app["request_context"]
+
+    # Path params.
     conn_id = request.match_info["conn_id"]
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
-
-    result = {}
+    mgr = V2ADAManager(context=context)
 
     # Call the function
-    result = await mydata_did_manager.fetch_existing_connections_record_for_current_connection(
+    result = await mgr.get_existing_connection_record_for_new_connection_id(
         conn_id
     )
+    result = result.serialize() if result else {}
 
     return web.json_response(result)
 
@@ -262,6 +267,7 @@ async def connections_list_v2(request: web.BaseRequest):
         "my_did",
         "their_did",
         "request_id",
+        "invitation_key"
     ):
         if param_name in request.query and request.query[param_name] != "":
             tag_filter[param_name] = request.query[param_name]
@@ -281,36 +287,19 @@ async def connections_list_v2(request: web.BaseRequest):
     page_size = clean_and_get_field_from_dict(request.query, "page_size")
     page_size = int(page_size) if page_size is not None else page_size
 
-    records: typing.List[ConnectionRecord] = await ConnectionRecord.query(
-        context,
+    # Category
+    org_flag = clean_and_get_field_from_dict(request.query, "org_flag")
+    marketplace_flag = clean_and_get_field_from_dict(request.query, "marketplace_flag")
+
+    mgr = V2ADAManager(context)
+
+    pagination_result = await mgr.query_connections_and_categorise_results(
         tag_filter,
-        post_filter
+        post_filter,
+        page if page else 1,
+        page_size if page_size else 10,
+        str_to_bool(org_flag) if org_flag else org_flag,
+        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag
     )
-    records = sorted(
-        records,
-        key=lambda k: k.created_at,
-        reverse=True
-    )
-
-    res = []
-    for record in records:
-        tag_filter = {"connection_id": record.connection_id}
-
-        controller_details: typing.List[ConnectionControllerDetailsRecord] = \
-            await ConnectionControllerDetailsRecord.query(
-            context,
-            tag_filter
-        )
-        connection = record.serialize()
-        if controller_details:
-            connection.update({
-                "controller_details": controller_details[0].controller_details
-            })
-        else:
-            connection.update({"controller_details": {}})
-
-        res.append(connection)
-
-    pagination_result = paginate(res, page if page else 1, page_size if page_size else 10)
 
     return web.json_response(pagination_result._asdict())

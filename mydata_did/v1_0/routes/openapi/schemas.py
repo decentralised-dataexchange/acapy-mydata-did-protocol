@@ -900,24 +900,25 @@ class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
         example="Point of contact",
     )
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description="Comma separated fields to be included in the response.",
-        example="connection_id,state,presentation_exchange_id",
-    )
-
+    # Page
     page = fields.Int(
         required=False,
         description="Page number",
         example=1,
     )
 
+    # Page size
     page_size = fields.Int(
         required=False,
         description="Page size",
         example=10,
     )
+
+    # Org flag
+    org_flag = fields.Bool(required=False)
+
+    # Marketplace flag
+    marketplace_flag = fields.Bool(required=False)
 
 
 class ConnectionListSchema(OpenAPISchema):
