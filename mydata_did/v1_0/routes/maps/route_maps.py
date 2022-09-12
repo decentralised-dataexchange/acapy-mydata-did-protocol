@@ -14,7 +14,9 @@ from ..data_agreement_core_functions_routes import (
     generate_data_agreement_qr_code_payload,
     query_data_agreement_qr_code_metadata_records_handler,
     remove_data_agreement_qr_code_metadata_record_handler,
-    send_data_agreements_qr_code_workflow_initiate_handler
+    send_data_agreements_qr_code_workflow_initiate_handler,
+    fetch_customer_identification_da_handler,
+    configure_customer_identification_da_handler
 )
 
 from ..data_controller_functions_routes import (
@@ -87,6 +89,15 @@ ROUTES_ADA = [
     web.get(
         "/v1/auditor/data-agreements/instances",
         query_data_agreement_instances,
+        allow_head=False,
+    ),
+    web.post(
+        "/v1/data-agreements/{template_id}/customer-identification",
+        configure_customer_identification_da_handler
+    ),
+    web.get(
+        "/v1/data-agreements/customer-identification",
+        fetch_customer_identification_da_handler,
         allow_head=False,
     ),
     web.get(

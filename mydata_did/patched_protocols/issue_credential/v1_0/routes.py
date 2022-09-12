@@ -247,7 +247,7 @@ class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
     comment = fields.Str(
         description="Human-readable comment", required=False, allow_none=True
     )
-    credential_preview = fields.Nested(CredentialPreviewSchema, required=True)
+    credential_preview = fields.Nested(CredentialPreviewSchema, required=False)
     trace = fields.Bool(
         description="Whether to trace event (default false)",
         required=False,
@@ -901,6 +901,12 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
             reason="Either cred def id or data agreement template id is required."
         )
 
+    # Data agreement model
+    da_model = template_record.data_agreement_model
+
+    # Third party data sharing or not.
+    third_party_data_sharing = da_model.data_policy.third_party_data_sharing
+
     auto_issue = body.get(
         "auto_issue", context.settings.get(
             "debug.auto_respond_credential_request")
@@ -908,9 +914,28 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
 
     auto_remove = body.get("auto_remove")
     comment = body.get("comment")
-    preview_spec = body.get("credential_preview")
-    if not preview_spec:
-        raise web.HTTPBadRequest(reason=("Missing credential_preview"))
+
+    # If not third party data sharing,
+    # then use credential preview from request body
+    if not third_party_data_sharing:
+        preview_spec = body.get("credential_preview")
+        if not preview_spec:
+            raise web.HTTPBadRequest(reason=("Missing credential_preview"))
+    else:
+        # If third party data sharing,
+        # then construct the credential dynamically from personal data.
+        # Values are empty strings.
+        preview_spec_attrs = []
+        for pd in da_model.personal_data:
+            preview_spec_attrs.append({
+                "name": pd.attribute_name,
+                "value": " "
+            })
+        preview_spec = {
+            "@type": "issue-credential/1.0/credential-preview",
+            "attributes": preview_spec_attrs
+        }
+
     trace_msg = body.get("trace")
 
     cred_ex_record = None

@@ -18,7 +18,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-acapy-patched = "^0.5.6"
+acapy-patched = "0.5.6.dev1"
 validators = "^0.20.0"
 PyJWT = "^2.4.0"
 MarkupSafe = "2.0.1"

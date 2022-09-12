@@ -941,3 +941,9 @@ class UpdateControllerDetailsRequestSchema(OpenAPISchema):
     description = fields.Str(required=False)
     policy_url = fields.Str(required=False)
     eula_url = fields.Str(required=False)
+
+
+class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
+    """Configure customer identification DA match info schema"""
+
+    template_id = fields.Str()

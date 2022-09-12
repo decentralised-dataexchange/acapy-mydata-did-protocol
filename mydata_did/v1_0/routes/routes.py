@@ -37,43 +37,36 @@ async def authentication_middleware(
     # Context.
     context = request.app["request_context"]
 
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    # Fetch iGrant.io config from os environment.
+    config_org_id = context.settings.get("intermediary.igrantio_org_id")
+    config_api_key_secret = context.settings.get("intermediary.igrantio_org_api_key_secret")
 
-    try:
-        # Fetch iGrant.io config from os environment.
-        config: dict = await mydata_did_manager.fetch_igrantio_config_from_os_environ()
-    except ADAManagerError:
-        # iGrant.io config is not available.
-        # Proceed without authentication.
-
+    if not config_org_id:
+        # Intermediary config not available.
         return await handler(request)
-
-    # API Key secret
-    api_key_secret = config.get("igrantio_org_api_key_secret")
 
     # Fetch authorization header.
     authorization_header = request.headers.get("Authorization")
 
     # Fetch api key from authorization header.
-    api_key = authorization_header.split("ApiKey ")[1] if authorization_header else None
+    header_api_key = authorization_header.split("ApiKey ")[1] if authorization_header else None
 
-    if not api_key:
+    if not header_api_key:
         raise web.HTTPUnauthorized(reason="Missing Authorization header.")
 
     # Authenticate the request.
     try:
-        jwt.decode(api_key, api_key_secret, algorithms=["HS256"])
+        jwt.decode(header_api_key, config_api_key_secret, algorithms=["HS256"])
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                api_key, api_key_secret, algorithms=["HS256"], audience="dataverifier"
+                header_api_key, config_api_key_secret, algorithms=["HS256"], audience="dataverifier"
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason="Invalid API Key.")
 
-    # Override the api key in environment variable.
-    os.environ["IGRANTIO_ORG_API_KEY"] = api_key
+    # Override settings api key.
+    context.settings["intermediary.igrantio_org_api_key"] = header_api_key
 
     # Call the handler.
     return await handler(request)

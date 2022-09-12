@@ -10,6 +10,7 @@ from aiohttp_apispec import (
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
+from dexa_sdk.managers.dexa_manager import DexaManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
 from ..manager import ADAManagerError
 from ..models.exchange_records.data_agreement_personal_data_record import (
@@ -42,7 +43,8 @@ from .openapi import (
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
     GenerateDataAgreementQrCodePayloadQueryStringSchema,
     CreateOrUpdateDataAgreementInWalletRequestSchema,
-    UpdateDataAgreementTemplateOpenAPISchema
+    UpdateDataAgreementTemplateOpenAPISchema,
+    ConfigureCustomerIdentificationDAMatchInfoSchema
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -491,3 +493,53 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({}, status=204)
+
+
+@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary="Fetch customer identification data agreement.",
+)
+async def fetch_customer_identification_da_handler(request: web.BaseRequest):
+    """Fetch customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.fetch_customer_identification_data_agreement()
+
+    return web.json_response(record.serialize() if record else {})
+
+
+@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary="Configure customer identification data agreement.",
+)
+@match_info_schema(ConfigureCustomerIdentificationDAMatchInfoSchema())
+async def configure_customer_identification_da_handler(request: web.BaseRequest):
+    """Configure customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Path parameters
+    template_id = request.match_info["template_id"]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.configure_customer_identification_data_agreement(template_id)
+
+    return web.json_response(record.serialize())

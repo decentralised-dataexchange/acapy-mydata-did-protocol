@@ -29,6 +29,3 @@ class ReadDIDHandler(BaseHandler):
 
         # Process read-did message
         await mgr.process_read_did_message(context.message, context.message_receipt)
-
-
-
