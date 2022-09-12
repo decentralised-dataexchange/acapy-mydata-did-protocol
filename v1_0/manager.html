@@ -1,0 +1,1517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.manager API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.manager</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import base64
+import logging
+import json
+import time
+import typing
+
+import aiohttp
+
+from aries_cloudagent.config.injection_context import InjectionContext
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+from aries_cloudagent.connections.models.connection_target import ConnectionTarget
+from aries_cloudagent.messaging.responder import BaseResponder
+from aries_cloudagent.core.dispatcher import DispatcherResponder
+from aries_cloudagent.transport.inbound.receipt import MessageReceipt
+from aries_cloudagent.core.error import BaseError
+from aries_cloudagent.storage.base import BaseStorage, StorageRecord
+from aries_cloudagent.storage.indy import IndyStorage
+from aries_cloudagent.storage.error import (
+    StorageNotFoundError,
+    StorageDuplicateError,
+    StorageError
+)
+from aries_cloudagent.wallet.indy import IndyWallet
+from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.transport.pack_format import PackWireFormat
+from aries_cloudagent.transport.wire_format import BaseWireFormat
+from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
+from aries_cloudagent.protocols.connections.v1_0.manager import (
+    ConnectionManager,
+)
+from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
+from .messages.read_did_response import ReadDIDResponseMessage, ReadDIDResponseMessageSchema
+from .messages.problem_report import (
+    MyDataDIDProblemReportMessage,
+    MyDataDIDProblemReportMessageReason
+)
+from .messages.json_ld_processed import JSONLDProcessedMessage
+from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
+from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
+from .models.diddoc_model import (
+    MyDataDIDResponseBody,
+    MyDataDIDDoc,
+)
+from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
+from .models.json_ld_processed_model import JSONLDProcessedBody
+from .utils.did.mydata_did import DIDMyData
+from .utils.wallet.key_type import KeyType
+from .utils.jsonld.create_verify_data import create_verify_data
+
+
+class ADAManagerError(BaseError):
+    &#34;&#34;&#34;ADA manager error&#34;&#34;&#34;
+
+
+class ADAManager:
+
+    # Record for storing data agreement instance metadata (client)
+    RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA = &#34;data_agreement_instance_metadata&#34;
+
+    # Record for keeping track of DIDs that are registered in the DID registry (MyData DID registry)
+    RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO = &#34;mydata_did_registry_did_info&#34;
+
+    # Record for keeping metadata about data agreement QR codes (client)
+    RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = &#34;data_agreement_qr_code_metadata&#34;
+
+    # Temporary record for keeping personal data of unpublished (or draft) data agreements
+    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = &#34;temporary_data_agreement_personal_data&#34;
+
+    # Record for data controller details
+    RECORD_TYPE_DATA_CONTROLLER_DETAILS = &#34;data_controller_details&#34;
+
+    # Record for existing connection details.
+    RECORD_TYPE_EXISTING_CONNECTION = &#34;existing_connection&#34;
+
+    DATA_AGREEMENT_RECORD_TYPE = &#34;dataagreement_record&#34;
+
+    def __init__(self, context: InjectionContext) -&gt; None:
+        self._context = context
+        self._logger = logging.getLogger(__name__)
+
+    @property
+    def context(self) -&gt; InjectionContext:
+        return self._context
+
+    async def process_read_did_message(self,
+                                       read_did_message: ReadDIDMessage,
+                                       receipt: MessageReceipt):
+        &#34;&#34;&#34;
+        Process read-did DIDComm message
+        &#34;&#34;&#34;
+
+        # Storage instance from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Responder instance from context
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To DIDs of the recieved message
+        create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        # From and To DIDs for the response messages
+        response_message_from_did = create_did_message_to_did
+        response_message_to_did = create_did_message_from_did
+
+        mydata_did_registry_did_info_record = None
+        try:
+
+            # Fetch DID from wallet
+            mydata_did_registry_did_info_record = await storage.search_records(
+                type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
+                tag_query={&#34;did&#34;: read_did_message.body.did}
+            ).fetch_single()
+
+        except (StorageNotFoundError, StorageDuplicateError):
+            # Send problem-report message.
+
+            mydata_did_problem_report = MyDataDIDProblemReportMessage(
+                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
+                explain=&#34;DID not found.&#34;,
+                from_did=response_message_from_did.did,
+                to_did=response_message_to_did.did,
+                created_time=round(time.time() * 1000)
+            )
+
+            # Assign thread id
+            mydata_did_problem_report.assign_thread_id(
+                thid=read_did_message._id)
+
+            if responder:
+                await responder.send_reply(mydata_did_problem_report)
+
+            return
+
+        # Send read-did-response message
+        read_did_response_message = ReadDIDResponseMessage(
+            from_did=response_message_from_did.did,
+            to_did=response_message_to_did.did,
+            created_time=round(time.time() * 1000),
+            body=MyDataDIDResponseBody(
+                did_doc=MyDataDIDDoc.from_json(
+                    mydata_did_registry_did_info_record.value),
+                version=mydata_did_registry_did_info_record.tags.get(
+                    &#34;version&#34;),
+                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
+            )
+        )
+
+        # Assign thread id
+        read_did_response_message.assign_thread_id(
+            thid=read_did_message._id)
+
+        if responder:
+            await responder.send_reply(read_did_response_message)
+
+    async def process_read_did_response_message(
+        self,
+        read_did_response_message: ReadDIDResponseMessage,
+        receipt: MessageReceipt
+    ):
+        &#34;&#34;&#34;
+        Process read-did-response DIDComm message
+        &#34;&#34;&#34;
+
+        pass
+
+    async def send_read_did_message(self, did: str):
+        &#34;&#34;&#34;
+        Send read-did DIDComm message
+        &#34;&#34;&#34;
+
+        pass
+
+    async def store_data_agreement_instance_metadata(
+        self,
+        *,
+        data_agreement_id: str = None,
+        data_agreement_template_id: str = None,
+        method_of_use: str = None,
+        data_exchange_record_id: str = None
+    ) -&gt; None:
+        &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        data_instance_metadata_record = StorageRecord(
+            self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            data_agreement_id,
+            {
+                &#34;data_agreement_id&#34;: data_agreement_id,
+                &#34;data_agreement_template_id&#34;: data_agreement_template_id,
+                &#34;method_of_use&#34;: method_of_use,
+                &#34;data_exchange_record_id&#34;: data_exchange_record_id
+            }
+        )
+
+        await storage.add_record(data_instance_metadata_record)
+
+    async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+        &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        for storage_record in storage_records:
+            await storage.delete_record(storage_record)
+
+    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+        &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        return storage_records
+
+    async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+        &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
+
+        # Initialize DID MyData
+        mydata_did = DIDMyData.from_did(mydata_did)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Get pack format from context
+        pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
+
+        # Fetch connection record marked as MyData DID registry
+        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+        if err:
+            raise ADAManagerError(
+                &#34;Failed to fetch MyData DID registry connection record&#34;)
+
+        # Construct read-did message
+        # from_did
+        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+        from_did = DIDMyData.from_public_key_b58(
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+        # to_did
+        to_did = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519)
+
+        # Create read-did message
+        read_did_message = ReadDIDMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=ReadDIDMessageBody(
+                did=mydata_did.did
+            )
+        )
+
+        # Add transport decorator
+        read_did_message._decorators[&#34;transport&#34;] = TransportDecorator(
+            return_route=&#34;all&#34;
+        )
+
+        # Initialise connection manager
+        connection_manager = ConnectionManager(self.context)
+
+        # Fetch connection targets
+        connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+
+        if len(connection_targets) == 0:
+            raise ADAManagerError(&#34;No connection targets found&#34;)
+
+        connection_target: ConnectionTarget = connection_targets[0]
+
+        # Pack message
+        packed_message = await pack_format.pack(
+            context=self.context,
+            message_json=read_did_message.serialize(as_string=True),
+            recipient_keys=connection_target.recipient_keys,
+            routing_keys=None,
+            sender_key=connection_target.sender_key,
+        )
+
+        headers = {
+            &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
+        }
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(connection_target.endpoint, data=packed_message) as response:
+                if response.status != 200:
+                    raise ADAManagerError(
+                        f&#34;HTTP request failed with status code {response.status}&#34;)
+
+                message_body = await response.read()
+
+                unpacked = await wallet.unpack_message(message_body)
+
+                (
+                    message_json,
+                    sender_verkey,
+                    recipient_verkey,
+                ) = unpacked
+
+                message_json = json.loads(message_json)
+
+                if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
+                    raise ADAManagerError(
+                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+
+                if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
+                    read_did_response_message: ReadDIDResponseMessage = \
+                        ReadDIDResponseMessageSchema().load(message_json)
+
+                    if read_did_response_message.body.status == &#34;revoked&#34;:
+                        raise ADAManagerError(
+                            f&#34;MyData DID {mydata_did.did} is revoked&#34;
+                        )
+
+                    return read_did_response_message.body
+
+    async def process_json_ld_processed_message(
+        self,
+        json_ld_processed_message: JSONLDProcessedMessage,
+        receipt: MessageReceipt
+    ) -&gt; None:
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To MyData DIDs
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        try:
+            # Base64 decode data_base64
+            data_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.data_base64)
+
+            # JSON load data_base64
+            data_json = json.loads(data_base64_decoded)
+
+            # Base64 decode signature_options_base64
+            signature_options_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.signature_options_base64)
+
+            # JSON load signature_options_base64
+            signature_options_json = json.loads(
+                signature_options_base64_decoded)
+
+            # verify_data function
+            framed, combine_hash = create_verify_data(
+                data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
+
+            # Base64 encode framed
+            framed_base64_encoded = base64.b64encode(
+                json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+            # Base64 encode combine_hash
+            combine_hash_base64_encoded = base64.b64encode(
+                combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+            # Construct JSONLD Processed Response Message
+            json_ld_processed_response_message = JSONLDProcessedResponseMessage(
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000),
+                body=JSONLDProcessedResponseBody(
+                    framed_base64=framed_base64_encoded,
+                    combined_hash_base64=combine_hash_base64_encoded
+                )
+            )
+
+            if responder:
+                await responder.send_reply(
+                    json_ld_processed_response_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
+
+        except Exception as err:
+            # Send problem report
+            json_ld_problem_report_message = JSONLDProblemReport(
+                problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
+                explain=str(err),
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000)
+            )
+
+            if responder:
+                await responder.send_reply(
+                    json_ld_problem_report_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
+
+    async def send_json_ld_processed_message(
+        self,
+        *,
+        connection_id: str,
+        data: dict,
+        signature_options: dict,
+        proof_chain: bool
+    ) -&gt; None:
+        &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                connection_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f&#34;Failed to retrieve connection record: {err}&#34;
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Base64 encode data
+        data_base64 = base64.b64encode(json.dumps(
+            data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Base64 encode signature_options
+        signature_options_base64 = base64.b64encode(json.dumps(
+            signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Construct JSONLD Processed Message
+        json_ld_processed_message = JSONLDProcessedMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=JSONLDProcessedBody(
+                data_base64=data_base64,
+                signature_options_base64=signature_options_base64,
+                proof_chain=proof_chain
+            )
+        )
+
+        # Send JSONLD Processed Message
+        if responder:
+            await responder.send_reply(
+                json_ld_processed_message,
+                connection_id=connection_record.connection_id
+            )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.manager.ADAManager"><code class="flex name class">
+<span>class <span class="ident">ADAManager</span></span>
+<span>(</span><span>context: aries_cloudagent.config.injection_context.InjectionContext)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ADAManager:
+
+    # Record for storing data agreement instance metadata (client)
+    RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA = &#34;data_agreement_instance_metadata&#34;
+
+    # Record for keeping track of DIDs that are registered in the DID registry (MyData DID registry)
+    RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO = &#34;mydata_did_registry_did_info&#34;
+
+    # Record for keeping metadata about data agreement QR codes (client)
+    RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = &#34;data_agreement_qr_code_metadata&#34;
+
+    # Temporary record for keeping personal data of unpublished (or draft) data agreements
+    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = &#34;temporary_data_agreement_personal_data&#34;
+
+    # Record for data controller details
+    RECORD_TYPE_DATA_CONTROLLER_DETAILS = &#34;data_controller_details&#34;
+
+    # Record for existing connection details.
+    RECORD_TYPE_EXISTING_CONNECTION = &#34;existing_connection&#34;
+
+    DATA_AGREEMENT_RECORD_TYPE = &#34;dataagreement_record&#34;
+
+    def __init__(self, context: InjectionContext) -&gt; None:
+        self._context = context
+        self._logger = logging.getLogger(__name__)
+
+    @property
+    def context(self) -&gt; InjectionContext:
+        return self._context
+
+    async def process_read_did_message(self,
+                                       read_did_message: ReadDIDMessage,
+                                       receipt: MessageReceipt):
+        &#34;&#34;&#34;
+        Process read-did DIDComm message
+        &#34;&#34;&#34;
+
+        # Storage instance from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        # Responder instance from context
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To DIDs of the recieved message
+        create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        # From and To DIDs for the response messages
+        response_message_from_did = create_did_message_to_did
+        response_message_to_did = create_did_message_from_did
+
+        mydata_did_registry_did_info_record = None
+        try:
+
+            # Fetch DID from wallet
+            mydata_did_registry_did_info_record = await storage.search_records(
+                type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
+                tag_query={&#34;did&#34;: read_did_message.body.did}
+            ).fetch_single()
+
+        except (StorageNotFoundError, StorageDuplicateError):
+            # Send problem-report message.
+
+            mydata_did_problem_report = MyDataDIDProblemReportMessage(
+                problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
+                explain=&#34;DID not found.&#34;,
+                from_did=response_message_from_did.did,
+                to_did=response_message_to_did.did,
+                created_time=round(time.time() * 1000)
+            )
+
+            # Assign thread id
+            mydata_did_problem_report.assign_thread_id(
+                thid=read_did_message._id)
+
+            if responder:
+                await responder.send_reply(mydata_did_problem_report)
+
+            return
+
+        # Send read-did-response message
+        read_did_response_message = ReadDIDResponseMessage(
+            from_did=response_message_from_did.did,
+            to_did=response_message_to_did.did,
+            created_time=round(time.time() * 1000),
+            body=MyDataDIDResponseBody(
+                did_doc=MyDataDIDDoc.from_json(
+                    mydata_did_registry_did_info_record.value),
+                version=mydata_did_registry_did_info_record.tags.get(
+                    &#34;version&#34;),
+                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
+            )
+        )
+
+        # Assign thread id
+        read_did_response_message.assign_thread_id(
+            thid=read_did_message._id)
+
+        if responder:
+            await responder.send_reply(read_did_response_message)
+
+    async def process_read_did_response_message(
+        self,
+        read_did_response_message: ReadDIDResponseMessage,
+        receipt: MessageReceipt
+    ):
+        &#34;&#34;&#34;
+        Process read-did-response DIDComm message
+        &#34;&#34;&#34;
+
+        pass
+
+    async def send_read_did_message(self, did: str):
+        &#34;&#34;&#34;
+        Send read-did DIDComm message
+        &#34;&#34;&#34;
+
+        pass
+
+    async def store_data_agreement_instance_metadata(
+        self,
+        *,
+        data_agreement_id: str = None,
+        data_agreement_template_id: str = None,
+        method_of_use: str = None,
+        data_exchange_record_id: str = None
+    ) -&gt; None:
+        &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        data_instance_metadata_record = StorageRecord(
+            self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            data_agreement_id,
+            {
+                &#34;data_agreement_id&#34;: data_agreement_id,
+                &#34;data_agreement_template_id&#34;: data_agreement_template_id,
+                &#34;method_of_use&#34;: method_of_use,
+                &#34;data_exchange_record_id&#34;: data_exchange_record_id
+            }
+        )
+
+        await storage.add_record(data_instance_metadata_record)
+
+    async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+        &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        for storage_record in storage_records:
+            await storage.delete_record(storage_record)
+
+    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+        &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
+
+        # Fetch storage from context
+        storage: IndyStorage = await self.context.inject(BaseStorage)
+
+        storage_records = await storage.search_records(
+            type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+            tag_query=tag_query
+        ).fetch_all()
+
+        return storage_records
+
+    async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+        &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
+
+        # Initialize DID MyData
+        mydata_did = DIDMyData.from_did(mydata_did)
+
+        # Fetch wallet from context
+        wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+        # Get pack format from context
+        pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
+
+        # Fetch connection record marked as MyData DID registry
+        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+        if err:
+            raise ADAManagerError(
+                &#34;Failed to fetch MyData DID registry connection record&#34;)
+
+        # Construct read-did message
+        # from_did
+        pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+        from_did = DIDMyData.from_public_key_b58(
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+        # to_did
+        to_did = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519)
+
+        # Create read-did message
+        read_did_message = ReadDIDMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=ReadDIDMessageBody(
+                did=mydata_did.did
+            )
+        )
+
+        # Add transport decorator
+        read_did_message._decorators[&#34;transport&#34;] = TransportDecorator(
+            return_route=&#34;all&#34;
+        )
+
+        # Initialise connection manager
+        connection_manager = ConnectionManager(self.context)
+
+        # Fetch connection targets
+        connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+
+        if len(connection_targets) == 0:
+            raise ADAManagerError(&#34;No connection targets found&#34;)
+
+        connection_target: ConnectionTarget = connection_targets[0]
+
+        # Pack message
+        packed_message = await pack_format.pack(
+            context=self.context,
+            message_json=read_did_message.serialize(as_string=True),
+            recipient_keys=connection_target.recipient_keys,
+            routing_keys=None,
+            sender_key=connection_target.sender_key,
+        )
+
+        headers = {
+            &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
+        }
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.post(connection_target.endpoint, data=packed_message) as response:
+                if response.status != 200:
+                    raise ADAManagerError(
+                        f&#34;HTTP request failed with status code {response.status}&#34;)
+
+                message_body = await response.read()
+
+                unpacked = await wallet.unpack_message(message_body)
+
+                (
+                    message_json,
+                    sender_verkey,
+                    recipient_verkey,
+                ) = unpacked
+
+                message_json = json.loads(message_json)
+
+                if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
+                    raise ADAManagerError(
+                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+
+                if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
+                    read_did_response_message: ReadDIDResponseMessage = \
+                        ReadDIDResponseMessageSchema().load(message_json)
+
+                    if read_did_response_message.body.status == &#34;revoked&#34;:
+                        raise ADAManagerError(
+                            f&#34;MyData DID {mydata_did.did} is revoked&#34;
+                        )
+
+                    return read_did_response_message.body
+
+    async def process_json_ld_processed_message(
+        self,
+        json_ld_processed_message: JSONLDProcessedMessage,
+        receipt: MessageReceipt
+    ) -&gt; None:
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        # From and To MyData DIDs
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.sender_verkey, key_type=KeyType.ED25519)
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+        try:
+            # Base64 decode data_base64
+            data_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.data_base64)
+
+            # JSON load data_base64
+            data_json = json.loads(data_base64_decoded)
+
+            # Base64 decode signature_options_base64
+            signature_options_base64_decoded = base64.b64decode(
+                json_ld_processed_message.body.signature_options_base64)
+
+            # JSON load signature_options_base64
+            signature_options_json = json.loads(
+                signature_options_base64_decoded)
+
+            # verify_data function
+            framed, combine_hash = create_verify_data(
+                data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
+
+            # Base64 encode framed
+            framed_base64_encoded = base64.b64encode(
+                json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+            # Base64 encode combine_hash
+            combine_hash_base64_encoded = base64.b64encode(
+                combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+            # Construct JSONLD Processed Response Message
+            json_ld_processed_response_message = JSONLDProcessedResponseMessage(
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000),
+                body=JSONLDProcessedResponseBody(
+                    framed_base64=framed_base64_encoded,
+                    combined_hash_base64=combine_hash_base64_encoded
+                )
+            )
+
+            if responder:
+                await responder.send_reply(
+                    json_ld_processed_response_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
+
+        except Exception as err:
+            # Send problem report
+            json_ld_problem_report_message = JSONLDProblemReport(
+                problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
+                explain=str(err),
+                from_did=from_did.did,
+                to_did=to_did.did,
+                created_time=round(time.time() * 1000)
+            )
+
+            if responder:
+                await responder.send_reply(
+                    json_ld_problem_report_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
+
+    async def send_json_ld_processed_message(
+        self,
+        *,
+        connection_id: str,
+        data: dict,
+        signature_options: dict,
+        proof_chain: bool
+    ) -&gt; None:
+        &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
+
+        # Responder instance
+        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+        try:
+
+            # Retrieve connection record by id
+            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+                self.context,
+                connection_id
+            )
+
+        except StorageError as err:
+
+            raise ADAManagerError(
+                f&#34;Failed to retrieve connection record: {err}&#34;
+            )
+
+        # From and to mydata dids
+        from_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.my_did, key_type=KeyType.ED25519
+        )
+        to_did: DIDMyData = DIDMyData.from_public_key_b58(
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
+
+        # Base64 encode data
+        data_base64 = base64.b64encode(json.dumps(
+            data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Base64 encode signature_options
+        signature_options_base64 = base64.b64encode(json.dumps(
+            signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Construct JSONLD Processed Message
+        json_ld_processed_message = JSONLDProcessedMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=JSONLDProcessedBody(
+                data_base64=data_base64,
+                signature_options_base64=signature_options_base64,
+                proof_chain=proof_chain
+            )
+        )
+
+        # Send JSONLD Processed Message
+        if responder:
+            await responder.send_reply(
+                json_ld_processed_message,
+                connection_id=connection_record.connection_id
+            )</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.manager.ADAManager.DATA_AGREEMENT_RECORD_TYPE"><code class="name">var <span class="ident">DATA_AGREEMENT_RECORD_TYPE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA"><code class="name">var <span class="ident">RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA"><code class="name">var <span class="ident">RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_CONTROLLER_DETAILS"><code class="name">var <span class="ident">RECORD_TYPE_DATA_CONTROLLER_DETAILS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_EXISTING_CONNECTION"><code class="name">var <span class="ident">RECORD_TYPE_EXISTING_CONNECTION</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO"><code class="name">var <span class="ident">RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA"><code class="name">var <span class="ident">RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.manager.ADAManager.context"><code class="name">var <span class="ident">context</span> : aries_cloudagent.config.injection_context.InjectionContext</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def context(self) -&gt; InjectionContext:
+    return self._context</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata"><code class="name flex">
+<span>async def <span class="ident">delete_data_agreement_instance_metadata</span></span>(<span>self, *, tag_query: dict = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete data agreement instance metadata</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+    &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
+
+    # Fetch storage from context
+    storage: IndyStorage = await self.context.inject(BaseStorage)
+
+    storage_records = await storage.search_records(
+        type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+        tag_query=tag_query
+    ).fetch_all()
+
+    for storage_record in storage_records:
+        await storage.delete_record(storage_record)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message"><code class="name flex">
+<span>async def <span class="ident">process_json_ld_processed_message</span></span>(<span>self, json_ld_processed_message: <a title="mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage" href="messages/json_ld_processed.html#mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage">JSONLDProcessedMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def process_json_ld_processed_message(
+    self,
+    json_ld_processed_message: JSONLDProcessedMessage,
+    receipt: MessageReceipt
+) -&gt; None:
+
+    # Responder instance
+    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+    # From and To MyData DIDs
+    to_did: DIDMyData = DIDMyData.from_public_key_b58(
+        receipt.sender_verkey, key_type=KeyType.ED25519)
+    from_did: DIDMyData = DIDMyData.from_public_key_b58(
+        receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+    try:
+        # Base64 decode data_base64
+        data_base64_decoded = base64.b64decode(
+            json_ld_processed_message.body.data_base64)
+
+        # JSON load data_base64
+        data_json = json.loads(data_base64_decoded)
+
+        # Base64 decode signature_options_base64
+        signature_options_base64_decoded = base64.b64decode(
+            json_ld_processed_message.body.signature_options_base64)
+
+        # JSON load signature_options_base64
+        signature_options_json = json.loads(
+            signature_options_base64_decoded)
+
+        # verify_data function
+        framed, combine_hash = create_verify_data(
+            data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
+
+        # Base64 encode framed
+        framed_base64_encoded = base64.b64encode(
+            json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Base64 encode combine_hash
+        combine_hash_base64_encoded = base64.b64encode(
+            combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+        # Construct JSONLD Processed Response Message
+        json_ld_processed_response_message = JSONLDProcessedResponseMessage(
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000),
+            body=JSONLDProcessedResponseBody(
+                framed_base64=framed_base64_encoded,
+                combined_hash_base64=combine_hash_base64_encoded
+            )
+        )
+
+        if responder:
+            await responder.send_reply(
+                json_ld_processed_response_message,
+                connection_id=self.context.connection_record.connection_id
+            )
+
+    except Exception as err:
+        # Send problem report
+        json_ld_problem_report_message = JSONLDProblemReport(
+            problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
+            explain=str(err),
+            from_did=from_did.did,
+            to_did=to_did.did,
+            created_time=round(time.time() * 1000)
+        )
+
+        if responder:
+            await responder.send_reply(
+                json_ld_problem_report_message,
+                connection_id=self.context.connection_record.connection_id
+            )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.process_read_did_message"><code class="name flex">
+<span>async def <span class="ident">process_read_did_message</span></span>(<span>self, read_did_message: <a title="mydata_did.v1_0.messages.read_did.ReadDIDMessage" href="messages/read_did.html#mydata_did.v1_0.messages.read_did.ReadDIDMessage">ReadDIDMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process read-did DIDComm message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def process_read_did_message(self,
+                                   read_did_message: ReadDIDMessage,
+                                   receipt: MessageReceipt):
+    &#34;&#34;&#34;
+    Process read-did DIDComm message
+    &#34;&#34;&#34;
+
+    # Storage instance from context
+    storage: IndyStorage = await self.context.inject(BaseStorage)
+
+    # Responder instance from context
+    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+    # From and To DIDs of the recieved message
+    create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
+        receipt.sender_verkey, key_type=KeyType.ED25519)
+    create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
+        receipt.recipient_verkey, key_type=KeyType.ED25519)
+
+    # From and To DIDs for the response messages
+    response_message_from_did = create_did_message_to_did
+    response_message_to_did = create_did_message_from_did
+
+    mydata_did_registry_did_info_record = None
+    try:
+
+        # Fetch DID from wallet
+        mydata_did_registry_did_info_record = await storage.search_records(
+            type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
+            tag_query={&#34;did&#34;: read_did_message.body.did}
+        ).fetch_single()
+
+    except (StorageNotFoundError, StorageDuplicateError):
+        # Send problem-report message.
+
+        mydata_did_problem_report = MyDataDIDProblemReportMessage(
+            problem_code=MyDataDIDProblemReportMessageReason.DID_NOT_FOUND.value,
+            explain=&#34;DID not found.&#34;,
+            from_did=response_message_from_did.did,
+            to_did=response_message_to_did.did,
+            created_time=round(time.time() * 1000)
+        )
+
+        # Assign thread id
+        mydata_did_problem_report.assign_thread_id(
+            thid=read_did_message._id)
+
+        if responder:
+            await responder.send_reply(mydata_did_problem_report)
+
+        return
+
+    # Send read-did-response message
+    read_did_response_message = ReadDIDResponseMessage(
+        from_did=response_message_from_did.did,
+        to_did=response_message_to_did.did,
+        created_time=round(time.time() * 1000),
+        body=MyDataDIDResponseBody(
+            did_doc=MyDataDIDDoc.from_json(
+                mydata_did_registry_did_info_record.value),
+            version=mydata_did_registry_did_info_record.tags.get(
+                &#34;version&#34;),
+            status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
+        )
+    )
+
+    # Assign thread id
+    read_did_response_message.assign_thread_id(
+        thid=read_did_message._id)
+
+    if responder:
+        await responder.send_reply(read_did_response_message)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.process_read_did_response_message"><code class="name flex">
+<span>async def <span class="ident">process_read_did_response_message</span></span>(<span>self, read_did_response_message: <a title="mydata_did.v1_0.messages.read_did_response.ReadDIDResponseMessage" href="messages/read_did_response.html#mydata_did.v1_0.messages.read_did_response.ReadDIDResponseMessage">ReadDIDResponseMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process read-did-response DIDComm message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def process_read_did_response_message(
+    self,
+    read_did_response_message: ReadDIDResponseMessage,
+    receipt: MessageReceipt
+):
+    &#34;&#34;&#34;
+    Process read-did-response DIDComm message
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata"><code class="name flex">
+<span>async def <span class="ident">query_data_agreement_instance_metadata</span></span>(<span>self, *, tag_query: dict = None) ‑> List[aries_cloudagent.storage.record.StorageRecord]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Query data agreement instance metadata</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+    &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
+
+    # Fetch storage from context
+    storage: IndyStorage = await self.context.inject(BaseStorage)
+
+    storage_records = await storage.search_records(
+        type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+        tag_query=tag_query
+    ).fetch_all()
+
+    return storage_records</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did"><code class="name flex">
+<span>async def <span class="ident">resolve_remote_mydata_did</span></span>(<span>self, *, mydata_did: str) ‑> <a title="mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody" href="models/diddoc_model.html#mydata_did.v1_0.models.diddoc_model.MyDataDIDResponseBody">MyDataDIDResponseBody</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resolve remote MyData DID</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+    &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
+
+    # Initialize DID MyData
+    mydata_did = DIDMyData.from_did(mydata_did)
+
+    # Fetch wallet from context
+    wallet: IndyWallet = await self.context.inject(BaseWallet)
+
+    # Get pack format from context
+    pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
+
+    # Fetch connection record marked as MyData DID registry
+    connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+    if err:
+        raise ADAManagerError(
+            &#34;Failed to fetch MyData DID registry connection record&#34;)
+
+    # Construct read-did message
+    # from_did
+    pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
+    from_did = DIDMyData.from_public_key_b58(
+        pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+
+    # to_did
+    to_did = DIDMyData.from_public_key_b58(
+        connection_record.their_did, key_type=KeyType.ED25519)
+
+    # Create read-did message
+    read_did_message = ReadDIDMessage(
+        from_did=from_did.did,
+        to_did=to_did.did,
+        created_time=round(time.time() * 1000),
+        body=ReadDIDMessageBody(
+            did=mydata_did.did
+        )
+    )
+
+    # Add transport decorator
+    read_did_message._decorators[&#34;transport&#34;] = TransportDecorator(
+        return_route=&#34;all&#34;
+    )
+
+    # Initialise connection manager
+    connection_manager = ConnectionManager(self.context)
+
+    # Fetch connection targets
+    connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+
+    if len(connection_targets) == 0:
+        raise ADAManagerError(&#34;No connection targets found&#34;)
+
+    connection_target: ConnectionTarget = connection_targets[0]
+
+    # Pack message
+    packed_message = await pack_format.pack(
+        context=self.context,
+        message_json=read_did_message.serialize(as_string=True),
+        recipient_keys=connection_target.recipient_keys,
+        routing_keys=None,
+        sender_key=connection_target.sender_key,
+    )
+
+    headers = {
+        &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
+    }
+    async with aiohttp.ClientSession(headers=headers) as session:
+        async with session.post(connection_target.endpoint, data=packed_message) as response:
+            if response.status != 200:
+                raise ADAManagerError(
+                    f&#34;HTTP request failed with status code {response.status}&#34;)
+
+            message_body = await response.read()
+
+            unpacked = await wallet.unpack_message(message_body)
+
+            (
+                message_json,
+                sender_verkey,
+                recipient_verkey,
+            ) = unpacked
+
+            message_json = json.loads(message_json)
+
+            if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
+                raise ADAManagerError(
+                    f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+
+            if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
+                read_did_response_message: ReadDIDResponseMessage = \
+                    ReadDIDResponseMessageSchema().load(message_json)
+
+                if read_did_response_message.body.status == &#34;revoked&#34;:
+                    raise ADAManagerError(
+                        f&#34;MyData DID {mydata_did.did} is revoked&#34;
+                    )
+
+                return read_did_response_message.body</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message"><code class="name flex">
+<span>async def <span class="ident">send_json_ld_processed_message</span></span>(<span>self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send JSON-LD Processed Message to remote agent.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def send_json_ld_processed_message(
+    self,
+    *,
+    connection_id: str,
+    data: dict,
+    signature_options: dict,
+    proof_chain: bool
+) -&gt; None:
+    &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
+
+    # Responder instance
+    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+
+    try:
+
+        # Retrieve connection record by id
+        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
+            self.context,
+            connection_id
+        )
+
+    except StorageError as err:
+
+        raise ADAManagerError(
+            f&#34;Failed to retrieve connection record: {err}&#34;
+        )
+
+    # From and to mydata dids
+    from_did: DIDMyData = DIDMyData.from_public_key_b58(
+        connection_record.my_did, key_type=KeyType.ED25519
+    )
+    to_did: DIDMyData = DIDMyData.from_public_key_b58(
+        connection_record.their_did, key_type=KeyType.ED25519
+    )
+
+    # Base64 encode data
+    data_base64 = base64.b64encode(json.dumps(
+        data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+    # Base64 encode signature_options
+    signature_options_base64 = base64.b64encode(json.dumps(
+        signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
+
+    # Construct JSONLD Processed Message
+    json_ld_processed_message = JSONLDProcessedMessage(
+        from_did=from_did.did,
+        to_did=to_did.did,
+        created_time=round(time.time() * 1000),
+        body=JSONLDProcessedBody(
+            data_base64=data_base64,
+            signature_options_base64=signature_options_base64,
+            proof_chain=proof_chain
+        )
+    )
+
+    # Send JSONLD Processed Message
+    if responder:
+        await responder.send_reply(
+            json_ld_processed_message,
+            connection_id=connection_record.connection_id
+        )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.send_read_did_message"><code class="name flex">
+<span>async def <span class="ident">send_read_did_message</span></span>(<span>self, did: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send read-did DIDComm message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def send_read_did_message(self, did: str):
+    &#34;&#34;&#34;
+    Send read-did DIDComm message
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata"><code class="name flex">
+<span>async def <span class="ident">store_data_agreement_instance_metadata</span></span>(<span>self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Store data agreement instance metadata</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def store_data_agreement_instance_metadata(
+    self,
+    *,
+    data_agreement_id: str = None,
+    data_agreement_template_id: str = None,
+    method_of_use: str = None,
+    data_exchange_record_id: str = None
+) -&gt; None:
+    &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
+
+    # Fetch storage from context
+    storage: IndyStorage = await self.context.inject(BaseStorage)
+
+    data_instance_metadata_record = StorageRecord(
+        self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
+        data_agreement_id,
+        {
+            &#34;data_agreement_id&#34;: data_agreement_id,
+            &#34;data_agreement_template_id&#34;: data_agreement_template_id,
+            &#34;method_of_use&#34;: method_of_use,
+            &#34;data_exchange_record_id&#34;: data_exchange_record_id
+        }
+    )
+
+    await storage.add_record(data_instance_metadata_record)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.manager.ADAManagerError"><code class="flex name class">
+<span>class <span class="ident">ADAManagerError</span></span>
+<span>(</span><span>*args, error_code: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ADA manager error</p>
+<p>Initialize a BaseError instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ADAManagerError(BaseError):
+    &#34;&#34;&#34;ADA manager error&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.core.error.BaseError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0" href="index.html">mydata_did.v1_0</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.manager.ADAManager" href="#mydata_did.v1_0.manager.ADAManager">ADAManager</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.DATA_AGREEMENT_RECORD_TYPE" href="#mydata_did.v1_0.manager.ADAManager.DATA_AGREEMENT_RECORD_TYPE">DATA_AGREEMENT_RECORD_TYPE</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA">RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA">RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_CONTROLLER_DETAILS" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_DATA_CONTROLLER_DETAILS">RECORD_TYPE_DATA_CONTROLLER_DETAILS</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_EXISTING_CONNECTION" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_EXISTING_CONNECTION">RECORD_TYPE_EXISTING_CONNECTION</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO">RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA">RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.context" href="#mydata_did.v1_0.manager.ADAManager.context">context</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata">delete_data_agreement_instance_metadata</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message">process_json_ld_processed_message</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_message">process_read_did_message</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_response_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_response_message">process_read_did_response_message</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata">query_data_agreement_instance_metadata</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did" href="#mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did">resolve_remote_mydata_did</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message">send_json_ld_processed_message</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.send_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.send_read_did_message">send_read_did_message</a></code></li>
+<li><code><a title="mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata">store_data_agreement_instance_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.manager.ADAManagerError" href="#mydata_did.v1_0.manager.ADAManagerError">ADAManagerError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

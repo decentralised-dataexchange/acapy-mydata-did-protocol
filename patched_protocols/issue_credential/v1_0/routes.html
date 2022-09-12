@@ -1,0 +1,3633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.patched_protocols.issue_credential.v1_0.routes API documentation</title>
+<meta name="description" content="Credential exchange admin routes." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.patched_protocols.issue_credential.v1_0.routes</code></h1>
+</header>
+<section id="section-intro">
+<p>Credential exchange admin routes.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Credential exchange admin routes.&#34;&#34;&#34;
+
+from aiohttp import web
+from aiohttp_apispec import (
+    docs,
+    match_info_schema,
+    querystring_schema,
+    request_schema,
+    response_schema,
+)
+from json.decoder import JSONDecodeError
+from marshmallow import fields, validate
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+from aries_cloudagent.issuer.base import IssuerError
+from aries_cloudagent.ledger.error import LedgerError
+from aries_cloudagent.messaging.credential_definitions.util import CRED_DEF_TAGS
+from aries_cloudagent.messaging.models.base import BaseModelError, OpenAPISchema
+from aries_cloudagent.messaging.valid import (
+    INDY_CRED_DEF_ID,
+    INDY_CRED_REV_ID,
+    INDY_DID,
+    INDY_REV_REG_ID,
+    INDY_SCHEMA_ID,
+    INDY_VERSION,
+    NATURAL_NUM,
+    UUIDFour,
+    UUID4,
+)
+from aries_cloudagent.storage.error import StorageError, StorageNotFoundError
+from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.wallet.error import WalletError
+from aries_cloudagent.utils.outofband import serialize_outofband
+from aries_cloudagent.utils.tracing import trace_event, get_timer, AdminAPIMessageTracingSchema
+
+from aries_cloudagent.protocols.problem_report.v1_0 import internal_error
+from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
+from mydata_did.v1_0.messages.problem_report import DataAgreementNegotiationProblemReportReason
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from dexa_sdk.agreements.da.v1_0.records.da_template_record import DataAgreementTemplateRecord
+from dexa_sdk.utils import paginate_records, clean_and_get_field_from_dict
+from .manager import CredentialManager, CredentialManagerError
+from .message_types import SPEC_URI
+from .messages.credential_proposal import CredentialProposal
+from .messages.credential_offer import CredentialOfferSchema
+from .messages.inner.credential_preview import (
+    CredentialPreview,
+    CredentialPreviewSchema,
+)
+from .models.credential_exchange import (
+    V10CredentialExchange,
+    V10CredentialExchangeSchema,
+)
+
+from ....v1_0.decorators.data_agreement_context_decorator import DataAgreementContextDecorator
+
+PAGINATION_PAGE_SIZE = 10
+
+
+class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for credential exchange list query.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    role = fields.Str(
+        description=&#34;Role assigned in credential exchange&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(V10CredentialExchange, m)
+                for m in vars(V10CredentialExchange)
+                if m.startswith(&#34;ROLE_&#34;)
+            ]
+        ),
+    )
+    state = fields.Str(
+        description=&#34;Credential exchange state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(V10CredentialExchange, m)
+                for m in vars(V10CredentialExchange)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )
+
+    # Data Agreement template identifier
+    template_id = fields.Str(required=False)
+
+    # Page
+    page = fields.Int(required=False)
+
+    # Page size
+    page_size = fields.Int(required=False)
+
+
+class V10CredentialExchangeListResultSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for Aries#0036 v1.0 credential exchange query.&#34;&#34;&#34;
+
+    results = fields.List(
+        fields.Nested(V10CredentialExchangeSchema),
+        description=&#34;Aries#0036 v1.0 credential exchange records&#34;,
+    )
+
+
+class V10CredentialStoreRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending a credential store admin message.&#34;&#34;&#34;
+
+    credential_id = fields.Str(required=False)
+
+
+class V10CredentialCreateSchema(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Base class for request schema for sending credential proposal admin message.&#34;&#34;&#34;
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;, required=False, **INDY_SCHEMA_ID
+    )
+    schema_issuer_did = fields.Str(
+        description=&#34;Schema issuer DID&#34;, required=False, **INDY_DID
+    )
+    schema_name = fields.Str(
+        description=&#34;Schema name&#34;, required=False, example=&#34;preferences&#34;
+    )
+    schema_version = fields.Str(
+        description=&#34;Schema version&#34;, required=False, **INDY_VERSION
+    )
+    issuer_did = fields.Str(
+        description=&#34;Credential issuer DID&#34;, required=False, **INDY_DID
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )
+    credential_proposal = fields.Nested(CredentialPreviewSchema, required=True)
+
+
+class V10CredentialProposalRequestSchemaBase(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Base class for request schema for sending credential proposal admin message.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;, required=False, **INDY_SCHEMA_ID
+    )
+    schema_issuer_did = fields.Str(
+        description=&#34;Schema issuer DID&#34;, required=False, **INDY_DID
+    )
+    schema_name = fields.Str(
+        description=&#34;Schema name&#34;, required=False, example=&#34;preferences&#34;
+    )
+    schema_version = fields.Str(
+        description=&#34;Schema version&#34;, required=False, **INDY_VERSION
+    )
+    issuer_did = fields.Str(
+        description=&#34;Credential issuer DID&#34;, required=False, **INDY_DID
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )
+
+
+class V10CredentialProposalRequestOptSchema(V10CredentialProposalRequestSchemaBase):
+    &#34;&#34;&#34;Request schema for sending credential proposal on optional proposal preview.&#34;&#34;&#34;
+
+    credential_proposal = fields.Nested(
+        CredentialPreviewSchema, required=False)
+
+
+class V10CredentialProposalRequestMandSchema(V10CredentialProposalRequestSchemaBase):
+    &#34;&#34;&#34;Request schema for sending credential proposal on mandatory proposal preview.&#34;&#34;&#34;
+
+    credential_proposal = fields.Nested(CredentialPreviewSchema, required=True)
+
+
+class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Request schema for sending credential offer admin message.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    auto_issue = fields.Bool(
+        description=(
+            &#34;Whether to respond automatically to credential requests, creating &#34;
+            &#34;and issuing requested credentials&#34;
+        ),
+        required=False,
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+        default=True,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    credential_preview = fields.Nested(CredentialPreviewSchema, required=False)
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )
+
+    # Data agreement template identifier
+    template_id = fields.Str(
+        description=&#34;Data agreement template identifier&#34;, required=False, example=UUIDFour.EXAMPLE
+    )
+
+
+class V10CredentialIssueRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending credential issue admin message.&#34;&#34;&#34;
+
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+
+
+class V10CredentialProblemReportRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending problem report.&#34;&#34;&#34;
+
+    explain_ltxt = fields.Str(required=True)
+
+
+class V10PublishRevocationsSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request and result schema for revocation publication API call.&#34;&#34;&#34;
+
+    rrid2crid = fields.Dict(
+        required=False,
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID[&#34;example&#34;]),
+        values=fields.List(
+            fields.Str(
+                description=&#34;Credential revocation identifier&#34;, **INDY_CRED_REV_ID
+            )
+        ),
+        description=&#34;Credential revocation ids by revocation registry id&#34;,
+    )
+
+
+class V10ClearPendingRevocationsRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for clear pending revocations API call.&#34;&#34;&#34;
+
+    purge = fields.Dict(
+        required=False,
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID[&#34;example&#34;]),
+        values=fields.List(
+            fields.Str(
+                description=&#34;Credential revocation identifier&#34;, **INDY_CRED_REV_ID
+            )
+        ),
+        description=(
+            &#34;Credential revocation ids by revocation registry id: omit for all, &#34;
+            &#34;specify null or empty list for all pending per revocation registry&#34;
+        ),
+    )
+
+
+class RevokeQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for revocation request.&#34;&#34;&#34;
+
+    rev_reg_id = fields.Str(
+        description=&#34;Revocation registry identifier&#34;,
+        required=True,
+        **INDY_REV_REG_ID,
+    )
+    cred_rev_id = fields.Int(
+        description=&#34;Credential revocation identifier&#34;,
+        required=True,
+        **NATURAL_NUM,
+    )
+    publish = fields.Boolean(
+        description=(
+            &#34;(True) publish revocation to ledger immediately, or &#34;
+            &#34;(False) mark it pending (default value)&#34;
+        ),
+        required=False,
+    )
+
+
+class CredIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking credential id.&#34;&#34;&#34;
+
+    credential_id = fields.Str(
+        description=&#34;Credential identifier&#34;, required=True, example=UUIDFour.EXAMPLE
+    )
+
+
+class CredExIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking credential exchange id.&#34;&#34;&#34;
+
+    cred_ex_id = fields.Str(
+        description=&#34;Credential exchange identifier&#34;, required=True, **UUID4
+    )
+
+
+class DataAgreementBoundCredentialOfferMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking data agreement bound credential offer id.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        required=True,
+        description=&#34;The unique identifier for the data agreement.&#34;,
+        example=UUIDFour.EXAMPLE
+    )
+
+
+class SendDataAgreementNegotiationProblemReportRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending problem report.&#34;&#34;&#34;
+
+    explain = fields.Str(description=&#34;Describe the problem&#34;, required=True,
+                         example=&#34;Data agreement context decorator not found in the didcomm message.&#34;)
+    problem_code = fields.Str(description=&#34;Problem code&#34;, required=True,
+                              example=DataAgreementNegotiationProblemReportReason.DATA_AGREEMENT_CONTEXT_INVALID.value)
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Fetch all credential exchange records&#34;)
+@querystring_schema(V10CredentialExchangeListQueryStringSchema)
+@response_schema(V10CredentialExchangeListResultSchema(), 200)
+async def credential_exchange_list(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for searching connection records.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection list response
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    tag_filter = {}
+    if &#34;thread_id&#34; in request.query and request.query[&#34;thread_id&#34;] != &#34;&#34;:
+        tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
+    post_filter = {
+        k: request.query[k]
+        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;, &#34;template_id&#34;)
+        if request.query.get(k, &#34;&#34;) != &#34;&#34;
+    }
+
+    page = clean_and_get_field_from_dict(request.query, &#34;page&#34;)
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, &#34;page_size&#34;)
+    page_size = int(page_size) if page_size is not None else page_size
+
+    try:
+        records = await V10CredentialExchange.query(context, tag_filter, post_filter)
+
+        # Pagination result.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(pagination_result._asdict())
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Fetch a single credential exchange record&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_retrieve(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for fetching single connection record.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    cred_ex_record = None
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+        result = cred_ex_record.serialize()
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    except (BaseModelError, StorageError) as err:
+        await internal_error(err, web.HTTPBadRequest, cred_ex_record, outbound_handler)
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential, automating entire flow&#34;,
+)
+@request_schema(V10CredentialCreateSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_create(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating a credential from attr values.
+
+    The internal credential record will be created without the credential
+    being sent to any connection. This can be used in conjunction with
+    the `oob` protocols to bind messages to an out of band message.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+
+    body = await request.json()
+
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=&#34;credential_proposal must be provided&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    try:
+        preview = CredentialPreview.deserialize(preview_spec)
+
+        credential_proposal = CredentialProposal(
+            comment=comment,
+            credential_proposal=preview,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+        credential_proposal.assign_trace_decorator(
+            context.settings,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_proposal,
+            outcome=&#34;credential_exchange_create.START&#34;,
+        )
+
+        credential_manager = CredentialManager(context)
+
+        (
+            credential_exchange_record,
+            credential_offer_message,
+        ) = await credential_manager.prepare_send(
+            None,
+            credential_proposal=credential_proposal,
+            auto_remove=auto_remove,
+        )
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_create.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(credential_exchange_record.serialize())
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential, automating entire flow&#34;,
+)
+@request_schema(V10CredentialProposalRequestMandSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential from issuer to holder from attr values.
+
+    If both issuer and holder are configured for automatic responses, the operation
+    ultimately results in credential issue; otherwise, the result waits on the first
+    response not automated; the credential exchange record retains state regardless.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    comment = body.get(&#34;comment&#34;)
+    connection_id = body.get(&#34;connection_id&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=&#34;credential_proposal must be provided&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    connection_record = None
+    cred_ex_record = None
+    try:
+        preview = CredentialPreview.deserialize(preview_spec)
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_proposal = CredentialProposal(
+            comment=comment,
+            credential_proposal=preview,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+        credential_proposal.assign_trace_decorator(
+            context.settings,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_proposal,
+            outcome=&#34;credential_exchange_send.START&#34;,
+        )
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_offer_message,
+        ) = await credential_manager.prepare_send(
+            connection_id,
+            credential_proposal=credential_proposal,
+            auto_remove=auto_remove,
+        )
+        result = cred_ex_record.serialize()
+    except (StorageError, BaseModelError, CredentialManagerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(
+        credential_offer_message, connection_id=cred_ex_record.connection_id
+    )
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send issuer a credential proposal&#34;)
+@request_schema(V10CredentialProposalRequestOptSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_proposal(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential proposal.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    connection_record = None
+    cred_ex_record = None
+    try:
+        preview = CredentialPreview.deserialize(
+            preview_spec) if preview_spec else None
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        cred_ex_record = await credential_manager.create_proposal(
+            connection_id,
+            comment=comment,
+            credential_preview=preview,
+            auto_remove=auto_remove,
+            trace=trace_msg,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+
+        credential_proposal = CredentialProposal.deserialize(
+            cred_ex_record.credential_proposal_dict
+        )
+        result = cred_ex_record.serialize()
+    except (BaseModelError, StorageError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(
+        credential_proposal,
+        connection_id=connection_id,
+    )
+
+    trace_event(
+        context.settings,
+        credential_proposal,
+        outcome=&#34;credential_exchange_send_proposal.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+async def _create_free_offer(
+    context,
+    cred_def_id: str,
+    connection_id: str = None,
+    auto_issue: bool = False,
+    auto_remove: bool = False,
+    preview_spec: dict = None,
+    comment: str = None,
+    trace_msg: bool = None,
+):
+    &#34;&#34;&#34;Create a credential offer and related exchange record.&#34;&#34;&#34;
+
+    credential_preview = CredentialPreview.deserialize(preview_spec)
+    credential_proposal = CredentialProposal(
+        comment=comment,
+        credential_proposal=credential_preview,
+        cred_def_id=cred_def_id,
+    )
+    credential_proposal.assign_trace_decorator(
+        context.settings,
+        trace_msg,
+    )
+    credential_proposal_dict = credential_proposal.serialize()
+
+    cred_ex_record = V10CredentialExchange(
+        connection_id=connection_id,
+        initiator=V10CredentialExchange.INITIATOR_SELF,
+        credential_definition_id=cred_def_id,
+        credential_proposal_dict=credential_proposal_dict,
+        auto_issue=auto_issue,
+        auto_remove=auto_remove,
+        trace=trace_msg,
+    )
+
+    credential_manager = CredentialManager(context)
+
+    (
+        cred_ex_record,
+        credential_offer_message,
+    ) = await credential_manager.create_offer(cred_ex_record, comment=comment)
+
+    return (cred_ex_record, credential_offer_message)
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Create a credential offer, independent of any proposal&#34;,
+)
+@request_schema(V10CredentialOfferRequestSchema())
+@response_schema(CredentialOfferSchema(), 200)
+async def credential_exchange_create_free_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating free credential offer.
+
+    Unlike with `send-offer`, this credential exchange is not tied to a specific
+    connection. It must be dispatched out-of-band by the controller.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    cred_def_id = body.get(&#34;cred_def_id&#34;)
+    if not cred_def_id:
+        raise web.HTTPBadRequest(reason=&#34;cred_def_id is required&#34;)
+
+    auto_issue = body.get(
+        &#34;auto_issue&#34;, context.settings.get(
+            &#34;debug.auto_respond_credential_request&#34;)
+    )
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_preview&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    wallet: BaseWallet = await context.inject(BaseWallet)
+    if connection_id:
+        try:
+            connection_record = await ConnectionRecord.retrieve_by_id(
+                context, connection_id
+            )
+            conn_did = await wallet.get_local_did(connection_record.my_did)
+        except (WalletError, StorageError) as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+    else:
+        conn_did = await wallet.get_public_did()
+        if not conn_did:
+            raise web.HTTPBadRequest(
+                reason=f&#34;Wallet &#39;{wallet.name}&#39; has no public DID&#34;)
+        connection_id = None
+
+    did_info = await wallet.get_public_did()
+    endpoint = did_info.metadata.get(
+        &#34;endpoint&#34;, context.settings.get(&#34;default_endpoint&#34;)
+    )
+    if not endpoint:
+        raise web.HTTPBadRequest(
+            reason=&#34;An endpoint for the public DID is required&#34;)
+
+    cred_ex_record = None
+    try:
+        (cred_ex_record, credential_offer_message,) = await _create_free_offer(
+            context,
+            cred_def_id,
+            connection_id,
+            auto_issue,
+            auto_remove,
+            preview_spec,
+            comment,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_offer_message,
+            outcome=&#34;credential_exchange_create_free_offer.END&#34;,
+            perf_counter=r_time,
+        )
+
+        oob_url = serialize_outofband(
+            credential_offer_message, conn_did, endpoint)
+        result = cred_ex_record.serialize()
+    except (BaseModelError, CredentialManagerError, LedgerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    response = {&#34;record&#34;: result, &#34;oob_url&#34;: oob_url}
+    return web.json_response(response)
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential offer, independent of any proposal&#34;,
+)
+@request_schema(V10CredentialOfferRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_free_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending free credential offer.
+
+    An issuer initiates a such a credential offer, free from any
+    holder-initiated corresponding credential proposal with preview.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+
+    print(&#34;Patched route for sending credential offers.&#34;)
+
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    cred_def_id = body.get(&#34;cred_def_id&#34;)
+    template_id = body.get(&#34;template_id&#34;)
+
+    # Fetch data agreement template record
+    template_record: DataAgreementTemplateRecord = None
+    if template_id:
+        template_record: DataAgreementTemplateRecord = \
+            await DataAgreementTemplateRecord.latest_published_template_by_id(
+                context,
+                template_id
+            )
+
+        # Validate agreement method of use
+        if template_record.method_of_use != DataAgreementTemplateRecord.METHOD_OF_USE_DATA_SOURCE:
+            raise web.HTTPBadRequest(
+                reason=&#34;Data agreement method of use must be data-source.&#34;
+            )
+
+        # Replace cred def id from template if available.
+        cred_def_id = template_record.cred_def_id if template_record.cred_def_id else cred_def_id
+
+    # Check if either cred def id or data agreement id is present.
+    if not cred_def_id and not template_id:
+        raise web.HTTPBadRequest(
+            reason=&#34;Either cred def id or data agreement template id is required.&#34;
+        )
+
+    # Data agreement model
+    da_model = template_record.data_agreement_model
+
+    # Third party data sharing or not.
+    third_party_data_sharing = da_model.data_policy.third_party_data_sharing
+
+    auto_issue = body.get(
+        &#34;auto_issue&#34;, context.settings.get(
+            &#34;debug.auto_respond_credential_request&#34;)
+    )
+
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    comment = body.get(&#34;comment&#34;)
+
+    # If not third party data sharing,
+    # then use credential preview from request body
+    if not third_party_data_sharing:
+        preview_spec = body.get(&#34;credential_preview&#34;)
+        if not preview_spec:
+            raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+    else:
+        # If third party data sharing,
+        # then construct the credential dynamically from personal data.
+        # Values are empty strings.
+        preview_spec_attrs = []
+        for pd in da_model.personal_data:
+            preview_spec_attrs.append({
+                &#34;name&#34;: pd.attribute_name,
+                &#34;value&#34;: &#34; &#34;
+            })
+        preview_spec = {
+            &#34;@type&#34;: &#34;issue-credential/1.0/credential-preview&#34;,
+            &#34;attributes&#34;: preview_spec_attrs
+        }
+
+    trace_msg = body.get(&#34;trace&#34;)
+
+    cred_ex_record = None
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        (cred_ex_record, credential_offer_message,) = await _create_free_offer(
+            context,
+            cred_def_id,
+            connection_id,
+            auto_issue,
+            auto_remove,
+            preview_spec,
+            comment,
+            trace_msg,
+        )
+        result = cred_ex_record.serialize()
+    except (
+        StorageNotFoundError,
+        BaseModelError,
+        CredentialManagerError,
+        LedgerError,
+    ) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    # Initialise MyData DID Manager
+    manager: V2ADAManager = V2ADAManager(context=context)
+
+    # Construct data agreement offer message.
+    data_agreement_offer_message = \
+        await manager.build_data_agreement_offer_for_credential_exchange(
+            template_id=template_id,
+            cred_ex_record=cred_ex_record,
+            connection_record=connection_record,
+
+        )
+
+    # Add data agreement context decorator
+    credential_offer_message._decorators[&#34;data-agreement-context&#34;] =\
+        DataAgreementContextDecorator(
+        message_type=&#34;protocol&#34;,
+        message=data_agreement_offer_message.serialize()
+    )
+
+    cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+    cred_ex_record.template_id = template_id
+    await cred_ex_record.save(context)
+
+    result = cred_ex_record.serialize()
+
+    await outbound_handler(credential_offer_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send_free_offer.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential offer in reference to a proposal with preview&#34;,
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_bound_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending bound credential offer.
+
+    A holder initiates this sequence with a credential proposal; this message
+    responds with an offer bound to the proposal.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        if cred_ex_record.state != (
+            V10CredentialExchange.STATE_PROPOSAL_RECEIVED
+        ):  # check state here: manager call creates free offers too
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_PROPOSAL_RECEIVED})&#34;
+            )
+
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_offer_message,
+        ) = await credential_manager.create_offer(cred_ex_record, comment=None)
+
+        result = cred_ex_record.serialize()
+    except (StorageError, BaseModelError, CredentialManagerError, LedgerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_offer_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send_bound_offer.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send issuer a credential request&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_request(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential request.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    connection_id = cred_ex_record.connection_id
+
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_request_message,
+        ) = await credential_manager.create_request(
+            cred_ex_record, connection_record.my_did
+        )
+
+        # Initialize ADA manager.
+        manager = V2ADAManager(context)
+
+        # Create data agreement accept message.
+        accept_message = await manager.build_data_agreement_accept_for_data_ex_record(
+            connection_record,
+            cred_ex_record
+        )
+
+        # Update credential request message with data agreement context decorator
+        credential_request_message._decorators[&#34;data-agreement-context&#34;] = \
+            DataAgreementContextDecorator(
+            message_type=&#34;protocol&#34;,
+            message=accept_message.serialize()
+        )
+
+        result = cred_ex_record.serialize()
+    except (StorageError, CredentialManagerError, BaseModelError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_request_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_request_message,
+        outcome=&#34;credential_exchange_send_request.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send holder a credential&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialIssueRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_issue(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+    comment = body.get(&#34;comment&#34;)
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    connection_id = cred_ex_record.connection_id
+
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_issue_message,
+        ) = await credential_manager.issue_credential(cred_ex_record, comment=comment)
+
+        result = cred_ex_record.serialize()
+    except (BaseModelError, CredentialManagerError, IssuerError, StorageError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_issue_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_issue_message,
+        outcome=&#34;credential_exchange_issue.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Store a received credential&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialStoreRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_store(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for storing credential.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    try:
+        body = await request.json() or {}
+        credential_id = body.get(&#34;credential_id&#34;)
+    except JSONDecodeError:
+        credential_id = None
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_stored_message,
+        ) = await credential_manager.store_credential(cred_ex_record, credential_id)
+
+        result = cred_ex_record.serialize()
+    except (StorageError, CredentialManagerError, BaseModelError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_stored_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_stored_message,
+        outcome=&#34;credential_exchange_store.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;], summary=&#34;Remove an existing credential exchange record&#34;
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+async def credential_exchange_remove(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for removing a credential exchange record.
+
+    Args:
+        request: aiohttp request object
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    cred_ex_record = None
+    try:
+        cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+
+        await cred_ex_record.delete_record(context)
+
+        # Initialize ADA manager
+        manager = V2ADAManager(context)
+
+        # Delete data agreement instance
+        await manager.delete_da_instance_by_data_ex_id(cred_ex_record.credential_exchange_id)
+
+    except StorageNotFoundError as err:
+        await internal_error(err, web.HTTPNotFound, cred_ex_record, outbound_handler)
+    except StorageError as err:
+        await internal_error(err, web.HTTPBadRequest, cred_ex_record, outbound_handler)
+
+    return web.json_response({})
+
+
+@docs(
+    tags=[&#34;issue-credential&#34;], summary=&#34;Send a problem report for credential exchange&#34;
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialProblemReportRequestSchema())
+async def credential_exchange_problem_report(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending problem report.
+
+    Args:
+        request: aiohttp request object
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    body = await request.json()
+
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    error_result = ProblemReport(explain_ltxt=body[&#34;explain_ltxt&#34;])
+    error_result.assign_thread_id(cred_ex_record.thread_id)
+
+    await outbound_handler(error_result, connection_id=cred_ex_record.connection_id)
+
+    trace_event(
+        context.settings,
+        error_result,
+        outcome=&#34;credential_exchange_problem_report.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response({})
+
+
+async def register(app: web.Application):
+    &#34;&#34;&#34;Register routes.&#34;&#34;&#34;
+
+    app.add_routes(
+        [
+            web.get(
+                &#34;/issue-credential/records&#34;, credential_exchange_list, allow_head=False
+            ),
+            web.get(
+                &#34;/issue-credential/records/{cred_ex_id}&#34;,
+                credential_exchange_retrieve,
+                allow_head=False,
+            ),
+            web.post(&#34;/issue-credential/create&#34;, credential_exchange_create),
+            web.post(&#34;/issue-credential/send&#34;, credential_exchange_send),
+            web.post(
+                &#34;/issue-credential/send-proposal&#34;, credential_exchange_send_proposal
+            ),
+            web.post(
+                &#34;/issue-credential/send-offer&#34;, credential_exchange_send_free_offer
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/send-offer&#34;,
+                credential_exchange_send_bound_offer,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/send-request&#34;,
+                credential_exchange_send_request,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/issue&#34;,
+                credential_exchange_issue,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/store&#34;,
+                credential_exchange_store,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/problem-report&#34;,
+                credential_exchange_problem_report,
+            ),
+            web.delete(
+                &#34;/issue-credential/records/{cred_ex_id}&#34;,
+                credential_exchange_remove,
+            ),
+        ]
+    )
+
+
+def post_process_routes(app: web.Application):
+    &#34;&#34;&#34;Amend swagger API.&#34;&#34;&#34;
+
+    # Add top-level tags description
+    if &#34;tags&#34; not in app._state[&#34;swagger_dict&#34;]:
+        app._state[&#34;swagger_dict&#34;][&#34;tags&#34;] = []
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(
+        {
+            &#34;name&#34;: &#34;issue-credential&#34;,
+            &#34;description&#34;: &#34;Credential issue, revocation&#34;,
+            &#34;externalDocs&#34;: {&#34;description&#34;: &#34;Specification&#34;, &#34;url&#34;: SPEC_URI},
+        }
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_create</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for creating a credential from attr values.</p>
+<p>The internal credential record will be created without the credential
+being sent to any connection. This can be used in conjunction with
+the <code>oob</code> protocols to bind messages to an out of band message.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential, automating entire flow&#34;,
+)
+@request_schema(V10CredentialCreateSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_create(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating a credential from attr values.
+
+    The internal credential record will be created without the credential
+    being sent to any connection. This can be used in conjunction with
+    the `oob` protocols to bind messages to an out of band message.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+
+    body = await request.json()
+
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=&#34;credential_proposal must be provided&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    try:
+        preview = CredentialPreview.deserialize(preview_spec)
+
+        credential_proposal = CredentialProposal(
+            comment=comment,
+            credential_proposal=preview,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+        credential_proposal.assign_trace_decorator(
+            context.settings,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_proposal,
+            outcome=&#34;credential_exchange_create.START&#34;,
+        )
+
+        credential_manager = CredentialManager(context)
+
+        (
+            credential_exchange_record,
+            credential_offer_message,
+        ) = await credential_manager.prepare_send(
+            None,
+            credential_proposal=credential_proposal,
+            auto_remove=auto_remove,
+        )
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_create.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(credential_exchange_record.serialize())</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create_free_offer"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_create_free_offer</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for creating free credential offer.</p>
+<p>Unlike with <code>send-offer</code>, this credential exchange is not tied to a specific
+connection. It must be dispatched out-of-band by the controller.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Create a credential offer, independent of any proposal&#34;,
+)
+@request_schema(V10CredentialOfferRequestSchema())
+@response_schema(CredentialOfferSchema(), 200)
+async def credential_exchange_create_free_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for creating free credential offer.
+
+    Unlike with `send-offer`, this credential exchange is not tied to a specific
+    connection. It must be dispatched out-of-band by the controller.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    cred_def_id = body.get(&#34;cred_def_id&#34;)
+    if not cred_def_id:
+        raise web.HTTPBadRequest(reason=&#34;cred_def_id is required&#34;)
+
+    auto_issue = body.get(
+        &#34;auto_issue&#34;, context.settings.get(
+            &#34;debug.auto_respond_credential_request&#34;)
+    )
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_preview&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    wallet: BaseWallet = await context.inject(BaseWallet)
+    if connection_id:
+        try:
+            connection_record = await ConnectionRecord.retrieve_by_id(
+                context, connection_id
+            )
+            conn_did = await wallet.get_local_did(connection_record.my_did)
+        except (WalletError, StorageError) as err:
+            raise web.HTTPBadRequest(reason=err.roll_up) from err
+    else:
+        conn_did = await wallet.get_public_did()
+        if not conn_did:
+            raise web.HTTPBadRequest(
+                reason=f&#34;Wallet &#39;{wallet.name}&#39; has no public DID&#34;)
+        connection_id = None
+
+    did_info = await wallet.get_public_did()
+    endpoint = did_info.metadata.get(
+        &#34;endpoint&#34;, context.settings.get(&#34;default_endpoint&#34;)
+    )
+    if not endpoint:
+        raise web.HTTPBadRequest(
+            reason=&#34;An endpoint for the public DID is required&#34;)
+
+    cred_ex_record = None
+    try:
+        (cred_ex_record, credential_offer_message,) = await _create_free_offer(
+            context,
+            cred_def_id,
+            connection_id,
+            auto_issue,
+            auto_remove,
+            preview_spec,
+            comment,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_offer_message,
+            outcome=&#34;credential_exchange_create_free_offer.END&#34;,
+            perf_counter=r_time,
+        )
+
+        oob_url = serialize_outofband(
+            credential_offer_message, conn_did, endpoint)
+        result = cred_ex_record.serialize()
+    except (BaseModelError, CredentialManagerError, LedgerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    response = {&#34;record&#34;: result, &#34;oob_url&#34;: oob_url}
+    return web.json_response(response)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_issue"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_issue</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending credential.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send holder a credential&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialIssueRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_issue(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+    comment = body.get(&#34;comment&#34;)
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    connection_id = cred_ex_record.connection_id
+
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_issue_message,
+        ) = await credential_manager.issue_credential(cred_ex_record, comment=comment)
+
+        result = cred_ex_record.serialize()
+    except (BaseModelError, CredentialManagerError, IssuerError, StorageError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_issue_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_issue_message,
+        outcome=&#34;credential_exchange_issue.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_list"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_list</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for searching connection records.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The connection list response</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Fetch all credential exchange records&#34;)
+@querystring_schema(V10CredentialExchangeListQueryStringSchema)
+@response_schema(V10CredentialExchangeListResultSchema(), 200)
+async def credential_exchange_list(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for searching connection records.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The connection list response
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    tag_filter = {}
+    if &#34;thread_id&#34; in request.query and request.query[&#34;thread_id&#34;] != &#34;&#34;:
+        tag_filter[&#34;thread_id&#34;] = request.query[&#34;thread_id&#34;]
+    post_filter = {
+        k: request.query[k]
+        for k in (&#34;connection_id&#34;, &#34;role&#34;, &#34;state&#34;, &#34;template_id&#34;)
+        if request.query.get(k, &#34;&#34;) != &#34;&#34;
+    }
+
+    page = clean_and_get_field_from_dict(request.query, &#34;page&#34;)
+    page = int(page) if page is not None else page
+    page_size = clean_and_get_field_from_dict(request.query, &#34;page_size&#34;)
+    page_size = int(page_size) if page_size is not None else page_size
+
+    try:
+        records = await V10CredentialExchange.query(context, tag_filter, post_filter)
+
+        # Pagination result.
+        pagination_result = paginate_records(
+            records,
+            page if page else 1,
+            page_size if page_size else 10
+        )
+    except (StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(pagination_result._asdict())</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_problem_report"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_problem_report</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending problem report.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;], summary=&#34;Send a problem report for credential exchange&#34;
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialProblemReportRequestSchema())
+async def credential_exchange_problem_report(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending problem report.
+
+    Args:
+        request: aiohttp request object
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    body = await request.json()
+
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    error_result = ProblemReport(explain_ltxt=body[&#34;explain_ltxt&#34;])
+    error_result.assign_thread_id(cred_ex_record.thread_id)
+
+    await outbound_handler(error_result, connection_id=cred_ex_record.connection_id)
+
+    trace_event(
+        context.settings,
+        error_result,
+        outcome=&#34;credential_exchange_problem_report.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response({})</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_remove"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_remove</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for removing a credential exchange record.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;], summary=&#34;Remove an existing credential exchange record&#34;
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+async def credential_exchange_remove(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for removing a credential exchange record.
+
+    Args:
+        request: aiohttp request object
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    cred_ex_record = None
+    try:
+        cred_ex_record: V10CredentialExchange = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+
+        await cred_ex_record.delete_record(context)
+
+        # Initialize ADA manager
+        manager = V2ADAManager(context)
+
+        # Delete data agreement instance
+        await manager.delete_da_instance_by_data_ex_id(cred_ex_record.credential_exchange_id)
+
+    except StorageNotFoundError as err:
+        await internal_error(err, web.HTTPNotFound, cred_ex_record, outbound_handler)
+    except StorageError as err:
+        await internal_error(err, web.HTTPBadRequest, cred_ex_record, outbound_handler)
+
+    return web.json_response({})</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_retrieve"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_retrieve</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for fetching single connection record.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Fetch a single credential exchange record&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_retrieve(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for fetching single connection record.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    cred_ex_record = None
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+        result = cred_ex_record.serialize()
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    except (BaseModelError, StorageError) as err:
+        await internal_error(err, web.HTTPBadRequest, cred_ex_record, outbound_handler)
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_send</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending credential from issuer to holder from attr values.</p>
+<p>If both issuer and holder are configured for automatic responses, the operation
+ultimately results in credential issue; otherwise, the result waits on the first
+response not automated; the credential exchange record retains state regardless.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential, automating entire flow&#34;,
+)
+@request_schema(V10CredentialProposalRequestMandSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential from issuer to holder from attr values.
+
+    If both issuer and holder are configured for automatic responses, the operation
+    ultimately results in credential issue; otherwise, the result waits on the first
+    response not automated; the credential exchange record retains state regardless.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    comment = body.get(&#34;comment&#34;)
+    connection_id = body.get(&#34;connection_id&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    if not preview_spec:
+        raise web.HTTPBadRequest(reason=&#34;credential_proposal must be provided&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    connection_record = None
+    cred_ex_record = None
+    try:
+        preview = CredentialPreview.deserialize(preview_spec)
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_proposal = CredentialProposal(
+            comment=comment,
+            credential_proposal=preview,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+        credential_proposal.assign_trace_decorator(
+            context.settings,
+            trace_msg,
+        )
+
+        trace_event(
+            context.settings,
+            credential_proposal,
+            outcome=&#34;credential_exchange_send.START&#34;,
+        )
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_offer_message,
+        ) = await credential_manager.prepare_send(
+            connection_id,
+            credential_proposal=credential_proposal,
+            auto_remove=auto_remove,
+        )
+        result = cred_ex_record.serialize()
+    except (StorageError, BaseModelError, CredentialManagerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(
+        credential_offer_message, connection_id=cred_ex_record.connection_id
+    )
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_bound_offer"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_send_bound_offer</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending bound credential offer.</p>
+<p>A holder initiates this sequence with a credential proposal; this message
+responds with an offer bound to the proposal.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential offer in reference to a proposal with preview&#34;,
+)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_bound_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending bound credential offer.
+
+    A holder initiates this sequence with a credential proposal; this message
+    responds with an offer bound to the proposal.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        if cred_ex_record.state != (
+            V10CredentialExchange.STATE_PROPOSAL_RECEIVED
+        ):  # check state here: manager call creates free offers too
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_PROPOSAL_RECEIVED})&#34;
+            )
+
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_offer_message,
+        ) = await credential_manager.create_offer(cred_ex_record, comment=None)
+
+        result = cred_ex_record.serialize()
+    except (StorageError, BaseModelError, CredentialManagerError, LedgerError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_offer_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send_bound_offer.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_free_offer"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_send_free_offer</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending free credential offer.</p>
+<p>An issuer initiates a such a credential offer, free from any
+holder-initiated corresponding credential proposal with preview.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;issue-credential&#34;],
+    summary=&#34;Send holder a credential offer, independent of any proposal&#34;,
+)
+@request_schema(V10CredentialOfferRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_free_offer(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending free credential offer.
+
+    An issuer initiates a such a credential offer, free from any
+    holder-initiated corresponding credential proposal with preview.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+
+    print(&#34;Patched route for sending credential offers.&#34;)
+
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    cred_def_id = body.get(&#34;cred_def_id&#34;)
+    template_id = body.get(&#34;template_id&#34;)
+
+    # Fetch data agreement template record
+    template_record: DataAgreementTemplateRecord = None
+    if template_id:
+        template_record: DataAgreementTemplateRecord = \
+            await DataAgreementTemplateRecord.latest_published_template_by_id(
+                context,
+                template_id
+            )
+
+        # Validate agreement method of use
+        if template_record.method_of_use != DataAgreementTemplateRecord.METHOD_OF_USE_DATA_SOURCE:
+            raise web.HTTPBadRequest(
+                reason=&#34;Data agreement method of use must be data-source.&#34;
+            )
+
+        # Replace cred def id from template if available.
+        cred_def_id = template_record.cred_def_id if template_record.cred_def_id else cred_def_id
+
+    # Check if either cred def id or data agreement id is present.
+    if not cred_def_id and not template_id:
+        raise web.HTTPBadRequest(
+            reason=&#34;Either cred def id or data agreement template id is required.&#34;
+        )
+
+    # Data agreement model
+    da_model = template_record.data_agreement_model
+
+    # Third party data sharing or not.
+    third_party_data_sharing = da_model.data_policy.third_party_data_sharing
+
+    auto_issue = body.get(
+        &#34;auto_issue&#34;, context.settings.get(
+            &#34;debug.auto_respond_credential_request&#34;)
+    )
+
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    comment = body.get(&#34;comment&#34;)
+
+    # If not third party data sharing,
+    # then use credential preview from request body
+    if not third_party_data_sharing:
+        preview_spec = body.get(&#34;credential_preview&#34;)
+        if not preview_spec:
+            raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+    else:
+        # If third party data sharing,
+        # then construct the credential dynamically from personal data.
+        # Values are empty strings.
+        preview_spec_attrs = []
+        for pd in da_model.personal_data:
+            preview_spec_attrs.append({
+                &#34;name&#34;: pd.attribute_name,
+                &#34;value&#34;: &#34; &#34;
+            })
+        preview_spec = {
+            &#34;@type&#34;: &#34;issue-credential/1.0/credential-preview&#34;,
+            &#34;attributes&#34;: preview_spec_attrs
+        }
+
+    trace_msg = body.get(&#34;trace&#34;)
+
+    cred_ex_record = None
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        (cred_ex_record, credential_offer_message,) = await _create_free_offer(
+            context,
+            cred_def_id,
+            connection_id,
+            auto_issue,
+            auto_remove,
+            preview_spec,
+            comment,
+            trace_msg,
+        )
+        result = cred_ex_record.serialize()
+    except (
+        StorageNotFoundError,
+        BaseModelError,
+        CredentialManagerError,
+        LedgerError,
+    ) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    # Initialise MyData DID Manager
+    manager: V2ADAManager = V2ADAManager(context=context)
+
+    # Construct data agreement offer message.
+    data_agreement_offer_message = \
+        await manager.build_data_agreement_offer_for_credential_exchange(
+            template_id=template_id,
+            cred_ex_record=cred_ex_record,
+            connection_record=connection_record,
+
+        )
+
+    # Add data agreement context decorator
+    credential_offer_message._decorators[&#34;data-agreement-context&#34;] =\
+        DataAgreementContextDecorator(
+        message_type=&#34;protocol&#34;,
+        message=data_agreement_offer_message.serialize()
+    )
+
+    cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+    cred_ex_record.template_id = template_id
+    await cred_ex_record.save(context)
+
+    result = cred_ex_record.serialize()
+
+    await outbound_handler(credential_offer_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_offer_message,
+        outcome=&#34;credential_exchange_send_free_offer.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_proposal"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_send_proposal</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending credential proposal.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send issuer a credential proposal&#34;)
+@request_schema(V10CredentialProposalRequestOptSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_proposal(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential proposal.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    body = await request.json()
+
+    connection_id = body.get(&#34;connection_id&#34;)
+    comment = body.get(&#34;comment&#34;)
+    preview_spec = body.get(&#34;credential_proposal&#34;)
+    auto_remove = body.get(&#34;auto_remove&#34;)
+    trace_msg = body.get(&#34;trace&#34;)
+
+    connection_record = None
+    cred_ex_record = None
+    try:
+        preview = CredentialPreview.deserialize(
+            preview_spec) if preview_spec else None
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        cred_ex_record = await credential_manager.create_proposal(
+            connection_id,
+            comment=comment,
+            credential_preview=preview,
+            auto_remove=auto_remove,
+            trace=trace_msg,
+            **{t: body.get(t) for t in CRED_DEF_TAGS if body.get(t)},
+        )
+
+        credential_proposal = CredentialProposal.deserialize(
+            cred_ex_record.credential_proposal_dict
+        )
+        result = cred_ex_record.serialize()
+    except (BaseModelError, StorageError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(
+        credential_proposal,
+        connection_id=connection_id,
+    )
+
+    trace_event(
+        context.settings,
+        credential_proposal,
+        outcome=&#34;credential_exchange_send_proposal.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_request"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_send_request</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for sending credential request.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Send issuer a credential request&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_send_request(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for sending credential request.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+    connection_id = cred_ex_record.connection_id
+
+    connection_record = None
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_request_message,
+        ) = await credential_manager.create_request(
+            cred_ex_record, connection_record.my_did
+        )
+
+        # Initialize ADA manager.
+        manager = V2ADAManager(context)
+
+        # Create data agreement accept message.
+        accept_message = await manager.build_data_agreement_accept_for_data_ex_record(
+            connection_record,
+            cred_ex_record
+        )
+
+        # Update credential request message with data agreement context decorator
+        credential_request_message._decorators[&#34;data-agreement-context&#34;] = \
+            DataAgreementContextDecorator(
+            message_type=&#34;protocol&#34;,
+            message=accept_message.serialize()
+        )
+
+        result = cred_ex_record.serialize()
+    except (StorageError, CredentialManagerError, BaseModelError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_request_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_request_message,
+        outcome=&#34;credential_exchange_send_request.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_store"><code class="name flex">
+<span>async def <span class="ident">credential_exchange_store</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for storing credential.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(tags=[&#34;issue-credential&#34;], summary=&#34;Store a received credential&#34;)
+@match_info_schema(CredExIdMatchInfoSchema())
+@request_schema(V10CredentialStoreRequestSchema())
+@response_schema(V10CredentialExchangeSchema(), 200)
+async def credential_exchange_store(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for storing credential.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The credential exchange record
+
+    &#34;&#34;&#34;
+    r_time = get_timer()
+
+    context = request.app[&#34;request_context&#34;]
+    outbound_handler = request.app[&#34;outbound_message_router&#34;]
+
+    try:
+        body = await request.json() or {}
+        credential_id = body.get(&#34;credential_id&#34;)
+    except JSONDecodeError:
+        credential_id = None
+
+    credential_exchange_id = request.match_info[&#34;cred_ex_id&#34;]
+    try:
+        cred_ex_record = await V10CredentialExchange.retrieve_by_id(
+            context, credential_exchange_id
+        )
+    except StorageNotFoundError as err:
+        raise web.HTTPNotFound(reason=err.roll_up) from err
+
+    connection_record = None
+    connection_id = cred_ex_record.connection_id
+    try:
+        connection_record = await ConnectionRecord.retrieve_by_id(
+            context, connection_id
+        )
+        if not connection_record.is_ready:
+            raise web.HTTPForbidden(
+                reason=f&#34;Connection {connection_id} not ready&#34;)
+
+        credential_manager = CredentialManager(context)
+        (
+            cred_ex_record,
+            credential_stored_message,
+        ) = await credential_manager.store_credential(cred_ex_record, credential_id)
+
+        result = cred_ex_record.serialize()
+    except (StorageError, CredentialManagerError, BaseModelError) as err:
+        await internal_error(
+            err,
+            web.HTTPBadRequest,
+            cred_ex_record or connection_record,
+            outbound_handler,
+        )
+
+    await outbound_handler(credential_stored_message, connection_id=connection_id)
+
+    trace_event(
+        context.settings,
+        credential_stored_message,
+        outcome=&#34;credential_exchange_store.END&#34;,
+        perf_counter=r_time,
+    )
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.post_process_routes"><code class="name flex">
+<span>def <span class="ident">post_process_routes</span></span>(<span>app: aiohttp.web_app.Application)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Amend swagger API.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def post_process_routes(app: web.Application):
+    &#34;&#34;&#34;Amend swagger API.&#34;&#34;&#34;
+
+    # Add top-level tags description
+    if &#34;tags&#34; not in app._state[&#34;swagger_dict&#34;]:
+        app._state[&#34;swagger_dict&#34;][&#34;tags&#34;] = []
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(
+        {
+            &#34;name&#34;: &#34;issue-credential&#34;,
+            &#34;description&#34;: &#34;Credential issue, revocation&#34;,
+            &#34;externalDocs&#34;: {&#34;description&#34;: &#34;Specification&#34;, &#34;url&#34;: SPEC_URI},
+        }
+    )</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.register"><code class="name flex">
+<span>async def <span class="ident">register</span></span>(<span>app: aiohttp.web_app.Application)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register routes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def register(app: web.Application):
+    &#34;&#34;&#34;Register routes.&#34;&#34;&#34;
+
+    app.add_routes(
+        [
+            web.get(
+                &#34;/issue-credential/records&#34;, credential_exchange_list, allow_head=False
+            ),
+            web.get(
+                &#34;/issue-credential/records/{cred_ex_id}&#34;,
+                credential_exchange_retrieve,
+                allow_head=False,
+            ),
+            web.post(&#34;/issue-credential/create&#34;, credential_exchange_create),
+            web.post(&#34;/issue-credential/send&#34;, credential_exchange_send),
+            web.post(
+                &#34;/issue-credential/send-proposal&#34;, credential_exchange_send_proposal
+            ),
+            web.post(
+                &#34;/issue-credential/send-offer&#34;, credential_exchange_send_free_offer
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/send-offer&#34;,
+                credential_exchange_send_bound_offer,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/send-request&#34;,
+                credential_exchange_send_request,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/issue&#34;,
+                credential_exchange_issue,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/store&#34;,
+                credential_exchange_store,
+            ),
+            web.post(
+                &#34;/issue-credential/records/{cred_ex_id}/problem-report&#34;,
+                credential_exchange_problem_report,
+            ),
+            web.delete(
+                &#34;/issue-credential/records/{cred_ex_id}&#34;,
+                credential_exchange_remove,
+            ),
+        ]
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">CredExIdMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Path parameters and validators for request taking credential exchange id.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CredExIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking credential exchange id.&#34;&#34;&#34;
+
+    cred_ex_id = fields.Str(
+        description=&#34;Credential exchange identifier&#34;, required=True, **UUID4
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">CredIdMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Path parameters and validators for request taking credential id.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CredIdMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking credential id.&#34;&#34;&#34;
+
+    credential_id = fields.Str(
+        description=&#34;Credential identifier&#34;, required=True, example=UUIDFour.EXAMPLE
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementBoundCredentialOfferMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Path parameters and validators for request taking data agreement bound credential offer id.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementBoundCredentialOfferMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Path parameters and validators for request taking data agreement bound credential offer id.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+
+    # Data agreement identifier
+    data_agreement_id = fields.Str(
+        required=True,
+        description=&#34;The unique identifier for the data agreement.&#34;,
+        example=UUIDFour.EXAMPLE
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">RevokeQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parameters and validators for revocation request.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RevokeQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for revocation request.&#34;&#34;&#34;
+
+    rev_reg_id = fields.Str(
+        description=&#34;Revocation registry identifier&#34;,
+        required=True,
+        **INDY_REV_REG_ID,
+    )
+    cred_rev_id = fields.Int(
+        description=&#34;Credential revocation identifier&#34;,
+        required=True,
+        **NATURAL_NUM,
+    )
+    publish = fields.Boolean(
+        description=(
+            &#34;(True) publish revocation to ledger immediately, or &#34;
+            &#34;(False) mark it pending (default value)&#34;
+        ),
+        required=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema"><code class="flex name class">
+<span>class <span class="ident">SendDataAgreementNegotiationProblemReportRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending problem report.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendDataAgreementNegotiationProblemReportRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending problem report.&#34;&#34;&#34;
+
+    explain = fields.Str(description=&#34;Describe the problem&#34;, required=True,
+                         example=&#34;Data agreement context decorator not found in the didcomm message.&#34;)
+    problem_code = fields.Str(description=&#34;Problem code&#34;, required=True,
+                              example=DataAgreementNegotiationProblemReportReason.DATA_AGREEMENT_CONTEXT_INVALID.value)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V10ClearPendingRevocationsRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for clear pending revocations API call.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10ClearPendingRevocationsRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for clear pending revocations API call.&#34;&#34;&#34;
+
+    purge = fields.Dict(
+        required=False,
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID[&#34;example&#34;]),
+        values=fields.List(
+            fields.Str(
+                description=&#34;Credential revocation identifier&#34;, **INDY_CRED_REV_ID
+            )
+        ),
+        description=(
+            &#34;Credential revocation ids by revocation registry id: omit for all, &#34;
+            &#34;specify null or empty list for all pending per revocation registry&#34;
+        ),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialCreateSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for request schema for sending credential proposal admin message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialCreateSchema(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Base class for request schema for sending credential proposal admin message.&#34;&#34;&#34;
+
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;, required=False, **INDY_SCHEMA_ID
+    )
+    schema_issuer_did = fields.Str(
+        description=&#34;Schema issuer DID&#34;, required=False, **INDY_DID
+    )
+    schema_name = fields.Str(
+        description=&#34;Schema name&#34;, required=False, example=&#34;preferences&#34;
+    )
+    schema_version = fields.Str(
+        description=&#34;Schema version&#34;, required=False, **INDY_VERSION
+    )
+    issuer_did = fields.Str(
+        description=&#34;Credential issuer DID&#34;, required=False, **INDY_DID
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )
+    credential_proposal = fields.Nested(CredentialPreviewSchema, required=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.utils.tracing.AdminAPIMessageTracingSchema</li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialExchangeListQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parameters and validators for credential exchange list query.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialExchangeListQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Parameters and validators for credential exchange list query.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    thread_id = fields.UUID(
+        description=&#34;Thread identifier&#34;,
+        required=False,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    role = fields.Str(
+        description=&#34;Role assigned in credential exchange&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(V10CredentialExchange, m)
+                for m in vars(V10CredentialExchange)
+                if m.startswith(&#34;ROLE_&#34;)
+            ]
+        ),
+    )
+    state = fields.Str(
+        description=&#34;Credential exchange state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(V10CredentialExchange, m)
+                for m in vars(V10CredentialExchange)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )
+
+    # Data Agreement template identifier
+    template_id = fields.Str(required=False)
+
+    # Page
+    page = fields.Int(required=False)
+
+    # Page size
+    page_size = fields.Int(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialExchangeListResultSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Result schema for Aries#0036 v1.0 credential exchange query.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialExchangeListResultSchema(OpenAPISchema):
+    &#34;&#34;&#34;Result schema for Aries#0036 v1.0 credential exchange query.&#34;&#34;&#34;
+
+    results = fields.List(
+        fields.Nested(V10CredentialExchangeSchema),
+        description=&#34;Aries#0036 v1.0 credential exchange records&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialIssueRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending credential issue admin message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialIssueRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending credential issue admin message.&#34;&#34;&#34;
+
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialOfferRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending credential offer admin message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Request schema for sending credential offer admin message.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    auto_issue = fields.Bool(
+        description=(
+            &#34;Whether to respond automatically to credential requests, creating &#34;
+            &#34;and issuing requested credentials&#34;
+        ),
+        required=False,
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+        default=True,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    credential_preview = fields.Nested(CredentialPreviewSchema, required=False)
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )
+
+    # Data agreement template identifier
+    template_id = fields.Str(
+        description=&#34;Data agreement template identifier&#34;, required=False, example=UUIDFour.EXAMPLE
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.utils.tracing.AdminAPIMessageTracingSchema</li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialProblemReportRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending problem report.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialProblemReportRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending problem report.&#34;&#34;&#34;
+
+    explain_ltxt = fields.Str(required=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialProposalRequestMandSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending credential proposal on mandatory proposal preview.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialProposalRequestMandSchema(V10CredentialProposalRequestSchemaBase):
+    &#34;&#34;&#34;Request schema for sending credential proposal on mandatory proposal preview.&#34;&#34;&#34;
+
+    credential_proposal = fields.Nested(CredentialPreviewSchema, required=True)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase">V10CredentialProposalRequestSchemaBase</a></li>
+<li>aries_cloudagent.utils.tracing.AdminAPIMessageTracingSchema</li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialProposalRequestOptSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending credential proposal on optional proposal preview.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialProposalRequestOptSchema(V10CredentialProposalRequestSchemaBase):
+    &#34;&#34;&#34;Request schema for sending credential proposal on optional proposal preview.&#34;&#34;&#34;
+
+    credential_proposal = fields.Nested(
+        CredentialPreviewSchema, required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase">V10CredentialProposalRequestSchemaBase</a></li>
+<li>aries_cloudagent.utils.tracing.AdminAPIMessageTracingSchema</li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase"><code class="flex name class">
+<span>class <span class="ident">V10CredentialProposalRequestSchemaBase</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for request schema for sending credential proposal admin message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialProposalRequestSchemaBase(AdminAPIMessageTracingSchema):
+    &#34;&#34;&#34;Base class for request schema for sending credential proposal admin message.&#34;&#34;&#34;
+
+    connection_id = fields.UUID(
+        description=&#34;Connection identifier&#34;,
+        required=True,
+        example=UUIDFour.EXAMPLE,  # typically but not necessarily a UUID4
+    )
+    cred_def_id = fields.Str(
+        description=&#34;Credential definition identifier&#34;,
+        required=False,
+        **INDY_CRED_DEF_ID,
+    )
+    schema_id = fields.Str(
+        description=&#34;Schema identifier&#34;, required=False, **INDY_SCHEMA_ID
+    )
+    schema_issuer_did = fields.Str(
+        description=&#34;Schema issuer DID&#34;, required=False, **INDY_DID
+    )
+    schema_name = fields.Str(
+        description=&#34;Schema name&#34;, required=False, example=&#34;preferences&#34;
+    )
+    schema_version = fields.Str(
+        description=&#34;Schema version&#34;, required=False, **INDY_VERSION
+    )
+    issuer_did = fields.Str(
+        description=&#34;Credential issuer DID&#34;, required=False, **INDY_DID
+    )
+    auto_remove = fields.Bool(
+        description=(
+            &#34;Whether to remove the credential exchange record on completion &#34;
+            &#34;(overrides --preserve-exchange-records configuration setting)&#34;
+        ),
+        required=False,
+    )
+    comment = fields.Str(
+        description=&#34;Human-readable comment&#34;, required=False, allow_none=True
+    )
+    trace = fields.Bool(
+        description=&#34;Whether to trace event (default false)&#34;,
+        required=False,
+        example=False,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.utils.tracing.AdminAPIMessageTracingSchema</li>
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema">V10CredentialProposalRequestMandSchema</a></li>
+<li><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema">V10CredentialProposalRequestOptSchema</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V10CredentialStoreRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request schema for sending a credential store admin message.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10CredentialStoreRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request schema for sending a credential store admin message.&#34;&#34;&#34;
+
+    credential_id = fields.Str(required=False)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema"><code class="flex name class">
+<span>class <span class="ident">V10PublishRevocationsSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request and result schema for revocation publication API call.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V10PublishRevocationsSchema(OpenAPISchema):
+    &#34;&#34;&#34;Request and result schema for revocation publication API call.&#34;&#34;&#34;
+
+    rrid2crid = fields.Dict(
+        required=False,
+        # marshmallow 3.0 ignores
+        keys=fields.Str(example=INDY_REV_REG_ID[&#34;example&#34;]),
+        values=fields.List(
+            fields.Str(
+                description=&#34;Credential revocation identifier&#34;, **INDY_CRED_REV_ID
+            )
+        ),
+        description=&#34;Credential revocation ids by revocation registry id&#34;,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0" href="index.html">mydata_did.patched_protocols.issue_credential.v1_0</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create">credential_exchange_create</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create_free_offer" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_create_free_offer">credential_exchange_create_free_offer</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_issue" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_issue">credential_exchange_issue</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_list" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_list">credential_exchange_list</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_problem_report" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_problem_report">credential_exchange_problem_report</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_remove" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_remove">credential_exchange_remove</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_retrieve" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_retrieve">credential_exchange_retrieve</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send">credential_exchange_send</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_bound_offer" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_bound_offer">credential_exchange_send_bound_offer</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_free_offer" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_free_offer">credential_exchange_send_free_offer</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_proposal" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_proposal">credential_exchange_send_proposal</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_request" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_send_request">credential_exchange_send_request</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_store" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.credential_exchange_store">credential_exchange_store</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.post_process_routes" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.post_process_routes">post_process_routes</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.register" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.register">register</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema">CredExIdMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema">CredIdMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema">DataAgreementBoundCredentialOfferMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema">RevokeQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema">SendDataAgreementNegotiationProblemReportRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema">V10ClearPendingRevocationsRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema">V10CredentialCreateSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema">V10CredentialExchangeListQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema">V10CredentialExchangeListResultSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema">V10CredentialIssueRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema">V10CredentialOfferRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema">V10CredentialProblemReportRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema">V10CredentialProposalRequestMandSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema">V10CredentialProposalRequestOptSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase">V10CredentialProposalRequestSchemaBase</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema">V10CredentialStoreRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema">V10PublishRevocationsSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema.opts" href="#mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

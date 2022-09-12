@@ -1,0 +1,2604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.patched_protocols.issue_credential.v1_0.manager API documentation</title>
+<meta name="description" content="Classes to manage credentials." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.patched_protocols.issue_credential.v1_0.manager</code></h1>
+</header>
+<section id="section-intro">
+<p>Classes to manage credentials.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Classes to manage credentials.&#34;&#34;&#34;
+
+import asyncio
+import json
+import logging
+import uuid
+
+from typing import Mapping, Tuple
+
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
+
+from .messages.credential_ack import CredentialAck
+from .messages.credential_issue import CredentialIssue
+from .messages.credential_offer import CredentialOffer
+from .messages.credential_proposal import CredentialProposal
+from .messages.credential_request import CredentialRequest
+from .messages.inner.credential_preview import CredentialPreview
+from .models.credential_exchange import V10CredentialExchange
+from aries_cloudagent.cache.base import BaseCache
+from aries_cloudagent.config.injection_context import InjectionContext
+from aries_cloudagent.core.error import BaseError
+from aries_cloudagent.holder.base import BaseHolder, HolderError
+from aries_cloudagent.issuer.base import BaseIssuer
+from aries_cloudagent.issuer.indy import IssuerRevocationRegistryFullError
+from aries_cloudagent.ledger.base import BaseLedger
+from aries_cloudagent.messaging.credential_definitions.util import (
+    CRED_DEF_TAGS,
+    CRED_DEF_SENT_RECORD_TYPE,
+)
+from aries_cloudagent.revocation.indy import IndyRevocation
+from aries_cloudagent.revocation.models.revocation_registry import RevocationRegistry
+from aries_cloudagent.revocation.models.issuer_rev_reg_record import IssuerRevRegRecord
+from aries_cloudagent.storage.base import BaseStorage
+from aries_cloudagent.storage.error import StorageNotFoundError
+
+LOGGER = logging.getLogger(__name__)
+
+
+class CredentialManagerError(BaseError):
+    &#34;&#34;&#34;Credential error.&#34;&#34;&#34;
+
+
+class CredentialManager:
+    &#34;&#34;&#34;Class for managing credentials.&#34;&#34;&#34;
+
+    def __init__(self, context: InjectionContext):
+        &#34;&#34;&#34;
+        Initialize a CredentialManager.
+
+        Args:
+            context: The context for this credential
+        &#34;&#34;&#34;
+        self._context = context
+
+    @property
+    def context(self) -&gt; InjectionContext:
+        &#34;&#34;&#34;
+        Accessor for the current request context.
+
+        Returns:
+            The request context for this connection
+
+        &#34;&#34;&#34;
+        return self._context
+
+    async def _match_sent_cred_def_id(self, tag_query: Mapping[str, str]) -&gt; str:
+        &#34;&#34;&#34;Return most recent matching id of cred def that agent sent to ledger.&#34;&#34;&#34;
+
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+        found = await storage.search_records(
+            type_filter=CRED_DEF_SENT_RECORD_TYPE, tag_query=tag_query
+        ).fetch_all()
+        if not found:
+            raise CredentialManagerError(
+                f&#34;Issuer has no operable cred def for proposal spec {tag_query}&#34;
+            )
+        return max(found, key=lambda r: int(r.tags[&#34;epoch&#34;])).tags[&#34;cred_def_id&#34;]
+
+    async def prepare_send(
+        self,
+        connection_id: str,
+        credential_proposal: CredentialProposal,
+        auto_remove: bool = None,
+    ) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+        &#34;&#34;&#34;
+        Set up a new credential exchange for an automated send.
+
+        Args:
+            connection_id: Connection to create offer for
+            credential_proposal: The credential proposal with preview
+            auto_remove: Flag to automatically remove the record on completion
+
+        Returns:
+            A tuple of the new credential exchange record and credential offer message
+
+        &#34;&#34;&#34;
+        if auto_remove is None:
+            auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+        credential_exchange = V10CredentialExchange(
+            auto_issue=True,
+            auto_remove=auto_remove,
+            connection_id=connection_id,
+            initiator=V10CredentialExchange.INITIATOR_SELF,
+            role=V10CredentialExchange.ROLE_ISSUER,
+            credential_proposal_dict=credential_proposal.serialize(),
+            trace=(credential_proposal._trace is not None),
+        )
+        (credential_exchange, credential_offer) = await self.create_offer(
+            cred_ex_record=credential_exchange,
+            comment=&#34;create automated credential exchange&#34;,
+        )
+        return (credential_exchange, credential_offer)
+
+    async def create_proposal(
+        self,
+        connection_id: str,
+        *,
+        auto_offer: bool = None,
+        auto_remove: bool = None,
+        comment: str = None,
+        credential_preview: CredentialPreview = None,
+        schema_id: str = None,
+        schema_issuer_did: str = None,
+        schema_name: str = None,
+        schema_version: str = None,
+        cred_def_id: str = None,
+        issuer_did: str = None,
+        trace: bool = False,
+    ) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Create a credential proposal.
+
+        Args:
+            connection_id: Connection to create proposal for
+            auto_offer: Should this proposal request automatically be handled to
+                offer a credential
+            auto_remove: Should the record be automatically removed on completion
+            comment: Optional human-readable comment to include in proposal
+            credential_preview: The credential preview to use to create
+                the credential proposal
+            schema_id: Schema id for credential proposal
+            schema_issuer_did: Schema issuer DID for credential proposal
+            schema_name: Schema name for credential proposal
+            schema_version: Schema version for credential proposal
+            cred_def_id: Credential definition id for credential proposal
+            issuer_did: Issuer DID for credential proposal
+
+        Returns:
+            Resulting credential exchange record including credential proposal
+
+        &#34;&#34;&#34;
+        credential_proposal_message = CredentialProposal(
+            comment=comment,
+            credential_proposal=credential_preview,
+            schema_id=schema_id,
+            schema_issuer_did=schema_issuer_did,
+            schema_name=schema_name,
+            schema_version=schema_version,
+            cred_def_id=cred_def_id,
+            issuer_did=issuer_did,
+        )
+        credential_proposal_message.assign_trace_decorator(self.context.settings, trace)
+
+        if auto_remove is None:
+            auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+        cred_ex_record = V10CredentialExchange(
+            connection_id=connection_id,
+            thread_id=credential_proposal_message._thread_id,
+            initiator=V10CredentialExchange.INITIATOR_SELF,
+            role=V10CredentialExchange.ROLE_HOLDER,
+            state=V10CredentialExchange.STATE_PROPOSAL_SENT,
+            credential_proposal_dict=credential_proposal_message.serialize(),
+            auto_offer=auto_offer,
+            auto_remove=auto_remove,
+            trace=trace,
+        )
+        await cred_ex_record.save(self.context, reason=&#34;create credential proposal&#34;)
+        return cred_ex_record
+
+    async def receive_proposal(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential proposal from message in context on manager creation.
+
+        Returns:
+            The resulting credential exchange record, created
+
+        &#34;&#34;&#34;
+        credential_proposal_message = self.context.message
+        connection_id = self.context.connection_record.connection_id
+
+        # at this point, cred def and schema still open to potential negotiation
+        cred_ex_record = V10CredentialExchange(
+            connection_id=connection_id,
+            thread_id=credential_proposal_message._thread_id,
+            initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+            role=V10CredentialExchange.ROLE_ISSUER,
+            state=V10CredentialExchange.STATE_PROPOSAL_RECEIVED,
+            credential_proposal_dict=credential_proposal_message.serialize(),
+            auto_offer=self.context.settings.get(
+                &#34;debug.auto_respond_credential_proposal&#34;
+            ),
+            auto_issue=self.context.settings.get(
+                &#34;debug.auto_respond_credential_request&#34;
+            ),
+            trace=(credential_proposal_message._trace is not None),
+        )
+        await cred_ex_record.save(self.context, reason=&#34;receive credential proposal&#34;)
+
+        return cred_ex_record
+
+    async def create_offer(
+        self, cred_ex_record: V10CredentialExchange, comment: str = None
+    ) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+        &#34;&#34;&#34;
+        Create a credential offer, update credential exchange record.
+
+        Args:
+            cred_ex_record: Credential exchange to create offer for
+            comment: optional human-readable comment to set in offer message
+
+        Returns:
+            A tuple (credential exchange record, credential offer message)
+
+        &#34;&#34;&#34;
+
+        async def _create(cred_def_id):
+            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+            offer_json = await issuer.create_credential_offer(cred_def_id)
+            return json.loads(offer_json)
+
+        credential_proposal_message = CredentialProposal.deserialize(
+            cred_ex_record.credential_proposal_dict
+        )
+        credential_proposal_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+        cred_def_id = await self._match_sent_cred_def_id(
+            {
+                t: getattr(credential_proposal_message, t)
+                for t in CRED_DEF_TAGS
+                if getattr(credential_proposal_message, t)
+            }
+        )
+        cred_preview = credential_proposal_message.credential_proposal
+
+        # vet attributes
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            schema_id = await ledger.credential_definition_id2schema_id(cred_def_id)
+            schema = await ledger.get_schema(schema_id)
+        schema_attrs = {attr for attr in schema[&#34;attrNames&#34;]}
+        preview_attrs = {attr for attr in cred_preview.attr_dict()}
+        if preview_attrs != schema_attrs:
+            raise CredentialManagerError(
+                f&#34;Preview attributes {preview_attrs} &#34;
+                f&#34;mismatch corresponding schema attributes {schema_attrs}&#34;
+            )
+
+        credential_offer = None
+        cache_key = f&#34;credential_offer::{cred_def_id}&#34;
+        cache: BaseCache = await self.context.inject(BaseCache, required=False)
+        if cache:
+            async with cache.acquire(cache_key) as entry:
+                if entry.result:
+                    credential_offer = entry.result
+                else:
+                    credential_offer = await _create(cred_def_id)
+                    await entry.set_result(credential_offer, 3600)
+        if not credential_offer:
+            credential_offer = await _create(cred_def_id)
+
+        credential_offer_message = CredentialOffer(
+            comment=comment,
+            credential_preview=cred_preview,
+            offers_attach=[CredentialOffer.wrap_indy_offer(credential_offer)],
+        )
+
+        credential_offer_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_offer_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        cred_ex_record.thread_id = credential_offer_message._thread_id
+        cred_ex_record.schema_id = credential_offer[&#34;schema_id&#34;]
+        cred_ex_record.credential_definition_id = credential_offer[&#34;cred_def_id&#34;]
+        cred_ex_record.state = V10CredentialExchange.STATE_OFFER_SENT
+        cred_ex_record.credential_offer = credential_offer
+
+        cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+
+        await cred_ex_record.save(self.context, reason=&#34;create credential offer&#34;)
+
+        return (cred_ex_record, credential_offer_message)
+
+    async def receive_offer(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential offer.
+
+        Returns:
+            The credential exchange record, updated
+
+        &#34;&#34;&#34;
+        credential_offer_message: CredentialOffer = self.context.message
+        connection_id = self.context.connection_record.connection_id
+
+        credential_preview = credential_offer_message.credential_preview
+        indy_offer = credential_offer_message.indy_offer(0)
+        schema_id = indy_offer[&#34;schema_id&#34;]
+        cred_def_id = indy_offer[&#34;cred_def_id&#34;]
+
+        credential_proposal_dict = CredentialProposal(
+            comment=credential_offer_message.comment,
+            credential_proposal=credential_preview,
+            schema_id=schema_id,
+            cred_def_id=cred_def_id,
+        ).serialize()
+
+        # Get credential exchange record (holder sent proposal first)
+        # or create it (issuer sent offer first)
+        try:
+            (
+                cred_ex_record
+            ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+                self.context, connection_id, credential_offer_message._thread_id
+            )
+            cred_ex_record.credential_proposal_dict = credential_proposal_dict
+        except StorageNotFoundError:  # issuer sent this offer free of any proposal
+            cred_ex_record = V10CredentialExchange(
+                connection_id=connection_id,
+                thread_id=credential_offer_message._thread_id,
+                initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+                role=V10CredentialExchange.ROLE_HOLDER,
+                credential_proposal_dict=credential_proposal_dict,
+                trace=(credential_offer_message._trace is not None),
+            )
+
+        cred_ex_record.credential_offer = indy_offer
+        cred_ex_record.state = V10CredentialExchange.STATE_OFFER_RECEIVED
+        cred_ex_record.schema_id = schema_id
+        cred_ex_record.credential_definition_id = cred_def_id
+        cred_ex_record.auto_remove = False
+
+        await cred_ex_record.save(self.context, reason=&#34;receive credential offer&#34;)
+
+        return cred_ex_record
+
+    async def create_request(
+        self, cred_ex_record: V10CredentialExchange, holder_did: str
+    ) -&gt; Tuple[V10CredentialExchange, CredentialRequest]:
+        &#34;&#34;&#34;
+        Create a credential request.
+
+        Args:
+            cred_ex_record: Credential exchange record
+                for which to create request
+            holder_did: holder DID
+
+        Returns:
+            A tuple (credential exchange record, credential request message)
+
+        &#34;&#34;&#34;
+        if cred_ex_record.state != V10CredentialExchange.STATE_OFFER_RECEIVED:
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_OFFER_RECEIVED})&#34;
+            )
+
+        credential_definition_id = cred_ex_record.credential_definition_id
+        credential_offer = cred_ex_record.credential_offer
+
+        async def _create():
+            ledger: BaseLedger = await self.context.inject(BaseLedger)
+            async with ledger:
+                credential_definition = await ledger.get_credential_definition(
+                    credential_definition_id
+                )
+
+            holder: BaseHolder = await self.context.inject(BaseHolder)
+            request_json, metadata_json = await holder.create_credential_request(
+                credential_offer, credential_definition, holder_did
+            )
+            return {
+                &#34;request&#34;: json.loads(request_json),
+                &#34;metadata&#34;: json.loads(metadata_json),
+            }
+
+        if cred_ex_record.credential_request:
+            LOGGER.warning(
+                &#34;create_request called multiple times for v1.0 credential exchange: %s&#34;,
+                cred_ex_record.credential_exchange_id,
+            )
+        else:
+            if &#34;nonce&#34; not in credential_offer:
+                raise CredentialManagerError(&#34;Missing nonce in credential offer&#34;)
+            nonce = credential_offer[&#34;nonce&#34;]
+            cache_key = (
+                f&#34;credential_request::{credential_definition_id}::{holder_did}::{nonce}&#34;
+            )
+            cred_req_result = None
+            cache: BaseCache = await self.context.inject(BaseCache, required=False)
+            if cache:
+                async with cache.acquire(cache_key) as entry:
+                    if entry.result:
+                        cred_req_result = entry.result
+                    else:
+                        cred_req_result = await _create()
+                        await entry.set_result(cred_req_result, 3600)
+            if not cred_req_result:
+                cred_req_result = await _create()
+
+            (
+                cred_ex_record.credential_request,
+                cred_ex_record.credential_request_metadata,
+            ) = (cred_req_result[&#34;request&#34;], cred_req_result[&#34;metadata&#34;])
+
+        credential_request_message = CredentialRequest(
+            requests_attach=[
+                CredentialRequest.wrap_indy_cred_req(cred_ex_record.credential_request)
+            ]
+        )
+        credential_request_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_request_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_SENT
+        await cred_ex_record.save(self.context, reason=&#34;create credential request&#34;)
+
+        return (cred_ex_record, credential_request_message)
+
+    async def receive_request(self):
+        &#34;&#34;&#34;
+        Receive a credential request.
+
+        Args:
+            credential_request_message: Credential request to receive
+
+        Returns:
+            credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_request_message = self.context.message
+        assert len(credential_request_message.requests_attach or []) == 1
+        credential_request = credential_request_message.indy_cred_req(0)
+        connection_id = (
+            self.context.connection_record
+            and self.context.connection_record.connection_id
+        )
+
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context, connection_id, credential_request_message._thread_id
+        )
+        cred_ex_record.credential_request = credential_request
+        cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_RECEIVED
+        await cred_ex_record.save(self.context, reason=&#34;receive credential request&#34;)
+
+        return cred_ex_record
+
+    async def issue_credential(
+        self,
+        cred_ex_record: V10CredentialExchange,
+        *,
+        comment: str = None,
+        retries: int = 5,
+    ) -&gt; Tuple[V10CredentialExchange, CredentialIssue]:
+        &#34;&#34;&#34;
+        Issue a credential.
+
+        Args:
+            cred_ex_record: The credential exchange record
+                for which to issue a credential
+            comment: optional human-readable comment pertaining to credential issue
+
+        Returns:
+            Tuple: (Updated credential exchange record, credential message)
+
+        &#34;&#34;&#34;
+
+        if cred_ex_record.state != V10CredentialExchange.STATE_REQUEST_RECEIVED:
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_REQUEST_RECEIVED})&#34;
+            )
+
+        schema_id = cred_ex_record.schema_id
+        rev_reg = None
+
+        if cred_ex_record.credential:
+            LOGGER.warning(
+                &#34;issue_credential called multiple times for &#34;
+                + &#34;credential exchange record %s - abstaining&#34;,
+                cred_ex_record.credential_exchange_id,
+            )
+        else:
+            credential_offer = cred_ex_record.credential_offer
+            credential_request = cred_ex_record.credential_request
+
+            ledger: BaseLedger = await self.context.inject(BaseLedger)
+            async with ledger:
+                schema = await ledger.get_schema(schema_id)
+                credential_definition = await ledger.get_credential_definition(
+                    cred_ex_record.credential_definition_id
+                )
+
+            tails_path = None
+            if credential_definition[&#34;value&#34;].get(&#34;revocation&#34;):
+                revoc = IndyRevocation(self.context)
+                try:
+                    active_rev_reg_rec = await revoc.get_active_issuer_rev_reg_record(
+                        cred_ex_record.credential_definition_id
+                    )
+                    rev_reg = await active_rev_reg_rec.get_registry()
+                    cred_ex_record.revoc_reg_id = active_rev_reg_rec.revoc_reg_id
+
+                    tails_path = rev_reg.tails_local_path
+                    await rev_reg.get_or_fetch_local_tails_path()
+
+                except StorageNotFoundError:
+                    posted_rev_reg_recs = await IssuerRevRegRecord.query_by_cred_def_id(
+                        self.context,
+                        cred_ex_record.credential_definition_id,
+                        state=IssuerRevRegRecord.STATE_POSTED,
+                    )
+                    if not posted_rev_reg_recs:
+                        # Send next 2 rev regs, publish tails files in background
+                        old_rev_reg_recs = sorted(
+                            await IssuerRevRegRecord.query_by_cred_def_id(
+                                self.context,
+                                cred_ex_record.credential_definition_id,
+                            )
+                        )  # prefer to reuse prior rev reg size
+                        for _ in range(2):
+                            pending_rev_reg_rec = await revoc.init_issuer_registry(
+                                cred_ex_record.credential_definition_id,
+                                max_cred_num=(
+                                    old_rev_reg_recs[0].max_cred_num
+                                    if old_rev_reg_recs
+                                    else None
+                                ),
+                            )
+                            asyncio.ensure_future(
+                                pending_rev_reg_rec.stage_pending_registry(
+                                    self.context,
+                                    max_attempts=3,  # fail both in &lt; 2s at worst
+                                )
+                            )
+                    if retries &gt; 0:
+                        LOGGER.info(
+                            &#34;Waiting 2s on posted rev reg for cred def %s, retrying&#34;,
+                            cred_ex_record.credential_definition_id,
+                        )
+                        await asyncio.sleep(2)
+                        return await self.issue_credential(
+                            cred_ex_record=cred_ex_record,
+                            comment=comment,
+                            retries=retries - 1,
+                        )
+
+                    raise CredentialManagerError(
+                        f&#34;Cred def id {cred_ex_record.credential_definition_id} &#34;
+                        &#34;has no active revocation registry&#34;
+                    )
+
+            credential_values = CredentialProposal.deserialize(
+                cred_ex_record.credential_proposal_dict
+            ).credential_proposal.attr_dict(decode=False)
+            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+            try:
+                (
+                    credential_json,
+                    cred_ex_record.revocation_id,
+                ) = await issuer.create_credential(
+                    schema,
+                    credential_offer,
+                    credential_request,
+                    credential_values,
+                    cred_ex_record.credential_exchange_id,
+                    cred_ex_record.revoc_reg_id,
+                    tails_path,
+                )
+
+                # If the rev reg is now full
+                if rev_reg and rev_reg.max_creds == int(cred_ex_record.revocation_id):
+                    await active_rev_reg_rec.set_state(
+                        self.context,
+                        IssuerRevRegRecord.STATE_FULL,
+                    )
+
+                    # Send next 1 rev reg, publish tails file in background
+                    pending_rev_reg_rec = await revoc.init_issuer_registry(
+                        active_rev_reg_rec.cred_def_id,
+                        max_cred_num=active_rev_reg_rec.max_cred_num,
+                    )
+                    asyncio.ensure_future(
+                        pending_rev_reg_rec.stage_pending_registry(
+                            self.context,
+                            max_attempts=16,
+                        )
+                    )
+
+            except IssuerRevocationRegistryFullError:
+                # unlucky: duelling instance issued last cred near same time as us
+                await active_rev_reg_rec.set_state(
+                    self.context,
+                    IssuerRevRegRecord.STATE_FULL,
+                )
+
+                if retries &gt; 0:
+                    # use next rev reg; at worst, lucky instance is putting one up
+                    LOGGER.info(
+                        &#34;Waiting 1s and retrying: revocation registry %s is full&#34;,
+                        active_rev_reg_rec.revoc_reg_id,
+                    )
+                    await asyncio.sleep(1)
+                    return await self.issue_credential(
+                        cred_ex_record=cred_ex_record,
+                        comment=comment,
+                        retries=retries - 1,
+                    )
+
+                raise
+
+            cred_ex_record.credential = json.loads(credential_json)
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ISSUED
+        await cred_ex_record.save(self.context, reason=&#34;issue credential&#34;)
+
+        credential_message = CredentialIssue(
+            comment=comment,
+            credentials_attach=[
+                CredentialIssue.wrap_indy_credential(cred_ex_record.credential)
+            ],
+        )
+        credential_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        return (cred_ex_record, credential_message)
+
+    async def receive_credential(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential from an issuer.
+
+        Hold in storage potentially to be processed by controller before storing.
+
+        Returns:
+            Credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_message = self.context.message
+        assert len(credential_message.credentials_attach or []) == 1
+        raw_credential = credential_message.indy_credential(0)
+
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context,
+            self.context.connection_record.connection_id,
+            credential_message._thread_id,
+        )
+
+        cred_ex_record.raw_credential = raw_credential
+        cred_ex_record.state = V10CredentialExchange.STATE_CREDENTIAL_RECEIVED
+
+        await cred_ex_record.save(self.context, reason=&#34;receive credential&#34;)
+        return cred_ex_record
+
+    async def store_credential(
+        self, cred_ex_record: V10CredentialExchange, credential_id: str = None
+    ) -&gt; Tuple[V10CredentialExchange, CredentialAck]:
+        &#34;&#34;&#34;
+        Store a credential in holder wallet; send ack to issuer.
+
+        Args:
+            cred_ex_record: credential exchange record
+                with credential to store and ack
+            credential_id: optional credential identifier to override default on storage
+
+        Returns:
+            Tuple: (Updated credential exchange record, credential ack message)
+
+        &#34;&#34;&#34;
+        if cred_ex_record.state != (V10CredentialExchange.STATE_CREDENTIAL_RECEIVED):
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_CREDENTIAL_RECEIVED})&#34;
+            )
+
+        raw_credential = cred_ex_record.raw_credential
+        revoc_reg_def = None
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            credential_definition = await ledger.get_credential_definition(
+                raw_credential[&#34;cred_def_id&#34;]
+            )
+            if (
+                &#34;rev_reg_id&#34; in raw_credential
+                and raw_credential[&#34;rev_reg_id&#34;] is not None
+            ):
+                revoc_reg_def = await ledger.get_revoc_reg_def(
+                    raw_credential[&#34;rev_reg_id&#34;]
+                )
+
+        holder: BaseHolder = await self.context.inject(BaseHolder)
+        if (
+            cred_ex_record.credential_proposal_dict
+            and &#34;credential_proposal&#34; in cred_ex_record.credential_proposal_dict
+        ):
+            mime_types = CredentialPreview.deserialize(
+                cred_ex_record.credential_proposal_dict[&#34;credential_proposal&#34;]
+            ).mime_types()
+        else:
+            mime_types = None
+
+        if revoc_reg_def:
+            revoc_reg = RevocationRegistry.from_definition(revoc_reg_def, True)
+            await revoc_reg.get_or_fetch_local_tails_path()
+        try:
+            credential_id = await holder.store_credential(
+                credential_definition,
+                raw_credential,
+                cred_ex_record.credential_request_metadata,
+                mime_types,
+                credential_id=credential_id,
+                rev_reg_def=revoc_reg_def,
+            )
+        except HolderError as e:
+            LOGGER.error(f&#34;Error storing credential. {e.error_code}: {e.message}&#34;)
+            raise e
+
+        credential_json = await holder.get_credential(credential_id)
+        credential = json.loads(credential_json)
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+        cred_ex_record.credential_id = credential_id
+        cred_ex_record.credential = credential
+        cred_ex_record.revoc_reg_id = credential.get(&#34;rev_reg_id&#34;, None)
+        cred_ex_record.revocation_id = credential.get(&#34;cred_rev_id&#34;, None)
+
+        await cred_ex_record.save(self.context, reason=&#34;store credential&#34;)
+
+        credential_ack_message = CredentialAck()
+        credential_ack_message.assign_thread_id(
+            cred_ex_record.thread_id, cred_ex_record.parent_thread_id
+        )
+        credential_ack_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        if cred_ex_record.auto_remove:
+            # Delete the exchange record since we&#39;re done with it
+            await cred_ex_record.delete_record(self.context)
+
+        return (cred_ex_record, credential_ack_message)
+
+    async def receive_credential_ack(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive credential ack from holder.
+
+        Returns:
+            credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_ack_message = self.context.message
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context,
+            self.context.connection_record.connection_id,
+            credential_ack_message._thread_id,
+        )
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+        await cred_ex_record.save(self.context, reason=&#34;credential acked&#34;)
+
+        if cred_ex_record.auto_remove:
+            # We&#39;re done with the exchange so delete
+            await cred_ex_record.delete_record(self.context)
+
+        return cred_ex_record</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager"><code class="flex name class">
+<span>class <span class="ident">CredentialManager</span></span>
+<span>(</span><span>context: aries_cloudagent.config.injection_context.InjectionContext)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for managing credentials.</p>
+<p>Initialize a CredentialManager.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>context</code></strong></dt>
+<dd>The context for this credential</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CredentialManager:
+    &#34;&#34;&#34;Class for managing credentials.&#34;&#34;&#34;
+
+    def __init__(self, context: InjectionContext):
+        &#34;&#34;&#34;
+        Initialize a CredentialManager.
+
+        Args:
+            context: The context for this credential
+        &#34;&#34;&#34;
+        self._context = context
+
+    @property
+    def context(self) -&gt; InjectionContext:
+        &#34;&#34;&#34;
+        Accessor for the current request context.
+
+        Returns:
+            The request context for this connection
+
+        &#34;&#34;&#34;
+        return self._context
+
+    async def _match_sent_cred_def_id(self, tag_query: Mapping[str, str]) -&gt; str:
+        &#34;&#34;&#34;Return most recent matching id of cred def that agent sent to ledger.&#34;&#34;&#34;
+
+        storage: BaseStorage = await self.context.inject(BaseStorage)
+        found = await storage.search_records(
+            type_filter=CRED_DEF_SENT_RECORD_TYPE, tag_query=tag_query
+        ).fetch_all()
+        if not found:
+            raise CredentialManagerError(
+                f&#34;Issuer has no operable cred def for proposal spec {tag_query}&#34;
+            )
+        return max(found, key=lambda r: int(r.tags[&#34;epoch&#34;])).tags[&#34;cred_def_id&#34;]
+
+    async def prepare_send(
+        self,
+        connection_id: str,
+        credential_proposal: CredentialProposal,
+        auto_remove: bool = None,
+    ) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+        &#34;&#34;&#34;
+        Set up a new credential exchange for an automated send.
+
+        Args:
+            connection_id: Connection to create offer for
+            credential_proposal: The credential proposal with preview
+            auto_remove: Flag to automatically remove the record on completion
+
+        Returns:
+            A tuple of the new credential exchange record and credential offer message
+
+        &#34;&#34;&#34;
+        if auto_remove is None:
+            auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+        credential_exchange = V10CredentialExchange(
+            auto_issue=True,
+            auto_remove=auto_remove,
+            connection_id=connection_id,
+            initiator=V10CredentialExchange.INITIATOR_SELF,
+            role=V10CredentialExchange.ROLE_ISSUER,
+            credential_proposal_dict=credential_proposal.serialize(),
+            trace=(credential_proposal._trace is not None),
+        )
+        (credential_exchange, credential_offer) = await self.create_offer(
+            cred_ex_record=credential_exchange,
+            comment=&#34;create automated credential exchange&#34;,
+        )
+        return (credential_exchange, credential_offer)
+
+    async def create_proposal(
+        self,
+        connection_id: str,
+        *,
+        auto_offer: bool = None,
+        auto_remove: bool = None,
+        comment: str = None,
+        credential_preview: CredentialPreview = None,
+        schema_id: str = None,
+        schema_issuer_did: str = None,
+        schema_name: str = None,
+        schema_version: str = None,
+        cred_def_id: str = None,
+        issuer_did: str = None,
+        trace: bool = False,
+    ) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Create a credential proposal.
+
+        Args:
+            connection_id: Connection to create proposal for
+            auto_offer: Should this proposal request automatically be handled to
+                offer a credential
+            auto_remove: Should the record be automatically removed on completion
+            comment: Optional human-readable comment to include in proposal
+            credential_preview: The credential preview to use to create
+                the credential proposal
+            schema_id: Schema id for credential proposal
+            schema_issuer_did: Schema issuer DID for credential proposal
+            schema_name: Schema name for credential proposal
+            schema_version: Schema version for credential proposal
+            cred_def_id: Credential definition id for credential proposal
+            issuer_did: Issuer DID for credential proposal
+
+        Returns:
+            Resulting credential exchange record including credential proposal
+
+        &#34;&#34;&#34;
+        credential_proposal_message = CredentialProposal(
+            comment=comment,
+            credential_proposal=credential_preview,
+            schema_id=schema_id,
+            schema_issuer_did=schema_issuer_did,
+            schema_name=schema_name,
+            schema_version=schema_version,
+            cred_def_id=cred_def_id,
+            issuer_did=issuer_did,
+        )
+        credential_proposal_message.assign_trace_decorator(self.context.settings, trace)
+
+        if auto_remove is None:
+            auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+        cred_ex_record = V10CredentialExchange(
+            connection_id=connection_id,
+            thread_id=credential_proposal_message._thread_id,
+            initiator=V10CredentialExchange.INITIATOR_SELF,
+            role=V10CredentialExchange.ROLE_HOLDER,
+            state=V10CredentialExchange.STATE_PROPOSAL_SENT,
+            credential_proposal_dict=credential_proposal_message.serialize(),
+            auto_offer=auto_offer,
+            auto_remove=auto_remove,
+            trace=trace,
+        )
+        await cred_ex_record.save(self.context, reason=&#34;create credential proposal&#34;)
+        return cred_ex_record
+
+    async def receive_proposal(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential proposal from message in context on manager creation.
+
+        Returns:
+            The resulting credential exchange record, created
+
+        &#34;&#34;&#34;
+        credential_proposal_message = self.context.message
+        connection_id = self.context.connection_record.connection_id
+
+        # at this point, cred def and schema still open to potential negotiation
+        cred_ex_record = V10CredentialExchange(
+            connection_id=connection_id,
+            thread_id=credential_proposal_message._thread_id,
+            initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+            role=V10CredentialExchange.ROLE_ISSUER,
+            state=V10CredentialExchange.STATE_PROPOSAL_RECEIVED,
+            credential_proposal_dict=credential_proposal_message.serialize(),
+            auto_offer=self.context.settings.get(
+                &#34;debug.auto_respond_credential_proposal&#34;
+            ),
+            auto_issue=self.context.settings.get(
+                &#34;debug.auto_respond_credential_request&#34;
+            ),
+            trace=(credential_proposal_message._trace is not None),
+        )
+        await cred_ex_record.save(self.context, reason=&#34;receive credential proposal&#34;)
+
+        return cred_ex_record
+
+    async def create_offer(
+        self, cred_ex_record: V10CredentialExchange, comment: str = None
+    ) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+        &#34;&#34;&#34;
+        Create a credential offer, update credential exchange record.
+
+        Args:
+            cred_ex_record: Credential exchange to create offer for
+            comment: optional human-readable comment to set in offer message
+
+        Returns:
+            A tuple (credential exchange record, credential offer message)
+
+        &#34;&#34;&#34;
+
+        async def _create(cred_def_id):
+            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+            offer_json = await issuer.create_credential_offer(cred_def_id)
+            return json.loads(offer_json)
+
+        credential_proposal_message = CredentialProposal.deserialize(
+            cred_ex_record.credential_proposal_dict
+        )
+        credential_proposal_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+        cred_def_id = await self._match_sent_cred_def_id(
+            {
+                t: getattr(credential_proposal_message, t)
+                for t in CRED_DEF_TAGS
+                if getattr(credential_proposal_message, t)
+            }
+        )
+        cred_preview = credential_proposal_message.credential_proposal
+
+        # vet attributes
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            schema_id = await ledger.credential_definition_id2schema_id(cred_def_id)
+            schema = await ledger.get_schema(schema_id)
+        schema_attrs = {attr for attr in schema[&#34;attrNames&#34;]}
+        preview_attrs = {attr for attr in cred_preview.attr_dict()}
+        if preview_attrs != schema_attrs:
+            raise CredentialManagerError(
+                f&#34;Preview attributes {preview_attrs} &#34;
+                f&#34;mismatch corresponding schema attributes {schema_attrs}&#34;
+            )
+
+        credential_offer = None
+        cache_key = f&#34;credential_offer::{cred_def_id}&#34;
+        cache: BaseCache = await self.context.inject(BaseCache, required=False)
+        if cache:
+            async with cache.acquire(cache_key) as entry:
+                if entry.result:
+                    credential_offer = entry.result
+                else:
+                    credential_offer = await _create(cred_def_id)
+                    await entry.set_result(credential_offer, 3600)
+        if not credential_offer:
+            credential_offer = await _create(cred_def_id)
+
+        credential_offer_message = CredentialOffer(
+            comment=comment,
+            credential_preview=cred_preview,
+            offers_attach=[CredentialOffer.wrap_indy_offer(credential_offer)],
+        )
+
+        credential_offer_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_offer_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        cred_ex_record.thread_id = credential_offer_message._thread_id
+        cred_ex_record.schema_id = credential_offer[&#34;schema_id&#34;]
+        cred_ex_record.credential_definition_id = credential_offer[&#34;cred_def_id&#34;]
+        cred_ex_record.state = V10CredentialExchange.STATE_OFFER_SENT
+        cred_ex_record.credential_offer = credential_offer
+
+        cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+
+        await cred_ex_record.save(self.context, reason=&#34;create credential offer&#34;)
+
+        return (cred_ex_record, credential_offer_message)
+
+    async def receive_offer(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential offer.
+
+        Returns:
+            The credential exchange record, updated
+
+        &#34;&#34;&#34;
+        credential_offer_message: CredentialOffer = self.context.message
+        connection_id = self.context.connection_record.connection_id
+
+        credential_preview = credential_offer_message.credential_preview
+        indy_offer = credential_offer_message.indy_offer(0)
+        schema_id = indy_offer[&#34;schema_id&#34;]
+        cred_def_id = indy_offer[&#34;cred_def_id&#34;]
+
+        credential_proposal_dict = CredentialProposal(
+            comment=credential_offer_message.comment,
+            credential_proposal=credential_preview,
+            schema_id=schema_id,
+            cred_def_id=cred_def_id,
+        ).serialize()
+
+        # Get credential exchange record (holder sent proposal first)
+        # or create it (issuer sent offer first)
+        try:
+            (
+                cred_ex_record
+            ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+                self.context, connection_id, credential_offer_message._thread_id
+            )
+            cred_ex_record.credential_proposal_dict = credential_proposal_dict
+        except StorageNotFoundError:  # issuer sent this offer free of any proposal
+            cred_ex_record = V10CredentialExchange(
+                connection_id=connection_id,
+                thread_id=credential_offer_message._thread_id,
+                initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+                role=V10CredentialExchange.ROLE_HOLDER,
+                credential_proposal_dict=credential_proposal_dict,
+                trace=(credential_offer_message._trace is not None),
+            )
+
+        cred_ex_record.credential_offer = indy_offer
+        cred_ex_record.state = V10CredentialExchange.STATE_OFFER_RECEIVED
+        cred_ex_record.schema_id = schema_id
+        cred_ex_record.credential_definition_id = cred_def_id
+        cred_ex_record.auto_remove = False
+
+        await cred_ex_record.save(self.context, reason=&#34;receive credential offer&#34;)
+
+        return cred_ex_record
+
+    async def create_request(
+        self, cred_ex_record: V10CredentialExchange, holder_did: str
+    ) -&gt; Tuple[V10CredentialExchange, CredentialRequest]:
+        &#34;&#34;&#34;
+        Create a credential request.
+
+        Args:
+            cred_ex_record: Credential exchange record
+                for which to create request
+            holder_did: holder DID
+
+        Returns:
+            A tuple (credential exchange record, credential request message)
+
+        &#34;&#34;&#34;
+        if cred_ex_record.state != V10CredentialExchange.STATE_OFFER_RECEIVED:
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_OFFER_RECEIVED})&#34;
+            )
+
+        credential_definition_id = cred_ex_record.credential_definition_id
+        credential_offer = cred_ex_record.credential_offer
+
+        async def _create():
+            ledger: BaseLedger = await self.context.inject(BaseLedger)
+            async with ledger:
+                credential_definition = await ledger.get_credential_definition(
+                    credential_definition_id
+                )
+
+            holder: BaseHolder = await self.context.inject(BaseHolder)
+            request_json, metadata_json = await holder.create_credential_request(
+                credential_offer, credential_definition, holder_did
+            )
+            return {
+                &#34;request&#34;: json.loads(request_json),
+                &#34;metadata&#34;: json.loads(metadata_json),
+            }
+
+        if cred_ex_record.credential_request:
+            LOGGER.warning(
+                &#34;create_request called multiple times for v1.0 credential exchange: %s&#34;,
+                cred_ex_record.credential_exchange_id,
+            )
+        else:
+            if &#34;nonce&#34; not in credential_offer:
+                raise CredentialManagerError(&#34;Missing nonce in credential offer&#34;)
+            nonce = credential_offer[&#34;nonce&#34;]
+            cache_key = (
+                f&#34;credential_request::{credential_definition_id}::{holder_did}::{nonce}&#34;
+            )
+            cred_req_result = None
+            cache: BaseCache = await self.context.inject(BaseCache, required=False)
+            if cache:
+                async with cache.acquire(cache_key) as entry:
+                    if entry.result:
+                        cred_req_result = entry.result
+                    else:
+                        cred_req_result = await _create()
+                        await entry.set_result(cred_req_result, 3600)
+            if not cred_req_result:
+                cred_req_result = await _create()
+
+            (
+                cred_ex_record.credential_request,
+                cred_ex_record.credential_request_metadata,
+            ) = (cred_req_result[&#34;request&#34;], cred_req_result[&#34;metadata&#34;])
+
+        credential_request_message = CredentialRequest(
+            requests_attach=[
+                CredentialRequest.wrap_indy_cred_req(cred_ex_record.credential_request)
+            ]
+        )
+        credential_request_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_request_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_SENT
+        await cred_ex_record.save(self.context, reason=&#34;create credential request&#34;)
+
+        return (cred_ex_record, credential_request_message)
+
+    async def receive_request(self):
+        &#34;&#34;&#34;
+        Receive a credential request.
+
+        Args:
+            credential_request_message: Credential request to receive
+
+        Returns:
+            credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_request_message = self.context.message
+        assert len(credential_request_message.requests_attach or []) == 1
+        credential_request = credential_request_message.indy_cred_req(0)
+        connection_id = (
+            self.context.connection_record
+            and self.context.connection_record.connection_id
+        )
+
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context, connection_id, credential_request_message._thread_id
+        )
+        cred_ex_record.credential_request = credential_request
+        cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_RECEIVED
+        await cred_ex_record.save(self.context, reason=&#34;receive credential request&#34;)
+
+        return cred_ex_record
+
+    async def issue_credential(
+        self,
+        cred_ex_record: V10CredentialExchange,
+        *,
+        comment: str = None,
+        retries: int = 5,
+    ) -&gt; Tuple[V10CredentialExchange, CredentialIssue]:
+        &#34;&#34;&#34;
+        Issue a credential.
+
+        Args:
+            cred_ex_record: The credential exchange record
+                for which to issue a credential
+            comment: optional human-readable comment pertaining to credential issue
+
+        Returns:
+            Tuple: (Updated credential exchange record, credential message)
+
+        &#34;&#34;&#34;
+
+        if cred_ex_record.state != V10CredentialExchange.STATE_REQUEST_RECEIVED:
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_REQUEST_RECEIVED})&#34;
+            )
+
+        schema_id = cred_ex_record.schema_id
+        rev_reg = None
+
+        if cred_ex_record.credential:
+            LOGGER.warning(
+                &#34;issue_credential called multiple times for &#34;
+                + &#34;credential exchange record %s - abstaining&#34;,
+                cred_ex_record.credential_exchange_id,
+            )
+        else:
+            credential_offer = cred_ex_record.credential_offer
+            credential_request = cred_ex_record.credential_request
+
+            ledger: BaseLedger = await self.context.inject(BaseLedger)
+            async with ledger:
+                schema = await ledger.get_schema(schema_id)
+                credential_definition = await ledger.get_credential_definition(
+                    cred_ex_record.credential_definition_id
+                )
+
+            tails_path = None
+            if credential_definition[&#34;value&#34;].get(&#34;revocation&#34;):
+                revoc = IndyRevocation(self.context)
+                try:
+                    active_rev_reg_rec = await revoc.get_active_issuer_rev_reg_record(
+                        cred_ex_record.credential_definition_id
+                    )
+                    rev_reg = await active_rev_reg_rec.get_registry()
+                    cred_ex_record.revoc_reg_id = active_rev_reg_rec.revoc_reg_id
+
+                    tails_path = rev_reg.tails_local_path
+                    await rev_reg.get_or_fetch_local_tails_path()
+
+                except StorageNotFoundError:
+                    posted_rev_reg_recs = await IssuerRevRegRecord.query_by_cred_def_id(
+                        self.context,
+                        cred_ex_record.credential_definition_id,
+                        state=IssuerRevRegRecord.STATE_POSTED,
+                    )
+                    if not posted_rev_reg_recs:
+                        # Send next 2 rev regs, publish tails files in background
+                        old_rev_reg_recs = sorted(
+                            await IssuerRevRegRecord.query_by_cred_def_id(
+                                self.context,
+                                cred_ex_record.credential_definition_id,
+                            )
+                        )  # prefer to reuse prior rev reg size
+                        for _ in range(2):
+                            pending_rev_reg_rec = await revoc.init_issuer_registry(
+                                cred_ex_record.credential_definition_id,
+                                max_cred_num=(
+                                    old_rev_reg_recs[0].max_cred_num
+                                    if old_rev_reg_recs
+                                    else None
+                                ),
+                            )
+                            asyncio.ensure_future(
+                                pending_rev_reg_rec.stage_pending_registry(
+                                    self.context,
+                                    max_attempts=3,  # fail both in &lt; 2s at worst
+                                )
+                            )
+                    if retries &gt; 0:
+                        LOGGER.info(
+                            &#34;Waiting 2s on posted rev reg for cred def %s, retrying&#34;,
+                            cred_ex_record.credential_definition_id,
+                        )
+                        await asyncio.sleep(2)
+                        return await self.issue_credential(
+                            cred_ex_record=cred_ex_record,
+                            comment=comment,
+                            retries=retries - 1,
+                        )
+
+                    raise CredentialManagerError(
+                        f&#34;Cred def id {cred_ex_record.credential_definition_id} &#34;
+                        &#34;has no active revocation registry&#34;
+                    )
+
+            credential_values = CredentialProposal.deserialize(
+                cred_ex_record.credential_proposal_dict
+            ).credential_proposal.attr_dict(decode=False)
+            issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+            try:
+                (
+                    credential_json,
+                    cred_ex_record.revocation_id,
+                ) = await issuer.create_credential(
+                    schema,
+                    credential_offer,
+                    credential_request,
+                    credential_values,
+                    cred_ex_record.credential_exchange_id,
+                    cred_ex_record.revoc_reg_id,
+                    tails_path,
+                )
+
+                # If the rev reg is now full
+                if rev_reg and rev_reg.max_creds == int(cred_ex_record.revocation_id):
+                    await active_rev_reg_rec.set_state(
+                        self.context,
+                        IssuerRevRegRecord.STATE_FULL,
+                    )
+
+                    # Send next 1 rev reg, publish tails file in background
+                    pending_rev_reg_rec = await revoc.init_issuer_registry(
+                        active_rev_reg_rec.cred_def_id,
+                        max_cred_num=active_rev_reg_rec.max_cred_num,
+                    )
+                    asyncio.ensure_future(
+                        pending_rev_reg_rec.stage_pending_registry(
+                            self.context,
+                            max_attempts=16,
+                        )
+                    )
+
+            except IssuerRevocationRegistryFullError:
+                # unlucky: duelling instance issued last cred near same time as us
+                await active_rev_reg_rec.set_state(
+                    self.context,
+                    IssuerRevRegRecord.STATE_FULL,
+                )
+
+                if retries &gt; 0:
+                    # use next rev reg; at worst, lucky instance is putting one up
+                    LOGGER.info(
+                        &#34;Waiting 1s and retrying: revocation registry %s is full&#34;,
+                        active_rev_reg_rec.revoc_reg_id,
+                    )
+                    await asyncio.sleep(1)
+                    return await self.issue_credential(
+                        cred_ex_record=cred_ex_record,
+                        comment=comment,
+                        retries=retries - 1,
+                    )
+
+                raise
+
+            cred_ex_record.credential = json.loads(credential_json)
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ISSUED
+        await cred_ex_record.save(self.context, reason=&#34;issue credential&#34;)
+
+        credential_message = CredentialIssue(
+            comment=comment,
+            credentials_attach=[
+                CredentialIssue.wrap_indy_credential(cred_ex_record.credential)
+            ],
+        )
+        credential_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+        credential_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        return (cred_ex_record, credential_message)
+
+    async def receive_credential(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive a credential from an issuer.
+
+        Hold in storage potentially to be processed by controller before storing.
+
+        Returns:
+            Credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_message = self.context.message
+        assert len(credential_message.credentials_attach or []) == 1
+        raw_credential = credential_message.indy_credential(0)
+
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context,
+            self.context.connection_record.connection_id,
+            credential_message._thread_id,
+        )
+
+        cred_ex_record.raw_credential = raw_credential
+        cred_ex_record.state = V10CredentialExchange.STATE_CREDENTIAL_RECEIVED
+
+        await cred_ex_record.save(self.context, reason=&#34;receive credential&#34;)
+        return cred_ex_record
+
+    async def store_credential(
+        self, cred_ex_record: V10CredentialExchange, credential_id: str = None
+    ) -&gt; Tuple[V10CredentialExchange, CredentialAck]:
+        &#34;&#34;&#34;
+        Store a credential in holder wallet; send ack to issuer.
+
+        Args:
+            cred_ex_record: credential exchange record
+                with credential to store and ack
+            credential_id: optional credential identifier to override default on storage
+
+        Returns:
+            Tuple: (Updated credential exchange record, credential ack message)
+
+        &#34;&#34;&#34;
+        if cred_ex_record.state != (V10CredentialExchange.STATE_CREDENTIAL_RECEIVED):
+            raise CredentialManagerError(
+                f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+                f&#34;in {cred_ex_record.state} state &#34;
+                f&#34;(must be {V10CredentialExchange.STATE_CREDENTIAL_RECEIVED})&#34;
+            )
+
+        raw_credential = cred_ex_record.raw_credential
+        revoc_reg_def = None
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            credential_definition = await ledger.get_credential_definition(
+                raw_credential[&#34;cred_def_id&#34;]
+            )
+            if (
+                &#34;rev_reg_id&#34; in raw_credential
+                and raw_credential[&#34;rev_reg_id&#34;] is not None
+            ):
+                revoc_reg_def = await ledger.get_revoc_reg_def(
+                    raw_credential[&#34;rev_reg_id&#34;]
+                )
+
+        holder: BaseHolder = await self.context.inject(BaseHolder)
+        if (
+            cred_ex_record.credential_proposal_dict
+            and &#34;credential_proposal&#34; in cred_ex_record.credential_proposal_dict
+        ):
+            mime_types = CredentialPreview.deserialize(
+                cred_ex_record.credential_proposal_dict[&#34;credential_proposal&#34;]
+            ).mime_types()
+        else:
+            mime_types = None
+
+        if revoc_reg_def:
+            revoc_reg = RevocationRegistry.from_definition(revoc_reg_def, True)
+            await revoc_reg.get_or_fetch_local_tails_path()
+        try:
+            credential_id = await holder.store_credential(
+                credential_definition,
+                raw_credential,
+                cred_ex_record.credential_request_metadata,
+                mime_types,
+                credential_id=credential_id,
+                rev_reg_def=revoc_reg_def,
+            )
+        except HolderError as e:
+            LOGGER.error(f&#34;Error storing credential. {e.error_code}: {e.message}&#34;)
+            raise e
+
+        credential_json = await holder.get_credential(credential_id)
+        credential = json.loads(credential_json)
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+        cred_ex_record.credential_id = credential_id
+        cred_ex_record.credential = credential
+        cred_ex_record.revoc_reg_id = credential.get(&#34;rev_reg_id&#34;, None)
+        cred_ex_record.revocation_id = credential.get(&#34;cred_rev_id&#34;, None)
+
+        await cred_ex_record.save(self.context, reason=&#34;store credential&#34;)
+
+        credential_ack_message = CredentialAck()
+        credential_ack_message.assign_thread_id(
+            cred_ex_record.thread_id, cred_ex_record.parent_thread_id
+        )
+        credential_ack_message.assign_trace_decorator(
+            self.context.settings, cred_ex_record.trace
+        )
+
+        if cred_ex_record.auto_remove:
+            # Delete the exchange record since we&#39;re done with it
+            await cred_ex_record.delete_record(self.context)
+
+        return (cred_ex_record, credential_ack_message)
+
+    async def receive_credential_ack(self) -&gt; V10CredentialExchange:
+        &#34;&#34;&#34;
+        Receive credential ack from holder.
+
+        Returns:
+            credential exchange record, retrieved and updated
+
+        &#34;&#34;&#34;
+        credential_ack_message = self.context.message
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context,
+            self.context.connection_record.connection_id,
+            credential_ack_message._thread_id,
+        )
+
+        cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+        await cred_ex_record.save(self.context, reason=&#34;credential acked&#34;)
+
+        if cred_ex_record.auto_remove:
+            # We&#39;re done with the exchange so delete
+            await cred_ex_record.delete_record(self.context)
+
+        return cred_ex_record</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.context"><code class="name">var <span class="ident">context</span> : aries_cloudagent.config.injection_context.InjectionContext</code></dt>
+<dd>
+<div class="desc"><p>Accessor for the current request context.</p>
+<h2 id="returns">Returns</h2>
+<p>The request context for this connection</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def context(self) -&gt; InjectionContext:
+    &#34;&#34;&#34;
+    Accessor for the current request context.
+
+    Returns:
+        The request context for this connection
+
+    &#34;&#34;&#34;
+    return self._context</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_offer"><code class="name flex">
+<span>async def <span class="ident">create_offer</span></span>(<span>self, cred_ex_record: <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, comment: str = None) ‑> Tuple[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_offer.CredentialOffer" href="messages/credential_offer.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_offer.CredentialOffer">CredentialOffer</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a credential offer, update credential exchange record.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cred_ex_record</code></strong></dt>
+<dd>Credential exchange to create offer for</dd>
+<dt><strong><code>comment</code></strong></dt>
+<dd>optional human-readable comment to set in offer message</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple (credential exchange record, credential offer message)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def create_offer(
+    self, cred_ex_record: V10CredentialExchange, comment: str = None
+) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+    &#34;&#34;&#34;
+    Create a credential offer, update credential exchange record.
+
+    Args:
+        cred_ex_record: Credential exchange to create offer for
+        comment: optional human-readable comment to set in offer message
+
+    Returns:
+        A tuple (credential exchange record, credential offer message)
+
+    &#34;&#34;&#34;
+
+    async def _create(cred_def_id):
+        issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+        offer_json = await issuer.create_credential_offer(cred_def_id)
+        return json.loads(offer_json)
+
+    credential_proposal_message = CredentialProposal.deserialize(
+        cred_ex_record.credential_proposal_dict
+    )
+    credential_proposal_message.assign_trace_decorator(
+        self.context.settings, cred_ex_record.trace
+    )
+    cred_def_id = await self._match_sent_cred_def_id(
+        {
+            t: getattr(credential_proposal_message, t)
+            for t in CRED_DEF_TAGS
+            if getattr(credential_proposal_message, t)
+        }
+    )
+    cred_preview = credential_proposal_message.credential_proposal
+
+    # vet attributes
+    ledger: BaseLedger = await self.context.inject(BaseLedger)
+    async with ledger:
+        schema_id = await ledger.credential_definition_id2schema_id(cred_def_id)
+        schema = await ledger.get_schema(schema_id)
+    schema_attrs = {attr for attr in schema[&#34;attrNames&#34;]}
+    preview_attrs = {attr for attr in cred_preview.attr_dict()}
+    if preview_attrs != schema_attrs:
+        raise CredentialManagerError(
+            f&#34;Preview attributes {preview_attrs} &#34;
+            f&#34;mismatch corresponding schema attributes {schema_attrs}&#34;
+        )
+
+    credential_offer = None
+    cache_key = f&#34;credential_offer::{cred_def_id}&#34;
+    cache: BaseCache = await self.context.inject(BaseCache, required=False)
+    if cache:
+        async with cache.acquire(cache_key) as entry:
+            if entry.result:
+                credential_offer = entry.result
+            else:
+                credential_offer = await _create(cred_def_id)
+                await entry.set_result(credential_offer, 3600)
+    if not credential_offer:
+        credential_offer = await _create(cred_def_id)
+
+    credential_offer_message = CredentialOffer(
+        comment=comment,
+        credential_preview=cred_preview,
+        offers_attach=[CredentialOffer.wrap_indy_offer(credential_offer)],
+    )
+
+    credential_offer_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+    credential_offer_message.assign_trace_decorator(
+        self.context.settings, cred_ex_record.trace
+    )
+
+    cred_ex_record.thread_id = credential_offer_message._thread_id
+    cred_ex_record.schema_id = credential_offer[&#34;schema_id&#34;]
+    cred_ex_record.credential_definition_id = credential_offer[&#34;cred_def_id&#34;]
+    cred_ex_record.state = V10CredentialExchange.STATE_OFFER_SENT
+    cred_ex_record.credential_offer = credential_offer
+
+    cred_ex_record.credential_offer_dict = credential_offer_message.serialize()
+
+    await cred_ex_record.save(self.context, reason=&#34;create credential offer&#34;)
+
+    return (cred_ex_record, credential_offer_message)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_proposal"><code class="name flex">
+<span>async def <span class="ident">create_proposal</span></span>(<span>self, connection_id: str, *, auto_offer: bool = None, auto_remove: bool = None, comment: str = None, credential_preview: <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.inner.credential_preview.CredentialPreview" href="messages/inner/credential_preview.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.inner.credential_preview.CredentialPreview">CredentialPreview</a> = None, schema_id: str = None, schema_issuer_did: str = None, schema_name: str = None, schema_version: str = None, cred_def_id: str = None, issuer_did: str = None, trace: bool = False) ‑> <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a credential proposal.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>connection_id</code></strong></dt>
+<dd>Connection to create proposal for</dd>
+<dt><strong><code>auto_offer</code></strong></dt>
+<dd>Should this proposal request automatically be handled to
+offer a credential</dd>
+<dt><strong><code>auto_remove</code></strong></dt>
+<dd>Should the record be automatically removed on completion</dd>
+<dt><strong><code>comment</code></strong></dt>
+<dd>Optional human-readable comment to include in proposal</dd>
+<dt><strong><code>credential_preview</code></strong></dt>
+<dd>The credential preview to use to create
+the credential proposal</dd>
+<dt><strong><code>schema_id</code></strong></dt>
+<dd>Schema id for credential proposal</dd>
+<dt><strong><code>schema_issuer_did</code></strong></dt>
+<dd>Schema issuer DID for credential proposal</dd>
+<dt><strong><code>schema_name</code></strong></dt>
+<dd>Schema name for credential proposal</dd>
+<dt><strong><code>schema_version</code></strong></dt>
+<dd>Schema version for credential proposal</dd>
+<dt><strong><code>cred_def_id</code></strong></dt>
+<dd>Credential definition id for credential proposal</dd>
+<dt><strong><code>issuer_did</code></strong></dt>
+<dd>Issuer DID for credential proposal</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Resulting credential exchange record including credential proposal</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def create_proposal(
+    self,
+    connection_id: str,
+    *,
+    auto_offer: bool = None,
+    auto_remove: bool = None,
+    comment: str = None,
+    credential_preview: CredentialPreview = None,
+    schema_id: str = None,
+    schema_issuer_did: str = None,
+    schema_name: str = None,
+    schema_version: str = None,
+    cred_def_id: str = None,
+    issuer_did: str = None,
+    trace: bool = False,
+) -&gt; V10CredentialExchange:
+    &#34;&#34;&#34;
+    Create a credential proposal.
+
+    Args:
+        connection_id: Connection to create proposal for
+        auto_offer: Should this proposal request automatically be handled to
+            offer a credential
+        auto_remove: Should the record be automatically removed on completion
+        comment: Optional human-readable comment to include in proposal
+        credential_preview: The credential preview to use to create
+            the credential proposal
+        schema_id: Schema id for credential proposal
+        schema_issuer_did: Schema issuer DID for credential proposal
+        schema_name: Schema name for credential proposal
+        schema_version: Schema version for credential proposal
+        cred_def_id: Credential definition id for credential proposal
+        issuer_did: Issuer DID for credential proposal
+
+    Returns:
+        Resulting credential exchange record including credential proposal
+
+    &#34;&#34;&#34;
+    credential_proposal_message = CredentialProposal(
+        comment=comment,
+        credential_proposal=credential_preview,
+        schema_id=schema_id,
+        schema_issuer_did=schema_issuer_did,
+        schema_name=schema_name,
+        schema_version=schema_version,
+        cred_def_id=cred_def_id,
+        issuer_did=issuer_did,
+    )
+    credential_proposal_message.assign_trace_decorator(self.context.settings, trace)
+
+    if auto_remove is None:
+        auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+    cred_ex_record = V10CredentialExchange(
+        connection_id=connection_id,
+        thread_id=credential_proposal_message._thread_id,
+        initiator=V10CredentialExchange.INITIATOR_SELF,
+        role=V10CredentialExchange.ROLE_HOLDER,
+        state=V10CredentialExchange.STATE_PROPOSAL_SENT,
+        credential_proposal_dict=credential_proposal_message.serialize(),
+        auto_offer=auto_offer,
+        auto_remove=auto_remove,
+        trace=trace,
+    )
+    await cred_ex_record.save(self.context, reason=&#34;create credential proposal&#34;)
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_request"><code class="name flex">
+<span>async def <span class="ident">create_request</span></span>(<span>self, cred_ex_record: <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, holder_did: str) ‑> Tuple[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_request.CredentialRequest" href="messages/credential_request.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_request.CredentialRequest">CredentialRequest</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a credential request.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cred_ex_record</code></strong></dt>
+<dd>Credential exchange record
+for which to create request</dd>
+<dt><strong><code>holder_did</code></strong></dt>
+<dd>holder DID</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple (credential exchange record, credential request message)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def create_request(
+    self, cred_ex_record: V10CredentialExchange, holder_did: str
+) -&gt; Tuple[V10CredentialExchange, CredentialRequest]:
+    &#34;&#34;&#34;
+    Create a credential request.
+
+    Args:
+        cred_ex_record: Credential exchange record
+            for which to create request
+        holder_did: holder DID
+
+    Returns:
+        A tuple (credential exchange record, credential request message)
+
+    &#34;&#34;&#34;
+    if cred_ex_record.state != V10CredentialExchange.STATE_OFFER_RECEIVED:
+        raise CredentialManagerError(
+            f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+            f&#34;in {cred_ex_record.state} state &#34;
+            f&#34;(must be {V10CredentialExchange.STATE_OFFER_RECEIVED})&#34;
+        )
+
+    credential_definition_id = cred_ex_record.credential_definition_id
+    credential_offer = cred_ex_record.credential_offer
+
+    async def _create():
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            credential_definition = await ledger.get_credential_definition(
+                credential_definition_id
+            )
+
+        holder: BaseHolder = await self.context.inject(BaseHolder)
+        request_json, metadata_json = await holder.create_credential_request(
+            credential_offer, credential_definition, holder_did
+        )
+        return {
+            &#34;request&#34;: json.loads(request_json),
+            &#34;metadata&#34;: json.loads(metadata_json),
+        }
+
+    if cred_ex_record.credential_request:
+        LOGGER.warning(
+            &#34;create_request called multiple times for v1.0 credential exchange: %s&#34;,
+            cred_ex_record.credential_exchange_id,
+        )
+    else:
+        if &#34;nonce&#34; not in credential_offer:
+            raise CredentialManagerError(&#34;Missing nonce in credential offer&#34;)
+        nonce = credential_offer[&#34;nonce&#34;]
+        cache_key = (
+            f&#34;credential_request::{credential_definition_id}::{holder_did}::{nonce}&#34;
+        )
+        cred_req_result = None
+        cache: BaseCache = await self.context.inject(BaseCache, required=False)
+        if cache:
+            async with cache.acquire(cache_key) as entry:
+                if entry.result:
+                    cred_req_result = entry.result
+                else:
+                    cred_req_result = await _create()
+                    await entry.set_result(cred_req_result, 3600)
+        if not cred_req_result:
+            cred_req_result = await _create()
+
+        (
+            cred_ex_record.credential_request,
+            cred_ex_record.credential_request_metadata,
+        ) = (cred_req_result[&#34;request&#34;], cred_req_result[&#34;metadata&#34;])
+
+    credential_request_message = CredentialRequest(
+        requests_attach=[
+            CredentialRequest.wrap_indy_cred_req(cred_ex_record.credential_request)
+        ]
+    )
+    credential_request_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+    credential_request_message.assign_trace_decorator(
+        self.context.settings, cred_ex_record.trace
+    )
+
+    cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_SENT
+    await cred_ex_record.save(self.context, reason=&#34;create credential request&#34;)
+
+    return (cred_ex_record, credential_request_message)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.issue_credential"><code class="name flex">
+<span>async def <span class="ident">issue_credential</span></span>(<span>self, cred_ex_record: <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, *, comment: str = None, retries: int = 5) ‑> Tuple[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_issue.CredentialIssue" href="messages/credential_issue.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_issue.CredentialIssue">CredentialIssue</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Issue a credential.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cred_ex_record</code></strong></dt>
+<dd>The credential exchange record
+for which to issue a credential</dd>
+<dt><strong><code>comment</code></strong></dt>
+<dd>optional human-readable comment pertaining to credential issue</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tuple</code></dt>
+<dd>(Updated credential exchange record, credential message)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def issue_credential(
+    self,
+    cred_ex_record: V10CredentialExchange,
+    *,
+    comment: str = None,
+    retries: int = 5,
+) -&gt; Tuple[V10CredentialExchange, CredentialIssue]:
+    &#34;&#34;&#34;
+    Issue a credential.
+
+    Args:
+        cred_ex_record: The credential exchange record
+            for which to issue a credential
+        comment: optional human-readable comment pertaining to credential issue
+
+    Returns:
+        Tuple: (Updated credential exchange record, credential message)
+
+    &#34;&#34;&#34;
+
+    if cred_ex_record.state != V10CredentialExchange.STATE_REQUEST_RECEIVED:
+        raise CredentialManagerError(
+            f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+            f&#34;in {cred_ex_record.state} state &#34;
+            f&#34;(must be {V10CredentialExchange.STATE_REQUEST_RECEIVED})&#34;
+        )
+
+    schema_id = cred_ex_record.schema_id
+    rev_reg = None
+
+    if cred_ex_record.credential:
+        LOGGER.warning(
+            &#34;issue_credential called multiple times for &#34;
+            + &#34;credential exchange record %s - abstaining&#34;,
+            cred_ex_record.credential_exchange_id,
+        )
+    else:
+        credential_offer = cred_ex_record.credential_offer
+        credential_request = cred_ex_record.credential_request
+
+        ledger: BaseLedger = await self.context.inject(BaseLedger)
+        async with ledger:
+            schema = await ledger.get_schema(schema_id)
+            credential_definition = await ledger.get_credential_definition(
+                cred_ex_record.credential_definition_id
+            )
+
+        tails_path = None
+        if credential_definition[&#34;value&#34;].get(&#34;revocation&#34;):
+            revoc = IndyRevocation(self.context)
+            try:
+                active_rev_reg_rec = await revoc.get_active_issuer_rev_reg_record(
+                    cred_ex_record.credential_definition_id
+                )
+                rev_reg = await active_rev_reg_rec.get_registry()
+                cred_ex_record.revoc_reg_id = active_rev_reg_rec.revoc_reg_id
+
+                tails_path = rev_reg.tails_local_path
+                await rev_reg.get_or_fetch_local_tails_path()
+
+            except StorageNotFoundError:
+                posted_rev_reg_recs = await IssuerRevRegRecord.query_by_cred_def_id(
+                    self.context,
+                    cred_ex_record.credential_definition_id,
+                    state=IssuerRevRegRecord.STATE_POSTED,
+                )
+                if not posted_rev_reg_recs:
+                    # Send next 2 rev regs, publish tails files in background
+                    old_rev_reg_recs = sorted(
+                        await IssuerRevRegRecord.query_by_cred_def_id(
+                            self.context,
+                            cred_ex_record.credential_definition_id,
+                        )
+                    )  # prefer to reuse prior rev reg size
+                    for _ in range(2):
+                        pending_rev_reg_rec = await revoc.init_issuer_registry(
+                            cred_ex_record.credential_definition_id,
+                            max_cred_num=(
+                                old_rev_reg_recs[0].max_cred_num
+                                if old_rev_reg_recs
+                                else None
+                            ),
+                        )
+                        asyncio.ensure_future(
+                            pending_rev_reg_rec.stage_pending_registry(
+                                self.context,
+                                max_attempts=3,  # fail both in &lt; 2s at worst
+                            )
+                        )
+                if retries &gt; 0:
+                    LOGGER.info(
+                        &#34;Waiting 2s on posted rev reg for cred def %s, retrying&#34;,
+                        cred_ex_record.credential_definition_id,
+                    )
+                    await asyncio.sleep(2)
+                    return await self.issue_credential(
+                        cred_ex_record=cred_ex_record,
+                        comment=comment,
+                        retries=retries - 1,
+                    )
+
+                raise CredentialManagerError(
+                    f&#34;Cred def id {cred_ex_record.credential_definition_id} &#34;
+                    &#34;has no active revocation registry&#34;
+                )
+
+        credential_values = CredentialProposal.deserialize(
+            cred_ex_record.credential_proposal_dict
+        ).credential_proposal.attr_dict(decode=False)
+        issuer: BaseIssuer = await self.context.inject(BaseIssuer)
+        try:
+            (
+                credential_json,
+                cred_ex_record.revocation_id,
+            ) = await issuer.create_credential(
+                schema,
+                credential_offer,
+                credential_request,
+                credential_values,
+                cred_ex_record.credential_exchange_id,
+                cred_ex_record.revoc_reg_id,
+                tails_path,
+            )
+
+            # If the rev reg is now full
+            if rev_reg and rev_reg.max_creds == int(cred_ex_record.revocation_id):
+                await active_rev_reg_rec.set_state(
+                    self.context,
+                    IssuerRevRegRecord.STATE_FULL,
+                )
+
+                # Send next 1 rev reg, publish tails file in background
+                pending_rev_reg_rec = await revoc.init_issuer_registry(
+                    active_rev_reg_rec.cred_def_id,
+                    max_cred_num=active_rev_reg_rec.max_cred_num,
+                )
+                asyncio.ensure_future(
+                    pending_rev_reg_rec.stage_pending_registry(
+                        self.context,
+                        max_attempts=16,
+                    )
+                )
+
+        except IssuerRevocationRegistryFullError:
+            # unlucky: duelling instance issued last cred near same time as us
+            await active_rev_reg_rec.set_state(
+                self.context,
+                IssuerRevRegRecord.STATE_FULL,
+            )
+
+            if retries &gt; 0:
+                # use next rev reg; at worst, lucky instance is putting one up
+                LOGGER.info(
+                    &#34;Waiting 1s and retrying: revocation registry %s is full&#34;,
+                    active_rev_reg_rec.revoc_reg_id,
+                )
+                await asyncio.sleep(1)
+                return await self.issue_credential(
+                    cred_ex_record=cred_ex_record,
+                    comment=comment,
+                    retries=retries - 1,
+                )
+
+            raise
+
+        cred_ex_record.credential = json.loads(credential_json)
+
+    cred_ex_record.state = V10CredentialExchange.STATE_ISSUED
+    await cred_ex_record.save(self.context, reason=&#34;issue credential&#34;)
+
+    credential_message = CredentialIssue(
+        comment=comment,
+        credentials_attach=[
+            CredentialIssue.wrap_indy_credential(cred_ex_record.credential)
+        ],
+    )
+    credential_message._thread = {&#34;thid&#34;: cred_ex_record.thread_id}
+    credential_message.assign_trace_decorator(
+        self.context.settings, cred_ex_record.trace
+    )
+
+    return (cred_ex_record, credential_message)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.prepare_send"><code class="name flex">
+<span>async def <span class="ident">prepare_send</span></span>(<span>self, connection_id: str, credential_proposal: <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_proposal.CredentialProposal" href="messages/credential_proposal.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_proposal.CredentialProposal">CredentialProposal</a>, auto_remove: bool = None) ‑> Tuple[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_offer.CredentialOffer" href="messages/credential_offer.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_offer.CredentialOffer">CredentialOffer</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up a new credential exchange for an automated send.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>connection_id</code></strong></dt>
+<dd>Connection to create offer for</dd>
+<dt><strong><code>credential_proposal</code></strong></dt>
+<dd>The credential proposal with preview</dd>
+<dt><strong><code>auto_remove</code></strong></dt>
+<dd>Flag to automatically remove the record on completion</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple of the new credential exchange record and credential offer message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def prepare_send(
+    self,
+    connection_id: str,
+    credential_proposal: CredentialProposal,
+    auto_remove: bool = None,
+) -&gt; Tuple[V10CredentialExchange, CredentialOffer]:
+    &#34;&#34;&#34;
+    Set up a new credential exchange for an automated send.
+
+    Args:
+        connection_id: Connection to create offer for
+        credential_proposal: The credential proposal with preview
+        auto_remove: Flag to automatically remove the record on completion
+
+    Returns:
+        A tuple of the new credential exchange record and credential offer message
+
+    &#34;&#34;&#34;
+    if auto_remove is None:
+        auto_remove = not self.context.settings.get(&#34;preserve_exchange_records&#34;)
+    credential_exchange = V10CredentialExchange(
+        auto_issue=True,
+        auto_remove=auto_remove,
+        connection_id=connection_id,
+        initiator=V10CredentialExchange.INITIATOR_SELF,
+        role=V10CredentialExchange.ROLE_ISSUER,
+        credential_proposal_dict=credential_proposal.serialize(),
+        trace=(credential_proposal._trace is not None),
+    )
+    (credential_exchange, credential_offer) = await self.create_offer(
+        cred_ex_record=credential_exchange,
+        comment=&#34;create automated credential exchange&#34;,
+    )
+    return (credential_exchange, credential_offer)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential"><code class="name flex">
+<span>async def <span class="ident">receive_credential</span></span>(<span>self) ‑> <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive a credential from an issuer.</p>
+<p>Hold in storage potentially to be processed by controller before storing.</p>
+<h2 id="returns">Returns</h2>
+<p>Credential exchange record, retrieved and updated</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def receive_credential(self) -&gt; V10CredentialExchange:
+    &#34;&#34;&#34;
+    Receive a credential from an issuer.
+
+    Hold in storage potentially to be processed by controller before storing.
+
+    Returns:
+        Credential exchange record, retrieved and updated
+
+    &#34;&#34;&#34;
+    credential_message = self.context.message
+    assert len(credential_message.credentials_attach or []) == 1
+    raw_credential = credential_message.indy_credential(0)
+
+    (
+        cred_ex_record
+    ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+        self.context,
+        self.context.connection_record.connection_id,
+        credential_message._thread_id,
+    )
+
+    cred_ex_record.raw_credential = raw_credential
+    cred_ex_record.state = V10CredentialExchange.STATE_CREDENTIAL_RECEIVED
+
+    await cred_ex_record.save(self.context, reason=&#34;receive credential&#34;)
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential_ack"><code class="name flex">
+<span>async def <span class="ident">receive_credential_ack</span></span>(<span>self) ‑> <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive credential ack from holder.</p>
+<h2 id="returns">Returns</h2>
+<p>credential exchange record, retrieved and updated</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def receive_credential_ack(self) -&gt; V10CredentialExchange:
+    &#34;&#34;&#34;
+    Receive credential ack from holder.
+
+    Returns:
+        credential exchange record, retrieved and updated
+
+    &#34;&#34;&#34;
+    credential_ack_message = self.context.message
+    (
+        cred_ex_record
+    ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+        self.context,
+        self.context.connection_record.connection_id,
+        credential_ack_message._thread_id,
+    )
+
+    cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+    await cred_ex_record.save(self.context, reason=&#34;credential acked&#34;)
+
+    if cred_ex_record.auto_remove:
+        # We&#39;re done with the exchange so delete
+        await cred_ex_record.delete_record(self.context)
+
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_offer"><code class="name flex">
+<span>async def <span class="ident">receive_offer</span></span>(<span>self) ‑> <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive a credential offer.</p>
+<h2 id="returns">Returns</h2>
+<p>The credential exchange record, updated</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def receive_offer(self) -&gt; V10CredentialExchange:
+    &#34;&#34;&#34;
+    Receive a credential offer.
+
+    Returns:
+        The credential exchange record, updated
+
+    &#34;&#34;&#34;
+    credential_offer_message: CredentialOffer = self.context.message
+    connection_id = self.context.connection_record.connection_id
+
+    credential_preview = credential_offer_message.credential_preview
+    indy_offer = credential_offer_message.indy_offer(0)
+    schema_id = indy_offer[&#34;schema_id&#34;]
+    cred_def_id = indy_offer[&#34;cred_def_id&#34;]
+
+    credential_proposal_dict = CredentialProposal(
+        comment=credential_offer_message.comment,
+        credential_proposal=credential_preview,
+        schema_id=schema_id,
+        cred_def_id=cred_def_id,
+    ).serialize()
+
+    # Get credential exchange record (holder sent proposal first)
+    # or create it (issuer sent offer first)
+    try:
+        (
+            cred_ex_record
+        ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+            self.context, connection_id, credential_offer_message._thread_id
+        )
+        cred_ex_record.credential_proposal_dict = credential_proposal_dict
+    except StorageNotFoundError:  # issuer sent this offer free of any proposal
+        cred_ex_record = V10CredentialExchange(
+            connection_id=connection_id,
+            thread_id=credential_offer_message._thread_id,
+            initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+            role=V10CredentialExchange.ROLE_HOLDER,
+            credential_proposal_dict=credential_proposal_dict,
+            trace=(credential_offer_message._trace is not None),
+        )
+
+    cred_ex_record.credential_offer = indy_offer
+    cred_ex_record.state = V10CredentialExchange.STATE_OFFER_RECEIVED
+    cred_ex_record.schema_id = schema_id
+    cred_ex_record.credential_definition_id = cred_def_id
+    cred_ex_record.auto_remove = False
+
+    await cred_ex_record.save(self.context, reason=&#34;receive credential offer&#34;)
+
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_proposal"><code class="name flex">
+<span>async def <span class="ident">receive_proposal</span></span>(<span>self) ‑> <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive a credential proposal from message in context on manager creation.</p>
+<h2 id="returns">Returns</h2>
+<p>The resulting credential exchange record, created</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def receive_proposal(self) -&gt; V10CredentialExchange:
+    &#34;&#34;&#34;
+    Receive a credential proposal from message in context on manager creation.
+
+    Returns:
+        The resulting credential exchange record, created
+
+    &#34;&#34;&#34;
+    credential_proposal_message = self.context.message
+    connection_id = self.context.connection_record.connection_id
+
+    # at this point, cred def and schema still open to potential negotiation
+    cred_ex_record = V10CredentialExchange(
+        connection_id=connection_id,
+        thread_id=credential_proposal_message._thread_id,
+        initiator=V10CredentialExchange.INITIATOR_EXTERNAL,
+        role=V10CredentialExchange.ROLE_ISSUER,
+        state=V10CredentialExchange.STATE_PROPOSAL_RECEIVED,
+        credential_proposal_dict=credential_proposal_message.serialize(),
+        auto_offer=self.context.settings.get(
+            &#34;debug.auto_respond_credential_proposal&#34;
+        ),
+        auto_issue=self.context.settings.get(
+            &#34;debug.auto_respond_credential_request&#34;
+        ),
+        trace=(credential_proposal_message._trace is not None),
+    )
+    await cred_ex_record.save(self.context, reason=&#34;receive credential proposal&#34;)
+
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_request"><code class="name flex">
+<span>async def <span class="ident">receive_request</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Receive a credential request.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>credential_request_message</code></strong></dt>
+<dd>Credential request to receive</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>credential exchange record, retrieved and updated</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def receive_request(self):
+    &#34;&#34;&#34;
+    Receive a credential request.
+
+    Args:
+        credential_request_message: Credential request to receive
+
+    Returns:
+        credential exchange record, retrieved and updated
+
+    &#34;&#34;&#34;
+    credential_request_message = self.context.message
+    assert len(credential_request_message.requests_attach or []) == 1
+    credential_request = credential_request_message.indy_cred_req(0)
+    connection_id = (
+        self.context.connection_record
+        and self.context.connection_record.connection_id
+    )
+
+    (
+        cred_ex_record
+    ) = await V10CredentialExchange.retrieve_by_connection_and_thread(
+        self.context, connection_id, credential_request_message._thread_id
+    )
+    cred_ex_record.credential_request = credential_request
+    cred_ex_record.state = V10CredentialExchange.STATE_REQUEST_RECEIVED
+    await cred_ex_record.save(self.context, reason=&#34;receive credential request&#34;)
+
+    return cred_ex_record</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.store_credential"><code class="name flex">
+<span>async def <span class="ident">store_credential</span></span>(<span>self, cred_ex_record: <a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, credential_id: str = None) ‑> Tuple[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>, <a title="mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_ack.CredentialAck" href="messages/credential_ack.html#mydata_did.patched_protocols.issue_credential.v1_0.messages.credential_ack.CredentialAck">CredentialAck</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Store a credential in holder wallet; send ack to issuer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cred_ex_record</code></strong></dt>
+<dd>credential exchange record
+with credential to store and ack</dd>
+<dt><strong><code>credential_id</code></strong></dt>
+<dd>optional credential identifier to override default on storage</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tuple</code></dt>
+<dd>(Updated credential exchange record, credential ack message)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def store_credential(
+    self, cred_ex_record: V10CredentialExchange, credential_id: str = None
+) -&gt; Tuple[V10CredentialExchange, CredentialAck]:
+    &#34;&#34;&#34;
+    Store a credential in holder wallet; send ack to issuer.
+
+    Args:
+        cred_ex_record: credential exchange record
+            with credential to store and ack
+        credential_id: optional credential identifier to override default on storage
+
+    Returns:
+        Tuple: (Updated credential exchange record, credential ack message)
+
+    &#34;&#34;&#34;
+    if cred_ex_record.state != (V10CredentialExchange.STATE_CREDENTIAL_RECEIVED):
+        raise CredentialManagerError(
+            f&#34;Credential exchange {cred_ex_record.credential_exchange_id} &#34;
+            f&#34;in {cred_ex_record.state} state &#34;
+            f&#34;(must be {V10CredentialExchange.STATE_CREDENTIAL_RECEIVED})&#34;
+        )
+
+    raw_credential = cred_ex_record.raw_credential
+    revoc_reg_def = None
+    ledger: BaseLedger = await self.context.inject(BaseLedger)
+    async with ledger:
+        credential_definition = await ledger.get_credential_definition(
+            raw_credential[&#34;cred_def_id&#34;]
+        )
+        if (
+            &#34;rev_reg_id&#34; in raw_credential
+            and raw_credential[&#34;rev_reg_id&#34;] is not None
+        ):
+            revoc_reg_def = await ledger.get_revoc_reg_def(
+                raw_credential[&#34;rev_reg_id&#34;]
+            )
+
+    holder: BaseHolder = await self.context.inject(BaseHolder)
+    if (
+        cred_ex_record.credential_proposal_dict
+        and &#34;credential_proposal&#34; in cred_ex_record.credential_proposal_dict
+    ):
+        mime_types = CredentialPreview.deserialize(
+            cred_ex_record.credential_proposal_dict[&#34;credential_proposal&#34;]
+        ).mime_types()
+    else:
+        mime_types = None
+
+    if revoc_reg_def:
+        revoc_reg = RevocationRegistry.from_definition(revoc_reg_def, True)
+        await revoc_reg.get_or_fetch_local_tails_path()
+    try:
+        credential_id = await holder.store_credential(
+            credential_definition,
+            raw_credential,
+            cred_ex_record.credential_request_metadata,
+            mime_types,
+            credential_id=credential_id,
+            rev_reg_def=revoc_reg_def,
+        )
+    except HolderError as e:
+        LOGGER.error(f&#34;Error storing credential. {e.error_code}: {e.message}&#34;)
+        raise e
+
+    credential_json = await holder.get_credential(credential_id)
+    credential = json.loads(credential_json)
+
+    cred_ex_record.state = V10CredentialExchange.STATE_ACKED
+    cred_ex_record.credential_id = credential_id
+    cred_ex_record.credential = credential
+    cred_ex_record.revoc_reg_id = credential.get(&#34;rev_reg_id&#34;, None)
+    cred_ex_record.revocation_id = credential.get(&#34;cred_rev_id&#34;, None)
+
+    await cred_ex_record.save(self.context, reason=&#34;store credential&#34;)
+
+    credential_ack_message = CredentialAck()
+    credential_ack_message.assign_thread_id(
+        cred_ex_record.thread_id, cred_ex_record.parent_thread_id
+    )
+    credential_ack_message.assign_trace_decorator(
+        self.context.settings, cred_ex_record.trace
+    )
+
+    if cred_ex_record.auto_remove:
+        # Delete the exchange record since we&#39;re done with it
+        await cred_ex_record.delete_record(self.context)
+
+    return (cred_ex_record, credential_ack_message)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManagerError"><code class="flex name class">
+<span>class <span class="ident">CredentialManagerError</span></span>
+<span>(</span><span>*args, error_code: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Credential error.</p>
+<p>Initialize a BaseError instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CredentialManagerError(BaseError):
+    &#34;&#34;&#34;Credential error.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.core.error.BaseError</li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0" href="index.html">mydata_did.patched_protocols.issue_credential.v1_0</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager">CredentialManager</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.context" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.context">context</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_offer" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_offer">create_offer</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_proposal" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_proposal">create_proposal</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_request" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.create_request">create_request</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.issue_credential" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.issue_credential">issue_credential</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.prepare_send" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.prepare_send">prepare_send</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential">receive_credential</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential_ack" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_credential_ack">receive_credential_ack</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_offer" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_offer">receive_offer</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_proposal" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_proposal">receive_proposal</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_request" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.receive_request">receive_request</a></code></li>
+<li><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.store_credential" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManager.store_credential">store_credential</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManagerError" href="#mydata_did.patched_protocols.issue_credential.v1_0.manager.CredentialManagerError">CredentialManagerError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

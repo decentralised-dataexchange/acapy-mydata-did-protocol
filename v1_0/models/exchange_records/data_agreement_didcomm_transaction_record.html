@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from os import environ
+from typing import Any
+import typing
+
+from marshmallow import fields, validate
+
+from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.valid import UUIDFour
+
+
+class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
+    &#34;&#34;&#34;
+    Transaction record model class for Data Agreement CRUD didcomm message lifecycle.
+    for e.g. create-data-agreement and create-data-agreement-response messages are part of
+    create-data-agreement didcomm message lifecycle.
+
+    Model class will create a transaction record adhering to the schema specified and
+    store the record in the wallet.
+
+    Each transaction record will have 2 tags: thread_id and message_type.
+
+    1. thread_id - identifier of the initial message that triggered the transaction.
+    2. message_type - identifier of the message family that triggered the transaction 
+                        for .e.g. create-data-agreement
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementCRUDDIDCommTransactionSchema&#34;
+
+    RECORD_TYPE = &#34;data_agreement_crud_didcomm_transaction&#34;
+    RECORD_ID_NAME = &#34;da_crud_didcomm_tx_id&#34;
+    WEBHOOK_TOPIC = None
+    TAG_NAMES = {&#34;~thread_id&#34;, &#34;~message_type&#34;, &#34;~connection_id&#34;}
+
+    # Message family for the transaction record
+    # Create Data Agreement message family
+    MESSAGE_TYPE_CREATE_DATA_AGREEMENT = &#34;create-data-agreement&#34;
+    # Read Data Agreement message family
+    MESSAGE_TYPE_READ_DATA_AGREEMENT = &#34;read-data-agreement&#34;
+    # Update Data Agreement message family
+    MESSAGE_TYPE_UPDATE_DATA_AGREEMENT = &#34;update-data-agreement&#34;
+    # Delete Data Agreement message family
+    MESSAGE_TYPE_DELETE_DATA_AGREEMENT = &#34;delete-data-agreement&#34;
+
+    def __init__(
+        self,
+        *,
+        da_crud_didcomm_tx_id: str = None,
+        thread_id: str = None,
+        message_type: str = None,
+        messages_list: typing.List[dict] = None,
+        connection_id: str = None,
+        **kwargs
+    ):
+        super().__init__(da_crud_didcomm_tx_id, **kwargs)
+        self.thread_id = thread_id
+        self.message_type = message_type
+        self.messages_list = messages_list
+        self.connection_id = connection_id
+
+    @property
+    def da_crud_didcomm_tx_id(self) -&gt; str:
+        &#34;&#34;&#34;
+        Returns transaction record identifier.
+        &#34;&#34;&#34;
+        return self._id
+
+    @property
+    def record_value(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for JSON record value generated for this transaction record.&#34;&#34;&#34;
+        return {
+            prop: getattr(self, prop)
+            for prop in (
+                &#34;thread_id&#34;,
+                &#34;message_type&#34;,
+                &#34;messages_list&#34;,
+                &#34;connection_id&#34;,
+            )
+        }
+
+    def __eq__(self, other: Any) -&gt; bool:
+        &#34;&#34;&#34;Comparison between records.&#34;&#34;&#34;
+        return super().__eq__(other)
+
+
+class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementCRUDDIDCommTransaction
+    
+    # Transaction record id
+    da_crud_didcomm_tx_id = fields.Str(
+        required=True,
+        description=&#34;Transaction record id&#34;,
+        example=UUIDFour.EXAMPLE,
+    )
+    
+    # Parent message id of the transaction record
+    thread_id = fields.Str(
+        required=False,
+        description=&#34;Parent message identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+    )
+    # Message type of the transaction record
+    message_type = fields.Str(
+        required=False,
+        description=&#34;DIDComm message family&#34;,
+        example=&#34;create-data-agreement&#34;,
+    )
+    # List of messages in the transaction record
+    messages_list = fields.List(fields.Dict(), required=False, description=&#34;Messages list&#34;)
+
+    # Connection identifier
+    connection_id = fields.Str(
+        required=False,
+        description=&#34;Connection identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction"><code class="flex name class">
+<span>class <span class="ident">DataAgreementCRUDDIDCommTransaction</span></span>
+<span>(</span><span>*, da_crud_didcomm_tx_id: str = None, thread_id: str = None, message_type: str = None, messages_list: List[dict] = None, connection_id: str = None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transaction record model class for Data Agreement CRUD didcomm message lifecycle.
+for e.g. create-data-agreement and create-data-agreement-response messages are part of
+create-data-agreement didcomm message lifecycle.</p>
+<p>Model class will create a transaction record adhering to the schema specified and
+store the record in the wallet.</p>
+<p>Each transaction record will have 2 tags: thread_id and message_type.</p>
+<ol>
+<li>thread_id - identifier of the initial message that triggered the transaction.</li>
+<li>message_type - identifier of the message family that triggered the transaction
+for .e.g. create-data-agreement</li>
+</ol>
+<p>Initialize a new V10CredentialExchange.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
+    &#34;&#34;&#34;
+    Transaction record model class for Data Agreement CRUD didcomm message lifecycle.
+    for e.g. create-data-agreement and create-data-agreement-response messages are part of
+    create-data-agreement didcomm message lifecycle.
+
+    Model class will create a transaction record adhering to the schema specified and
+    store the record in the wallet.
+
+    Each transaction record will have 2 tags: thread_id and message_type.
+
+    1. thread_id - identifier of the initial message that triggered the transaction.
+    2. message_type - identifier of the message family that triggered the transaction 
+                        for .e.g. create-data-agreement
+    &#34;&#34;&#34;
+    class Meta:
+        # Schema class
+        schema_class = &#34;DataAgreementCRUDDIDCommTransactionSchema&#34;
+
+    RECORD_TYPE = &#34;data_agreement_crud_didcomm_transaction&#34;
+    RECORD_ID_NAME = &#34;da_crud_didcomm_tx_id&#34;
+    WEBHOOK_TOPIC = None
+    TAG_NAMES = {&#34;~thread_id&#34;, &#34;~message_type&#34;, &#34;~connection_id&#34;}
+
+    # Message family for the transaction record
+    # Create Data Agreement message family
+    MESSAGE_TYPE_CREATE_DATA_AGREEMENT = &#34;create-data-agreement&#34;
+    # Read Data Agreement message family
+    MESSAGE_TYPE_READ_DATA_AGREEMENT = &#34;read-data-agreement&#34;
+    # Update Data Agreement message family
+    MESSAGE_TYPE_UPDATE_DATA_AGREEMENT = &#34;update-data-agreement&#34;
+    # Delete Data Agreement message family
+    MESSAGE_TYPE_DELETE_DATA_AGREEMENT = &#34;delete-data-agreement&#34;
+
+    def __init__(
+        self,
+        *,
+        da_crud_didcomm_tx_id: str = None,
+        thread_id: str = None,
+        message_type: str = None,
+        messages_list: typing.List[dict] = None,
+        connection_id: str = None,
+        **kwargs
+    ):
+        super().__init__(da_crud_didcomm_tx_id, **kwargs)
+        self.thread_id = thread_id
+        self.message_type = message_type
+        self.messages_list = messages_list
+        self.connection_id = connection_id
+
+    @property
+    def da_crud_didcomm_tx_id(self) -&gt; str:
+        &#34;&#34;&#34;
+        Returns transaction record identifier.
+        &#34;&#34;&#34;
+        return self._id
+
+    @property
+    def record_value(self) -&gt; dict:
+        &#34;&#34;&#34;Accessor for JSON record value generated for this transaction record.&#34;&#34;&#34;
+        return {
+            prop: getattr(self, prop)
+            for prop in (
+                &#34;thread_id&#34;,
+                &#34;message_type&#34;,
+                &#34;messages_list&#34;,
+                &#34;connection_id&#34;,
+            )
+        }
+
+    def __eq__(self, other: Any) -&gt; bool:
+        &#34;&#34;&#34;Comparison between records.&#34;&#34;&#34;
+        return super().__eq__(other)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base_record.BaseExchangeRecord</li>
+<li>aries_cloudagent.messaging.models.base_record.BaseRecord</li>
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_CREATE_DATA_AGREEMENT"><code class="name">var <span class="ident">MESSAGE_TYPE_CREATE_DATA_AGREEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_DELETE_DATA_AGREEMENT"><code class="name">var <span class="ident">MESSAGE_TYPE_DELETE_DATA_AGREEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT"><code class="name">var <span class="ident">MESSAGE_TYPE_READ_DATA_AGREEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_UPDATE_DATA_AGREEMENT"><code class="name">var <span class="ident">MESSAGE_TYPE_UPDATE_DATA_AGREEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_ID_NAME"><code class="name">var <span class="ident">RECORD_ID_NAME</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_TYPE"><code class="name">var <span class="ident">RECORD_TYPE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.TAG_NAMES"><code class="name">var <span class="ident">TAG_NAMES</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.WEBHOOK_TOPIC"><code class="name">var <span class="ident">WEBHOOK_TOPIC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.da_crud_didcomm_tx_id"><code class="name">var <span class="ident">da_crud_didcomm_tx_id</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Returns transaction record identifier.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def da_crud_didcomm_tx_id(self) -&gt; str:
+    &#34;&#34;&#34;
+    Returns transaction record identifier.
+    &#34;&#34;&#34;
+    return self._id</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.record_value"><code class="name">var <span class="ident">record_value</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Accessor for JSON record value generated for this transaction record.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def record_value(self) -&gt; dict:
+    &#34;&#34;&#34;Accessor for JSON record value generated for this transaction record.&#34;&#34;&#34;
+    return {
+        prop: getattr(self, prop)
+        for prop in (
+            &#34;thread_id&#34;,
+            &#34;message_type&#34;,
+            &#34;messages_list&#34;,
+            &#34;connection_id&#34;,
+        )
+    }</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementCRUDDIDCommTransactionSchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base schema for exchange records.</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
+
+    class Meta:
+        # Model class
+        model_class = DataAgreementCRUDDIDCommTransaction
+    
+    # Transaction record id
+    da_crud_didcomm_tx_id = fields.Str(
+        required=True,
+        description=&#34;Transaction record id&#34;,
+        example=UUIDFour.EXAMPLE,
+    )
+    
+    # Parent message id of the transaction record
+    thread_id = fields.Str(
+        required=False,
+        description=&#34;Parent message identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+    )
+    # Message type of the transaction record
+    message_type = fields.Str(
+        required=False,
+        description=&#34;DIDComm message family&#34;,
+        example=&#34;create-data-agreement&#34;,
+    )
+    # List of messages in the transaction record
+    messages_list = fields.List(fields.Dict(), required=False, description=&#34;Messages list&#34;)
+
+    # Connection identifier
+    connection_id = fields.Str(
+        required=False,
+        description=&#34;Connection identifier&#34;,
+        example=UUIDFour.EXAMPLE,
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.base_record.BaseExchangeSchema</li>
+<li>aries_cloudagent.messaging.models.base_record.BaseRecordSchema</li>
+<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="mydata_did.v1_0.models.exchange_records" href="index.html">mydata_did.v1_0.models.exchange_records</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction">DataAgreementCRUDDIDCommTransaction</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_CREATE_DATA_AGREEMENT" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_CREATE_DATA_AGREEMENT">MESSAGE_TYPE_CREATE_DATA_AGREEMENT</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_DELETE_DATA_AGREEMENT" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_DELETE_DATA_AGREEMENT">MESSAGE_TYPE_DELETE_DATA_AGREEMENT</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_READ_DATA_AGREEMENT">MESSAGE_TYPE_READ_DATA_AGREEMENT</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_UPDATE_DATA_AGREEMENT" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.MESSAGE_TYPE_UPDATE_DATA_AGREEMENT">MESSAGE_TYPE_UPDATE_DATA_AGREEMENT</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.Meta" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_ID_NAME" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_ID_NAME">RECORD_ID_NAME</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_TYPE" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.RECORD_TYPE">RECORD_TYPE</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.TAG_NAMES" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.TAG_NAMES">TAG_NAMES</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.WEBHOOK_TOPIC" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.WEBHOOK_TOPIC">WEBHOOK_TOPIC</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.da_crud_didcomm_tx_id" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.da_crud_didcomm_tx_id">da_crud_didcomm_tx_id</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.record_value" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransaction.record_value">record_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema">DataAgreementCRUDDIDCommTransactionSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.Meta" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.opts" href="#mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record.DataAgreementCRUDDIDCommTransactionSchema.opts">opts</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
