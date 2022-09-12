@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>mydata_did.v1_0.messages.existing_connections API documentation</title>
+<title>mydata_did.v1_0.models.data_agreement_negotiation_receipt_model API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,76 +19,54 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>mydata_did.v1_0.messages.existing_connections</code></h1>
+<h1 class="title">Module <code>mydata_did.v1_0.models.data_agreement_negotiation_receipt_model</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
-from marshmallow import EXCLUDE, fields
-from ..message_types import EXISTING_CONNECTIONS, PROTOCOL_PACKAGE
-from ..models.existing_connections_model import (
-    ExistingConnectionsBody,
-    ExistingConnectionsBodySchema
-)
-
-# Handler class for existing connections message.
-HANDLER_CLASS = (
-    f&#34;{PROTOCOL_PACKAGE}.handlers&#34;
-    &#34;.existing_connections_handler.ExistingConnectionsMessageHandler&#34;
-)
+<pre><code class="python">from marshmallow import fields, EXCLUDE
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 
 
-class ExistingConnectionsMessage(AgentMessage):
-    &#34;&#34;&#34;
-    Message class for existing connections.
-    &#34;&#34;&#34;
+class DataAgreementNegotiationReceiptBody(BaseModel):
+    &#34;&#34;&#34;Data Agreement Negotiation Receipt Body&#34;&#34;&#34;
 
     class Meta:
-
-        # Handler class that can handle this message
-        handler_class = HANDLER_CLASS
-
-        # Message type
-        message_type = EXISTING_CONNECTIONS
-
-        # Message schema class
-        schema_class = &#34;ExistingConnectionsMessageSchema&#34;
+        schema_class = &#34;DataAgreementNegotiationReceiptBodySchema&#34;
 
     def __init__(
         self,
         *,
-        body: ExistingConnectionsBody,
+        instance_id: str,
+        blockchain_receipt: dict,
+        blink: str,
+        mydata_did: str,
         **kwargs
     ):
-        &#34;&#34;&#34;
-        Initialize a ExistingConnectionsMessage message instance.
-        &#34;&#34;&#34;
         super().__init__(**kwargs)
 
-        # Message body
-        self.body = body
+        # Set model attributes.
+        self.blockchain_receipt = blockchain_receipt
+        self.blink = blink
+        self.mydata_did = mydata_did
+        self.instance_id = instance_id
 
 
-class ExistingConnectionsMessageSchema(AgentMessageSchema):
-    &#34;&#34;&#34;
-    Schema class for existing connections message.
-    &#34;&#34;&#34;
+class DataAgreementNegotiationReceiptBodySchema(BaseModelSchema):
+    &#34;&#34;&#34;Data Agreement Negotiation Receipt Body schema&#34;&#34;&#34;
 
     class Meta:
-        # The message class that this schema is for
-        model_class = ExistingConnectionsMessage
+        model_class = DataAgreementNegotiationReceiptBody
 
-        # Unknown fields to exclude from the schema (handled by marshmallow)
+        # Unknown fields are excluded
         unknown = EXCLUDE
 
-    # Message body
-    body = fields.Nested(
-        ExistingConnectionsBodySchema,
-        required=True
-    )</code></pre>
+    instance_id = fields.Str()
+    blockchain_receipt = fields.Str()
+    blink = fields.Str()
+    mydata_did = fields.Str()</code></pre>
 </details>
 </section>
 <section>
@@ -100,109 +78,101 @@ class ExistingConnectionsMessageSchema(AgentMessageSchema):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage"><code class="flex name class">
-<span>class <span class="ident">ExistingConnectionsMessage</span></span>
-<span>(</span><span>*, body: <a title="mydata_did.v1_0.models.existing_connections_model.ExistingConnectionsBody" href="../models/existing_connections_model.html#mydata_did.v1_0.models.existing_connections_model.ExistingConnectionsBody">ExistingConnectionsBody</a>, **kwargs)</span>
+<dt id="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody"><code class="flex name class">
+<span>class <span class="ident">DataAgreementNegotiationReceiptBody</span></span>
+<span>(</span><span>*, instance_id: str, blockchain_receipt: dict, blink: str, mydata_did: str, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message class for existing connections.</p>
-<p>Initialize a ExistingConnectionsMessage message instance.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ExistingConnectionsMessage(AgentMessage):
-    &#34;&#34;&#34;
-    Message class for existing connections.
-    &#34;&#34;&#34;
-
-    class Meta:
-
-        # Handler class that can handle this message
-        handler_class = HANDLER_CLASS
-
-        # Message type
-        message_type = EXISTING_CONNECTIONS
-
-        # Message schema class
-        schema_class = &#34;ExistingConnectionsMessageSchema&#34;
-
-    def __init__(
-        self,
-        *,
-        body: ExistingConnectionsBody,
-        **kwargs
-    ):
-        &#34;&#34;&#34;
-        Initialize a ExistingConnectionsMessage message instance.
-        &#34;&#34;&#34;
-        super().__init__(**kwargs)
-
-        # Message body
-        self.body = body</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>aries_cloudagent.messaging.agent_message.AgentMessage</li>
-<li>aries_cloudagent.messaging.models.base.BaseModel</li>
-<li>abc.ABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
-<dt id="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema"><code class="flex name class">
-<span>class <span class="ident">ExistingConnectionsMessageSchema</span></span>
-<span>(</span><span>*args, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Schema class for existing connections message.</p>
-<p>Initialize an instance of AgentMessageSchema.</p>
+<div class="desc"><p>Data Agreement Negotiation Receipt Body</p>
+<p>Initialize BaseModel.</p>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>TypeError</code></dt>
-<dd>If Meta.model_class has not been set</dd>
+<dd>If schema_class is not set on Meta</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ExistingConnectionsMessageSchema(AgentMessageSchema):
-    &#34;&#34;&#34;
-    Schema class for existing connections message.
-    &#34;&#34;&#34;
+<pre><code class="python">class DataAgreementNegotiationReceiptBody(BaseModel):
+    &#34;&#34;&#34;Data Agreement Negotiation Receipt Body&#34;&#34;&#34;
 
     class Meta:
-        # The message class that this schema is for
-        model_class = ExistingConnectionsMessage
+        schema_class = &#34;DataAgreementNegotiationReceiptBodySchema&#34;
 
-        # Unknown fields to exclude from the schema (handled by marshmallow)
-        unknown = EXCLUDE
+    def __init__(
+        self,
+        *,
+        instance_id: str,
+        blockchain_receipt: dict,
+        blink: str,
+        mydata_did: str,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
 
-    # Message body
-    body = fields.Nested(
-        ExistingConnectionsBodySchema,
-        required=True
-    )</code></pre>
+        # Set model attributes.
+        self.blockchain_receipt = blockchain_receipt
+        self.blink = blink
+        self.mydata_did = mydata_did
+        self.instance_id = instance_id</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li>aries_cloudagent.messaging.agent_message.AgentMessageSchema</li>
+<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema"><code class="flex name class">
+<span>class <span class="ident">DataAgreementNegotiationReceiptBodySchema</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data Agreement Negotiation Receipt Body schema</p>
+<p>Initialize BaseModelSchema.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If model_class is not set on Meta</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataAgreementNegotiationReceiptBodySchema(BaseModelSchema):
+    &#34;&#34;&#34;Data Agreement Negotiation Receipt Body schema&#34;&#34;&#34;
+
+    class Meta:
+        model_class = DataAgreementNegotiationReceiptBody
+
+        # Unknown fields are excluded
+        unknown = EXCLUDE
+
+    instance_id = fields.Str()
+    blockchain_receipt = fields.Str()
+    blink = fields.Str()
+    mydata_did = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
 <li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
 <li>marshmallow.schema.Schema</li>
 <li>marshmallow.base.SchemaABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dt id="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dt id="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -219,22 +189,22 @@ class ExistingConnectionsMessageSchema(AgentMessageSchema):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="mydata_did.v1_0.messages" href="index.html">mydata_did.v1_0.messages</a></code></li>
+<li><code><a title="mydata_did.v1_0.models" href="index.html">mydata_did.v1_0.models</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage" href="#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage">ExistingConnectionsMessage</a></code></h4>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody" href="#mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody">DataAgreementNegotiationReceiptBody</a></code></h4>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage.Meta" href="#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody.Meta" href="#mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBody.Meta">Meta</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema" href="#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema">ExistingConnectionsMessageSchema</a></code></h4>
+<h4><code><a title="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema" href="#mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema">DataAgreementNegotiationReceiptBodySchema</a></code></h4>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.Meta" href="#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.Meta">Meta</a></code></li>
-<li><code><a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.opts" href="#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessageSchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.Meta" href="#mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.opts" href="#mydata_did.v1_0.models.data_agreement_negotiation_receipt_model.DataAgreementNegotiationReceiptBodySchema.opts">opts</a></code></li>
 </ul>
 </li>
 </ul>

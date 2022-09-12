@@ -928,24 +928,25 @@ class ConnectionsListQueryStringSchemaV2(OpenAPISchema):
         example=&#34;Point of contact&#34;,
     )
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description=&#34;Comma separated fields to be included in the response.&#34;,
-        example=&#34;connection_id,state,presentation_exchange_id&#34;,
-    )
-
+    # Page
     page = fields.Int(
         required=False,
         description=&#34;Page number&#34;,
         example=1,
     )
 
+    # Page size
     page_size = fields.Int(
         required=False,
         description=&#34;Page size&#34;,
         example=10,
     )
+
+    # Org flag
+    org_flag = fields.Bool(required=False)
+
+    # Marketplace flag
+    marketplace_flag = fields.Bool(required=False)
 
 
 class ConnectionListSchema(OpenAPISchema):
@@ -967,7 +968,13 @@ class UpdateControllerDetailsRequestSchema(OpenAPISchema):
     organisation_type = fields.Str(required=False)
     description = fields.Str(required=False)
     policy_url = fields.Str(required=False)
-    eula_url = fields.Str(required=False)</code></pre>
+    eula_url = fields.Str(required=False)
+
+
+class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Configure customer identification DA match info schema&#34;&#34;&#34;
+
+    template_id = fields.Str()</code></pre>
 </details>
 </section>
 <section>
@@ -1162,6 +1169,35 @@ data agreement QR code payload endpoint</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">ConfigureCustomerIdentificationDAMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configure customer identification DA match info schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Configure customer identification DA match info schema&#34;&#34;&#34;
+
+    template_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema"><code class="flex name class">
 <span>class <span class="ident">ConnectionListSchema</span></span>
 <span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
@@ -1245,24 +1281,25 @@ data agreement QR code payload endpoint</p></div>
         example=&#34;Point of contact&#34;,
     )
 
-    # Response fields
-    include_fields = fields.Str(
-        required=False,
-        description=&#34;Comma separated fields to be included in the response.&#34;,
-        example=&#34;connection_id,state,presentation_exchange_id&#34;,
-    )
-
+    # Page
     page = fields.Int(
         required=False,
         description=&#34;Page number&#34;,
         example=1,
     )
 
+    # Page size
     page_size = fields.Int(
         required=False,
         description=&#34;Page size&#34;,
         example=10,
-    )</code></pre>
+    )
+
+    # Org flag
+    org_flag = fields.Bool(required=False)
+
+    # Marketplace flag
+    marketplace_flag = fields.Bool(required=False)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -3417,6 +3454,12 @@ data agreement template message handler</p></div>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema">Base64EncodeDataAgreementQrCodeMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema">ConfigureCustomerIdentificationDAMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema.opts">opts</a></code></li>
 </ul>
 </li>
 <li>

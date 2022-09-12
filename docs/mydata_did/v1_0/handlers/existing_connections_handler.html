@@ -27,37 +27,28 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
+from dexa_sdk.managers.ada_manager import V2ADAManager
 from ..messages.existing_connections import ExistingConnectionsMessage
-from ..manager import ADAManager
-
-import json
 
 
 class ExistingConnectionsMessageHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for connections/1.0/exists message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handler for existing connections message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for connections/1.0/exists message.
+        Handle function.
         &#34;&#34;&#34;
 
-        # Assert if received message is of type ExistingConnectionsMessage
+        # Assert message type.
         assert isinstance(context.message, ExistingConnectionsMessage)
 
-        self._logger.info(
-            &#34;Received connections/1.0/exists message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
-        )
-
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_existing_connections_message(
-            existing_connections_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_existing_connections_message(
+            context.message,
+            context.message_receipt,
         )</code></pre>
 </details>
 </section>
@@ -74,36 +65,30 @@ class ExistingConnectionsMessageHandler(BaseHandler):
 <span>class <span class="ident">ExistingConnectionsMessageHandler</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handle for connections/1.0/exists message</p>
+<div class="desc"><p>Handler for existing connections message</p>
 <p>Initialize a BaseHandler instance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ExistingConnectionsMessageHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for connections/1.0/exists message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handler for existing connections message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for connections/1.0/exists message.
+        Handle function.
         &#34;&#34;&#34;
 
-        # Assert if received message is of type ExistingConnectionsMessage
+        # Assert message type.
         assert isinstance(context.message, ExistingConnectionsMessage)
 
-        self._logger.info(
-            &#34;Received connections/1.0/exists message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
-        )
-
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
-
-        await ada_manager.process_existing_connections_message(
-            existing_connections_message=context.message,
-            receipt=context.message_receipt,
+        await mgr.process_existing_connections_message(
+            context.message,
+            context.message_receipt,
         )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -117,32 +102,26 @@ class ExistingConnectionsMessageHandler(BaseHandler):
 <span>async def <span class="ident">handle</span></span>(<span>self, context: aries_cloudagent.messaging.request_context.RequestContext, responder: aries_cloudagent.messaging.responder.BaseResponder)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message handler logic for connections/1.0/exists message.</p></div>
+<div class="desc"><p>Handle function.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def handle(self, context: RequestContext, responder: BaseResponder):
     &#34;&#34;&#34;
-    Message handler logic for connections/1.0/exists message.
+    Handle function.
     &#34;&#34;&#34;
 
-    # Assert if received message is of type ExistingConnectionsMessage
+    # Assert message type.
     assert isinstance(context.message, ExistingConnectionsMessage)
 
-    self._logger.info(
-        &#34;Received connections/1.0/exists message: \n%s&#34;,
-        json.dumps(context.message.serialize(), indent=4)
-    )
-
     # Initialize ADA manager
-    ada_manager = ADAManager(context)
+    mgr = V2ADAManager(context)
 
     # Call the function
-
-    await ada_manager.process_existing_connections_message(
-        existing_connections_message=context.message,
-        receipt=context.message_receipt,
+    await mgr.process_existing_connections_message(
+        context.message,
+        context.message_receipt,
     )</code></pre>
 </details>
 </dd>

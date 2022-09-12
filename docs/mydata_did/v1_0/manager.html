@@ -29,9 +29,7 @@
 <pre><code class="python">import base64
 import logging
 import json
-import os
 import time
-import uuid
 import typing
 
 import aiohttp
@@ -39,7 +37,6 @@ import aiohttp
 from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.connections.models.connection_target import ConnectionTarget
-from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.messaging.responder import BaseResponder
 from aries_cloudagent.core.dispatcher import DispatcherResponder
 from aries_cloudagent.transport.inbound.receipt import MessageReceipt
@@ -53,111 +50,30 @@ from aries_cloudagent.storage.error import (
 )
 from aries_cloudagent.wallet.indy import IndyWallet
 from aries_cloudagent.wallet.base import BaseWallet
-from aries_cloudagent.messaging.decorators.default import DecoratorSet
 from aries_cloudagent.transport.pack_format import PackWireFormat
 from aries_cloudagent.transport.wire_format import BaseWireFormat
 from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
 from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManager,
-    ConnectionManagerError
 )
-from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
-    ConnectionInvitation
-)
-from aries_cloudagent.indy.util import generate_pr_nonce
-from aries_cloudagent.messaging.decorators.attach_decorator import AttachDecorator
-from aries_cloudagent.messaging.util import str_to_epoch
-
-from dexa_sdk.agreements.da.v1_0.records.da_qrcode_record import (
-    DataAgreementQRCodeRecord
-)
-
 from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
 from .messages.read_did_response import ReadDIDResponseMessage, ReadDIDResponseMessageSchema
 from .messages.problem_report import (
     MyDataDIDProblemReportMessage,
-    MyDataDIDProblemReportMessageReason,
-    DataAgreementNegotiationProblemReport
-)
-from .messages.data_agreement_offer import (
-    DataAgreementNegotiationOfferMessage,
-    DataAgreementNegotiationOfferMessageSchema
-)
-from .messages.data_agreement_accept import (
-    DataAgreementNegotiationAcceptMessage,
-    DataAgreementNegotiationAcceptMessageSchema
-)
-from .messages.data_agreement_reject import (
-    DataAgreementNegotiationRejectMessage,
-)
-from .messages.data_agreement_terminate import (
-    DataAgreementTerminationTerminateMessage,
-)
-from .messages.data_agreement_qr_code_initiate import DataAgreementQrCodeInitiateMessage
-from .messages.data_agreement_qr_code_problem_report import (
-    DataAgreementQrCodeProblemReport,
-    DataAgreementQrCodeProblemReportReason
+    MyDataDIDProblemReportMessageReason
 )
 from .messages.json_ld_processed import JSONLDProcessedMessage
 from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
 from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
-from .messages.data_controller_details import DataControllerDetailsMessage
-from .messages.data_controller_details_response import DataControllerDetailsResponseMessage
-from .messages.existing_connections import ExistingConnectionsMessage
-
-from .models.data_agreement_model import (
-    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
-    DataAgreementV1,
-    DataAgreementV1Schema
-)
 from .models.diddoc_model import (
     MyDataDIDResponseBody,
     MyDataDIDDoc,
 )
-from .models.exchange_records.data_agreement_record import DataAgreementV1Record
-from .models.data_agreement_negotiation_offer_model import (
-    DataAgreementNegotiationOfferBody,
-    DataAgreementEvent,
-    DataAgreementProof,
-    DataAgreementProofSchema
-)
-from .models.data_agreement_instance_model import DataAgreementInstance, DataAgreementInstanceSchema
-from .models.data_agreement_negotiation_accept_model import DataAgreementNegotiationAcceptBody
-from .models.data_agreement_negotiation_reject_model import DataAgreementNegotiationRejectBody
-from .models.data_agreement_termination_terminate_model import DataAgreementTerminationTerminateBody
-from .models.data_agreement_qr_code_initiate_model import DataAgreementQrCodeInitiateBody
 from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
 from .models.json_ld_processed_model import JSONLDProcessedBody
-from .models.data_controller_model import DataController, DataControllerSchema
-from .models.existing_connections_model import ExistingConnectionsBody
 from .utils.did.mydata_did import DIDMyData
 from .utils.wallet.key_type import KeyType
-from .utils.jsonld import ED25519_2018_CONTEXT_URL
-from .utils.jsonld.data_agreement import sign_data_agreement
-from .utils.util import current_datetime_in_iso8601
 from .utils.jsonld.create_verify_data import create_verify_data
-
-from .decorators.data_agreement_context_decorator import (
-    DataAgreementContextDecoratorSchema,
-    DataAgreementContextDecorator
-)
-from .message_types import (
-    DATA_AGREEMENT_NEGOTIATION_OFFER,
-    DATA_AGREEMENT_NEGOTIATION_ACCEPT,
-)
-
-from ..patched_protocols.issue_credential.v1_0.models.credential_exchange import (
-    V10CredentialExchange
-)
-from ..patched_protocols.present_proof.v1_0.models.presentation_exchange import (
-    V10PresentationExchange
-)
-from ..patched_protocols.present_proof.v1_0.messages.presentation_request import PresentationRequest
-from ..patched_protocols.present_proof.v1_0.message_types import (
-    ATTACH_DECO_IDS,
-    PRESENTATION_REQUEST
-)
-from ..patched_protocols.present_proof.v1_0.manager import PresentationManager
 
 
 class ADAManagerError(BaseError):
@@ -285,7 +201,14 @@ class ADAManager:
 
         pass
 
-    async def store_data_agreement_instance_metadata(self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) -&gt; None:
+    async def store_data_agreement_instance_metadata(
+        self,
+        *,
+        data_agreement_id: str = None,
+        data_agreement_template_id: str = None,
+        method_of_use: str = None,
+        data_exchange_record_id: str = None
+    ) -&gt; None:
         &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -336,9 +259,6 @@ class ADAManager:
 
         # Initialize DID MyData
         mydata_did = DIDMyData.from_did(mydata_did)
-
-        # Fetch storage from context
-        storage: IndyStorage = await self.context.inject(BaseStorage)
 
         # Fetch wallet from context
         wallet: IndyWallet = await self.context.inject(BaseWallet)
@@ -423,7 +343,8 @@ class ADAManager:
                         f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
 
                 if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                    read_did_response_message: ReadDIDResponseMessage = ReadDIDResponseMessageSchema().load(message_json)
+                    read_did_response_message: ReadDIDResponseMessage = \
+                        ReadDIDResponseMessageSchema().load(message_json)
 
                     if read_did_response_message.body.status == &#34;revoked&#34;:
                         raise ADAManagerError(
@@ -432,88 +353,11 @@ class ADAManager:
 
                     return read_did_response_message.body
 
-    async def fetch_firebase_config_from_os_environ(self) -&gt; dict:
-        &#34;&#34;&#34;Fetch firebase config from os environ&#34;&#34;&#34;
-
-        # Retrieve config from os environ
-        firebase_web_api_key = os.environ.get(&#34;FIREBASE_WEB_API_KEY&#34;)
-        firebase_domain_uri_prefix = os.environ.get(
-            &#34;FIREBASE_DOMAIN_URI_PREFIX&#34;)
-        firebase_android_android_package_name = os.environ.get(
-            &#34;FIREBASE_ANDROID_ANDROID_PACKAGE_NAME&#34;)
-        firebase_ios_bundle_id = os.environ.get(&#34;FIREBASE_IOS_BUNDLE_ID&#34;)
-        firebase_ios_appstore_id = os.environ.get(&#34;FIREBASE_IOS_APPSTORE_ID&#34;)
-
-        if not firebase_web_api_key:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase web api key from os environ&#34;)
-
-        if not firebase_domain_uri_prefix:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase domain uri prefix from os environ&#34;)
-
-        if not firebase_android_android_package_name:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase android android package name from os environ&#34;)
-
-        if not firebase_ios_bundle_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase ios bundle id from os environ&#34;)
-
-        if not firebase_ios_appstore_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase ios appstore id from os environ&#34;)
-
-        return {
-            &#34;firebase_web_api_key&#34;: firebase_web_api_key,
-            &#34;firebase_domain_uri_prefix&#34;: firebase_domain_uri_prefix,
-            &#34;firebase_android_android_package_name&#34;: firebase_android_android_package_name,
-            &#34;firebase_ios_bundle_id&#34;: firebase_ios_bundle_id,
-            &#34;firebase_ios_appstore_id&#34;: firebase_ios_appstore_id,
-        }
-
-    async def fetch_igrantio_config_from_os_environ(self) -&gt; dict:
-        &#34;&#34;&#34;Fetch iGrant.io config from os environ&#34;&#34;&#34;
-
-        igrantio_org_id = os.environ.get(&#34;IGRANTIO_ORG_ID&#34;)
-
-        igrantio_org_api_key = os.environ.get(&#34;IGRANTIO_ORG_API_KEY&#34;)
-
-        igrantio_org_api_key_secret = os.environ.get(
-            &#34;IGRANTIO_ORG_API_KEY_SECRET&#34;)
-
-        igrantio_endpoint_url = os.environ.get(&#34;IGRANTIO_ENDPOINT_URL&#34;)
-
-        if not igrantio_org_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org id from os environ&#34;)
-
-        if not igrantio_org_api_key:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org api key from os environ&#34;)
-
-        if not igrantio_org_api_key_secret:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org api key secret from os environ&#34;)
-
-        if not igrantio_endpoint_url:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio endpoint url from os environ&#34;)
-
-        return {
-            &#34;igrantio_org_id&#34;: igrantio_org_id,
-            &#34;igrantio_org_api_key&#34;: igrantio_org_api_key,
-            &#34;igrantio_org_api_key_secret&#34;: igrantio_org_api_key_secret,
-            &#34;igrantio_endpoint_url&#34;: igrantio_endpoint_url,
-        }
-
-    async def process_json_ld_processed_message(self, json_ld_processed_message: JSONLDProcessedMessage, receipt: MessageReceipt) -&gt; None:
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Wallet instance
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
+    async def process_json_ld_processed_message(
+        self,
+        json_ld_processed_message: JSONLDProcessedMessage,
+        receipt: MessageReceipt
+    ) -&gt; None:
 
         # Responder instance
         responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
@@ -564,7 +408,10 @@ class ADAManager:
             )
 
             if responder:
-                await responder.send_reply(json_ld_processed_response_message, connection_id=self.context.connection_record.connection_id)
+                await responder.send_reply(
+                    json_ld_processed_response_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
 
         except Exception as err:
             # Send problem report
@@ -577,9 +424,19 @@ class ADAManager:
             )
 
             if responder:
-                await responder.send_reply(json_ld_problem_report_message, connection_id=self.context.connection_record.connection_id)
+                await responder.send_reply(
+                    json_ld_problem_report_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
 
-    async def send_json_ld_processed_message(self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) -&gt; None:
+    async def send_json_ld_processed_message(
+        self,
+        *,
+        connection_id: str,
+        data: dict,
+        signature_options: dict,
+        proof_chain: bool
+    ) -&gt; None:
         &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
 
         # Responder instance
@@ -629,485 +486,10 @@ class ADAManager:
 
         # Send JSONLD Processed Message
         if responder:
-            await responder.send_reply(json_ld_processed_message, connection_id=connection_record.connection_id)
-
-    async def generate_firebase_dynamic_link_for_connection_invitation(self, conn_id: str) -&gt; str:
-        &#34;&#34;&#34;Generate a Firebase Dynamic Link for a connection invitation.&#34;&#34;&#34;
-
-        # Fetch config from os environ
-        config = await self.fetch_firebase_config_from_os_environ()
-
-        # Fetch connection record
-
-        try:
-
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                conn_id
-            )
-
-        except StorageError as err:
-            raise ADAManagerError(
-                f&#34;Failed to fetch connection record: {err}&#34;
-            )
-
-        # Retreive connection invitation
-
-        connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-        # Get the invitation url
-
-        invitation_url = connection_invitation.to_url()
-
-        # Generate the dynamic link
-
-        # Construct firebase payload
-        payload = {
-            &#34;dynamicLinkInfo&#34;: {
-                &#34;domainUriPrefix&#34;: config[&#34;firebase_domain_uri_prefix&#34;],
-                &#34;link&#34;: invitation_url,
-                &#34;androidInfo&#34;: {
-                    &#34;androidPackageName&#34;: config[&#34;firebase_android_android_package_name&#34;],
-                },
-                &#34;iosInfo&#34;: {
-                    &#34;iosBundleId&#34;: config[&#34;firebase_ios_bundle_id&#34;],
-                    &#34;iosAppStoreId&#34;: config[&#34;firebase_ios_appstore_id&#34;],
-                }
-            },
-            &#34;suffix&#34;: {
-                &#34;option&#34;: &#34;UNGUESSABLE&#34;
-            }
-        }
-
-        firebase_dynamic_link_endpoint = &#34;https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=&#34; + \
-            config[&#34;firebase_web_api_key&#34;]
-
-        jresp = {}
-        async with aiohttp.ClientSession() as session:
-            async with session.post(firebase_dynamic_link_endpoint, json=payload) as resp:
-                if resp.status == 200:
-                    jresp = await resp.json()
-                else:
-                    tresp = await resp.text()
-                    raise ADAManagerError(
-                        f&#34;Failed to generate firebase dynamic link for connection-invitation: {resp.status} {tresp}&#34;
-                    )
-
-        return jresp[&#34;shortLink&#34;]
-
-    async def fetch_org_details_from_igrantio(self) -&gt; str:
-        &#34;&#34;&#34;
-        Fetch org details from iGrant.io.
-        &#34;&#34;&#34;
-
-        # fetch iGrant.io config from os environment
-        igrantio_config = await self.fetch_igrantio_config_from_os_environ()
-
-        # Construct iGrant.io organisation detail endpoint URL
-        igrantio_organisation_detail_url = f&#34;{igrantio_config[&#39;igrantio_endpoint_url&#39;]}/v1/organizations/{igrantio_config[&#39;igrantio_org_id&#39;]}&#34;
-
-        # Construct request headers
-        request_headers = {
-            &#34;Authorization&#34;: f&#34;ApiKey {igrantio_config[&#39;igrantio_org_api_key&#39;]}&#34;
-        }
-
-        data_controller = json.dumps({})
-
-        async with aiohttp.ClientSession(headers=request_headers) as session:
-            async with session.get(igrantio_organisation_detail_url) as resp:
-                if resp.status == 200:
-                    jresp = await resp.json()
-
-                    if &#34;Organization&#34; in jresp:
-                        organization_details = jresp[&#34;Organization&#34;]
-
-                        exclude_keys = [
-                            &#34;BillingInfo&#34;,
-                            &#34;Admins&#34;,
-                            &#34;HlcSupport&#34;,
-                            &#34;DataRetention&#34;,
-                            &#34;Enabled&#34;,
-                            &#34;Subs&#34;
-                        ]
-
-                        for exclude_key in exclude_keys:
-                            organization_details.pop(exclude_key, None)
-
-                        data_controller = DataController(
-                            organisation_id=organization_details[&#34;ID&#34;],
-                            organisation_name=organization_details[&#34;Name&#34;],
-                            cover_image_url=organization_details[&#34;CoverImageURL&#34;] + &#34;/web&#34;,
-                            logo_image_url=organization_details[&#34;LogoImageURL&#34;] + &#34;/web&#34;,
-                            location=organization_details[&#34;Location&#34;],
-                            organisation_type=organization_details[&#34;Type&#34;][&#34;Type&#34;],
-                            description=organization_details[&#34;Description&#34;],
-                            policy_url=organization_details[&#34;PolicyURL&#34;],
-                            eula_url=organization_details[&#34;EulaURL&#34;]
-                        ).to_json()
-
-        return data_controller
-
-    async def process_existing_connections_message(self, existing_connections_message: ExistingConnectionsMessage, receipt: MessageReceipt) -&gt; None:
-        &#34;&#34;&#34;Processing connections/1.0/exists message.&#34;&#34;&#34;
-
-        # Storage instance
-        storage = await self.context.inject(BaseStorage)
-
-        invitation_key = receipt.recipient_verkey
-
-        # fetch current connection record using invitation key
-        connection = await ConnectionRecord.retrieve_by_invitation_key(
-            self.context, invitation_key)
-
-        # Fetch existing connections record for the current connection.
-
-        existing_connection = await storage.search_records(
-            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-            tag_query={
-                &#34;connection_id&#34;: connection.connection_id
-            }
-        ).fetch_all()
-
-        if existing_connection:
-            # delete existing connections record
-            existing_connection = existing_connection[0]
-            await storage.delete_record(existing_connection)
-
-        existing_connection = None
-
-        # fetch the existing connection by did
-        existing_connection = await ConnectionRecord.retrieve_by_did(
-            self.context, their_did=None, my_did=existing_connections_message.body.theirdid)
-
-        # create existing_connections record with connection_id, did, connection_status available
-        record_tags = {
-            &#34;existing_connection_id&#34;: existing_connection.connection_id,
-            &#34;my_did&#34;: existing_connection.my_did,
-            &#34;connection_status&#34;: &#34;available&#34;,
-            &#34;connection_id&#34;: connection.connection_id
-        }
-
-        record = StorageRecord(
-            self.RECORD_TYPE_EXISTING_CONNECTION,
-            connection.connection_id,
-            record_tags
-        )
-        await storage.add_record(record)
-
-        # updating the current connection invitation status to inactive
-        connection.state = ConnectionRecord.STATE_INACTIVE
-        await connection.save(context=self.context)
-
-    async def send_existing_connections_message(self, theirdid: str, connection_id: str) -&gt; None:
-        &#34;&#34;&#34;Send existing connections message.&#34;&#34;&#34;
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        try:
-            connection_mgr = ConnectionManager(self.context)
-
-            # Retrieve connection record by id
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                connection_id
-            )
-
-            connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-            request = await connection_mgr.create_request(connection_record)
-
-        except StorageError as err:
-
-            raise ADAManagerError(
-                f&#34;Failed to retrieve connection record: {err}&#34;
-            )
-
-        # From and to mydata dids
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            request.connection.did, key_type=KeyType.ED25519
-        )
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            request.connection.did, key_type=KeyType.ED25519
-        )
-
-        # Construct ExistingConnectionsMessage Message
-        existing_connections_message = ExistingConnectionsMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=ExistingConnectionsBody(
-                theirdid=theirdid
-            )
-        )
-
-        # Send message
-        if responder:
             await responder.send_reply(
-                existing_connections_message,
+                json_ld_processed_message,
                 connection_id=connection_record.connection_id
-            )
-
-    async def fetch_existing_connections_record_for_current_connection(self, connection_id: str) -&gt; dict:
-        &#34;&#34;&#34;
-        Fetch existing connections record for the current connection.
-        &#34;&#34;&#34;
-
-        # Storage instance
-        storage = await self.context.inject(BaseStorage)
-
-        # Fetch existing connections record for the current connection.
-
-        existing_connection = await storage.search_records(
-            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-            tag_query={
-                &#34;connection_id&#34;: connection_id
-            }
-        ).fetch_all()
-
-        if existing_connection:
-            existing_connection = existing_connection[0]
-            return existing_connection.tags
-        else:
-            return {}
-
-    def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; typing.Union[typing.List[dict], dict]:
-        &#34;&#34;&#34;
-        Serialize data agreement record.
-
-        Args:
-            data_agreement_record: Data agreement record.
-
-        Returns:
-            :rtype: dict: Data agreement record as dict
-        &#34;&#34;&#34;
-
-        data_agreement_record_list = []
-
-        assert len(data_agreement_records) &gt; 0
-
-        for data_agreement_record in data_agreement_records:
-
-            temp_record = {
-                &#34;data_agreement_id&#34;: data_agreement_record.data_agreement_id,
-                &#34;state&#34;: data_agreement_record.state,
-                &#34;method_of_use&#34;: data_agreement_record.method_of_use,
-                &#34;data_agreement&#34;: data_agreement_record.data_agreement,
-                &#34;publish_flag&#34;: data_agreement_record._publish_flag,
-                &#34;delete_flag&#34;: data_agreement_record._delete_flag,
-                &#34;schema_id&#34;: data_agreement_record.schema_id,
-                &#34;cred_def_id&#34;: data_agreement_record.cred_def_id,
-                &#34;presentation_request&#34;: data_agreement_record.data_agreement_proof_presentation_request,
-                &#34;is_existing_schema&#34;: data_agreement_record._is_existing_schema,
-                &#34;created_at&#34;: str_to_epoch(data_agreement_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(data_agreement_record.updated_at)
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            data_agreement_record_list.append(temp_record)
-
-        # Sort data agreement records by created_at in descending order
-        data_agreement_record_list = sorted(
-            data_agreement_record_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return data_agreement_record_list if is_list else data_agreement_record_list[0]
-
-    @classmethod
-    def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize connection record.
-
-        Args:
-            connection_records: List of connection records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized connection records.
-        &#34;&#34;&#34;
-
-        connection_records_list = []
-        for connection_record in connection_records:
-
-            temp_record = {
-                &#34;state&#34;: connection_record.state,
-                &#34;invitation_mode&#34;: connection_record.invitation_mode,
-                &#34;connection_id&#34;: connection_record.connection_id,
-                &#34;created_at&#34;: str_to_epoch(connection_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(connection_record.updated_at),
-                &#34;their_did&#34;: connection_record.their_did,
-                &#34;accept&#34;: connection_record.accept,
-                &#34;initiator&#34;: connection_record.initiator,
-                &#34;invitation_key&#34;: connection_record.invitation_key,
-                &#34;routing_state&#34;: connection_record.routing_state,
-                &#34;their_label&#34;: connection_record.their_label,
-                &#34;my_did&#34;: connection_record.my_did,
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            connection_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        connection_records_list = sorted(
-            connection_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return connection_records_list if is_list else connection_records_list[0]
-
-    @classmethod
-    def serialize_presentation_exchange_records(cls, presentation_exchange_records: typing.List[V10PresentationExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize presentation exchange records.
-
-        Args:
-            presentation_exchange_records: List of presentation exchange records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized presentation exchange records.
-        &#34;&#34;&#34;
-
-        presentation_exchange_records_list = []
-
-        for presentation_exchange_record in presentation_exchange_records:
-
-            temp_record = {
-                &#34;presentation_exchange_id&#34;: presentation_exchange_record.presentation_exchange_id,
-                &#34;connection_id&#34;: presentation_exchange_record.connection_id,
-                &#34;thread_id&#34;: presentation_exchange_record.thread_id,
-                &#34;initiator&#34;: presentation_exchange_record.initiator,
-                &#34;role&#34;: presentation_exchange_record.role,
-                &#34;state&#34;: presentation_exchange_record.state,
-                &#34;presentation_proposal_dict&#34;: presentation_exchange_record.presentation_proposal_dict,
-                &#34;presentation_request&#34;: presentation_exchange_record.presentation_request,
-                &#34;presentation_request_dict&#34;: presentation_exchange_record.presentation_request_dict,
-                &#34;presentation&#34;: presentation_exchange_record.presentation,
-                &#34;verified&#34;: presentation_exchange_record.verified,
-                &#34;auto_present&#34;: presentation_exchange_record.auto_present,
-                &#34;error_msg&#34;: presentation_exchange_record.error_msg,
-                &#34;data_agreement&#34;: presentation_exchange_record.data_agreement,
-                &#34;data_agreement_id&#34;: presentation_exchange_record.data_agreement_id,
-                &#34;data_agreement_template_id&#34;: presentation_exchange_record.data_agreement_template_id,
-                &#34;data_agreement_status&#34;: presentation_exchange_record.data_agreement_status,
-                &#34;data_agreement_problem_report&#34;: presentation_exchange_record.data_agreement_problem_report,
-                &#34;created_at&#34;: str_to_epoch(presentation_exchange_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(presentation_exchange_record.updated_at),
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            presentation_exchange_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        presentation_exchange_records_list = sorted(
-            presentation_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return presentation_exchange_records_list if is_list else presentation_exchange_records_list[0]
-
-    @classmethod
-    def serialize_credential_exchange_records(cls, credential_exchange_records: typing.List[V10CredentialExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize credential exchange records.
-
-        Args:
-            credential_exchange_records: List of credential exchange records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized credential exchange records.
-        &#34;&#34;&#34;
-
-        credential_exchange_records_list = []
-
-        for credential_exchange_record in credential_exchange_records:
-
-            temp_record = {
-                &#34;credential_exchange_id&#34;: credential_exchange_record.credential_exchange_id,
-                &#34;connection_id&#34;: credential_exchange_record.connection_id,
-                &#34;thread_id&#34;: credential_exchange_record.thread_id,
-                &#34;initiator&#34;: credential_exchange_record.initiator,
-                &#34;role&#34;: credential_exchange_record.role,
-                &#34;state&#34;: credential_exchange_record.state,
-                &#34;credential_definition_id&#34;: credential_exchange_record.credential_definition_id,
-                &#34;schema_id&#34;: credential_exchange_record.schema_id,
-                &#34;credential_proposal_dict&#34;: credential_exchange_record.credential_proposal_dict,
-                &#34;credential_offer_dict&#34;: credential_exchange_record.credential_offer_dict,
-                &#34;credential_offer&#34;: credential_exchange_record.credential_offer,
-                &#34;credential_request&#34;: credential_exchange_record.credential_request,
-                &#34;credential_request_metadata&#34;: credential_exchange_record.credential_request_metadata,
-                &#34;credential_id&#34;: credential_exchange_record.credential_id,
-                &#34;raw_credential&#34;: credential_exchange_record.raw_credential,
-                &#34;credential&#34;: credential_exchange_record.credential,
-                &#34;auto_offer&#34;: credential_exchange_record.auto_offer,
-                &#34;auto_issue&#34;: credential_exchange_record.auto_issue,
-                &#34;auto_remove&#34;: credential_exchange_record.auto_remove,
-                &#34;error_msg&#34;: credential_exchange_record.error_msg,
-                &#34;data_agreement&#34;: credential_exchange_record.data_agreement,
-                &#34;data_agreement_id&#34;: credential_exchange_record.data_agreement_id,
-                &#34;data_agreement_template_id&#34;: credential_exchange_record.data_agreement_template_id,
-                &#34;data_agreement_status&#34;: credential_exchange_record.data_agreement_status,
-                &#34;data_agreement_problem_report&#34;: credential_exchange_record.data_agreement_problem_report,
-                &#34;created_at&#34;: str_to_epoch(credential_exchange_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(credential_exchange_record.updated_at),
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            credential_exchange_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        credential_exchange_records_list = sorted(
-            credential_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return credential_exchange_records_list if is_list else credential_exchange_records_list[0]</code></pre>
+            )</code></pre>
 </details>
 </section>
 <section>
@@ -1250,7 +632,14 @@ class ADAManager:
 
         pass
 
-    async def store_data_agreement_instance_metadata(self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) -&gt; None:
+    async def store_data_agreement_instance_metadata(
+        self,
+        *,
+        data_agreement_id: str = None,
+        data_agreement_template_id: str = None,
+        method_of_use: str = None,
+        data_exchange_record_id: str = None
+    ) -&gt; None:
         &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -1301,9 +690,6 @@ class ADAManager:
 
         # Initialize DID MyData
         mydata_did = DIDMyData.from_did(mydata_did)
-
-        # Fetch storage from context
-        storage: IndyStorage = await self.context.inject(BaseStorage)
 
         # Fetch wallet from context
         wallet: IndyWallet = await self.context.inject(BaseWallet)
@@ -1388,7 +774,8 @@ class ADAManager:
                         f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
 
                 if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                    read_did_response_message: ReadDIDResponseMessage = ReadDIDResponseMessageSchema().load(message_json)
+                    read_did_response_message: ReadDIDResponseMessage = \
+                        ReadDIDResponseMessageSchema().load(message_json)
 
                     if read_did_response_message.body.status == &#34;revoked&#34;:
                         raise ADAManagerError(
@@ -1397,88 +784,11 @@ class ADAManager:
 
                     return read_did_response_message.body
 
-    async def fetch_firebase_config_from_os_environ(self) -&gt; dict:
-        &#34;&#34;&#34;Fetch firebase config from os environ&#34;&#34;&#34;
-
-        # Retrieve config from os environ
-        firebase_web_api_key = os.environ.get(&#34;FIREBASE_WEB_API_KEY&#34;)
-        firebase_domain_uri_prefix = os.environ.get(
-            &#34;FIREBASE_DOMAIN_URI_PREFIX&#34;)
-        firebase_android_android_package_name = os.environ.get(
-            &#34;FIREBASE_ANDROID_ANDROID_PACKAGE_NAME&#34;)
-        firebase_ios_bundle_id = os.environ.get(&#34;FIREBASE_IOS_BUNDLE_ID&#34;)
-        firebase_ios_appstore_id = os.environ.get(&#34;FIREBASE_IOS_APPSTORE_ID&#34;)
-
-        if not firebase_web_api_key:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase web api key from os environ&#34;)
-
-        if not firebase_domain_uri_prefix:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase domain uri prefix from os environ&#34;)
-
-        if not firebase_android_android_package_name:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase android android package name from os environ&#34;)
-
-        if not firebase_ios_bundle_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase ios bundle id from os environ&#34;)
-
-        if not firebase_ios_appstore_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve firebase ios appstore id from os environ&#34;)
-
-        return {
-            &#34;firebase_web_api_key&#34;: firebase_web_api_key,
-            &#34;firebase_domain_uri_prefix&#34;: firebase_domain_uri_prefix,
-            &#34;firebase_android_android_package_name&#34;: firebase_android_android_package_name,
-            &#34;firebase_ios_bundle_id&#34;: firebase_ios_bundle_id,
-            &#34;firebase_ios_appstore_id&#34;: firebase_ios_appstore_id,
-        }
-
-    async def fetch_igrantio_config_from_os_environ(self) -&gt; dict:
-        &#34;&#34;&#34;Fetch iGrant.io config from os environ&#34;&#34;&#34;
-
-        igrantio_org_id = os.environ.get(&#34;IGRANTIO_ORG_ID&#34;)
-
-        igrantio_org_api_key = os.environ.get(&#34;IGRANTIO_ORG_API_KEY&#34;)
-
-        igrantio_org_api_key_secret = os.environ.get(
-            &#34;IGRANTIO_ORG_API_KEY_SECRET&#34;)
-
-        igrantio_endpoint_url = os.environ.get(&#34;IGRANTIO_ENDPOINT_URL&#34;)
-
-        if not igrantio_org_id:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org id from os environ&#34;)
-
-        if not igrantio_org_api_key:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org api key from os environ&#34;)
-
-        if not igrantio_org_api_key_secret:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio org api key secret from os environ&#34;)
-
-        if not igrantio_endpoint_url:
-            raise ADAManagerError(
-                &#34;Failed to retrieve igrantio endpoint url from os environ&#34;)
-
-        return {
-            &#34;igrantio_org_id&#34;: igrantio_org_id,
-            &#34;igrantio_org_api_key&#34;: igrantio_org_api_key,
-            &#34;igrantio_org_api_key_secret&#34;: igrantio_org_api_key_secret,
-            &#34;igrantio_endpoint_url&#34;: igrantio_endpoint_url,
-        }
-
-    async def process_json_ld_processed_message(self, json_ld_processed_message: JSONLDProcessedMessage, receipt: MessageReceipt) -&gt; None:
-
-        # Storage instance
-        storage: IndyStorage = await self.context.inject(BaseStorage)
-
-        # Wallet instance
-        wallet: IndyWallet = await self.context.inject(BaseWallet)
+    async def process_json_ld_processed_message(
+        self,
+        json_ld_processed_message: JSONLDProcessedMessage,
+        receipt: MessageReceipt
+    ) -&gt; None:
 
         # Responder instance
         responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
@@ -1529,7 +839,10 @@ class ADAManager:
             )
 
             if responder:
-                await responder.send_reply(json_ld_processed_response_message, connection_id=self.context.connection_record.connection_id)
+                await responder.send_reply(
+                    json_ld_processed_response_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
 
         except Exception as err:
             # Send problem report
@@ -1542,9 +855,19 @@ class ADAManager:
             )
 
             if responder:
-                await responder.send_reply(json_ld_problem_report_message, connection_id=self.context.connection_record.connection_id)
+                await responder.send_reply(
+                    json_ld_problem_report_message,
+                    connection_id=self.context.connection_record.connection_id
+                )
 
-    async def send_json_ld_processed_message(self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) -&gt; None:
+    async def send_json_ld_processed_message(
+        self,
+        *,
+        connection_id: str,
+        data: dict,
+        signature_options: dict,
+        proof_chain: bool
+    ) -&gt; None:
         &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
 
         # Responder instance
@@ -1594,485 +917,10 @@ class ADAManager:
 
         # Send JSONLD Processed Message
         if responder:
-            await responder.send_reply(json_ld_processed_message, connection_id=connection_record.connection_id)
-
-    async def generate_firebase_dynamic_link_for_connection_invitation(self, conn_id: str) -&gt; str:
-        &#34;&#34;&#34;Generate a Firebase Dynamic Link for a connection invitation.&#34;&#34;&#34;
-
-        # Fetch config from os environ
-        config = await self.fetch_firebase_config_from_os_environ()
-
-        # Fetch connection record
-
-        try:
-
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                conn_id
-            )
-
-        except StorageError as err:
-            raise ADAManagerError(
-                f&#34;Failed to fetch connection record: {err}&#34;
-            )
-
-        # Retreive connection invitation
-
-        connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-        # Get the invitation url
-
-        invitation_url = connection_invitation.to_url()
-
-        # Generate the dynamic link
-
-        # Construct firebase payload
-        payload = {
-            &#34;dynamicLinkInfo&#34;: {
-                &#34;domainUriPrefix&#34;: config[&#34;firebase_domain_uri_prefix&#34;],
-                &#34;link&#34;: invitation_url,
-                &#34;androidInfo&#34;: {
-                    &#34;androidPackageName&#34;: config[&#34;firebase_android_android_package_name&#34;],
-                },
-                &#34;iosInfo&#34;: {
-                    &#34;iosBundleId&#34;: config[&#34;firebase_ios_bundle_id&#34;],
-                    &#34;iosAppStoreId&#34;: config[&#34;firebase_ios_appstore_id&#34;],
-                }
-            },
-            &#34;suffix&#34;: {
-                &#34;option&#34;: &#34;UNGUESSABLE&#34;
-            }
-        }
-
-        firebase_dynamic_link_endpoint = &#34;https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=&#34; + \
-            config[&#34;firebase_web_api_key&#34;]
-
-        jresp = {}
-        async with aiohttp.ClientSession() as session:
-            async with session.post(firebase_dynamic_link_endpoint, json=payload) as resp:
-                if resp.status == 200:
-                    jresp = await resp.json()
-                else:
-                    tresp = await resp.text()
-                    raise ADAManagerError(
-                        f&#34;Failed to generate firebase dynamic link for connection-invitation: {resp.status} {tresp}&#34;
-                    )
-
-        return jresp[&#34;shortLink&#34;]
-
-    async def fetch_org_details_from_igrantio(self) -&gt; str:
-        &#34;&#34;&#34;
-        Fetch org details from iGrant.io.
-        &#34;&#34;&#34;
-
-        # fetch iGrant.io config from os environment
-        igrantio_config = await self.fetch_igrantio_config_from_os_environ()
-
-        # Construct iGrant.io organisation detail endpoint URL
-        igrantio_organisation_detail_url = f&#34;{igrantio_config[&#39;igrantio_endpoint_url&#39;]}/v1/organizations/{igrantio_config[&#39;igrantio_org_id&#39;]}&#34;
-
-        # Construct request headers
-        request_headers = {
-            &#34;Authorization&#34;: f&#34;ApiKey {igrantio_config[&#39;igrantio_org_api_key&#39;]}&#34;
-        }
-
-        data_controller = json.dumps({})
-
-        async with aiohttp.ClientSession(headers=request_headers) as session:
-            async with session.get(igrantio_organisation_detail_url) as resp:
-                if resp.status == 200:
-                    jresp = await resp.json()
-
-                    if &#34;Organization&#34; in jresp:
-                        organization_details = jresp[&#34;Organization&#34;]
-
-                        exclude_keys = [
-                            &#34;BillingInfo&#34;,
-                            &#34;Admins&#34;,
-                            &#34;HlcSupport&#34;,
-                            &#34;DataRetention&#34;,
-                            &#34;Enabled&#34;,
-                            &#34;Subs&#34;
-                        ]
-
-                        for exclude_key in exclude_keys:
-                            organization_details.pop(exclude_key, None)
-
-                        data_controller = DataController(
-                            organisation_id=organization_details[&#34;ID&#34;],
-                            organisation_name=organization_details[&#34;Name&#34;],
-                            cover_image_url=organization_details[&#34;CoverImageURL&#34;] + &#34;/web&#34;,
-                            logo_image_url=organization_details[&#34;LogoImageURL&#34;] + &#34;/web&#34;,
-                            location=organization_details[&#34;Location&#34;],
-                            organisation_type=organization_details[&#34;Type&#34;][&#34;Type&#34;],
-                            description=organization_details[&#34;Description&#34;],
-                            policy_url=organization_details[&#34;PolicyURL&#34;],
-                            eula_url=organization_details[&#34;EulaURL&#34;]
-                        ).to_json()
-
-        return data_controller
-
-    async def process_existing_connections_message(self, existing_connections_message: ExistingConnectionsMessage, receipt: MessageReceipt) -&gt; None:
-        &#34;&#34;&#34;Processing connections/1.0/exists message.&#34;&#34;&#34;
-
-        # Storage instance
-        storage = await self.context.inject(BaseStorage)
-
-        invitation_key = receipt.recipient_verkey
-
-        # fetch current connection record using invitation key
-        connection = await ConnectionRecord.retrieve_by_invitation_key(
-            self.context, invitation_key)
-
-        # Fetch existing connections record for the current connection.
-
-        existing_connection = await storage.search_records(
-            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-            tag_query={
-                &#34;connection_id&#34;: connection.connection_id
-            }
-        ).fetch_all()
-
-        if existing_connection:
-            # delete existing connections record
-            existing_connection = existing_connection[0]
-            await storage.delete_record(existing_connection)
-
-        existing_connection = None
-
-        # fetch the existing connection by did
-        existing_connection = await ConnectionRecord.retrieve_by_did(
-            self.context, their_did=None, my_did=existing_connections_message.body.theirdid)
-
-        # create existing_connections record with connection_id, did, connection_status available
-        record_tags = {
-            &#34;existing_connection_id&#34;: existing_connection.connection_id,
-            &#34;my_did&#34;: existing_connection.my_did,
-            &#34;connection_status&#34;: &#34;available&#34;,
-            &#34;connection_id&#34;: connection.connection_id
-        }
-
-        record = StorageRecord(
-            self.RECORD_TYPE_EXISTING_CONNECTION,
-            connection.connection_id,
-            record_tags
-        )
-        await storage.add_record(record)
-
-        # updating the current connection invitation status to inactive
-        connection.state = ConnectionRecord.STATE_INACTIVE
-        await connection.save(context=self.context)
-
-    async def send_existing_connections_message(self, theirdid: str, connection_id: str) -&gt; None:
-        &#34;&#34;&#34;Send existing connections message.&#34;&#34;&#34;
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        try:
-            connection_mgr = ConnectionManager(self.context)
-
-            # Retrieve connection record by id
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                connection_id
-            )
-
-            connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-            request = await connection_mgr.create_request(connection_record)
-
-        except StorageError as err:
-
-            raise ADAManagerError(
-                f&#34;Failed to retrieve connection record: {err}&#34;
-            )
-
-        # From and to mydata dids
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            request.connection.did, key_type=KeyType.ED25519
-        )
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            request.connection.did, key_type=KeyType.ED25519
-        )
-
-        # Construct ExistingConnectionsMessage Message
-        existing_connections_message = ExistingConnectionsMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=ExistingConnectionsBody(
-                theirdid=theirdid
-            )
-        )
-
-        # Send message
-        if responder:
             await responder.send_reply(
-                existing_connections_message,
+                json_ld_processed_message,
                 connection_id=connection_record.connection_id
-            )
-
-    async def fetch_existing_connections_record_for_current_connection(self, connection_id: str) -&gt; dict:
-        &#34;&#34;&#34;
-        Fetch existing connections record for the current connection.
-        &#34;&#34;&#34;
-
-        # Storage instance
-        storage = await self.context.inject(BaseStorage)
-
-        # Fetch existing connections record for the current connection.
-
-        existing_connection = await storage.search_records(
-            type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-            tag_query={
-                &#34;connection_id&#34;: connection_id
-            }
-        ).fetch_all()
-
-        if existing_connection:
-            existing_connection = existing_connection[0]
-            return existing_connection.tags
-        else:
-            return {}
-
-    def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; typing.Union[typing.List[dict], dict]:
-        &#34;&#34;&#34;
-        Serialize data agreement record.
-
-        Args:
-            data_agreement_record: Data agreement record.
-
-        Returns:
-            :rtype: dict: Data agreement record as dict
-        &#34;&#34;&#34;
-
-        data_agreement_record_list = []
-
-        assert len(data_agreement_records) &gt; 0
-
-        for data_agreement_record in data_agreement_records:
-
-            temp_record = {
-                &#34;data_agreement_id&#34;: data_agreement_record.data_agreement_id,
-                &#34;state&#34;: data_agreement_record.state,
-                &#34;method_of_use&#34;: data_agreement_record.method_of_use,
-                &#34;data_agreement&#34;: data_agreement_record.data_agreement,
-                &#34;publish_flag&#34;: data_agreement_record._publish_flag,
-                &#34;delete_flag&#34;: data_agreement_record._delete_flag,
-                &#34;schema_id&#34;: data_agreement_record.schema_id,
-                &#34;cred_def_id&#34;: data_agreement_record.cred_def_id,
-                &#34;presentation_request&#34;: data_agreement_record.data_agreement_proof_presentation_request,
-                &#34;is_existing_schema&#34;: data_agreement_record._is_existing_schema,
-                &#34;created_at&#34;: str_to_epoch(data_agreement_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(data_agreement_record.updated_at)
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            data_agreement_record_list.append(temp_record)
-
-        # Sort data agreement records by created_at in descending order
-        data_agreement_record_list = sorted(
-            data_agreement_record_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return data_agreement_record_list if is_list else data_agreement_record_list[0]
-
-    @classmethod
-    def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize connection record.
-
-        Args:
-            connection_records: List of connection records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized connection records.
-        &#34;&#34;&#34;
-
-        connection_records_list = []
-        for connection_record in connection_records:
-
-            temp_record = {
-                &#34;state&#34;: connection_record.state,
-                &#34;invitation_mode&#34;: connection_record.invitation_mode,
-                &#34;connection_id&#34;: connection_record.connection_id,
-                &#34;created_at&#34;: str_to_epoch(connection_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(connection_record.updated_at),
-                &#34;their_did&#34;: connection_record.their_did,
-                &#34;accept&#34;: connection_record.accept,
-                &#34;initiator&#34;: connection_record.initiator,
-                &#34;invitation_key&#34;: connection_record.invitation_key,
-                &#34;routing_state&#34;: connection_record.routing_state,
-                &#34;their_label&#34;: connection_record.their_label,
-                &#34;my_did&#34;: connection_record.my_did,
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            connection_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        connection_records_list = sorted(
-            connection_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return connection_records_list if is_list else connection_records_list[0]
-
-    @classmethod
-    def serialize_presentation_exchange_records(cls, presentation_exchange_records: typing.List[V10PresentationExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize presentation exchange records.
-
-        Args:
-            presentation_exchange_records: List of presentation exchange records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized presentation exchange records.
-        &#34;&#34;&#34;
-
-        presentation_exchange_records_list = []
-
-        for presentation_exchange_record in presentation_exchange_records:
-
-            temp_record = {
-                &#34;presentation_exchange_id&#34;: presentation_exchange_record.presentation_exchange_id,
-                &#34;connection_id&#34;: presentation_exchange_record.connection_id,
-                &#34;thread_id&#34;: presentation_exchange_record.thread_id,
-                &#34;initiator&#34;: presentation_exchange_record.initiator,
-                &#34;role&#34;: presentation_exchange_record.role,
-                &#34;state&#34;: presentation_exchange_record.state,
-                &#34;presentation_proposal_dict&#34;: presentation_exchange_record.presentation_proposal_dict,
-                &#34;presentation_request&#34;: presentation_exchange_record.presentation_request,
-                &#34;presentation_request_dict&#34;: presentation_exchange_record.presentation_request_dict,
-                &#34;presentation&#34;: presentation_exchange_record.presentation,
-                &#34;verified&#34;: presentation_exchange_record.verified,
-                &#34;auto_present&#34;: presentation_exchange_record.auto_present,
-                &#34;error_msg&#34;: presentation_exchange_record.error_msg,
-                &#34;data_agreement&#34;: presentation_exchange_record.data_agreement,
-                &#34;data_agreement_id&#34;: presentation_exchange_record.data_agreement_id,
-                &#34;data_agreement_template_id&#34;: presentation_exchange_record.data_agreement_template_id,
-                &#34;data_agreement_status&#34;: presentation_exchange_record.data_agreement_status,
-                &#34;data_agreement_problem_report&#34;: presentation_exchange_record.data_agreement_problem_report,
-                &#34;created_at&#34;: str_to_epoch(presentation_exchange_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(presentation_exchange_record.updated_at),
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            presentation_exchange_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        presentation_exchange_records_list = sorted(
-            presentation_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return presentation_exchange_records_list if is_list else presentation_exchange_records_list[0]
-
-    @classmethod
-    def serialize_credential_exchange_records(cls, credential_exchange_records: typing.List[V10CredentialExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-        &#34;&#34;&#34;
-        Serialize credential exchange records.
-
-        Args:
-            credential_exchange_records: List of credential exchange records.
-            is_list: If true, serialize as list.
-
-        Returns:
-            List of serialized credential exchange records.
-        &#34;&#34;&#34;
-
-        credential_exchange_records_list = []
-
-        for credential_exchange_record in credential_exchange_records:
-
-            temp_record = {
-                &#34;credential_exchange_id&#34;: credential_exchange_record.credential_exchange_id,
-                &#34;connection_id&#34;: credential_exchange_record.connection_id,
-                &#34;thread_id&#34;: credential_exchange_record.thread_id,
-                &#34;initiator&#34;: credential_exchange_record.initiator,
-                &#34;role&#34;: credential_exchange_record.role,
-                &#34;state&#34;: credential_exchange_record.state,
-                &#34;credential_definition_id&#34;: credential_exchange_record.credential_definition_id,
-                &#34;schema_id&#34;: credential_exchange_record.schema_id,
-                &#34;credential_proposal_dict&#34;: credential_exchange_record.credential_proposal_dict,
-                &#34;credential_offer_dict&#34;: credential_exchange_record.credential_offer_dict,
-                &#34;credential_offer&#34;: credential_exchange_record.credential_offer,
-                &#34;credential_request&#34;: credential_exchange_record.credential_request,
-                &#34;credential_request_metadata&#34;: credential_exchange_record.credential_request_metadata,
-                &#34;credential_id&#34;: credential_exchange_record.credential_id,
-                &#34;raw_credential&#34;: credential_exchange_record.raw_credential,
-                &#34;credential&#34;: credential_exchange_record.credential,
-                &#34;auto_offer&#34;: credential_exchange_record.auto_offer,
-                &#34;auto_issue&#34;: credential_exchange_record.auto_issue,
-                &#34;auto_remove&#34;: credential_exchange_record.auto_remove,
-                &#34;error_msg&#34;: credential_exchange_record.error_msg,
-                &#34;data_agreement&#34;: credential_exchange_record.data_agreement,
-                &#34;data_agreement_id&#34;: credential_exchange_record.data_agreement_id,
-                &#34;data_agreement_template_id&#34;: credential_exchange_record.data_agreement_template_id,
-                &#34;data_agreement_status&#34;: credential_exchange_record.data_agreement_status,
-                &#34;data_agreement_problem_report&#34;: credential_exchange_record.data_agreement_problem_report,
-                &#34;created_at&#34;: str_to_epoch(credential_exchange_record.created_at),
-                &#34;updated_at&#34;: str_to_epoch(credential_exchange_record.updated_at),
-            }
-
-            # Include only the fields specified in the include_fields list
-            if include_fields:
-
-                # created_at must be present in the include_fields
-                if &#34;created_at&#34; not in include_fields:
-                    include_fields.append(&#34;created_at&#34;)
-
-                # updated_at must be present in the include_fields
-                if &#34;updated_at&#34; not in include_fields:
-                    include_fields.append(&#34;updated_at&#34;)
-
-                temp_record = {k: v for k,
-                               v in temp_record.items() if k in include_fields}
-
-            credential_exchange_records_list.append(temp_record)
-
-        # Sort by created_at in descending order
-        credential_exchange_records_list = sorted(
-            credential_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-        return credential_exchange_records_list if is_list else credential_exchange_records_list[0]</code></pre>
+            )</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -2103,250 +951,6 @@ class ADAManager:
 <dt id="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA"><code class="name">var <span class="ident">RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA</span></code></dt>
 <dd>
 <div class="desc"></div>
-</dd>
-</dl>
-<h3>Static methods</h3>
-<dl>
-<dt id="mydata_did.v1_0.manager.ADAManager.serialize_connection_record"><code class="name flex">
-<span>def <span class="ident">serialize_connection_record</span></span>(<span>connection_records: List[aries_cloudagent.connections.models.connection_record.ConnectionRecord], is_list: bool = True, include_fields: List[str] = []) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Serialize connection record.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>connection_records</code></strong></dt>
-<dd>List of connection records.</dd>
-<dt><strong><code>is_list</code></strong></dt>
-<dd>If true, serialize as list.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>List of serialized connection records.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def serialize_connection_record(cls, connection_records: typing.List[ConnectionRecord], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-    &#34;&#34;&#34;
-    Serialize connection record.
-
-    Args:
-        connection_records: List of connection records.
-        is_list: If true, serialize as list.
-
-    Returns:
-        List of serialized connection records.
-    &#34;&#34;&#34;
-
-    connection_records_list = []
-    for connection_record in connection_records:
-
-        temp_record = {
-            &#34;state&#34;: connection_record.state,
-            &#34;invitation_mode&#34;: connection_record.invitation_mode,
-            &#34;connection_id&#34;: connection_record.connection_id,
-            &#34;created_at&#34;: str_to_epoch(connection_record.created_at),
-            &#34;updated_at&#34;: str_to_epoch(connection_record.updated_at),
-            &#34;their_did&#34;: connection_record.their_did,
-            &#34;accept&#34;: connection_record.accept,
-            &#34;initiator&#34;: connection_record.initiator,
-            &#34;invitation_key&#34;: connection_record.invitation_key,
-            &#34;routing_state&#34;: connection_record.routing_state,
-            &#34;their_label&#34;: connection_record.their_label,
-            &#34;my_did&#34;: connection_record.my_did,
-        }
-
-        # Include only the fields specified in the include_fields list
-        if include_fields:
-
-            # created_at must be present in the include_fields
-            if &#34;created_at&#34; not in include_fields:
-                include_fields.append(&#34;created_at&#34;)
-
-            # updated_at must be present in the include_fields
-            if &#34;updated_at&#34; not in include_fields:
-                include_fields.append(&#34;updated_at&#34;)
-
-            temp_record = {k: v for k,
-                           v in temp_record.items() if k in include_fields}
-
-        connection_records_list.append(temp_record)
-
-    # Sort by created_at in descending order
-    connection_records_list = sorted(
-        connection_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-    return connection_records_list if is_list else connection_records_list[0]</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.serialize_credential_exchange_records"><code class="name flex">
-<span>def <span class="ident">serialize_credential_exchange_records</span></span>(<span>credential_exchange_records: List[<a title="mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange" href="../patched_protocols/issue_credential/v1_0/models/credential_exchange.html#mydata_did.patched_protocols.issue_credential.v1_0.models.credential_exchange.V10CredentialExchange">V10CredentialExchange</a>], is_list: bool = True, include_fields: List[str] = []) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Serialize credential exchange records.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>credential_exchange_records</code></strong></dt>
-<dd>List of credential exchange records.</dd>
-<dt><strong><code>is_list</code></strong></dt>
-<dd>If true, serialize as list.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>List of serialized credential exchange records.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def serialize_credential_exchange_records(cls, credential_exchange_records: typing.List[V10CredentialExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-    &#34;&#34;&#34;
-    Serialize credential exchange records.
-
-    Args:
-        credential_exchange_records: List of credential exchange records.
-        is_list: If true, serialize as list.
-
-    Returns:
-        List of serialized credential exchange records.
-    &#34;&#34;&#34;
-
-    credential_exchange_records_list = []
-
-    for credential_exchange_record in credential_exchange_records:
-
-        temp_record = {
-            &#34;credential_exchange_id&#34;: credential_exchange_record.credential_exchange_id,
-            &#34;connection_id&#34;: credential_exchange_record.connection_id,
-            &#34;thread_id&#34;: credential_exchange_record.thread_id,
-            &#34;initiator&#34;: credential_exchange_record.initiator,
-            &#34;role&#34;: credential_exchange_record.role,
-            &#34;state&#34;: credential_exchange_record.state,
-            &#34;credential_definition_id&#34;: credential_exchange_record.credential_definition_id,
-            &#34;schema_id&#34;: credential_exchange_record.schema_id,
-            &#34;credential_proposal_dict&#34;: credential_exchange_record.credential_proposal_dict,
-            &#34;credential_offer_dict&#34;: credential_exchange_record.credential_offer_dict,
-            &#34;credential_offer&#34;: credential_exchange_record.credential_offer,
-            &#34;credential_request&#34;: credential_exchange_record.credential_request,
-            &#34;credential_request_metadata&#34;: credential_exchange_record.credential_request_metadata,
-            &#34;credential_id&#34;: credential_exchange_record.credential_id,
-            &#34;raw_credential&#34;: credential_exchange_record.raw_credential,
-            &#34;credential&#34;: credential_exchange_record.credential,
-            &#34;auto_offer&#34;: credential_exchange_record.auto_offer,
-            &#34;auto_issue&#34;: credential_exchange_record.auto_issue,
-            &#34;auto_remove&#34;: credential_exchange_record.auto_remove,
-            &#34;error_msg&#34;: credential_exchange_record.error_msg,
-            &#34;data_agreement&#34;: credential_exchange_record.data_agreement,
-            &#34;data_agreement_id&#34;: credential_exchange_record.data_agreement_id,
-            &#34;data_agreement_template_id&#34;: credential_exchange_record.data_agreement_template_id,
-            &#34;data_agreement_status&#34;: credential_exchange_record.data_agreement_status,
-            &#34;data_agreement_problem_report&#34;: credential_exchange_record.data_agreement_problem_report,
-            &#34;created_at&#34;: str_to_epoch(credential_exchange_record.created_at),
-            &#34;updated_at&#34;: str_to_epoch(credential_exchange_record.updated_at),
-        }
-
-        # Include only the fields specified in the include_fields list
-        if include_fields:
-
-            # created_at must be present in the include_fields
-            if &#34;created_at&#34; not in include_fields:
-                include_fields.append(&#34;created_at&#34;)
-
-            # updated_at must be present in the include_fields
-            if &#34;updated_at&#34; not in include_fields:
-                include_fields.append(&#34;updated_at&#34;)
-
-            temp_record = {k: v for k,
-                           v in temp_record.items() if k in include_fields}
-
-        credential_exchange_records_list.append(temp_record)
-
-    # Sort by created_at in descending order
-    credential_exchange_records_list = sorted(
-        credential_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-    return credential_exchange_records_list if is_list else credential_exchange_records_list[0]</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.serialize_presentation_exchange_records"><code class="name flex">
-<span>def <span class="ident">serialize_presentation_exchange_records</span></span>(<span>presentation_exchange_records: List[<a title="mydata_did.patched_protocols.present_proof.v1_0.models.presentation_exchange.V10PresentationExchange" href="../patched_protocols/present_proof/v1_0/models/presentation_exchange.html#mydata_did.patched_protocols.present_proof.v1_0.models.presentation_exchange.V10PresentationExchange">V10PresentationExchange</a>], is_list: bool = True, include_fields: List[str] = []) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Serialize presentation exchange records.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>presentation_exchange_records</code></strong></dt>
-<dd>List of presentation exchange records.</dd>
-<dt><strong><code>is_list</code></strong></dt>
-<dd>If true, serialize as list.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>List of serialized presentation exchange records.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def serialize_presentation_exchange_records(cls, presentation_exchange_records: typing.List[V10PresentationExchange], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; dict:
-    &#34;&#34;&#34;
-    Serialize presentation exchange records.
-
-    Args:
-        presentation_exchange_records: List of presentation exchange records.
-        is_list: If true, serialize as list.
-
-    Returns:
-        List of serialized presentation exchange records.
-    &#34;&#34;&#34;
-
-    presentation_exchange_records_list = []
-
-    for presentation_exchange_record in presentation_exchange_records:
-
-        temp_record = {
-            &#34;presentation_exchange_id&#34;: presentation_exchange_record.presentation_exchange_id,
-            &#34;connection_id&#34;: presentation_exchange_record.connection_id,
-            &#34;thread_id&#34;: presentation_exchange_record.thread_id,
-            &#34;initiator&#34;: presentation_exchange_record.initiator,
-            &#34;role&#34;: presentation_exchange_record.role,
-            &#34;state&#34;: presentation_exchange_record.state,
-            &#34;presentation_proposal_dict&#34;: presentation_exchange_record.presentation_proposal_dict,
-            &#34;presentation_request&#34;: presentation_exchange_record.presentation_request,
-            &#34;presentation_request_dict&#34;: presentation_exchange_record.presentation_request_dict,
-            &#34;presentation&#34;: presentation_exchange_record.presentation,
-            &#34;verified&#34;: presentation_exchange_record.verified,
-            &#34;auto_present&#34;: presentation_exchange_record.auto_present,
-            &#34;error_msg&#34;: presentation_exchange_record.error_msg,
-            &#34;data_agreement&#34;: presentation_exchange_record.data_agreement,
-            &#34;data_agreement_id&#34;: presentation_exchange_record.data_agreement_id,
-            &#34;data_agreement_template_id&#34;: presentation_exchange_record.data_agreement_template_id,
-            &#34;data_agreement_status&#34;: presentation_exchange_record.data_agreement_status,
-            &#34;data_agreement_problem_report&#34;: presentation_exchange_record.data_agreement_problem_report,
-            &#34;created_at&#34;: str_to_epoch(presentation_exchange_record.created_at),
-            &#34;updated_at&#34;: str_to_epoch(presentation_exchange_record.updated_at),
-        }
-
-        # Include only the fields specified in the include_fields list
-        if include_fields:
-
-            # created_at must be present in the include_fields
-            if &#34;created_at&#34; not in include_fields:
-                include_fields.append(&#34;created_at&#34;)
-
-            # updated_at must be present in the include_fields
-            if &#34;updated_at&#34; not in include_fields:
-                include_fields.append(&#34;updated_at&#34;)
-
-            temp_record = {k: v for k,
-                           v in temp_record.items() if k in include_fields}
-
-        presentation_exchange_records_list.append(temp_record)
-
-    # Sort by created_at in descending order
-    presentation_exchange_records_list = sorted(
-        presentation_exchange_records_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-    return presentation_exchange_records_list if is_list else presentation_exchange_records_list[0]</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -2390,331 +994,6 @@ def context(self) -&gt; InjectionContext:
         await storage.delete_record(storage_record)</code></pre>
 </details>
 </dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.fetch_existing_connections_record_for_current_connection"><code class="name flex">
-<span>async def <span class="ident">fetch_existing_connections_record_for_current_connection</span></span>(<span>self, connection_id: str) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Fetch existing connections record for the current connection.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def fetch_existing_connections_record_for_current_connection(self, connection_id: str) -&gt; dict:
-    &#34;&#34;&#34;
-    Fetch existing connections record for the current connection.
-    &#34;&#34;&#34;
-
-    # Storage instance
-    storage = await self.context.inject(BaseStorage)
-
-    # Fetch existing connections record for the current connection.
-
-    existing_connection = await storage.search_records(
-        type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-        tag_query={
-            &#34;connection_id&#34;: connection_id
-        }
-    ).fetch_all()
-
-    if existing_connection:
-        existing_connection = existing_connection[0]
-        return existing_connection.tags
-    else:
-        return {}</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.fetch_firebase_config_from_os_environ"><code class="name flex">
-<span>async def <span class="ident">fetch_firebase_config_from_os_environ</span></span>(<span>self) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Fetch firebase config from os environ</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def fetch_firebase_config_from_os_environ(self) -&gt; dict:
-    &#34;&#34;&#34;Fetch firebase config from os environ&#34;&#34;&#34;
-
-    # Retrieve config from os environ
-    firebase_web_api_key = os.environ.get(&#34;FIREBASE_WEB_API_KEY&#34;)
-    firebase_domain_uri_prefix = os.environ.get(
-        &#34;FIREBASE_DOMAIN_URI_PREFIX&#34;)
-    firebase_android_android_package_name = os.environ.get(
-        &#34;FIREBASE_ANDROID_ANDROID_PACKAGE_NAME&#34;)
-    firebase_ios_bundle_id = os.environ.get(&#34;FIREBASE_IOS_BUNDLE_ID&#34;)
-    firebase_ios_appstore_id = os.environ.get(&#34;FIREBASE_IOS_APPSTORE_ID&#34;)
-
-    if not firebase_web_api_key:
-        raise ADAManagerError(
-            &#34;Failed to retrieve firebase web api key from os environ&#34;)
-
-    if not firebase_domain_uri_prefix:
-        raise ADAManagerError(
-            &#34;Failed to retrieve firebase domain uri prefix from os environ&#34;)
-
-    if not firebase_android_android_package_name:
-        raise ADAManagerError(
-            &#34;Failed to retrieve firebase android android package name from os environ&#34;)
-
-    if not firebase_ios_bundle_id:
-        raise ADAManagerError(
-            &#34;Failed to retrieve firebase ios bundle id from os environ&#34;)
-
-    if not firebase_ios_appstore_id:
-        raise ADAManagerError(
-            &#34;Failed to retrieve firebase ios appstore id from os environ&#34;)
-
-    return {
-        &#34;firebase_web_api_key&#34;: firebase_web_api_key,
-        &#34;firebase_domain_uri_prefix&#34;: firebase_domain_uri_prefix,
-        &#34;firebase_android_android_package_name&#34;: firebase_android_android_package_name,
-        &#34;firebase_ios_bundle_id&#34;: firebase_ios_bundle_id,
-        &#34;firebase_ios_appstore_id&#34;: firebase_ios_appstore_id,
-    }</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.fetch_igrantio_config_from_os_environ"><code class="name flex">
-<span>async def <span class="ident">fetch_igrantio_config_from_os_environ</span></span>(<span>self) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Fetch iGrant.io config from os environ</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def fetch_igrantio_config_from_os_environ(self) -&gt; dict:
-    &#34;&#34;&#34;Fetch iGrant.io config from os environ&#34;&#34;&#34;
-
-    igrantio_org_id = os.environ.get(&#34;IGRANTIO_ORG_ID&#34;)
-
-    igrantio_org_api_key = os.environ.get(&#34;IGRANTIO_ORG_API_KEY&#34;)
-
-    igrantio_org_api_key_secret = os.environ.get(
-        &#34;IGRANTIO_ORG_API_KEY_SECRET&#34;)
-
-    igrantio_endpoint_url = os.environ.get(&#34;IGRANTIO_ENDPOINT_URL&#34;)
-
-    if not igrantio_org_id:
-        raise ADAManagerError(
-            &#34;Failed to retrieve igrantio org id from os environ&#34;)
-
-    if not igrantio_org_api_key:
-        raise ADAManagerError(
-            &#34;Failed to retrieve igrantio org api key from os environ&#34;)
-
-    if not igrantio_org_api_key_secret:
-        raise ADAManagerError(
-            &#34;Failed to retrieve igrantio org api key secret from os environ&#34;)
-
-    if not igrantio_endpoint_url:
-        raise ADAManagerError(
-            &#34;Failed to retrieve igrantio endpoint url from os environ&#34;)
-
-    return {
-        &#34;igrantio_org_id&#34;: igrantio_org_id,
-        &#34;igrantio_org_api_key&#34;: igrantio_org_api_key,
-        &#34;igrantio_org_api_key_secret&#34;: igrantio_org_api_key_secret,
-        &#34;igrantio_endpoint_url&#34;: igrantio_endpoint_url,
-    }</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.fetch_org_details_from_igrantio"><code class="name flex">
-<span>async def <span class="ident">fetch_org_details_from_igrantio</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Fetch org details from iGrant.io.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def fetch_org_details_from_igrantio(self) -&gt; str:
-    &#34;&#34;&#34;
-    Fetch org details from iGrant.io.
-    &#34;&#34;&#34;
-
-    # fetch iGrant.io config from os environment
-    igrantio_config = await self.fetch_igrantio_config_from_os_environ()
-
-    # Construct iGrant.io organisation detail endpoint URL
-    igrantio_organisation_detail_url = f&#34;{igrantio_config[&#39;igrantio_endpoint_url&#39;]}/v1/organizations/{igrantio_config[&#39;igrantio_org_id&#39;]}&#34;
-
-    # Construct request headers
-    request_headers = {
-        &#34;Authorization&#34;: f&#34;ApiKey {igrantio_config[&#39;igrantio_org_api_key&#39;]}&#34;
-    }
-
-    data_controller = json.dumps({})
-
-    async with aiohttp.ClientSession(headers=request_headers) as session:
-        async with session.get(igrantio_organisation_detail_url) as resp:
-            if resp.status == 200:
-                jresp = await resp.json()
-
-                if &#34;Organization&#34; in jresp:
-                    organization_details = jresp[&#34;Organization&#34;]
-
-                    exclude_keys = [
-                        &#34;BillingInfo&#34;,
-                        &#34;Admins&#34;,
-                        &#34;HlcSupport&#34;,
-                        &#34;DataRetention&#34;,
-                        &#34;Enabled&#34;,
-                        &#34;Subs&#34;
-                    ]
-
-                    for exclude_key in exclude_keys:
-                        organization_details.pop(exclude_key, None)
-
-                    data_controller = DataController(
-                        organisation_id=organization_details[&#34;ID&#34;],
-                        organisation_name=organization_details[&#34;Name&#34;],
-                        cover_image_url=organization_details[&#34;CoverImageURL&#34;] + &#34;/web&#34;,
-                        logo_image_url=organization_details[&#34;LogoImageURL&#34;] + &#34;/web&#34;,
-                        location=organization_details[&#34;Location&#34;],
-                        organisation_type=organization_details[&#34;Type&#34;][&#34;Type&#34;],
-                        description=organization_details[&#34;Description&#34;],
-                        policy_url=organization_details[&#34;PolicyURL&#34;],
-                        eula_url=organization_details[&#34;EulaURL&#34;]
-                    ).to_json()
-
-    return data_controller</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.generate_firebase_dynamic_link_for_connection_invitation"><code class="name flex">
-<span>async def <span class="ident">generate_firebase_dynamic_link_for_connection_invitation</span></span>(<span>self, conn_id: str) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Generate a Firebase Dynamic Link for a connection invitation.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def generate_firebase_dynamic_link_for_connection_invitation(self, conn_id: str) -&gt; str:
-    &#34;&#34;&#34;Generate a Firebase Dynamic Link for a connection invitation.&#34;&#34;&#34;
-
-    # Fetch config from os environ
-    config = await self.fetch_firebase_config_from_os_environ()
-
-    # Fetch connection record
-
-    try:
-
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            self.context,
-            conn_id
-        )
-
-    except StorageError as err:
-        raise ADAManagerError(
-            f&#34;Failed to fetch connection record: {err}&#34;
-        )
-
-    # Retreive connection invitation
-
-    connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-    # Get the invitation url
-
-    invitation_url = connection_invitation.to_url()
-
-    # Generate the dynamic link
-
-    # Construct firebase payload
-    payload = {
-        &#34;dynamicLinkInfo&#34;: {
-            &#34;domainUriPrefix&#34;: config[&#34;firebase_domain_uri_prefix&#34;],
-            &#34;link&#34;: invitation_url,
-            &#34;androidInfo&#34;: {
-                &#34;androidPackageName&#34;: config[&#34;firebase_android_android_package_name&#34;],
-            },
-            &#34;iosInfo&#34;: {
-                &#34;iosBundleId&#34;: config[&#34;firebase_ios_bundle_id&#34;],
-                &#34;iosAppStoreId&#34;: config[&#34;firebase_ios_appstore_id&#34;],
-            }
-        },
-        &#34;suffix&#34;: {
-            &#34;option&#34;: &#34;UNGUESSABLE&#34;
-        }
-    }
-
-    firebase_dynamic_link_endpoint = &#34;https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=&#34; + \
-        config[&#34;firebase_web_api_key&#34;]
-
-    jresp = {}
-    async with aiohttp.ClientSession() as session:
-        async with session.post(firebase_dynamic_link_endpoint, json=payload) as resp:
-            if resp.status == 200:
-                jresp = await resp.json()
-            else:
-                tresp = await resp.text()
-                raise ADAManagerError(
-                    f&#34;Failed to generate firebase dynamic link for connection-invitation: {resp.status} {tresp}&#34;
-                )
-
-    return jresp[&#34;shortLink&#34;]</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.process_existing_connections_message"><code class="name flex">
-<span>async def <span class="ident">process_existing_connections_message</span></span>(<span>self, existing_connections_message: <a title="mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage" href="messages/existing_connections.html#mydata_did.v1_0.messages.existing_connections.ExistingConnectionsMessage">ExistingConnectionsMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Processing connections/1.0/exists message.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def process_existing_connections_message(self, existing_connections_message: ExistingConnectionsMessage, receipt: MessageReceipt) -&gt; None:
-    &#34;&#34;&#34;Processing connections/1.0/exists message.&#34;&#34;&#34;
-
-    # Storage instance
-    storage = await self.context.inject(BaseStorage)
-
-    invitation_key = receipt.recipient_verkey
-
-    # fetch current connection record using invitation key
-    connection = await ConnectionRecord.retrieve_by_invitation_key(
-        self.context, invitation_key)
-
-    # Fetch existing connections record for the current connection.
-
-    existing_connection = await storage.search_records(
-        type_filter=self.RECORD_TYPE_EXISTING_CONNECTION,
-        tag_query={
-            &#34;connection_id&#34;: connection.connection_id
-        }
-    ).fetch_all()
-
-    if existing_connection:
-        # delete existing connections record
-        existing_connection = existing_connection[0]
-        await storage.delete_record(existing_connection)
-
-    existing_connection = None
-
-    # fetch the existing connection by did
-    existing_connection = await ConnectionRecord.retrieve_by_did(
-        self.context, their_did=None, my_did=existing_connections_message.body.theirdid)
-
-    # create existing_connections record with connection_id, did, connection_status available
-    record_tags = {
-        &#34;existing_connection_id&#34;: existing_connection.connection_id,
-        &#34;my_did&#34;: existing_connection.my_did,
-        &#34;connection_status&#34;: &#34;available&#34;,
-        &#34;connection_id&#34;: connection.connection_id
-    }
-
-    record = StorageRecord(
-        self.RECORD_TYPE_EXISTING_CONNECTION,
-        connection.connection_id,
-        record_tags
-    )
-    await storage.add_record(record)
-
-    # updating the current connection invitation status to inactive
-    connection.state = ConnectionRecord.STATE_INACTIVE
-    await connection.save(context=self.context)</code></pre>
-</details>
-</dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message"><code class="name flex">
 <span>async def <span class="ident">process_json_ld_processed_message</span></span>(<span>self, json_ld_processed_message: <a title="mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage" href="messages/json_ld_processed.html#mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage">JSONLDProcessedMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt) ‑> None</span>
 </code></dt>
@@ -2724,13 +1003,11 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_json_ld_processed_message(self, json_ld_processed_message: JSONLDProcessedMessage, receipt: MessageReceipt) -&gt; None:
-
-    # Storage instance
-    storage: IndyStorage = await self.context.inject(BaseStorage)
-
-    # Wallet instance
-    wallet: IndyWallet = await self.context.inject(BaseWallet)
+<pre><code class="python">async def process_json_ld_processed_message(
+    self,
+    json_ld_processed_message: JSONLDProcessedMessage,
+    receipt: MessageReceipt
+) -&gt; None:
 
     # Responder instance
     responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
@@ -2781,7 +1058,10 @@ def context(self) -&gt; InjectionContext:
         )
 
         if responder:
-            await responder.send_reply(json_ld_processed_response_message, connection_id=self.context.connection_record.connection_id)
+            await responder.send_reply(
+                json_ld_processed_response_message,
+                connection_id=self.context.connection_record.connection_id
+            )
 
     except Exception as err:
         # Send problem report
@@ -2794,7 +1074,10 @@ def context(self) -&gt; InjectionContext:
         )
 
         if responder:
-            await responder.send_reply(json_ld_problem_report_message, connection_id=self.context.connection_record.connection_id)</code></pre>
+            await responder.send_reply(
+                json_ld_problem_report_message,
+                connection_id=self.context.connection_record.connection_id
+            )</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.process_read_did_message"><code class="name flex">
@@ -2939,9 +1222,6 @@ def context(self) -&gt; InjectionContext:
     # Initialize DID MyData
     mydata_did = DIDMyData.from_did(mydata_did)
 
-    # Fetch storage from context
-    storage: IndyStorage = await self.context.inject(BaseStorage)
-
     # Fetch wallet from context
     wallet: IndyWallet = await self.context.inject(BaseWallet)
 
@@ -3025,7 +1305,8 @@ def context(self) -&gt; InjectionContext:
                     f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
 
             if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                read_did_response_message: ReadDIDResponseMessage = ReadDIDResponseMessageSchema().load(message_json)
+                read_did_response_message: ReadDIDResponseMessage = \
+                    ReadDIDResponseMessageSchema().load(message_json)
 
                 if read_did_response_message.body.status == &#34;revoked&#34;:
                     raise ADAManagerError(
@@ -3033,66 +1314,6 @@ def context(self) -&gt; InjectionContext:
                     )
 
                 return read_did_response_message.body</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.send_existing_connections_message"><code class="name flex">
-<span>async def <span class="ident">send_existing_connections_message</span></span>(<span>self, theirdid: str, connection_id: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Send existing connections message.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def send_existing_connections_message(self, theirdid: str, connection_id: str) -&gt; None:
-    &#34;&#34;&#34;Send existing connections message.&#34;&#34;&#34;
-
-    # Responder instance
-    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-    try:
-        connection_mgr = ConnectionManager(self.context)
-
-        # Retrieve connection record by id
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            self.context,
-            connection_id
-        )
-
-        connection_invitation: ConnectionInvitation = await connection_record.retrieve_invitation(self.context)
-
-        request = await connection_mgr.create_request(connection_record)
-
-    except StorageError as err:
-
-        raise ADAManagerError(
-            f&#34;Failed to retrieve connection record: {err}&#34;
-        )
-
-    # From and to mydata dids
-    from_did: DIDMyData = DIDMyData.from_public_key_b58(
-        request.connection.did, key_type=KeyType.ED25519
-    )
-    to_did: DIDMyData = DIDMyData.from_public_key_b58(
-        request.connection.did, key_type=KeyType.ED25519
-    )
-
-    # Construct ExistingConnectionsMessage Message
-    existing_connections_message = ExistingConnectionsMessage(
-        from_did=from_did.did,
-        to_did=to_did.did,
-        created_time=round(time.time() * 1000),
-        body=ExistingConnectionsBody(
-            theirdid=theirdid
-        )
-    )
-
-    # Send message
-    if responder:
-        await responder.send_reply(
-            existing_connections_message,
-            connection_id=connection_record.connection_id
-        )</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message"><code class="name flex">
@@ -3104,7 +1325,14 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def send_json_ld_processed_message(self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) -&gt; None:
+<pre><code class="python">async def send_json_ld_processed_message(
+    self,
+    *,
+    connection_id: str,
+    data: dict,
+    signature_options: dict,
+    proof_chain: bool
+) -&gt; None:
     &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
 
     # Responder instance
@@ -3154,7 +1382,10 @@ def context(self) -&gt; InjectionContext:
 
     # Send JSONLD Processed Message
     if responder:
-        await responder.send_reply(json_ld_processed_message, connection_id=connection_record.connection_id)</code></pre>
+        await responder.send_reply(
+            json_ld_processed_message,
+            connection_id=connection_record.connection_id
+        )</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.send_read_did_message"><code class="name flex">
@@ -3174,77 +1405,6 @@ def context(self) -&gt; InjectionContext:
     pass</code></pre>
 </details>
 </dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.serialize_data_agreement_record"><code class="name flex">
-<span>def <span class="ident">serialize_data_agreement_record</span></span>(<span>self, *, data_agreement_records: List[<a title="mydata_did.v1_0.models.exchange_records.data_agreement_record.DataAgreementV1Record" href="models/exchange_records/data_agreement_record.html#mydata_did.v1_0.models.exchange_records.data_agreement_record.DataAgreementV1Record">DataAgreementV1Record</a>], is_list: bool = True, include_fields: List[str] = []) ‑> Union[List[dict], dict]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Serialize data agreement record.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>data_agreement_record</code></strong></dt>
-<dd>Data agreement record.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>:rtype: dict: Data agreement record as dict</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def serialize_data_agreement_record(self, *, data_agreement_records: typing.List[DataAgreementV1Record], is_list: bool = True, include_fields: typing.List[str] = []) -&gt; typing.Union[typing.List[dict], dict]:
-    &#34;&#34;&#34;
-    Serialize data agreement record.
-
-    Args:
-        data_agreement_record: Data agreement record.
-
-    Returns:
-        :rtype: dict: Data agreement record as dict
-    &#34;&#34;&#34;
-
-    data_agreement_record_list = []
-
-    assert len(data_agreement_records) &gt; 0
-
-    for data_agreement_record in data_agreement_records:
-
-        temp_record = {
-            &#34;data_agreement_id&#34;: data_agreement_record.data_agreement_id,
-            &#34;state&#34;: data_agreement_record.state,
-            &#34;method_of_use&#34;: data_agreement_record.method_of_use,
-            &#34;data_agreement&#34;: data_agreement_record.data_agreement,
-            &#34;publish_flag&#34;: data_agreement_record._publish_flag,
-            &#34;delete_flag&#34;: data_agreement_record._delete_flag,
-            &#34;schema_id&#34;: data_agreement_record.schema_id,
-            &#34;cred_def_id&#34;: data_agreement_record.cred_def_id,
-            &#34;presentation_request&#34;: data_agreement_record.data_agreement_proof_presentation_request,
-            &#34;is_existing_schema&#34;: data_agreement_record._is_existing_schema,
-            &#34;created_at&#34;: str_to_epoch(data_agreement_record.created_at),
-            &#34;updated_at&#34;: str_to_epoch(data_agreement_record.updated_at)
-        }
-
-        # Include only the fields specified in the include_fields list
-        if include_fields:
-
-            # created_at must be present in the include_fields
-            if &#34;created_at&#34; not in include_fields:
-                include_fields.append(&#34;created_at&#34;)
-
-            # updated_at must be present in the include_fields
-            if &#34;updated_at&#34; not in include_fields:
-                include_fields.append(&#34;updated_at&#34;)
-
-            temp_record = {k: v for k,
-                           v in temp_record.items() if k in include_fields}
-
-        data_agreement_record_list.append(temp_record)
-
-    # Sort data agreement records by created_at in descending order
-    data_agreement_record_list = sorted(
-        data_agreement_record_list, key=lambda k: k[&#39;created_at&#39;], reverse=True)
-
-    return data_agreement_record_list if is_list else data_agreement_record_list[0]</code></pre>
-</details>
-</dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata"><code class="name flex">
 <span>async def <span class="ident">store_data_agreement_instance_metadata</span></span>(<span>self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) ‑> None</span>
 </code></dt>
@@ -3254,7 +1414,14 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def store_data_agreement_instance_metadata(self, *, data_agreement_id: str = None, data_agreement_template_id: str = None, method_of_use: str = None, data_exchange_record_id: str = None) -&gt; None:
+<pre><code class="python">async def store_data_agreement_instance_metadata(
+    self,
+    *,
+    data_agreement_id: str = None,
+    data_agreement_template_id: str = None,
+    method_of_use: str = None,
+    data_exchange_record_id: str = None
+) -&gt; None:
     &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
     # Fetch storage from context
@@ -3325,24 +1492,13 @@ def context(self) -&gt; InjectionContext:
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA">RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.context" href="#mydata_did.v1_0.manager.ADAManager.context">context</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata">delete_data_agreement_instance_metadata</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.fetch_existing_connections_record_for_current_connection" href="#mydata_did.v1_0.manager.ADAManager.fetch_existing_connections_record_for_current_connection">fetch_existing_connections_record_for_current_connection</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.fetch_firebase_config_from_os_environ" href="#mydata_did.v1_0.manager.ADAManager.fetch_firebase_config_from_os_environ">fetch_firebase_config_from_os_environ</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.fetch_igrantio_config_from_os_environ" href="#mydata_did.v1_0.manager.ADAManager.fetch_igrantio_config_from_os_environ">fetch_igrantio_config_from_os_environ</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.fetch_org_details_from_igrantio" href="#mydata_did.v1_0.manager.ADAManager.fetch_org_details_from_igrantio">fetch_org_details_from_igrantio</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.generate_firebase_dynamic_link_for_connection_invitation" href="#mydata_did.v1_0.manager.ADAManager.generate_firebase_dynamic_link_for_connection_invitation">generate_firebase_dynamic_link_for_connection_invitation</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.process_existing_connections_message" href="#mydata_did.v1_0.manager.ADAManager.process_existing_connections_message">process_existing_connections_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message">process_json_ld_processed_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_message">process_read_did_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_response_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_response_message">process_read_did_response_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata">query_data_agreement_instance_metadata</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did" href="#mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did">resolve_remote_mydata_did</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.send_existing_connections_message" href="#mydata_did.v1_0.manager.ADAManager.send_existing_connections_message">send_existing_connections_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message">send_json_ld_processed_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.send_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.send_read_did_message">send_read_did_message</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.serialize_connection_record" href="#mydata_did.v1_0.manager.ADAManager.serialize_connection_record">serialize_connection_record</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.serialize_credential_exchange_records" href="#mydata_did.v1_0.manager.ADAManager.serialize_credential_exchange_records">serialize_credential_exchange_records</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.serialize_data_agreement_record" href="#mydata_did.v1_0.manager.ADAManager.serialize_data_agreement_record">serialize_data_agreement_record</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.serialize_presentation_exchange_records" href="#mydata_did.v1_0.manager.ADAManager.serialize_presentation_exchange_records">serialize_presentation_exchange_records</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata">store_data_agreement_instance_metadata</a></code></li>
 </ul>
 </li>

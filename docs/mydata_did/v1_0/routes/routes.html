@@ -65,43 +65,36 @@ async def authentication_middleware(
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    # Fetch iGrant.io config from os environment.
+    config_org_id = context.settings.get(&#34;intermediary.igrantio_org_id&#34;)
+    config_api_key_secret = context.settings.get(&#34;intermediary.igrantio_org_api_key_secret&#34;)
 
-    try:
-        # Fetch iGrant.io config from os environment.
-        config: dict = await mydata_did_manager.fetch_igrantio_config_from_os_environ()
-    except ADAManagerError:
-        # iGrant.io config is not available.
-        # Proceed without authentication.
-
+    if not config_org_id:
+        # Intermediary config not available.
         return await handler(request)
-
-    # API Key secret
-    api_key_secret = config.get(&#34;igrantio_org_api_key_secret&#34;)
 
     # Fetch authorization header.
     authorization_header = request.headers.get(&#34;Authorization&#34;)
 
     # Fetch api key from authorization header.
-    api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    header_api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
 
-    if not api_key:
+    if not header_api_key:
         raise web.HTTPUnauthorized(reason=&#34;Missing Authorization header.&#34;)
 
     # Authenticate the request.
     try:
-        jwt.decode(api_key, api_key_secret, algorithms=[&#34;HS256&#34;])
+        jwt.decode(header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;])
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                api_key, api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
+                header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason=&#34;Invalid API Key.&#34;)
 
-    # Override the api key in environment variable.
-    os.environ[&#34;IGRANTIO_ORG_API_KEY&#34;] = api_key
+    # Override settings api key.
+    context.settings[&#34;intermediary.igrantio_org_api_key&#34;] = header_api_key
 
     # Call the handler.
     return await handler(request)
@@ -162,43 +155,36 @@ async def authentication_middleware(
     # Context.
     context = request.app[&#34;request_context&#34;]
 
-    # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    # Fetch iGrant.io config from os environment.
+    config_org_id = context.settings.get(&#34;intermediary.igrantio_org_id&#34;)
+    config_api_key_secret = context.settings.get(&#34;intermediary.igrantio_org_api_key_secret&#34;)
 
-    try:
-        # Fetch iGrant.io config from os environment.
-        config: dict = await mydata_did_manager.fetch_igrantio_config_from_os_environ()
-    except ADAManagerError:
-        # iGrant.io config is not available.
-        # Proceed without authentication.
-
+    if not config_org_id:
+        # Intermediary config not available.
         return await handler(request)
-
-    # API Key secret
-    api_key_secret = config.get(&#34;igrantio_org_api_key_secret&#34;)
 
     # Fetch authorization header.
     authorization_header = request.headers.get(&#34;Authorization&#34;)
 
     # Fetch api key from authorization header.
-    api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    header_api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
 
-    if not api_key:
+    if not header_api_key:
         raise web.HTTPUnauthorized(reason=&#34;Missing Authorization header.&#34;)
 
     # Authenticate the request.
     try:
-        jwt.decode(api_key, api_key_secret, algorithms=[&#34;HS256&#34;])
+        jwt.decode(header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;])
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                api_key, api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
+                header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason=&#34;Invalid API Key.&#34;)
 
-    # Override the api key in environment variable.
-    os.environ[&#34;IGRANTIO_ORG_API_KEY&#34;] = api_key
+    # Override settings api key.
+    context.settings[&#34;intermediary.igrantio_org_api_key&#34;] = header_api_key
 
     # Call the handler.
     return await handler(request)</code></pre>

@@ -276,7 +276,7 @@ class V10CredentialOfferRequestSchema(AdminAPIMessageTracingSchema):
     comment = fields.Str(
         description=&#34;Human-readable comment&#34;, required=False, allow_none=True
     )
-    credential_preview = fields.Nested(CredentialPreviewSchema, required=True)
+    credential_preview = fields.Nested(CredentialPreviewSchema, required=False)
     trace = fields.Bool(
         description=&#34;Whether to trace event (default false)&#34;,
         required=False,
@@ -930,6 +930,12 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
             reason=&#34;Either cred def id or data agreement template id is required.&#34;
         )
 
+    # Data agreement model
+    da_model = template_record.data_agreement_model
+
+    # Third party data sharing or not.
+    third_party_data_sharing = da_model.data_policy.third_party_data_sharing
+
     auto_issue = body.get(
         &#34;auto_issue&#34;, context.settings.get(
             &#34;debug.auto_respond_credential_request&#34;)
@@ -937,9 +943,28 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
 
     auto_remove = body.get(&#34;auto_remove&#34;)
     comment = body.get(&#34;comment&#34;)
-    preview_spec = body.get(&#34;credential_preview&#34;)
-    if not preview_spec:
-        raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+
+    # If not third party data sharing,
+    # then use credential preview from request body
+    if not third_party_data_sharing:
+        preview_spec = body.get(&#34;credential_preview&#34;)
+        if not preview_spec:
+            raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+    else:
+        # If third party data sharing,
+        # then construct the credential dynamically from personal data.
+        # Values are empty strings.
+        preview_spec_attrs = []
+        for pd in da_model.personal_data:
+            preview_spec_attrs.append({
+                &#34;name&#34;: pd.attribute_name,
+                &#34;value&#34;: &#34; &#34;
+            })
+        preview_spec = {
+            &#34;@type&#34;: &#34;issue-credential/1.0/credential-preview&#34;,
+            &#34;attributes&#34;: preview_spec_attrs
+        }
+
     trace_msg = body.get(&#34;trace&#34;)
 
     cred_ex_record = None
@@ -2267,6 +2292,12 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
             reason=&#34;Either cred def id or data agreement template id is required.&#34;
         )
 
+    # Data agreement model
+    da_model = template_record.data_agreement_model
+
+    # Third party data sharing or not.
+    third_party_data_sharing = da_model.data_policy.third_party_data_sharing
+
     auto_issue = body.get(
         &#34;auto_issue&#34;, context.settings.get(
             &#34;debug.auto_respond_credential_request&#34;)
@@ -2274,9 +2305,28 @@ async def credential_exchange_send_free_offer(request: web.BaseRequest):
 
     auto_remove = body.get(&#34;auto_remove&#34;)
     comment = body.get(&#34;comment&#34;)
-    preview_spec = body.get(&#34;credential_preview&#34;)
-    if not preview_spec:
-        raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+
+    # If not third party data sharing,
+    # then use credential preview from request body
+    if not third_party_data_sharing:
+        preview_spec = body.get(&#34;credential_preview&#34;)
+        if not preview_spec:
+            raise web.HTTPBadRequest(reason=(&#34;Missing credential_preview&#34;))
+    else:
+        # If third party data sharing,
+        # then construct the credential dynamically from personal data.
+        # Values are empty strings.
+        preview_spec_attrs = []
+        for pd in da_model.personal_data:
+            preview_spec_attrs.append({
+                &#34;name&#34;: pd.attribute_name,
+                &#34;value&#34;: &#34; &#34;
+            })
+        preview_spec = {
+            &#34;@type&#34;: &#34;issue-credential/1.0/credential-preview&#34;,
+            &#34;attributes&#34;: preview_spec_attrs
+        }
+
     trace_msg = body.get(&#34;trace&#34;)
 
     cred_ex_record = None
@@ -3173,7 +3223,7 @@ async def credential_exchange_store(request: web.BaseRequest):
     comment = fields.Str(
         description=&#34;Human-readable comment&#34;, required=False, allow_none=True
     )
-    credential_preview = fields.Nested(CredentialPreviewSchema, required=True)
+    credential_preview = fields.Nested(CredentialPreviewSchema, required=False)
     trace = fields.Bool(
         description=&#34;Whether to trace event (default false)&#34;,
         required=False,

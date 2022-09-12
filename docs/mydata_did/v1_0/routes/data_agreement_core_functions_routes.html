@@ -38,6 +38,7 @@ from aiohttp_apispec import (
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
+from dexa_sdk.managers.dexa_manager import DexaManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
 from ..manager import ADAManagerError
 from ..models.exchange_records.data_agreement_personal_data_record import (
@@ -70,7 +71,8 @@ from .openapi import (
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
     GenerateDataAgreementQrCodePayloadQueryStringSchema,
     CreateOrUpdateDataAgreementInWalletRequestSchema,
-    UpdateDataAgreementTemplateOpenAPISchema
+    UpdateDataAgreementTemplateOpenAPISchema,
+    ConfigureCustomerIdentificationDAMatchInfoSchema
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -518,7 +520,57 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
-    return web.json_response({}, status=204)</code></pre>
+    return web.json_response({}, status=204)
+
+
+@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary=&#34;Fetch customer identification data agreement.&#34;,
+)
+async def fetch_customer_identification_da_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Fetch customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.fetch_customer_identification_data_agreement()
+
+    return web.json_response(record.serialize() if record else {})
+
+
+@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary=&#34;Configure customer identification data agreement.&#34;,
+)
+@match_info_schema(ConfigureCustomerIdentificationDAMatchInfoSchema())
+async def configure_customer_identification_da_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Configure customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Path parameters
+    template_id = request.match_info[&#34;template_id&#34;]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.configure_customer_identification_data_agreement(template_id)
+
+    return web.json_response(record.serialize())</code></pre>
 </details>
 </section>
 <section>
@@ -528,6 +580,47 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.configure_customer_identification_da_handler"><code class="name flex">
+<span>async def <span class="ident">configure_customer_identification_da_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configure customer identification DA.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong> :&ensp;<code>web.BaseRequest</code></dt>
+<dd>Request.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary=&#34;Configure customer identification data agreement.&#34;,
+)
+@match_info_schema(ConfigureCustomerIdentificationDAMatchInfoSchema())
+async def configure_customer_identification_da_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Configure customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Path parameters
+    template_id = request.match_info[&#34;template_id&#34;]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.configure_customer_identification_data_agreement(template_id)
+
+    return web.json_response(record.serialize())</code></pre>
+</details>
+</dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2"><code class="name flex">
 <span>async def <span class="ident">create_and_store_data_agreement_in_wallet_v2</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
 </code></dt>
@@ -661,6 +754,43 @@ async def delete_data_agreement_in_wallet(request: web.BaseRequest):
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
     return web.json_response({}, status=204)</code></pre>
+</details>
+</dd>
+<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.fetch_customer_identification_da_handler"><code class="name flex">
+<span>async def <span class="ident">fetch_customer_identification_da_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetch customer identification DA.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong> :&ensp;<code>web.BaseRequest</code></dt>
+<dd>Request.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary=&#34;Fetch customer identification data agreement.&#34;,
+)
+async def fetch_customer_identification_da_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Fetch customer identification DA.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Initialise the manager
+    mgr = DexaManager(context)
+
+    # Call the function
+    record = await mgr.fetch_customer_identification_data_agreement()
+
+    return web.json_response(record.serialize() if record else {})</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_data_agreement_qr_code_payload"><code class="name flex">
@@ -1097,9 +1227,11 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.configure_customer_identification_da_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.configure_customer_identification_da_handler">configure_customer_identification_da_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.create_and_store_data_agreement_in_wallet_v2">create_and_store_data_agreement_in_wallet_v2</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_da_personal_data_in_wallet">delete_da_personal_data_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_data_agreement_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.delete_data_agreement_in_wallet">delete_data_agreement_in_wallet</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.fetch_customer_identification_da_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.fetch_customer_identification_da_handler">fetch_customer_identification_da_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_data_agreement_qr_code_payload" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.generate_data_agreement_qr_code_payload">generate_data_agreement_qr_code_payload</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.publish_data_agreement_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.publish_data_agreement_handler">publish_data_agreement_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.query_da_personal_data_in_wallet">query_da_personal_data_in_wallet</a></code></li>

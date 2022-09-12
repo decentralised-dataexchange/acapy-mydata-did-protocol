@@ -50,6 +50,7 @@ DATA_AGREEMENT_PROBLEM_REPORT = f&#34;data-agreements/1.0/problem-report&#34;
 DATA_AGREEMENT_NEGOTIATION_OFFER = f&#34;data-agreement-negotiation/1.0/offer&#34;
 DATA_AGREEMENT_NEGOTIATION_REJECT = f&#34;data-agreement-negotiation/1.0/reject&#34;
 DATA_AGREEMENT_NEGOTIATION_ACCEPT = f&#34;data-agreement-negotiation/1.0/accept&#34;
+DATA_AGREEMENT_NEGOTIATION_RECEIPT = f&#34;data-agreement-negotiation/1.0/receipt&#34;
 DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = f&#34;data-agreement-negotiation/1.0/problem-report&#34;
 
 # Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
@@ -98,6 +99,9 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DATA_AGREEMENT_PROBLEM_REPORT: (
             f&#34;{PROTOCOL_PACKAGE}.messages.problem_report.DataAgreementProblemReport&#34;
+        ),
+        DATA_AGREEMENT_NEGOTIATION_RECEIPT: (
+            f&#34;{PROTOCOL_PACKAGE}.messages.da_negotiation_receipt.DataAgreementNegotiationReceiptMessage&#34;
         ),
         DATA_AGREEMENT_NEGOTIATION_REJECT: (
             f&#34;{PROTOCOL_PACKAGE}.messages.data_agreement_reject.DataAgreementNegotiationRejectMessage&#34;
