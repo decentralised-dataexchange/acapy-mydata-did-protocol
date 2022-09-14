@@ -1,6 +1,5 @@
-from marshmallow import fields
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class JSONLDProcessedResponseBody(BaseModel):
@@ -12,11 +11,7 @@ class JSONLDProcessedResponseBody(BaseModel):
         schema_class = "JSONLDProcessedResponseBodySchema"
 
     def __init__(
-        self,
-        *,
-        framed_base64: str = None,
-        combined_hash_base64: str = None,
-        **kwargs
+        self, *, framed_base64: str = None, combined_hash_base64: str = None, **kwargs
     ):
         """json-ld/1.0/processed-data-response message body init"""
 

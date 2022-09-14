@@ -1,10 +1,10 @@
 """Wallet utility functions."""
 
-import base58
 import base64
 
-import nacl.utils
+import base58
 import nacl.bindings
+import nacl.utils
 
 
 def random_seed() -> bytes:

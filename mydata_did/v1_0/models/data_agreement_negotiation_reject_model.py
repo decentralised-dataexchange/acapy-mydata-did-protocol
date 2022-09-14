@@ -1,12 +1,11 @@
-from marshmallow import fields
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from .data_agreement_negotiation_offer_model import (
+from marshmallow import fields
+from mydata_did.v1_0.models.data_agreement_negotiation_offer_model import (
+    DataAgreementEvent,
+    DataAgreementEventSchema,
     DataAgreementProof,
     DataAgreementProofSchema,
-    DataAgreementEvent,
-    DataAgreementEventSchema
 )
 
 
@@ -46,9 +45,7 @@ class DataAgreementNegotiationRejectBodySchema(BaseModelSchema):
 
     # Data agreement id
     data_agreement_id = fields.Str(
-        data_key="id",
-        example=UUIDFour.EXAMPLE,
-        description="Data agreement identifier"
+        data_key="id", example=UUIDFour.EXAMPLE, description="Data agreement identifier"
     )
 
     # Data agreement events

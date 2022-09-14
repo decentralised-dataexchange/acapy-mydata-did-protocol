@@ -1,13 +1,11 @@
 """JSON Web Encryption utilities."""
 
 import json
-
 from collections import OrderedDict
 from typing import Any, Iterable, List, Mapping, Optional, Union
 
-from marshmallow import fields, Schema, ValidationError
-
-from .wallet.util import b64_to_bytes, bytes_to_b64
+from marshmallow import Schema, ValidationError, fields
+from mydata_did.v1_0.utils.wallet.util import b64_to_bytes, bytes_to_b64
 
 IDENT_ENC_KEY = "encrypted_key"
 IDENT_HEADER = "header"

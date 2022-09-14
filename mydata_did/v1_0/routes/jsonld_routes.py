@@ -1,19 +1,12 @@
 import logging
+
 from aiohttp import web
-from aiohttp_apispec import (
-    docs,
-    request_schema,
-    match_info_schema,
-)
-
-from ..manager import ADAManager, ADAManagerError
-from ..routes.maps.tag_maps import (
-    TAGS_JSONLD_FUNCTIONS_LABEL,
-)
-
-from .openapi import (
-    SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema,
+from aiohttp_apispec import docs, match_info_schema, request_schema
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from mydata_did.v1_0.routes.maps.tag_maps import TAGS_JSONLD_FUNCTIONS_LABEL
+from mydata_did.v1_0.routes.openapi.schemas import (
     SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema,
+    SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -43,22 +36,16 @@ async def send_json_ld_didcomm_processed_data_message_handler(request: web.BaseR
 
     # Fetch request body
     body = await request.json()
+    data = body.get("data")
+    signature_options = body.get("signature_options")
 
     # Initialise MyData DID Manager.
-    mydata_did_manager: ADAManager = ADAManager(context=context)
+    mgr = V2ADAManager(context=context)
 
-    try:
-
-        # Call the function.
-
-        await mydata_did_manager.send_json_ld_processed_message(
-            connection_id=connection_id,
-            data=body.get("data", {}),
-            signature_options=body.get("signature_options", {}),
-            proof_chain=body.get("proof_chain", False),
-        )
-
-    except ADAManagerError as err:
-        raise web.HTTPBadRequest(reason=err.roll_up) from err
+    await mgr.send_json_ld_processed_message(
+        connection_id=connection_id,
+        data=data,
+        signature_options=signature_options,
+    )
 
     return web.json_response({}, status=204)

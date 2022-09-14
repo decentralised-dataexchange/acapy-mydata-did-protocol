@@ -1,38 +1,37 @@
 import json
-import uuid
 import logging
+import uuid
+
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
-    request_schema,
-    querystring_schema,
-    response_schema,
     match_info_schema,
+    querystring_schema,
+    request_schema,
+    response_schema,
 )
+from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.connections.models.connection_record import (
-    ConnectionRecord,
-)
 from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManager,
     ConnectionManagerError,
 )
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
-from ..utils.util import str_to_bool
-from ..manager import ADAManagerError
-from .openapi import (
-    V2CreateInvitationQueryStringSchema,
-    V2InvitationResultSchema,
+from mydata_did.v1_0.manager import ADAManagerError
+from mydata_did.v1_0.routes.openapi.schemas import (
+    ConnectionListSchema,
+    ConnectionsListQueryStringSchemaV2,
     GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema,
     GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema,
-    SendExistingConnectionsMessageHandlerMatchInfoSchema,
-    SendExistingConnectionsMessageHandlerRequestSchema,
     GetExistingConnectionMatchInfoSchema,
     GetExistingConnectionResponseSchema,
-    ConnectionsListQueryStringSchemaV2,
-    ConnectionListSchema,
+    SendExistingConnectionsMessageHandlerMatchInfoSchema,
+    SendExistingConnectionsMessageHandlerRequestSchema,
+    V2CreateInvitationQueryStringSchema,
+    V2InvitationResultSchema,
 )
+from mydata_did.v1_0.utils.util import str_to_bool
 
 LOGGER = logging.getLogger(__name__)
 
@@ -158,9 +157,7 @@ async def generate_firebase_dynamic_link_for_connection_invitation_handler(
     mgr = V2ADAManager(context=context)
     try:
         # Call the function
-        res = await mgr.create_connection_qr_code(
-            conn_id
-        )
+        res = await mgr.create_connection_qr_code(conn_id)
 
     except (ConnectionManagerError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -194,10 +191,7 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 
     try:
         # Call the function
-        await mgr.send_existing_connections_message(
-            theirdid,
-            conn_id
-        )
+        await mgr.send_existing_connections_message(theirdid, conn_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -224,9 +218,7 @@ async def get_existing_connections_handler(request: web.BaseRequest):
     mgr = V2ADAManager(context=context)
 
     # Call the function
-    result = await mgr.get_existing_connection_record_for_new_connection_id(
-        conn_id
-    )
+    result = await mgr.get_existing_connection_record_for_new_connection_id(conn_id)
     result = result.serialize() if result else {}
 
     return web.json_response(result)
@@ -267,7 +259,7 @@ async def connections_list_v2(request: web.BaseRequest):
         "my_did",
         "their_did",
         "request_id",
-        "invitation_key"
+        "invitation_key",
     ):
         if param_name in request.query and request.query[param_name] != "":
             tag_filter[param_name] = request.query[param_name]
@@ -299,7 +291,7 @@ async def connections_list_v2(request: web.BaseRequest):
         page if page else 1,
         page_size if page_size else 10,
         str_to_bool(org_flag) if org_flag else org_flag,
-        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag
+        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag,
     )
 
     return web.json_response(pagination_result._asdict())

@@ -1,9 +1,9 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-from ..message_types import EXISTING_CONNECTIONS, PROTOCOL_PACKAGE
-from ..models.existing_connections_model import (
+from mydata_did.v1_0.message_types import EXISTING_CONNECTIONS, PROTOCOL_PACKAGE
+from mydata_did.v1_0.models.existing_connections_model import (
     ExistingConnectionsBody,
-    ExistingConnectionsBodySchema
+    ExistingConnectionsBodySchema,
 )
 
 # Handler class for existing connections message.
@@ -29,12 +29,7 @@ class ExistingConnectionsMessage(AgentMessage):
         # Message schema class
         schema_class = "ExistingConnectionsMessageSchema"
 
-    def __init__(
-        self,
-        *,
-        body: ExistingConnectionsBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: ExistingConnectionsBody, **kwargs):
         """
         Initialize a ExistingConnectionsMessage message instance.
         """
@@ -57,7 +52,4 @@ class ExistingConnectionsMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        ExistingConnectionsBodySchema,
-        required=True
-    )
+    body = fields.Nested(ExistingConnectionsBodySchema, required=True)

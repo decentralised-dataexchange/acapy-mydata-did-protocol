@@ -1,10 +1,9 @@
 """DID MyData class and resolver methods."""
 
-from ..wallet.crypto import ed25519_pk_to_curve25519
-from ..wallet.key_type import KeyType
-from ..wallet.util import b58_to_bytes, bytes_to_b58
-
-from ..diddoc import DIDDoc
+from mydata_did.v1_0.utils.diddoc import DIDDoc
+from mydata_did.v1_0.utils.wallet.crypto import ed25519_pk_to_curve25519
+from mydata_did.v1_0.utils.wallet.key_type import KeyType
+from mydata_did.v1_0.utils.wallet.util import b58_to_bytes, bytes_to_b58
 
 
 class DIDMyData:
@@ -107,6 +106,7 @@ class DIDMyData:
     def key_id(self) -> str:
         """Getter for key id."""
         return f"{self.did}#{self.fingerprint}"
+
 
 def construct_did_key_ed25519(did_key: "DIDMyData") -> dict:
     """Construct Ed25519 did:mydata.

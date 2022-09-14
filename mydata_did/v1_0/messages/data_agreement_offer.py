@@ -1,10 +1,10 @@
-from marshmallow import EXCLUDE, fields
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from dexa_sdk.agreements.da.v1_0.models.da_instance_models import (
+    DataAgreementInstanceModel,
     DataAgreementInstanceSchema,
-    DataAgreementInstanceModel
 )
-from ..message_types import DATA_AGREEMENT_NEGOTIATION_OFFER
+from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.message_types import DATA_AGREEMENT_NEGOTIATION_OFFER
 
 
 class DataAgreementNegotiationOfferMessage(AgentMessage):
@@ -20,12 +20,7 @@ class DataAgreementNegotiationOfferMessage(AgentMessage):
         # Message schema class
         schema_class = "DataAgreementNegotiationOfferMessageSchema"
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementInstanceModel,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementInstanceModel, **kwargs):
         """
         Initialize a DataAgreementNegotiationOfferMessage message instance.
         """
@@ -48,7 +43,4 @@ class DataAgreementNegotiationOfferMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementInstanceSchema,
-        required=True
-    )
+    body = fields.Nested(DataAgreementInstanceSchema, required=True)

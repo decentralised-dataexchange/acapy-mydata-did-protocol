@@ -1,12 +1,11 @@
-from marshmallow import EXCLUDE
-
 from aries_cloudagent.messaging.ack.message import Ack, AckSchema
-
-from ..message_types import DATA_AGREEMENT_TERMINATION_TERMINATE_ACK, PROTOCOL_PACKAGE
-
-HANDLER_CLASS = (
-    f"{PROTOCOL_PACKAGE}.handlers.data_agreement_termination_ack_handler.DataAgreementTerminationAckHandler"
+from marshmallow import EXCLUDE
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_TERMINATION_TERMINATE_ACK,
+    PROTOCOL_PACKAGE,
 )
+
+HANDLER_CLASS = f"{PROTOCOL_PACKAGE}.handlers.data_agreement_termination_ack_handler.DataAgreementTerminationAckHandler"
 
 
 class DataAgreementTerminationAck(Ack):

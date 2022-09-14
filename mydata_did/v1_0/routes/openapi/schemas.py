@@ -1,30 +1,20 @@
+from aries_cloudagent.connections.models.connection_record import (
+    ConnectionRecord, ConnectionRecordSchema)
+from aries_cloudagent.messaging.models.openapi import OpenAPISchema
+from aries_cloudagent.messaging.valid import (INDY_DID, INDY_RAW_PUBLIC_KEY,
+                                              UUID4, UUIDFour)
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import \
+    ConnectionInvitationSchema
+from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import \
+    DAInstancePermissionRecord
 from marshmallow import fields, validate, validates
 from marshmallow.exceptions import ValidationError
-
-from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import (
-    INDY_DID,
-    UUIDFour,
-    UUID4,
-    INDY_RAW_PUBLIC_KEY,
-)
-from aries_cloudagent.connections.models.connection_record import (
-    ConnectionRecord,
-    ConnectionRecordSchema,
-)
-from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
-    ConnectionInvitationSchema,
-)
-
-from ...models.exchange_records.data_agreement_didcomm_transaction_record import (
-    DataAgreementCRUDDIDCommTransaction,
-)
-from ...models.exchange_records.data_agreement_record import (
-    DataAgreementV1Record,
-)
-from ...models.diddoc_model import MyDataDIDDocSchema
-
-from ...utils.regex import MYDATA_DID
+from mydata_did.v1_0.models.diddoc_model import MyDataDIDDocSchema
+from mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record import \
+    DataAgreementCRUDDIDCommTransaction
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import \
+    DataAgreementV1Record
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 
 class ReadDataAgreementRequestSchema(OpenAPISchema):
@@ -175,8 +165,7 @@ class PersonalDataOpenAPISchema(OpenAPISchema):
     attribute_category = fields.Str(data_key="attributeCategory")
     attribute_description = fields.Str(data_key="attributeDescription")
     restrictions = fields.List(
-        fields.Nested(PersonalDataRestrictionOpenAPISchema),
-        data_key="restrictions"
+        fields.Nested(PersonalDataRestrictionOpenAPISchema), data_key="restrictions"
     )
 
 
@@ -199,7 +188,9 @@ class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
     purpose_descripton = fields.Str(data_key="purposeDescription")
     lawful_basis = fields.Str(data_key="lawfulBasis")
     method_of_use = fields.Str(data_key="methodOfUse")
-    personal_data = fields.List(fields.Nested(PersonalDataOpenAPISchema), data_key="personalData")
+    personal_data = fields.List(
+        fields.Nested(PersonalDataOpenAPISchema), data_key="personalData"
+    )
     dpia = fields.Nested(DPIAOpenAPISchema, data_key="dpia")
 
 
@@ -249,6 +240,7 @@ class DataAgreementV1RecordResponseSchema(OpenAPISchema):
     """
     Schema for data agreement v1 record response
     """
+
     template_id = fields.Str()
     state = fields.Str()
     method_of_use = fields.Str()
@@ -366,9 +358,7 @@ class UpdateDataAgreementMatchInfoSchema(OpenAPISchema):
     Schema to match info for the update data agreement endpoint
     """
 
-    template_id = fields.Str(
-        description="Template identifier", required=True
-    )
+    template_id = fields.Str(description="Template identifier", required=True)
 
 
 class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
@@ -376,9 +366,7 @@ class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
     Schema to match info for the delete data agreement endpoint
     """
 
-    template_id = fields.Str(
-        description="Template identifier", required=True
-    )
+    template_id = fields.Str(description="Template identifier", required=True)
 
 
 class CreateAndStoreDAPersonalDataInWalletRequestSchema(OpenAPISchema):
@@ -591,8 +579,9 @@ class MyDataDIDRemoteRecordResponseSchema(OpenAPISchema):
 class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     """Query string schema for create data agreement handler"""
 
-    publish_flag = fields.Boolean(description="Publish the agreement",
-                                  required=False, example=False)
+    publish_flag = fields.Boolean(
+        description="Publish the agreement", required=False, example=False
+    )
 
     existing_schema_id = fields.Str(
         description="Existing schema identifier",
@@ -932,6 +921,7 @@ class ConnectionListSchema(OpenAPISchema):
 
 class UpdateControllerDetailsRequestSchema(OpenAPISchema):
     """Update controller details request schema"""
+
     organisation_did = fields.Str(required=False)
     organisation_name = fields.Str(required=False)
     cover_image_url = fields.Str(required=False)
@@ -947,3 +937,25 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
     """Configure customer identification DA match info schema"""
 
     template_id = fields.Str()
+
+
+class SetDAPermissionMatchInfoSchema(OpenAPISchema):
+    """Set DA permission match info schema"""
+
+    instance_id = fields.Str()
+
+
+class SetDAPermissionQueryStringSchema(OpenAPISchema):
+    """Set DA permission query string schema"""
+
+    state = fields.Str(
+        description="Permission state",
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DAInstancePermissionRecord, m)
+                for m in vars(DAInstancePermissionRecord)
+                if m.startswith("STATE_")
+            ]
+        ),
+    )

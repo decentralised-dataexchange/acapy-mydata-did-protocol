@@ -21,8 +21,7 @@ limitations under the License.
 from collections import namedtuple
 from enum import Enum
 
-from .util import canon_did, canon_ref, derive_did_type, resource
-
+from mydata_did.v1_0.utils.util import canon_did, canon_ref, derive_did_type, resource
 
 LinkedDataKeySpec = namedtuple("LinkedDataKeySpec", "ver_type authn_type specifier")
 

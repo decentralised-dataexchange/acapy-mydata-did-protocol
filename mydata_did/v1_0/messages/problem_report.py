@@ -1,17 +1,16 @@
 from enum import Enum
-from marshmallow import EXCLUDE, fields, validate
 
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..message_types import (
+from marshmallow import EXCLUDE, fields, validate
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT,
     DATA_AGREEMENT_PROBLEM_REPORT,
+    DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT,
     MYDATA_DID_PROBLEM_REPORT,
     PROTOCOL_PACKAGE,
-    DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT,
-    DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT
 )
-from ..utils.regex import MYDATA_DID
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 # Handler class
 HANDLER_CLASS = (
@@ -59,7 +58,7 @@ class MyDataDIDProblemReportMessage(AgentMessage):
         from_did: str = None,
         to_did: str = None,
         created_time: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize mydata-did problem report message instance.
@@ -158,7 +157,7 @@ class DataAgreementProblemReport(AgentMessage):
         from_did: str = None,
         to_did: str = None,
         created_time: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DataAgreementProblemReport message instance.
@@ -172,7 +171,6 @@ class DataAgreementProblemReport(AgentMessage):
 
 
 class DataAgreementProblemReportSchema(AgentMessageSchema):
-
     class Meta:
         """Metadata for data agreement problem report schema."""
 
@@ -241,7 +239,7 @@ class DataAgreementNegotiationProblemReport(AgentMessage):
         to_did: str = None,
         created_time: str = None,
         data_agreement_id: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DataAgreementNegotiationProblemReport message instance.
@@ -267,6 +265,7 @@ class DataAgreementNegotiationProblemReportSchema(AgentMessageSchema):
     """
     Data agreement negotiation problem report schema.
     """
+
     class Meta:
         """Metadata for data agreement negotiation problem report schema."""
 
@@ -287,7 +286,8 @@ class DataAgreementNegotiationProblemReportSchema(AgentMessageSchema):
         description="Standard error identifier",
         validate=validate.OneOf(
             choices=[
-                dapr.value for dapr in DataAgreementNegotiationProblemReportReason],
+                dapr.value for dapr in DataAgreementNegotiationProblemReportReason
+            ],
             error="Value {input} must be one of {choices}.",
         ),
         example=DataAgreementNegotiationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,
@@ -339,7 +339,7 @@ class DataAgreementTerminationProblemReport(AgentMessage):
         to_did: str = None,
         created_time: str = None,
         data_agreement_id: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DataAgreementTerminationProblemReport message instance.
@@ -365,6 +365,7 @@ class DataAgreementTerminationProblemReportSchema(AgentMessageSchema):
     """
     Data agreement termination problem report schema.
     """
+
     class Meta:
         """Metadata for data agreement termination problem report schema."""
 
@@ -385,7 +386,8 @@ class DataAgreementTerminationProblemReportSchema(AgentMessageSchema):
         description="Standard error identifier",
         validate=validate.OneOf(
             choices=[
-                dapr.value for dapr in DataAgreementTerminationProblemReportReason],
+                dapr.value for dapr in DataAgreementTerminationProblemReportReason
+            ],
             error="Value {input} must be one of {choices}.",
         ),
         example=DataAgreementTerminationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,

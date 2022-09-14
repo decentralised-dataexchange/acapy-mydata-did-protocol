@@ -1,25 +1,23 @@
-import datetime
-
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
-from marshmallow import fields, EXCLUDE
-from marshmallow.exceptions import ValidationError
-from typing import List
+from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.models.data_agreement_instance_model import (
+    DataAgreementInstance,
+    DataAgreementInstanceSchema,
+)
 
-from ..utils.regex import MYDATA_DID
-from .data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
 class ReadDataAgreementResponseBody(BaseModel):
     """ReadDataAgreementResponseBody model class"""
 
     class Meta:
         """ReadDataAgreementResponseBody metadata"""
+
         schema_class = "ReadDataAgreementResponseBodySchema"
 
     def __init__(
         self,
         *,
-        data_agreement :DataAgreementInstance = None,
+        data_agreement: DataAgreementInstance = None,
         **kwargs,
     ):
         """
@@ -37,6 +35,7 @@ class ReadDataAgreementResponseBodySchema(BaseModelSchema):
 
     class Meta:
         """ReadDataAgreementResponseBodySchema metadata"""
+
         model_class = ReadDataAgreementResponseBody
         unknown = EXCLUDE
 

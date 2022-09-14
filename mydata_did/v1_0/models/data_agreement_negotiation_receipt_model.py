@@ -1,5 +1,5 @@
-from marshmallow import fields, EXCLUDE
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import EXCLUDE, fields
 
 
 class DataAgreementNegotiationReceiptBody(BaseModel):
@@ -36,6 +36,6 @@ class DataAgreementNegotiationReceiptBodySchema(BaseModelSchema):
         unknown = EXCLUDE
 
     instance_id = fields.Str()
-    blockchain_receipt = fields.Str()
+    blockchain_receipt = fields.Dict()
     blink = fields.Str()
     mydata_did = fields.Str()

@@ -1,5 +1,5 @@
-from marshmallow import fields
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import fields
 
 
 class ExistingConnectionsBody(BaseModel):
@@ -10,12 +10,7 @@ class ExistingConnectionsBody(BaseModel):
 
         schema_class = "ExistingConnectionsBodySchema"
 
-    def __init__(
-        self,
-        *,
-        theirdid: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, theirdid: str = None, **kwargs):
         """ExistingConnectionsBody init"""
 
         super().__init__(**kwargs)

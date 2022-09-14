@@ -1,11 +1,12 @@
-from os import environ
-from typing import Any
 import typing
+from typing import Any
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
@@ -20,9 +21,10 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
     Each transaction record will have 2 tags: thread_id and message_type.
 
     1. thread_id - identifier of the initial message that triggered the transaction.
-    2. message_type - identifier of the message family that triggered the transaction 
+    2. message_type - identifier of the message family that triggered the transaction
                         for .e.g. create-data-agreement
     """
+
     class Meta:
         # Schema class
         schema_class = "DataAgreementCRUDDIDCommTransactionSchema"
@@ -84,18 +86,17 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
 
 
 class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
-
     class Meta:
         # Model class
         model_class = DataAgreementCRUDDIDCommTransaction
-    
+
     # Transaction record id
     da_crud_didcomm_tx_id = fields.Str(
         required=True,
         description="Transaction record id",
         example=UUIDFour.EXAMPLE,
     )
-    
+
     # Parent message id of the transaction record
     thread_id = fields.Str(
         required=False,
@@ -109,7 +110,9 @@ class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
         example="create-data-agreement",
     )
     # List of messages in the transaction record
-    messages_list = fields.List(fields.Dict(), required=False, description="Messages list")
+    messages_list = fields.List(
+        fields.Dict(), required=False, description="Messages list"
+    )
 
     # Connection identifier
     connection_id = fields.Str(

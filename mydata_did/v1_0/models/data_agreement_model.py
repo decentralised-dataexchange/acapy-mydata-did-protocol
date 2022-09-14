@@ -1,14 +1,12 @@
 import datetime
-
-import validators
-
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
-from marshmallow import fields, EXCLUDE, validate, validates, pre_load
-from marshmallow.exceptions import ValidationError
 from typing import List
 
-from ..utils.regex import MYDATA_DID
+import validators
+from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import EXCLUDE, fields, pre_load, validate, validates
+from marshmallow.exceptions import ValidationError
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 DATA_AGREEMENT_V1_SCHEMA_CONTEXT = "https://raw.githubusercontent.com/decentralised-dataexchange/automated-data-agreements/main/interface-specs/data-agreement-schema/v1/data-agreement-schema-context.jsonld"
 

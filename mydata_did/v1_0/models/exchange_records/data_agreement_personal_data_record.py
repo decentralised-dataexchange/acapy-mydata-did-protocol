@@ -1,18 +1,23 @@
-from os import environ
 import typing
 from typing import Any
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
+from mydata_did.v1_0.models.data_agreement_model import (
+    DataAgreementPersonalDataRestrictionSchema,
+)
 
-from ..data_agreement_model import DataAgreementPersonalDataRestriction, DataAgreementPersonalDataRestrictionSchema
 
 class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     """
-    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of data agreement personal data records to/from wallet.
+    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of
+    data agreement personal data records to/from wallet.
     """
+
     class Meta:
         # Data Agreement Personal Data Record schema class
         schema_class = "DataAgreementPersonalDataRecordSchema"
@@ -87,7 +92,7 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
                 "attribute_description",
                 "restrictions",
                 "da_template_id",
-                "da_template_version"
+                "da_template_version",
             )
         }
 
@@ -97,55 +102,44 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
 
 
 class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
-
     class Meta:
         """DataAgreementPersonalDataRecordSchema metadata."""
 
         # Model class
         model_class = DataAgreementPersonalDataRecord
-    
 
-    personal_data_id = fields.Str(
-        required=True,
-        example=UUIDFour.EXAMPLE
-    )
+    personal_data_id = fields.Str(required=True, example=UUIDFour.EXAMPLE)
 
     attribute_name = fields.Str(
-        required=True,
-        description="The name of the attribute.",
-        example="name"
+        required=True, description="The name of the attribute.", example="name"
     )
 
     attribute_description = fields.Str(
         required=True,
         description="The description of the attribute.",
-        example="Name of the customer"
+        example="Name of the customer",
     )
 
     attribute_category = fields.Str(
-        required=True,
-        description="The category of the attribute.",
-        example="personal"
+        required=True, description="The category of the attribute.", example="personal"
     )
-
 
     attribute_sensitive = fields.Str(
         required=True,
         description="The sensitive flag of the attribute.",
-        example="true"
+        example="true",
     )
 
-    restrictions = fields.List(fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False)
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False
+    )
 
     da_template_id = fields.Str(
         required=True,
         description="The data agreement template identifier.",
-        example=UUIDFour.EXAMPLE
+        example=UUIDFour.EXAMPLE,
     )
 
     da_template_version = fields.Int(
-        example=1,
-        description="Data agreement template version"
+        example=1, description="Data agreement template version"
     )
-
-

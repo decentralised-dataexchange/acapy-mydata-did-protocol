@@ -1,8 +1,13 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import DATA_CONTROLLER_DETAILS_RESPONSE, PROTOCOL_PACKAGE
-from ..models.data_controller_model import DataController, DataControllerSchema
+from mydata_did.v1_0.message_types import (
+    DATA_CONTROLLER_DETAILS_RESPONSE,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.data_controller_model import (
+    DataController,
+    DataControllerSchema,
+)
 
 # Handler class for data controller details response
 HANDLER_CLASS = (
@@ -26,12 +31,7 @@ class DataControllerDetailsResponseMessage(AgentMessage):
         # Message schema class
         schema_class = "DataControllerDetailsResponseMessageSchema"
 
-    def __init__(
-        self,
-        *,
-        body: DataController,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataController, **kwargs):
         """
         Initialize a DataControllerDetailsResponseMessage message instance.
         """

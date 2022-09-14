@@ -1,10 +1,12 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE, PROTOCOL_PACKAGE
-from ..models.data_agreement_qr_code_initiate_model import (
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.data_agreement_qr_code_initiate_model import (
     DataAgreementQrCodeInitiateBody,
-    DataAgreementQrCodeInitiateBodySchema
+    DataAgreementQrCodeInitiateBodySchema,
 )
 
 # Handler class for data-agreement-qr-code/1.0/initiate message
@@ -30,12 +32,7 @@ class DataAgreementQrCodeInitiateMessage(AgentMessage):
         # Message schema class
         schema_class = "DataAgreementQrCodeInitiateMessageSchema"
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementQrCodeInitiateBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementQrCodeInitiateBody, **kwargs):
         """
         Initialize a DataAgreementQrCodeInitiateMessage message instance.
         """
@@ -58,7 +55,4 @@ class DataAgreementQrCodeInitiateMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementQrCodeInitiateBodySchema,
-        required=True
-    )
+    body = fields.Nested(DataAgreementQrCodeInitiateBodySchema, required=True)

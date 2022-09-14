@@ -1,29 +1,28 @@
-import typing
 import datetime
+import typing
 
-from marshmallow import EXCLUDE, fields, validate, validates
-from marshmallow.exceptions import ValidationError
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..models.data_agreement_model import (
+from marshmallow import EXCLUDE, fields, validate
+from mydata_did.v1_0.models.data_agreement_model import (
+    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
     DataAgreementDataPolicy,
     DataAgreementDataPolicySchema,
-    DataAgreementPersonalData,
-    DataAgreementPersonalDataSchema,
     DataAgreementDPIA,
     DataAgreementDPIASchema,
-    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+    DataAgreementPersonalData,
+    DataAgreementPersonalDataSchema,
 )
-from ..utils.jsonld import ED25519_2018_CONTEXT_URL
-from ..utils.util import current_datetime_in_iso8601
-from ..utils.regex import MYDATA_DID
+from mydata_did.v1_0.utils.jsonld import ED25519_2018_CONTEXT_URL
+from mydata_did.v1_0.utils.regex import MYDATA_DID
+from mydata_did.v1_0.utils.util import current_datetime_in_iso8601
 
 
 class DataAgreementProof(BaseModel):
     """
     Data agreement proof model class
     """
+
     class Meta:
         # Schema class
         schema_class = "DataAgreementProofSchema"
@@ -58,6 +57,7 @@ class DataAgreementProofSchema(BaseModelSchema):
     """
     Data agreement proof schema class
     """
+
     class Meta:
         # Model class
         model_class = DataAgreementProof
@@ -67,7 +67,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="id",
         example="did:mydata:123456789abcdefghi#1",
         description="Proof identifier",
-        required=False
+        required=False,
     )
 
     # Proof type
@@ -75,7 +75,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="type",
         example="Ed25519Signature2018",
         description="Proof type",
-        required=False
+        required=False,
     )
 
     # Created
@@ -83,7 +83,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="created",
         example=current_datetime_in_iso8601(),
         description="Proof created date time in ISO 8601 format",
-        required=False
+        required=False,
     )
 
     # Verification method
@@ -91,7 +91,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="verificationMethod",
         example="did:mydata:123456789abcdefghi",
         description="Verification method",
-        required=False
+        required=False,
     )
 
     # Proof purpose
@@ -99,7 +99,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="proofPurpose",
         example="contractAgreement",
         description="Proof purpose",
-        required=False
+        required=False,
     )
 
     # Proof value
@@ -107,7 +107,7 @@ class DataAgreementProofSchema(BaseModelSchema):
         data_key="proofValue",
         example="123456789abcdefghi",
         description="Proof value",
-        required=False
+        required=False,
     )
 
 
@@ -115,6 +115,7 @@ class DataAgreementDummy(BaseModel):
     """
     Data agreement dummy model class
     """
+
     class Meta:
         # Schema class
         schema_class = "DataAgreementDummySchema"
@@ -122,22 +123,19 @@ class DataAgreementDummy(BaseModel):
         # Unknown fields are excluded
         unknown = EXCLUDE
 
-    def __init__(
-        self,
-        *,
-        dummy_id: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, dummy_id: str = None, **kwargs):
         # Call parent constructor
         super().__init__(**kwargs)
 
         # Set attributes
         self.dummy_id = dummy_id
 
+
 class DataAgreementDummySchema(BaseModelSchema):
     """
     Data agreement dummy schema class
     """
+
     class Meta:
         # Model class
         model_class = DataAgreementDummy
@@ -147,7 +145,7 @@ class DataAgreementDummySchema(BaseModelSchema):
         data_key="id",
         example="did:mydata:123456789abcdefghi#1",
         description="Dummy identifier",
-        required=False
+        required=False,
     )
 
 
@@ -192,6 +190,7 @@ class DataAgreementEventSchema(BaseModelSchema):
     """
     Data agreement event schema class
     """
+
     class Meta:
         # Model class
         model_class = DataAgreementEvent
@@ -205,23 +204,19 @@ class DataAgreementEventSchema(BaseModelSchema):
     # Time stamp
     time_stamp = fields.Str(
         data_key="time_stamp",
-        example=str(datetime.datetime.utcnow().replace(
-            tzinfo=datetime.timezone.utc).isoformat()),
-        description="Data agreement event timestamp in ISO 8601 UTC date time format"
+        example=str(
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+        ),
+        description="Data agreement event timestamp in ISO 8601 UTC date time format",
     )
 
     # Event origin DID
     did = fields.Str(
-        data_key="did",
-        description="MyData decentralised identifier",
-        **MYDATA_DID
+        data_key="did", description="MyData decentralised identifier", **MYDATA_DID
     )
 
     # State
-    state = fields.Str(
-        description="State of the event",
-        example="capture"
-    )
+    state = fields.Str(description="State of the event", example="capture")
 
 
 class DataAgreementNegotiationOfferBody(BaseModel):
@@ -276,7 +271,6 @@ class DataAgreementNegotiationOfferBody(BaseModel):
         self.proof = proof
         self.event = event
         self.principle_did = principle_did
-        
 
 
 class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
@@ -297,30 +291,26 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
 
     # Data agreement id
     data_agreement_id = fields.Str(
-        data_key="id",
-        example=UUIDFour.EXAMPLE,
-        description="Data agreement identifier"
+        data_key="id", example=UUIDFour.EXAMPLE, description="Data agreement identifier"
     )
 
     # Data agreement version
     data_agreement_version = fields.Int(
-        data_key="version",
-        example=1,
-        description="Data agreement version"
+        data_key="version", example=1, description="Data agreement version"
     )
 
     # Data agreement template id
     data_agreement_template_id = fields.Str(
         data_key="template_id",
         example=UUIDFour.EXAMPLE,
-        description="Data agreement template identifier"
+        description="Data agreement template identifier",
     )
 
     # Data agreement template version
     data_agreement_template_version = fields.Int(
         data_key="template_version",
         example=1,
-        description="Data agreement template version"
+        description="Data agreement template version",
     )
 
     # Data agreement data controller name
@@ -328,14 +318,14 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
     pii_controller_name = fields.Str(
         data_key="data_controller_name",
         example="Happy Shopping AB",
-        description="PII controller name"
+        description="PII controller name",
     )
 
     # Data agreement data controller URL
     pii_controller_url = fields.Str(
         data_key="data_controller_url",
         example="https://www.happyshopping.com",
-        description="PII controller URL"
+        description="PII controller URL",
     )
 
     # Data agreement usage purpose
@@ -343,7 +333,7 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
         data_key="purpose",
         example="Customized shopping experience",
         description="Usage purpose title",
-        required=True
+        required=True,
     )
 
     # Data agreement usage purpose description
@@ -351,7 +341,7 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
         data_key="purpose_description",
         example="Collecting user data for offering custom tailored shopping experience",
         description="Usage purpose description",
-        required=True
+        required=True,
     )
 
     # Data agreement legal basis
@@ -368,9 +358,8 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
                 "vital_interest",
                 "public_task",
                 "legitimate_interest",
-
             ]
-        )
+        ),
     )
 
     # Data agreement method of use (i.e. how the data is used)
@@ -384,33 +373,27 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
             [
                 "data-source",
                 "data-using-service",
-
             ]
-        )
+        ),
     )
 
     # Data agreement data policy
     data_policy = fields.Nested(
-        DataAgreementDataPolicySchema,
-        required=True,
-        description="Data policy"
+        DataAgreementDataPolicySchema, required=True, description="Data policy"
     )
 
     # Data agreement personal data (attributes)
     personal_data = fields.List(
         fields.Nested(DataAgreementPersonalDataSchema),
         required=True,
-        description="Personal data (attributes)"
+        description="Personal data (attributes)",
     )
 
     # Data agreement DPIA metadata
-    dpia = fields.Nested(
-        DataAgreementDPIASchema,
-        description="DPIA metadata"
-    )
+    dpia = fields.Nested(DataAgreementDPIASchema, description="DPIA metadata")
 
     # Data agreement events
-    event =fields.List(fields.Nested(DataAgreementEventSchema))
+    event = fields.List(fields.Nested(DataAgreementEventSchema))
 
     # Data agreement proof
     proof = fields.Nested(DataAgreementProofSchema)
@@ -419,5 +402,5 @@ class DataAgreementNegotiationOfferBodySchema(BaseModelSchema):
     principle_did = fields.Str(
         data_key="data_subject_did",
         example="did:mydata:123456789abcdefghi",
-        description="Principle did"
+        description="Principle did",
     )

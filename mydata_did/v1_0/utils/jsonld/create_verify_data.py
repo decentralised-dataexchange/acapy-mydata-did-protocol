@@ -11,6 +11,8 @@ import hashlib
 from pyld import jsonld
 
 cache = {}
+
+
 def caching_document_loader(url, options):
     loader = jsonld.requests_document_loader()
     if url in cache:
@@ -18,6 +20,7 @@ def caching_document_loader(url, options):
     resp = loader(url)
     cache[url] = resp
     return resp
+
 
 jsonld.set_document_loader(caching_document_loader)
 
@@ -33,8 +36,7 @@ def _sha256(data):
 
 
 def _cannonize_signature_options(signatureOptions):
-    _signatureOptions = {**signatureOptions,
-                        "@context": "https://w3id.org/security/v2"}
+    _signatureOptions = {**signatureOptions, "@context": "https://w3id.org/security/v2"}
     _signatureOptions.pop("jws", None)
     _signatureOptions.pop("signatureValue", None)
     _signatureOptions.pop("proofValue", None)
@@ -90,11 +92,9 @@ def create_verify_data(data, signature_options, proof_chain: bool = False):
     ):
         raise DroppedAttributeException("Extra Attribute Detected")
 
-    cannonized_signature_options = _cannonize_signature_options(
-        signature_options)
+    cannonized_signature_options = _cannonize_signature_options(signature_options)
 
-    hash_of_cannonized_signature_options = _sha256(
-        cannonized_signature_options)
+    hash_of_cannonized_signature_options = _sha256(cannonized_signature_options)
 
     cannonized_document = _cannonize_document(framed, proof_chain)
 

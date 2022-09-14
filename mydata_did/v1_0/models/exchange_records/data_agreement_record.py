@@ -1,22 +1,23 @@
-
-import json
 import typing
 from typing import Any
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema, match_post_filter
-from aries_cloudagent.messaging.valid import UUIDFour
 from aries_cloudagent.config.injection_context import InjectionContext
-from aries_cloudagent.storage.base import BaseStorage, StorageDuplicateError, StorageNotFoundError
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
+from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields, validate
+from mydata_did.v1_0.utils.util import bool_to_str
 
-from ...utils.util import bool_to_str
 
 class DataAgreementV1Record(BaseExchangeRecord):
     """
-    DataAgreementV1Record model class for serialisation/deserialisation of data agreement records to and from wallet.
+    DataAgreementV1Record model class for serialisation/deserialisation of data agreement
+    records to and from wallet.
     Data agreement schema will be version 1.0.
     """
+
     class Meta:
         # Data Agreement Record schema (version 1.0)
         schema_class = "DataAgreementV1RecordSchema"
@@ -34,13 +35,13 @@ class DataAgreementV1Record(BaseExchangeRecord):
     # Note: These are not tags for the ledger, but rather tags for the wallet
     #      to group records.
     TAG_NAMES = {
-        "~method_of_use", 
-        "~data_agreement_id", 
-        "~publish_flag", 
+        "~method_of_use",
+        "~data_agreement_id",
+        "~publish_flag",
         "~delete_flag",
         "~schema_id",
         "~cred_def_id",
-        "~is_existing_schema"
+        "~is_existing_schema",
     }
 
     # State of the data agreement.
@@ -85,7 +86,9 @@ class DataAgreementV1Record(BaseExchangeRecord):
         self.delete_flag = delete_flag
         self.schema_id = schema_id
         self.cred_def_id = cred_def_id
-        self.data_agreement_proof_presentation_request = data_agreement_proof_presentation_request
+        self.data_agreement_proof_presentation_request = (
+            data_agreement_proof_presentation_request
+        )
         self.is_existing_schema = is_existing_schema
 
     @property
@@ -115,7 +118,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
     def __eq__(self, other: Any) -> bool:
         """Comparison between records."""
         return super().__eq__(other)
-    
+
     @property
     def _publish_flag(self) -> bool:
         """Accessor for publish_flag."""
@@ -125,22 +128,22 @@ class DataAgreementV1Record(BaseExchangeRecord):
     def _publish_flag(self, value: bool) -> None:
         """Setter for publish_flag."""
         self.publish_flag = "true" if value else "false"
-    
+
     @property
     def _delete_flag(self) -> bool:
         """Accessor for delete_flag."""
         return self.delete_flag == "true"
-    
+
     @_delete_flag.setter
     def _delete_flag(self, value: bool) -> None:
         """Setter for delete_flag."""
         self.delete_flag = "true" if value else "false"
-    
+
     @property
     def _is_existing_schema(self) -> bool:
         """Accessor for is_existing_schema."""
         return self.is_existing_schema == "true"
-    
+
     @_is_existing_schema.setter
     def _is_existing_schema(self, value: bool) -> None:
         """Setter for is_existing_schema."""
@@ -150,7 +153,7 @@ class DataAgreementV1Record(BaseExchangeRecord):
     def is_published(self) -> bool:
         """Check if data agreement record is published."""
         return True if self._publish_flag and not self._delete_flag else False
-    
+
     @property
     def is_deleted(self) -> bool:
         """Check if data agreemnent is deleted."""
@@ -160,10 +163,10 @@ class DataAgreementV1Record(BaseExchangeRecord):
     def is_draft(self) -> bool:
         """Check if data agreement is a draft."""
         return True if not self._publish_flag and not self._delete_flag else False
-    
+
     @classmethod
     async def retrieve_non_deleted_data_agreement_by_id(
-        cls, 
+        cls,
         context: InjectionContext,
         data_agreement_id: str,
     ) -> "DataAgreementV1Record":
@@ -173,23 +176,19 @@ class DataAgreementV1Record(BaseExchangeRecord):
         Args:
             context: The injection context to use.
             data_agreement_id: The data agreement id.
-        
+
         Returns:
             The data agreement record.
         """
 
         tag_filter: dict = {
             "data_agreement_id": data_agreement_id,
-            "delete_flag": bool_to_str(False)
+            "delete_flag": bool_to_str(False),
         }
         post_filter: dict = None
 
-        return await cls.retrieve_by_tag_filter(
-            context,
-            tag_filter,
-            post_filter
-        )
-    
+        return await cls.retrieve_by_tag_filter(context, tag_filter, post_filter)
+
     @classmethod
     async def retrieve_all_non_deleted_data_agreements(
         cls,
@@ -205,17 +204,15 @@ class DataAgreementV1Record(BaseExchangeRecord):
             The data agreements.
         """
 
-        tag_filter: dict = {
-            "delete_flag": bool_to_str(False)
-        }
+        tag_filter: dict = {"delete_flag": bool_to_str(False)}
 
         return await cls.query(
             context,
             tag_filter=tag_filter,
         )
 
-class DataAgreementV1RecordSchema(BaseExchangeSchema):
 
+class DataAgreementV1RecordSchema(BaseExchangeSchema):
     class Meta:
         """DataAgreementRecordV1Schema metadata."""
 
@@ -226,14 +223,14 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
     data_agreement_record_id = fields.Str(
         required=True,
         description="Data Agreement Record identifier",
-        example=UUIDFour.EXAMPLE
+        example=UUIDFour.EXAMPLE,
     )
 
     # Data agreement identifier
     data_agreement_id = fields.Str(
         required=True,
         description="The unique identifier for the data agreement.",
-        example=UUIDFour.EXAMPLE
+        example=UUIDFour.EXAMPLE,
     )
 
     # State of the data agreement.
@@ -245,7 +242,7 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
             [
                 DataAgreementV1Record.STATE_PREPARATION,
             ]
-        )
+        ),
     )
 
     # Method of use for the data agreement.
@@ -258,7 +255,7 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
                 DataAgreementV1Record.METHOD_OF_USE_DATA_SOURCE,
                 DataAgreementV1Record.METHOD_OF_USE_DATA_USING_SERVICE,
             ]
-        )
+        ),
     )
 
     # Data agreement
@@ -277,7 +274,7 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
                 "true",
                 "false",
             ]
-        )
+        ),
     )
 
     # Delete flag
@@ -290,21 +287,21 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
                 "true",
                 "false",
             ]
-        )
+        ),
     )
 
     # Schema identifier
     schema_id = fields.Str(
         required=True,
         description="The schema identifier.",
-        example="WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0"
+        example="WgWxqztrNooG92RXvxSTWv:2:schema_name:1.0",
     )
 
     # Credential definition identifier
     cred_def_id = fields.Str(
         required=True,
         description="The credential definition identifier.",
-        example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag"
+        example="WgWxqztrNooG92RXvxSTWv:3:CL:20:tag",
     )
 
     # Data agreement proof presentation request
@@ -322,5 +319,5 @@ class DataAgreementV1RecordSchema(BaseExchangeSchema):
                 "true",
                 "false",
             ]
-        )
+        ),
     )

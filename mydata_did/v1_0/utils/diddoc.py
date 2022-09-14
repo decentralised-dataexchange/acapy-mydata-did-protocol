@@ -20,17 +20,22 @@ limitations under the License.
 
 import json
 import logging
-
 from typing import List, Sequence, Union
 
 if __name__ == "__main__":
-    from mydata_did.v1_0.utils.verification_method import PublicKey, PublicKeyType
     from mydata_did.v1_0.utils.service import Service
-    from mydata_did.v1_0.utils.util import canon_did, canon_ref, ok_did, resource, derive_did_type
+    from mydata_did.v1_0.utils.util import (
+        canon_did,
+        canon_ref,
+        derive_did_type,
+        ok_did,
+        resource,
+    )
+    from mydata_did.v1_0.utils.verification_method import PublicKey, PublicKeyType
 else:
-    from .verification_method import PublicKey, PublicKeyType
     from .service import Service
-    from .util import canon_did, canon_ref, ok_did, resource, derive_did_type
+    from .util import canon_did, canon_ref, derive_did_type, ok_did, resource
+    from .verification_method import PublicKey, PublicKeyType
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,7 +70,7 @@ class DIDDoc:
         self._did_type = derive_did_type(did)
         self._pubkey = {}
         self._service = {}
-    
+
     @property
     def did_type(self) -> str:
         return self._did_type
@@ -251,8 +256,7 @@ class DIDDoc:
                 if rv is None and section in did_doc:
                     for key_spec in did_doc[section]:
                         try:
-                            pubkey_did = canon_did(
-                                resource(key_spec.get("id", "")))
+                            pubkey_did = canon_did(resource(key_spec.get("id", "")))
                             if ok_did(pubkey_did):
                                 rv = DIDDoc(pubkey_did)
                                 break
@@ -303,16 +307,13 @@ class DIDDoc:
                 service.get(
                     "id",
                     canon_ref(
-                        rv.did, "assigned-service-{}".format(
-                            len(rv.service)), ";"
+                        rv.did, "assigned-service-{}".format(len(rv.service)), ";"
                     ),
                 ),
                 service["type"],
                 rv.add_service_pubkeys(service, "recipientKeys"),
-                rv.add_service_pubkeys(
-                    service, ["mediatorKeys", "routingKeys"]),
-                canon_ref(rv.did, endpoint,
-                          ";") if ";" in endpoint else endpoint,
+                rv.add_service_pubkeys(service, ["mediatorKeys", "routingKeys"]),
+                canon_ref(rv.did, endpoint, ";") if ";" in endpoint else endpoint,
                 service.get("priority", None),
             )
             rv.service[svc.id] = svc
@@ -332,29 +333,50 @@ class DIDDoc:
         """
 
         return cls.deserialize(json.loads(did_doc_json))
-    
+
     def validate(self):
         # FIXME : Code refactor
 
         # check public key and authentication key is available and if so, a single match item
-        if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+        if (
+            self.pubkey
+            and self.authnkey
+            and len(self.pubkey.values()) == 1
+            and len(self.authnkey.values()) == 1
+        ):
             # check if public key and authentication key match
             if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
                 # check if controller and did and publicKeyBase58 matches
                 # check if public key type is Ed25519VerificationKey2018
                 public_key: PublicKey = list(self.pubkey.values())[0]
-                if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                if (
+                    public_key.controller == self.did
+                    and public_key.type == PublicKeyType.ED25519_SIG_2018
+                ):
                     # Optional check, if service is available
                     if self.service:
-                        if len(self.service.values()) == 1 and canon_ref(self.did, "didcomm", ";", did_type=self.did_type) == list(self.service.keys())[0]:
+                        if (
+                            len(self.service.values()) == 1
+                            and canon_ref(
+                                self.did, "didcomm", ";", did_type=self.did_type
+                            )
+                            == list(self.service.keys())[0]
+                        ):
                             service: Service = list(self.service.values())[0]
-                            if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == "DIDComm" and service.priority == 0 and service.did == self.did:
+                            if (
+                                len(service.recip_keys) == 1
+                                and service.recip_keys[0].type == public_key.type
+                                and service.recip_keys[0].controller
+                                == public_key.controller
+                                and service.type == "DIDComm"
+                                and service.priority == 0
+                                and service.did == self.did
+                            ):
                                 return True
                     else:
                         return True
-        
-        return False
 
+        return False
 
     def __str__(self) -> str:
         """Return string representation for abbreviated display."""
@@ -369,7 +391,9 @@ class DIDDoc:
 
 if __name__ == "__main__":
     import json
+
     from mydata_did.v1_0.utils.diddoc import DIDDoc
+
     diddoc_json = {
         "@context": "https://w3id.org/did/v1",
         "id": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
@@ -378,13 +402,13 @@ if __name__ == "__main__":
                 "id": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1",
                 "type": "Ed25519VerificationKey2018",
                 "controller": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
-                "publicKeyBase58": "z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"
+                "publicKeyBase58": "z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E",
             }
         ],
         "authentication": [
             {
                 "type": "Ed25519VerificationKey2018",
-                "publicKey": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1"
+                "publicKey": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1",
             }
         ],
         "service": [
@@ -392,12 +416,10 @@ if __name__ == "__main__":
                 "id": "did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E;didcomm",
                 "type": "DIDComm",
                 "priority": 0,
-                "recipientKeys": [
-                    "z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"
-                ],
-                "serviceEndpoint": "https://ada-agent.example.com/service-x"
+                "recipientKeys": ["z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E"],
+                "serviceEndpoint": "https://ada-agent.example.com/service-x",
             }
-        ]
+        ],
     }
     diddoc_str = json.dumps(diddoc_json)
     diddoc = DIDDoc.from_json(diddoc_str)

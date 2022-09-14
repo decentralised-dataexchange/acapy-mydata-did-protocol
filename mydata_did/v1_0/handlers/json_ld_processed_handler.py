@@ -1,34 +1,35 @@
-from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
-from ..messages.json_ld_processed import JSONLDProcessedMessage
-from ..manager import ADAManager
-
 import json
+
+from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from mydata_did.v1_0.messages.json_ld_processed import JSONLDProcessedMessage
 
 
 class JSONLDProcessedHandler(BaseHandler):
-    """Handle for json-ld/1.0/processed-data message"""
+    """Handle for JSONLD processed message"""
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         """
-        Message handler logic for json-ld/1.0/processed-data message.
+        Message handler logic.
         """
 
-        # Assert if received message is of type JSONLDProcessedMessage
         assert isinstance(context.message, JSONLDProcessedMessage)
 
         self._logger.info(
-            "Received json-ld/1.0/processed-data message: \n%s",
-            json.dumps(context.message.serialize(), indent=4)
+            "Received JSONLD processed message: \n%s",
+            json.dumps(context.message.serialize(), indent=4),
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
 
-        await ada_manager.process_json_ld_processed_message(
+        await mgr.process_json_ld_processed_message(
             json_ld_processed_message=context.message,
             receipt=context.message_receipt,
         )
-

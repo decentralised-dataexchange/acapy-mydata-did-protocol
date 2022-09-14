@@ -1,17 +1,10 @@
 import logging
-from aiohttp import web
-from aiohttp_apispec import (
-    docs,
-    request_schema
-)
-from dexa_sdk.managers.ada_manager import V2ADAManager
-from ..routes.maps.tag_maps import (
-    TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL,
-)
-from .openapi.schemas import (
-    UpdateControllerDetailsRequestSchema
-)
 
+from aiohttp import web
+from aiohttp_apispec import docs, request_schema
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from mydata_did.v1_0.routes.maps.tag_maps import TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL
+from mydata_did.v1_0.routes.openapi.schemas import UpdateControllerDetailsRequestSchema
 
 LOGGER = logging.getLogger(__name__)
 
@@ -67,7 +60,7 @@ async def update_data_controller_details(request: web.BaseRequest):
         organisation_type=controller_details.get("organisation_type"),
         description=controller_details.get("description"),
         policy_url=controller_details.get("policy_url"),
-        eula_url=controller_details.get("eula_url")
+        eula_url=controller_details.get("eula_url"),
     )
 
     return web.json_response(record.serialize())

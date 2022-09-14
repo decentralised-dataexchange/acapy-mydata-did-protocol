@@ -1,26 +1,29 @@
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from marshmallow import fields, EXCLUDE
+from marshmallow import EXCLUDE, fields
 
 
 class DataController(BaseModel):
     """
     Data controller model class
     """
+
     class Meta:
         schema_class = "DataControllerSchema"
 
-    def __init__(self,
-                 *,
-                 organisation_did: str = None,
-                 organisation_name: str = None,
-                 cover_image_url: str = None,
-                 logo_image_url: str = None,
-                 location: str = None,
-                 organisation_type: str = None,
-                 description: str = None,
-                 policy_url: str = None,
-                 eula_url: str = None,
-                 **kwargs):
+    def __init__(
+        self,
+        *,
+        organisation_did: str = None,
+        organisation_name: str = None,
+        cover_image_url: str = None,
+        logo_image_url: str = None,
+        location: str = None,
+        organisation_type: str = None,
+        description: str = None,
+        policy_url: str = None,
+        eula_url: str = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
 
         self.organisation_did = organisation_did
@@ -38,6 +41,7 @@ class DataControllerSchema(BaseModelSchema):
     """
     Data controller schema class
     """
+
     class Meta:
         model_class = DataController
         unknown = EXCLUDE

@@ -1,6 +1,6 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE
-from ..message_types import DATA_CONTROLLER_DETAILS, PROTOCOL_PACKAGE
+from mydata_did.v1_0.message_types import DATA_CONTROLLER_DETAILS, PROTOCOL_PACKAGE
 
 # Handler class for data controller details
 HANDLER_CLASS = (

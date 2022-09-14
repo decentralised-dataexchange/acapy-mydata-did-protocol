@@ -2,9 +2,7 @@
 from aries_cloudagent.protocols.didcomm_prefix import DIDCommPrefix
 
 # DIDComm protocol specification for Automated Data Agreements
-SPEC_URI = (
-    "https://github.com/decentralised-dataexchange/automated-data-agreements"
-)
+SPEC_URI = "https://github.com/decentralised-dataexchange/automated-data-agreements"
 
 # Message types
 
@@ -23,23 +21,32 @@ DATA_AGREEMENT_NEGOTIATION_OFFER = f"data-agreement-negotiation/1.0/offer"
 DATA_AGREEMENT_NEGOTIATION_REJECT = f"data-agreement-negotiation/1.0/reject"
 DATA_AGREEMENT_NEGOTIATION_ACCEPT = f"data-agreement-negotiation/1.0/accept"
 DATA_AGREEMENT_NEGOTIATION_RECEIPT = f"data-agreement-negotiation/1.0/receipt"
-DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = f"data-agreement-negotiation/1.0/problem-report"
+DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = (
+    f"data-agreement-negotiation/1.0/problem-report"
+)
+
+DA_PERMISSIONS = f"data-agreement/1.0/permissions"
 
 # Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
 DATA_AGREEMENT_TERMINATION_TERMINATE = f"data-agreement-termination/1.0/terminate"
-DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = f"data-agreement-termination/1.0/terminate-ack"
-DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = f"data-agreement-termination/1.0/problem-report"
+DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = (
+    f"data-agreement-termination/1.0/terminate-ack"
+)
+DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = (
+    f"data-agreement-termination/1.0/problem-report"
+)
 
 # Message types for iGrant.io specific messages.
 
 # Data agreement QR code workflow initiate message.
 DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE = f"data-agreement-qr-code/1.0/initiate"
-DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = f"data-agreement-qr-code/1.0/problem-report"
+DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = (
+    f"data-agreement-qr-code/1.0/problem-report"
+)
 
 # JSON-LD functions protocol.
 JSON_LD_PROCESSED_DATA = f"json-ld/1.0/processed-data"
 JSON_LD_PROCESSED_RESPONSE_DATA = f"json-ld/1.0/processed-data-response"
-JSON_LD_PROBLEM_REPORT = f"json-ld/1.0/problem-report"
 
 # Data controller protocol
 DATA_CONTROLLER_DETAILS = f"data-controller/1.0/details"
@@ -54,9 +61,7 @@ PROTOCOL_PACKAGE = "mydata_did.v1_0"
 # Message type mappings to their corresponding class
 MESSAGE_TYPES = DIDCommPrefix.qualify_all(
     {
-        READ_DID: (
-            f"{PROTOCOL_PACKAGE}.messages.read_did.ReadDIDMessage"
-        ),
+        READ_DID: (f"{PROTOCOL_PACKAGE}.messages.read_did.ReadDIDMessage"),
         READ_DID_RESPONSE: (
             f"{PROTOCOL_PACKAGE}.messages.read_did_response.ReadDIDResponseMessage"
         ),
@@ -102,9 +107,6 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         JSON_LD_PROCESSED_RESPONSE_DATA: (
             f"{PROTOCOL_PACKAGE}.messages.json_ld_processed_response.JSONLDProcessedResponseMessage"
         ),
-        JSON_LD_PROBLEM_REPORT: (
-            f"{PROTOCOL_PACKAGE}.messages.json_ld_problem_report.JSONLDProblemReport"
-        ),
         DATA_CONTROLLER_DETAILS: (
             f"{PROTOCOL_PACKAGE}.messages.data_controller_details.DataControllerDetailsMessage"
         ),
@@ -113,6 +115,9 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         EXISTING_CONNECTIONS: (
             f"{PROTOCOL_PACKAGE}.messages.existing_connections.ExistingConnectionsMessage"
+        ),
+        DA_PERMISSIONS: (
+            f"{PROTOCOL_PACKAGE}.messages.da_permissions.DAPermissionsMessage"
         ),
     },
 )

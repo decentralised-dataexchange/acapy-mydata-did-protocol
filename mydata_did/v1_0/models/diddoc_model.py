@@ -1,14 +1,11 @@
 import typing
 
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
-
-from marshmallow import fields, EXCLUDE
+from marshmallow import EXCLUDE, fields
 from marshmallow.exceptions import ValidationError
-
-from ..utils.diddoc import DIDDoc
-from ..utils.regex import MYDATA_DID, MyDataDID
-from ..utils.verification_method import PublicKeyType
+from mydata_did.v1_0.utils.diddoc import DIDDoc
+from mydata_did.v1_0.utils.regex import MyDataDID
+from mydata_did.v1_0.utils.verification_method import PublicKeyType
 
 
 class DIDDocWrapper(fields.Field):
@@ -59,16 +56,14 @@ class MyDataDIDBodySchema(BaseModelSchema):
         model_class = MyDataDIDBody
         unknown = EXCLUDE
 
-    did_doc = DIDDocWrapper(
-        data_key="did",
-        required=False
-    )
+    did_doc = DIDDocWrapper(data_key="did", required=False)
 
 
 class MyDataDIDDocService(BaseModel):
     """
     Service information for a DID Document.
     """
+
     class Meta:
         # Schema class
         schema_class = "MyDataDIDDocServiceSchema"
@@ -81,7 +76,7 @@ class MyDataDIDDocService(BaseModel):
         service_priority: int = 0,
         recipient_keys: typing.List[str] = None,
         service_endpoint: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DID Document Service object.
@@ -114,8 +109,9 @@ class MyDataDIDDocService(BaseModel):
 
 class MyDataDIDDocServiceSchema(BaseModelSchema):
     """
-    Schema for DID Document Service. 
+    Schema for DID Document Service.
     """
+
     class Meta:
 
         # Model class
@@ -125,7 +121,9 @@ class MyDataDIDDocServiceSchema(BaseModelSchema):
         unknown = EXCLUDE
 
     # Service ID
-    service_id = fields.Str(data_key="id", required=True, example=f"did:mydata:{MyDataDID.EXAMPLE};didcomm")
+    service_id = fields.Str(
+        data_key="id", required=True, example=f"did:mydata:{MyDataDID.EXAMPLE};didcomm"
+    )
 
     # Service type
     service_type = fields.Str(data_key="type", required=True, example="DIDComm")
@@ -137,22 +135,27 @@ class MyDataDIDDocServiceSchema(BaseModelSchema):
     recipient_keys = fields.List(
         fields.Str(required=True, example=MyDataDID.EXAMPLE),
         data_key="recipientKeys",
-        required=True
+        required=True,
     )
 
     # Service endpoint
-    service_endpoint = fields.Str(data_key="serviceEndpoint", required=True, example="https://didcomm.org")
+    service_endpoint = fields.Str(
+        data_key="serviceEndpoint", required=True, example="https://didcomm.org"
+    )
 
 
 class MyDataDIDDocAuthentication(BaseModel):
     """
     Authentication information for a DID Document.
     """
+
     class Meta:
         # Schema class
         schema_class = "MyDataDIDDocAuthenticationSchema"
 
-    def __init__(self, *, authentication_type: str = None, public_key: str = None, **kwargs):
+    def __init__(
+        self, *, authentication_type: str = None, public_key: str = None, **kwargs
+    ):
         """
         Initialize a DID Document Authentication object.
 
@@ -172,6 +175,7 @@ class MyDataDIDDocAuthenticationSchema(BaseModelSchema):
     Schema for DID Document Authentication.
 
     """
+
     class Meta:
 
         # Model class
@@ -181,10 +185,18 @@ class MyDataDIDDocAuthenticationSchema(BaseModelSchema):
         unknown = EXCLUDE
 
     # The authentication type
-    authentication_type = fields.Str(data_key="type", required=True, example=PublicKeyType.ED25519_SIG_2018.authn_type)
+    authentication_type = fields.Str(
+        data_key="type",
+        required=True,
+        example=PublicKeyType.ED25519_SIG_2018.authn_type,
+    )
 
     # The public key
-    public_key = fields.Str(data_key="publicKey", required=True, example=f"did:mydata:f{MyDataDID.EXAMPLE}#1")
+    public_key = fields.Str(
+        data_key="publicKey",
+        required=True,
+        example=f"did:mydata:f{MyDataDID.EXAMPLE}#1",
+    )
 
 
 class MyDataDIDDocVerificationMethod(BaseModel):
@@ -203,7 +215,7 @@ class MyDataDIDDocVerificationMethod(BaseModel):
         verification_method_type: str = None,
         controller: str = None,
         public_key_base58: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DID Document Verification Method.
@@ -236,30 +248,22 @@ class MyDataDIDDocVerificationMethodSchema(BaseModelSchema):
 
     # Verification method id
     verification_method_id = fields.Str(
-        data_key="id",
-        required=True,
-        example=f"did:mydata:{MyDataDID.EXAMPLE}#1"
+        data_key="id", required=True, example=f"did:mydata:{MyDataDID.EXAMPLE}#1"
     )
 
     # Verification method type
     verification_method_type = fields.Str(
-        data_key="type",
-        required=True,
-        example=PublicKeyType.ED25519_SIG_2018.ver_type
+        data_key="type", required=True, example=PublicKeyType.ED25519_SIG_2018.ver_type
     )
 
     # Controller
     controller = fields.Str(
-        data_key="controller",
-        required=True,
-        example=f"did:mydata:{MyDataDID.EXAMPLE}"
+        data_key="controller", required=True, example=f"did:mydata:{MyDataDID.EXAMPLE}"
     )
 
     # Public key base58
     public_key_base58 = fields.Str(
-        data_key="publicKeyBase58",
-        required=True,
-        example=f"{MyDataDID.EXAMPLE}"
+        data_key="publicKeyBase58", required=True, example=f"{MyDataDID.EXAMPLE}"
     )
 
 
@@ -267,18 +271,21 @@ class MyDataDIDDoc(BaseModel):
     """
     MyData DIDDoc model
     """
+
     class Meta:
         # Schema class
         schema_class = "MyDataDIDDocSchema"
 
-    def __init__(self,
-                 *,
-                 context: str = None,
-                 diddoc_id: str = None,
-                 verification_method: typing.List[MyDataDIDDocVerificationMethod] = None,
-                 authentication: typing.List[MyDataDIDDocAuthentication] = None,
-                 service: typing.List[MyDataDIDDocService] = None,
-                 **kwargs):
+    def __init__(
+        self,
+        *,
+        context: str = None,
+        diddoc_id: str = None,
+        verification_method: typing.List[MyDataDIDDocVerificationMethod] = None,
+        authentication: typing.List[MyDataDIDDocAuthentication] = None,
+        service: typing.List[MyDataDIDDocService] = None,
+        **kwargs,
+    ):
         """
         Initialize a MyData DIDDoc model.
 
@@ -307,6 +314,7 @@ class MyDataDIDDocSchema(BaseModelSchema):
     """
     MyData DIDDoc schema
     """
+
     class Meta:
         # Model class
         model_class = MyDataDIDDoc
@@ -319,7 +327,7 @@ class MyDataDIDDocSchema(BaseModelSchema):
         required=True,
         data_key="@context",
         example=DIDDoc.CONTEXT,
-        description="The DIDDoc context"
+        description="The DIDDoc context",
     )
 
     # The DIDDoc id
@@ -331,33 +339,36 @@ class MyDataDIDDocSchema(BaseModelSchema):
 
     # The verification method
     verification_method = fields.List(
-        fields.Nested(MyDataDIDDocVerificationMethodSchema),
-        required=True
+        fields.Nested(MyDataDIDDocVerificationMethodSchema), required=True
     )
 
     # The authentication method
     authentication = fields.List(
-        fields.Nested(MyDataDIDDocAuthenticationSchema),
-        required=True
+        fields.Nested(MyDataDIDDocAuthenticationSchema), required=True
     )
 
     # The service
-    service = fields.List(
-        fields.Nested(MyDataDIDDocServiceSchema),
-        required=True
-    )
+    service = fields.List(fields.Nested(MyDataDIDDocServiceSchema), required=True)
 
 
 class MyDataDIDResponseBody(BaseModel):
     """
     MyData DID response body model
     """
+
     class Meta:
 
         # Schema class
         schema_class = "MyDataDIDResponseBodySchema"
 
-    def __init__(self, *, did_doc: MyDataDIDDoc = None, version: str = None, status: str = None, **kwargs):
+    def __init__(
+        self,
+        *,
+        did_doc: MyDataDIDDoc = None,
+        version: str = None,
+        status: str = None,
+        **kwargs,
+    ):
         """
         Initialize a MyData DID response body model.
 
@@ -377,6 +388,7 @@ class MyDataDIDResponseBodySchema(BaseModelSchema):
     """
     MyData DID response body schema
     """
+
     class Meta:
 
         # Model class
@@ -384,7 +396,7 @@ class MyDataDIDResponseBodySchema(BaseModelSchema):
 
         # Unknown fields are excluded
         unknown = EXCLUDE
-    
+
     # The DIDDoc
     did_doc = fields.Nested(MyDataDIDDocSchema, required=True)
 

@@ -1,12 +1,15 @@
 from aries_cloudagent.messaging.decorators.base import BaseDecoratorSet
-from aries_cloudagent.messaging.decorators.localization_decorator import LocalizationDecorator
+from aries_cloudagent.messaging.decorators.localization_decorator import (
+    LocalizationDecorator,
+)
 from aries_cloudagent.messaging.decorators.signature_decorator import SignatureDecorator
 from aries_cloudagent.messaging.decorators.thread_decorator import ThreadDecorator
-from aries_cloudagent.messaging.decorators.trace_decorator import TraceDecorator
 from aries_cloudagent.messaging.decorators.timing_decorator import TimingDecorator
+from aries_cloudagent.messaging.decorators.trace_decorator import TraceDecorator
 from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
-
-from .data_agreement_context_decorator import DataAgreementContextDecorator
+from mydata_did.v1_0.decorators.data_agreement_context_decorator import (
+    DataAgreementContextDecorator,
+)
 
 PATCHED_DECORATOR_MODELS = {
     "l10n": LocalizationDecorator,

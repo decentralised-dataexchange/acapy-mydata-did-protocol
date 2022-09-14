@@ -1,9 +1,12 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-from ..message_types import DATA_AGREEMENT_NEGOTIATION_RECEIPT, PROTOCOL_PACKAGE
-from ..models.data_agreement_negotiation_receipt_model import (
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_NEGOTIATION_RECEIPT,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.data_agreement_negotiation_receipt_model import (
     DataAgreementNegotiationReceiptBody,
-    DataAgreementNegotiationReceiptBodySchema
+    DataAgreementNegotiationReceiptBodySchema,
 )
 
 HANDLER_CLASS = (
@@ -28,12 +31,7 @@ class DataAgreementNegotiationReceiptMessage(AgentMessage):
         # Handler class
         handler_class = HANDLER_CLASS
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementNegotiationReceiptBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementNegotiationReceiptBody, **kwargs):
         """
         Initialize data agreement negotiation receipt message.
         """
@@ -56,7 +54,4 @@ class DataAgreementNegotiationReceiptMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementNegotiationReceiptBodySchema,
-        required=True
-    )
+    body = fields.Nested(DataAgreementNegotiationReceiptBodySchema, required=True)

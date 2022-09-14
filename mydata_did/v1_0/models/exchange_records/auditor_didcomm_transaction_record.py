@@ -1,11 +1,12 @@
-from os import environ
-from typing import Any
 import typing
+from typing import Any
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class AuditorDIDCommTransactionRecord(BaseExchangeRecord):
@@ -97,7 +98,8 @@ class AuditorDIDCommTransactionRecordSchema(BaseExchangeSchema):
 
     # List of messages for the transaction record
     messages_list = fields.List(
-        fields.Dict(), required=False, description="Messages list")
+        fields.Dict(), required=False, description="Messages list"
+    )
 
     # Connection identifier
     connection_id = fields.Str(

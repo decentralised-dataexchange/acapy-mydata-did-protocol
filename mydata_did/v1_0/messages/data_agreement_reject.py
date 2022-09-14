@@ -1,10 +1,12 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import DATA_AGREEMENT_NEGOTIATION_REJECT, PROTOCOL_PACKAGE
-from ..models.data_agreement_negotiation_reject_model import (
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_NEGOTIATION_REJECT,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.data_agreement_negotiation_reject_model import (
     DataAgreementNegotiationRejectBody,
-    DataAgreementNegotiationRejectBodySchema
+    DataAgreementNegotiationRejectBodySchema,
 )
 
 # Handler class for data agreement reject message
@@ -29,12 +31,7 @@ class DataAgreementNegotiationRejectMessage(AgentMessage):
         # Message schema class
         schema_class = "DataAgreementNegotiationRejectMessageSchema"
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementNegotiationRejectBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementNegotiationRejectBody, **kwargs):
         """
         Initialize a DataAgreementNegotiationAcceptMessage message instance.
         """
@@ -57,7 +54,4 @@ class DataAgreementNegotiationRejectMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementNegotiationRejectBodySchema,
-        required=True
-    )
+    body = fields.Nested(DataAgreementNegotiationRejectBodySchema, required=True)

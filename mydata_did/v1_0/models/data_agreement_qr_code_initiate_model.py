@@ -1,6 +1,6 @@
-from marshmallow import fields
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class DataAgreementQrCodeInitiateBody(BaseModel):
@@ -11,12 +11,7 @@ class DataAgreementQrCodeInitiateBody(BaseModel):
 
         schema_class = "DataAgreementQrCodeInitiateBodySchema"
 
-    def __init__(
-        self,
-        *,
-        qr_id: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, qr_id: str = None, **kwargs):
         """Data Agreement Qr Code Initiate Body init"""
 
         super().__init__(**kwargs)
@@ -34,7 +29,4 @@ class DataAgreementQrCodeInitiateBodySchema(BaseModelSchema):
         model_class = DataAgreementQrCodeInitiateBody
 
     # Data agreement id
-    qr_id = fields.Str(
-        example=UUIDFour.EXAMPLE,
-        description="Qr code identifier"
-    )
+    qr_id = fields.Str(example=UUIDFour.EXAMPLE, description="Qr code identifier")

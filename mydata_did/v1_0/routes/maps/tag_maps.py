@@ -1,5 +1,4 @@
-from ...message_types import SPEC_URI
-
+from mydata_did.v1_0.message_types import SPEC_URI
 
 TAGS_MYDATA_DID_OPERATIONS_LABEL = "Data Agreement - MyData DID Operations"
 TAGS_MYDATA_DID_OPERATIONS = {

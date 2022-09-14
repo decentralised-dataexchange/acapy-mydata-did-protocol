@@ -1,51 +1,51 @@
 import logging
+
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
-    request_schema,
-    querystring_schema,
-    response_schema,
     match_info_schema,
+    querystring_schema,
+    request_schema,
+    response_schema,
 )
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.managers.dexa_manager import DexaManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
-from ..manager import ADAManagerError
-from ..models.exchange_records.data_agreement_personal_data_record import (
+from mydata_did.v1_0.manager import ADAManagerError
+from mydata_did.v1_0.models.exchange_records.data_agreement_personal_data_record import (
     DataAgreementPersonalDataRecordSchema,
 )
-from ..utils.util import (
-    str_to_bool,
-)
-from ..routes.maps.tag_maps import (
+from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL,
 )
-
-from .openapi import (
-    DataAgreementV1RecordResponseSchema,
-    DataAgreementQueryStringSchema,
-    UpdateDataAgreementMatchInfoSchema,
-    DeleteDataAgreementMatchInfoSchema,
-    DataAgreementQRCodeMatchInfoSchema,
-    GenerateDataAgreementQrCodePayloadResponseSchema,
+from mydata_did.v1_0.routes.openapi.schemas import (
+    ConfigureCustomerIdentificationDAMatchInfoSchema,
     CreateOrUpdateDataAgreementInWalletQueryStringSchema,
+    CreateOrUpdateDataAgreementInWalletRequestSchema,
+    DataAgreementQRCodeMatchInfoSchema,
+    DataAgreementQueryStringSchema,
+    DataAgreementV1RecordResponseSchema,
+    DeleteDaPersonalDataInWalletMatchInfoSchema,
+    DeleteDataAgreementMatchInfoSchema,
+    GenerateDataAgreementQrCodePayloadQueryStringSchema,
+    GenerateDataAgreementQrCodePayloadResponseSchema,
     PublishDataAgreementMatchInfoSchema,
     QueryDaPersonalDataInWalletQueryStringSchema,
-    UpdateDaPersonalDataInWalletMatchInfoSchema,
-    UpdateDaPersonalDataInWalletRequestSchema,
-    UpdateDaPersonalDataInWalletResponseSchema,
-    DeleteDaPersonalDataInWalletMatchInfoSchema,
     QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema,
     QueryDataAgreementQRCodeMetadataRecordsResponseSchema,
     RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema,
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
-    GenerateDataAgreementQrCodePayloadQueryStringSchema,
-    CreateOrUpdateDataAgreementInWalletRequestSchema,
+    SetDAPermissionMatchInfoSchema,
+    SetDAPermissionQueryStringSchema,
+    UpdateDaPersonalDataInWalletMatchInfoSchema,
+    UpdateDaPersonalDataInWalletRequestSchema,
+    UpdateDaPersonalDataInWalletResponseSchema,
+    UpdateDataAgreementMatchInfoSchema,
     UpdateDataAgreementTemplateOpenAPISchema,
-    ConfigureCustomerIdentificationDAMatchInfoSchema
 )
+from mydata_did.v1_0.utils.util import str_to_bool
 
 LOGGER = logging.getLogger(__name__)
 
@@ -73,8 +73,12 @@ async def create_and_store_data_agreement_in_wallet_v2(request: web.BaseRequest)
     manager: V2ADAManager = V2ADAManager(context=context)
 
     # Fetch querystring params
-    publish_flag = str_to_bool(clean_and_get_field_from_dict(request.query, "publish_flag"))
-    existing_schema_id = clean_and_get_field_from_dict(request.query, "existing_schema_id")
+    publish_flag = str_to_bool(
+        clean_and_get_field_from_dict(request.query, "publish_flag")
+    )
+    existing_schema_id = clean_and_get_field_from_dict(
+        request.query, "existing_schema_id"
+    )
 
     try:
 
@@ -145,9 +149,12 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
     template_version = clean_and_get_field_from_dict(request.query, "template_version")
     delete_flag = clean_and_get_field_from_dict(request.query, "delete_flag")
     publish_flag = clean_and_get_field_from_dict(request.query, "publish_flag")
-    latest_version_flag = clean_and_get_field_from_dict(request.query, "latest_version_flag")
+    latest_version_flag = clean_and_get_field_from_dict(
+        request.query, "latest_version_flag"
+    )
     third_party_data_sharing = clean_and_get_field_from_dict(
-        request.query, "third_party_data_sharing")
+        request.query, "third_party_data_sharing"
+    )
     page = clean_and_get_field_from_dict(request.query, "page")
     page = int(page) if page is not None else page
     page_size = clean_and_get_field_from_dict(request.query, "page_size")
@@ -168,7 +175,7 @@ async def query_data_agreements_in_wallet(request: web.BaseRequest):
             template_version=template_version,
             third_party_data_sharing=third_party_data_sharing,
             page=page if page else 1,
-            page_size=page_size if page_size else 10
+            page_size=page_size if page_size else 10,
         )
 
     except (StorageError, BaseModelError, ValueError) as err:
@@ -203,8 +210,12 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
     manager: V2ADAManager = V2ADAManager(context=context)
 
     # Fetch querystring params
-    publish_flag = str_to_bool(clean_and_get_field_from_dict(request.query, "publish_flag"))
-    existing_schema_id = clean_and_get_field_from_dict(request.query, "existing_schema_id")
+    publish_flag = str_to_bool(
+        clean_and_get_field_from_dict(request.query, "publish_flag")
+    )
+    existing_schema_id = clean_and_get_field_from_dict(
+        request.query, "existing_schema_id"
+    )
 
     try:
         # Update data agreement in the wallet
@@ -212,7 +223,7 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
             template_id=template_id,
             data_agreement=data_agreement,
             publish_flag=publish_flag,
-            schema_id=existing_schema_id
+            schema_id=existing_schema_id,
         )
 
     except ADAManagerError as err:
@@ -244,9 +255,7 @@ async def delete_data_agreement_in_wallet(request: web.BaseRequest):
 
     try:
         # Delete data agreement template in the wallet
-        await manager.delete_da_template_in_wallet(
-            template_id=template_id
-        )
+        await manager.delete_da_template_in_wallet(template_id=template_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -273,7 +282,8 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
     method_of_use = clean_and_get_field_from_dict(request.query, "method_of_use")
     template_id = clean_and_get_field_from_dict(request.query, "template_id")
     third_party_data_sharing = clean_and_get_field_from_dict(
-        request.query, "third_party_data_sharing")
+        request.query, "third_party_data_sharing"
+    )
     page = clean_and_get_field_from_dict(request.query, "page")
     page = int(page) if page is not None else page
     page_size = clean_and_get_field_from_dict(request.query, "page_size")
@@ -287,7 +297,7 @@ async def query_da_personal_data_in_wallet(request: web.BaseRequest):
             method_of_use=method_of_use,
             third_party_data_sharing=third_party_data_sharing,
             page=page if page else 1,
-            page_size=page_size if page_size else 10
+            page_size=page_size if page_size else 10,
         )
 
     except ADAManagerError as err:
@@ -323,8 +333,7 @@ async def update_da_personal_data_in_wallet(request: web.BaseRequest):
     try:
         # Update data agreement personal data in wallet
         record = await manager.update_personal_data_description(
-            attribute_id=attribute_id,
-            desc=attribute_description
+            attribute_id=attribute_id, desc=attribute_description
         )
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -355,9 +364,7 @@ async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
 
     try:
 
-        await manager.delete_personal_data(
-            attribute_id=attribute_id
-        )
+        await manager.delete_personal_data(attribute_id=attribute_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -391,8 +398,7 @@ async def generate_data_agreement_qr_code_payload(request: web.BaseRequest):
 
         # Call the function.
         result = await manager.create_data_agreement_qr_code(
-            template_id,
-            multi_use_flag
+            template_id, multi_use_flag
         )
 
     except ADAManagerError as err:
@@ -484,10 +490,7 @@ async def send_data_agreements_qr_code_workflow_initiate_handler(
     try:
 
         # Call the function.
-        await mgr.send_qr_code_initiate_message(
-            qr_id,
-            connection_id
-        )
+        await mgr.send_qr_code_initiate_message(qr_id, connection_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -543,3 +546,34 @@ async def configure_customer_identification_da_handler(request: web.BaseRequest)
     record = await mgr.configure_customer_identification_data_agreement(template_id)
 
     return web.json_response(record.serialize())
+
+
+@docs(
+    tags=[TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL],
+    summary="Set permissions for data agreement.",
+)
+@match_info_schema(SetDAPermissionMatchInfoSchema())
+@querystring_schema(SetDAPermissionQueryStringSchema())
+async def set_da_permission_handler(request: web.BaseRequest):
+    """Set DA permission handler.
+
+    Args:
+        request (web.BaseRequest): Request.
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Path parameters
+    instance_id = request.match_info["instance_id"]
+
+    # Query params
+    state = clean_and_get_field_from_dict(request.query, "state")
+
+    # Initialise the manager
+    mgr = V2ADAManager(context)
+
+    # Call the function
+    await mgr.send_da_permissions_message(instance_id, state)
+
+    return web.json_response({}, status=204)

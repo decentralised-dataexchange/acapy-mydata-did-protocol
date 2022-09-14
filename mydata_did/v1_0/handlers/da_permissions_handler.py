@@ -4,13 +4,11 @@ from aries_cloudagent.messaging.base_handler import (
     RequestContext,
 )
 from dexa_sdk.managers.ada_manager import V2ADAManager
-from mydata_did.v1_0.messages.da_negotiation_receipt import (
-    DataAgreementNegotiationReceiptMessage,
-)
+from mydata_did.v1_0.messages.da_permissions import DAPermissionsMessage
 
 
-class DataAgreementNegotiationReceiptMessageHandler(BaseHandler):
-    """Data agreement negotiation receipt message handler."""
+class DAPermissionsMessageHandler(BaseHandler):
+    """Data agreement permissions message handler."""
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         """Handle function
@@ -21,12 +19,12 @@ class DataAgreementNegotiationReceiptMessageHandler(BaseHandler):
         """
 
         # Assert the message type.
-        assert isinstance(context.message, DataAgreementNegotiationReceiptMessage)
+        assert isinstance(context.message, DAPermissionsMessage)
 
         # Initialize manager.
         mgr = V2ADAManager(context)
 
-        # Process read-did message
-        await mgr.process_da_negotiation_receipt_message(
+        # Process message.
+        await mgr.process_da_permissions_message(
             context.message, context.message_receipt
         )

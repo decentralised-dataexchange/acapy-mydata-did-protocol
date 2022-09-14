@@ -1,9 +1,12 @@
-from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
-
-from ..messages.read_did_response import ReadDIDResponseMessage
-from ..manager import ADAManager
-
 import json
+
+from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from mydata_did.v1_0.manager import ADAManager
+from mydata_did.v1_0.messages.read_did_response import ReadDIDResponseMessage
 
 
 class ReadDIDResponseHandler(BaseHandler):
@@ -21,7 +24,7 @@ class ReadDIDResponseHandler(BaseHandler):
 
         self._logger.info(
             "Received read-did-response message: \n%s",
-            json.dumps(context.message.serialize(), indent=4)
+            json.dumps(context.message.serialize(), indent=4),
         )
 
         # Check if connection is ready
@@ -31,12 +34,11 @@ class ReadDIDResponseHandler(BaseHandler):
                 context.message_receipt.sender_did,
             )
             return
-        
+
         # Initialize ADA manager
         mgr = ADAManager(context)
 
         # Process the read DID response
-        await mgr.process_read_did_response_message(context.message, context.message_receipt)
-
-
-
+        await mgr.process_read_did_response_message(
+            context.message, context.message_receipt
+        )

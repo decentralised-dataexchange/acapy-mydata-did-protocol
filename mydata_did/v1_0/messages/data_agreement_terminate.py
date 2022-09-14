@@ -1,18 +1,21 @@
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import DATA_AGREEMENT_TERMINATION_TERMINATE, PROTOCOL_PACKAGE
-from ..utils.regex import MYDATA_DID
-from ..models.data_agreement_termination_terminate_model import (
-    DataAgreementTerminationTerminateBody,
-    DataAgreementTerminationTerminateBodySchema
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_TERMINATION_TERMINATE,
+    PROTOCOL_PACKAGE,
 )
+from mydata_did.v1_0.models.data_agreement_termination_terminate_model import (
+    DataAgreementTerminationTerminateBody,
+    DataAgreementTerminationTerminateBodySchema,
+)
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 # Handler class for data agreement terminate message
 HANDLER_CLASS = (
     f"{PROTOCOL_PACKAGE}.handlers"
     ".data_agreement_termination_terminate_handler.DataAgreementTerminationTerminateMessageHandler"
 )
+
 
 class DataAgreementTerminationTerminateMessage(AgentMessage):
     """
@@ -36,7 +39,7 @@ class DataAgreementTerminationTerminateMessage(AgentMessage):
         to_did,
         created_time,
         body: DataAgreementTerminationTerminateBody,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DataAgreementTerminationTerminateMessage message instance.
@@ -78,7 +81,4 @@ class DataAgreementTerminationTerminateMessageSchema(AgentMessageSchema):
     created_time = fields.Str(data_key="created_time")
 
     # Message body
-    body = fields.Nested(
-        DataAgreementTerminationTerminateBodySchema, 
-        required=True
-    )
+    body = fields.Nested(DataAgreementTerminationTerminateBodySchema, required=True)

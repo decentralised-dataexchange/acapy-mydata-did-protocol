@@ -1,22 +1,16 @@
-import os
-import typing
 import logging
+import typing
+
 import jwt
-
-from aiohttp import web
-from aiohttp import frozenlist
-from ..manager import ADAManager, ADAManagerError
-
-from .maps.tag_maps import (
-    TAGS_MYDATA_DID_OPERATIONS,
-    TAGS_DATA_AGREEMENT_CORE_FUNCTIONS,
+from aiohttp import frozenlist, web
+from mydata_did.v1_0.routes.maps.route_maps import ROUTES_ADA
+from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS,
+    TAGS_DATA_AGREEMENT_CORE_FUNCTIONS,
+    TAGS_DATA_CONTROLLER_FUNCTIONS,
     TAGS_JSONLD_FUNCTIONS,
-    TAGS_DATA_CONTROLLER_FUNCTIONS
+    TAGS_MYDATA_DID_OPERATIONS,
 )
-
-from .maps.route_maps import ROUTES_ADA
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -38,10 +32,14 @@ async def authentication_middleware(
     context = request.app["request_context"]
 
     # Fetch iGrant.io config from os environment.
-    config_org_id = context.settings.get("intermediary.igrantio_org_id")
-    config_api_key_secret = context.settings.get("intermediary.igrantio_org_api_key_secret")
+    config_api_key_secret = context.settings.get(
+        "intermediary.igrantio_org_api_key_secret"
+    )
+    config_igrantio_authentication = context.settings.get(
+        "intermediary.igrantio_authentication"
+    )
 
-    if not config_org_id:
+    if not config_igrantio_authentication or "webhook" in request.path:
         # Intermediary config not available.
         return await handler(request)
 
@@ -49,7 +47,9 @@ async def authentication_middleware(
     authorization_header = request.headers.get("Authorization")
 
     # Fetch api key from authorization header.
-    header_api_key = authorization_header.split("ApiKey ")[1] if authorization_header else None
+    header_api_key = (
+        authorization_header.split("ApiKey ")[1] if authorization_header else None
+    )
 
     if not header_api_key:
         raise web.HTTPUnauthorized(reason="Missing Authorization header.")
@@ -60,7 +60,10 @@ async def authentication_middleware(
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                header_api_key, config_api_key_secret, algorithms=["HS256"], audience="dataverifier"
+                header_api_key,
+                config_api_key_secret,
+                algorithms=["HS256"],
+                audience="dataverifier",
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason="Invalid API Key.")

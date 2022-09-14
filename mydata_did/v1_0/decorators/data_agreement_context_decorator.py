@@ -1,5 +1,5 @@
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from marshmallow import fields, EXCLUDE, validate
+from marshmallow import EXCLUDE, fields, validate
 
 
 class DataAgreementContextDecorator(BaseModel):
@@ -12,13 +12,7 @@ class DataAgreementContextDecorator(BaseModel):
 
         schema_class = "DataAgreementContextDecoratorSchema"
 
-    def __init__(
-        self,
-        *,
-        message_type: str = None,
-        message: dict = None,
-        **kwargs
-    ):
+    def __init__(self, *, message_type: str = None, message: dict = None, **kwargs):
         """
         Initialize a DataAgreementContextDecorator instance.
 

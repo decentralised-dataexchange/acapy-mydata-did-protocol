@@ -1,12 +1,11 @@
 from enum import Enum
-from marshmallow import EXCLUDE, fields, validate
 
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..message_types import (
+from marshmallow import EXCLUDE, fields, validate
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT,
     PROTOCOL_PACKAGE,
-    DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT
 )
 
 # Handler class path for Data Agreement Qr code workflow
@@ -27,7 +26,9 @@ class DataAgreementQrCodeProblemReportReason(str, Enum):
     QR_CODE_SCANNED_ONCE = "qr_code_scanned_once"
 
     # Failed to process qr code workflow initiate message due to an internal error.
-    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = "failed_to_process_qr_code_initiate_message"
+    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = (
+        "failed_to_process_qr_code_initiate_message"
+    )
 
 
 class DataAgreementQrCodeProblemReport(AgentMessage):
@@ -46,7 +47,7 @@ class DataAgreementQrCodeProblemReport(AgentMessage):
         problem_code: str = None,
         explain: str = None,
         qr_id: str = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a DataAgreementQrCodeProblemReport message instance.
@@ -69,6 +70,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
     """
     Data agreement qr code problem report schema.
     """
+
     class Meta:
         """Metadata for data agreement qr code problem report schema."""
 
@@ -85,8 +87,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
         required=False,
         description="Standard error identifier",
         validate=validate.OneOf(
-            choices=[
-                dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
+            choices=[dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
             error="Value {input} must be one of {choices}.",
         ),
         example=DataAgreementQrCodeProblemReportReason.QR_CODE_SCANNED_ONCE.value,
