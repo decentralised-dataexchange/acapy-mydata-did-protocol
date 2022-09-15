@@ -29,11 +29,10 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34;DID MyData class and resolver methods.&#34;&#34;&#34;
 
-from ..wallet.crypto import ed25519_pk_to_curve25519
-from ..wallet.key_type import KeyType
-from ..wallet.util import b58_to_bytes, bytes_to_b58
-
-from ..diddoc import DIDDoc
+from mydata_did.v1_0.utils.diddoc import DIDDoc
+from mydata_did.v1_0.utils.wallet.crypto import ed25519_pk_to_curve25519
+from mydata_did.v1_0.utils.wallet.key_type import KeyType
+from mydata_did.v1_0.utils.wallet.util import b58_to_bytes, bytes_to_b58
 
 
 class DIDMyData:
@@ -136,6 +135,7 @@ class DIDMyData:
     def key_id(self) -&gt; str:
         &#34;&#34;&#34;Getter for key id.&#34;&#34;&#34;
         return f&#34;{self.did}#{self.fingerprint}&#34;
+
 
 def construct_did_key_ed25519(did_key: &#34;DIDMyData&#34;) -&gt; dict:
     &#34;&#34;&#34;Construct Ed25519 did:mydata.

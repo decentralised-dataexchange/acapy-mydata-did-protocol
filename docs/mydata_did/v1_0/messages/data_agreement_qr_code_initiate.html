@@ -28,11 +28,13 @@
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE, PROTOCOL_PACKAGE
-from ..models.data_agreement_qr_code_initiate_model import (
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.data_agreement_qr_code_initiate_model import (
     DataAgreementQrCodeInitiateBody,
-    DataAgreementQrCodeInitiateBodySchema
+    DataAgreementQrCodeInitiateBodySchema,
 )
 
 # Handler class for data-agreement-qr-code/1.0/initiate message
@@ -58,12 +60,7 @@ class DataAgreementQrCodeInitiateMessage(AgentMessage):
         # Message schema class
         schema_class = &#34;DataAgreementQrCodeInitiateMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementQrCodeInitiateBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementQrCodeInitiateBody, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementQrCodeInitiateMessage message instance.
         &#34;&#34;&#34;
@@ -86,10 +83,7 @@ class DataAgreementQrCodeInitiateMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementQrCodeInitiateBodySchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(DataAgreementQrCodeInitiateBodySchema, required=True)</code></pre>
 </details>
 </section>
 <section>
@@ -128,12 +122,7 @@ class DataAgreementQrCodeInitiateMessageSchema(AgentMessageSchema):
         # Message schema class
         schema_class = &#34;DataAgreementQrCodeInitiateMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementQrCodeInitiateBody,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementQrCodeInitiateBody, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementQrCodeInitiateMessage message instance.
         &#34;&#34;&#34;
@@ -185,10 +174,7 @@ class DataAgreementQrCodeInitiateMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementQrCodeInitiateBodySchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(DataAgreementQrCodeInitiateBodySchema, required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

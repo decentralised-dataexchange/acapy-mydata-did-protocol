@@ -26,12 +26,16 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+<pre><code class="python">import json
 
-from ..messages.data_agreement_qr_code_problem_report import DataAgreementQrCodeProblemReport
-from ..manager import ADAManager
-
-import json
+from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from mydata_did.v1_0.messages.data_agreement_qr_code_problem_report import (
+    DataAgreementQrCodeProblemReport,
+)
 
 
 class DataAgreementQrCodeProblemReportHandler(BaseHandler):
@@ -47,7 +51,7 @@ class DataAgreementQrCodeProblemReportHandler(BaseHandler):
 
         self._logger.info(
             &#34;Received data-agreement-qr-code/1.0/problem-report message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            json.dumps(context.message.serialize(), indent=4),
         )</code></pre>
 </details>
 </section>
@@ -83,7 +87,7 @@ class DataAgreementQrCodeProblemReportHandler(BaseHandler):
 
         self._logger.info(
             &#34;Received data-agreement-qr-code/1.0/problem-report message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            json.dumps(context.message.serialize(), indent=4),
         )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -112,7 +116,7 @@ class DataAgreementQrCodeProblemReportHandler(BaseHandler):
 
     self._logger.info(
         &#34;Received data-agreement-qr-code/1.0/problem-report message: \n%s&#34;,
-        json.dumps(context.message.serialize(), indent=4)
+        json.dumps(context.message.serialize(), indent=4),
     )</code></pre>
 </details>
 </dd>

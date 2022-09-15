@@ -28,30 +28,20 @@
 </summary>
 <pre><code class="python">import json
 import logging
-from aiohttp import web
-from aiohttp_apispec import (
-    docs,
-    querystring_schema,
-    response_schema,
-    match_info_schema,
-)
 
+from aiohttp import web
+from aiohttp_apispec import docs, match_info_schema, querystring_schema, response_schema
 from aries_cloudagent.messaging.models.base import BaseModelError
-from aries_cloudagent.storage.error import StorageError
 from aries_cloudagent.storage.base import BaseStorage
+from aries_cloudagent.storage.error import StorageError
 from aries_cloudagent.storage.indy import IndyStorage
 from aries_cloudagent.storage.record import StorageRecord
-
-from ..manager import ADAManager, ADAManagerError
-
-from ..routes.maps.tag_maps import (
-    TAGS_MYDATA_DID_OPERATIONS_LABEL
-)
-
-from .openapi import (
-    SendReadDIDMessageMatchInfoSchema,
+from mydata_did.v1_0.manager import ADAManager, ADAManagerError
+from mydata_did.v1_0.routes.maps.tag_maps import TAGS_MYDATA_DID_OPERATIONS_LABEL
+from mydata_did.v1_0.routes.openapi.schemas import (
+    MyDataDIDRemoteRecordResponseSchema,
     MyDataDIDRemoteRecordsQueryStringSchema,
-    MyDataDIDRemoteRecordResponseSchema
+    SendReadDIDMessageMatchInfoSchema,
 )
 
 LOGGER = logging.getLogger(__name__)

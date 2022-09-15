@@ -30,9 +30,7 @@
 from aries_cloudagent.protocols.didcomm_prefix import DIDCommPrefix
 
 # DIDComm protocol specification for Automated Data Agreements
-SPEC_URI = (
-    &#34;https://github.com/decentralised-dataexchange/automated-data-agreements&#34;
-)
+SPEC_URI = &#34;https://github.com/decentralised-dataexchange/automated-data-agreements&#34;
 
 # Message types
 
@@ -51,23 +49,42 @@ DATA_AGREEMENT_NEGOTIATION_OFFER = f&#34;data-agreement-negotiation/1.0/offer&#3
 DATA_AGREEMENT_NEGOTIATION_REJECT = f&#34;data-agreement-negotiation/1.0/reject&#34;
 DATA_AGREEMENT_NEGOTIATION_ACCEPT = f&#34;data-agreement-negotiation/1.0/accept&#34;
 DATA_AGREEMENT_NEGOTIATION_RECEIPT = f&#34;data-agreement-negotiation/1.0/receipt&#34;
-DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = f&#34;data-agreement-negotiation/1.0/problem-report&#34;
+DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = (
+    f&#34;data-agreement-negotiation/1.0/problem-report&#34;
+)
+
+THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES = (
+    f&#34;third-party-data-sharing/1.0/fetch-preferences&#34;
+)
+THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES_RESPONSE = (
+    f&#34;third-party-data-sharing/1.0/fetch-preferences-response&#34;
+)
+THIRDPARTY_DATA_SHARING_UPDATE_PREFERENCES = (
+    f&#34;third-party-data-sharing/1.0/update-preferences&#34;
+)
+
+DA_PERMISSIONS = f&#34;data-agreement/1.0/permissions&#34;
 
 # Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
 DATA_AGREEMENT_TERMINATION_TERMINATE = f&#34;data-agreement-termination/1.0/terminate&#34;
-DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = f&#34;data-agreement-termination/1.0/terminate-ack&#34;
-DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = f&#34;data-agreement-termination/1.0/problem-report&#34;
+DATA_AGREEMENT_TERMINATION_TERMINATE_ACK = (
+    f&#34;data-agreement-termination/1.0/terminate-ack&#34;
+)
+DATA_AGREEMENT_TERMINATION_PROBLEM_REPORT = (
+    f&#34;data-agreement-termination/1.0/problem-report&#34;
+)
 
 # Message types for iGrant.io specific messages.
 
 # Data agreement QR code workflow initiate message.
 DATA_AGREEMENT_QR_CODE_WORKFLOW_INITIATE = f&#34;data-agreement-qr-code/1.0/initiate&#34;
-DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = f&#34;data-agreement-qr-code/1.0/problem-report&#34;
+DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT = (
+    f&#34;data-agreement-qr-code/1.0/problem-report&#34;
+)
 
 # JSON-LD functions protocol.
 JSON_LD_PROCESSED_DATA = f&#34;json-ld/1.0/processed-data&#34;
 JSON_LD_PROCESSED_RESPONSE_DATA = f&#34;json-ld/1.0/processed-data-response&#34;
-JSON_LD_PROBLEM_REPORT = f&#34;json-ld/1.0/problem-report&#34;
 
 # Data controller protocol
 DATA_CONTROLLER_DETAILS = f&#34;data-controller/1.0/details&#34;
@@ -82,9 +99,7 @@ PROTOCOL_PACKAGE = &#34;mydata_did.v1_0&#34;
 # Message type mappings to their corresponding class
 MESSAGE_TYPES = DIDCommPrefix.qualify_all(
     {
-        READ_DID: (
-            f&#34;{PROTOCOL_PACKAGE}.messages.read_did.ReadDIDMessage&#34;
-        ),
+        READ_DID: (f&#34;{PROTOCOL_PACKAGE}.messages.read_did.ReadDIDMessage&#34;),
         READ_DID_RESPONSE: (
             f&#34;{PROTOCOL_PACKAGE}.messages.read_did_response.ReadDIDResponseMessage&#34;
         ),
@@ -130,9 +145,6 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         JSON_LD_PROCESSED_RESPONSE_DATA: (
             f&#34;{PROTOCOL_PACKAGE}.messages.json_ld_processed_response.JSONLDProcessedResponseMessage&#34;
         ),
-        JSON_LD_PROBLEM_REPORT: (
-            f&#34;{PROTOCOL_PACKAGE}.messages.json_ld_problem_report.JSONLDProblemReport&#34;
-        ),
         DATA_CONTROLLER_DETAILS: (
             f&#34;{PROTOCOL_PACKAGE}.messages.data_controller_details.DataControllerDetailsMessage&#34;
         ),
@@ -141,6 +153,15 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         EXISTING_CONNECTIONS: (
             f&#34;{PROTOCOL_PACKAGE}.messages.existing_connections.ExistingConnectionsMessage&#34;
+        ),
+        DA_PERMISSIONS: (
+            f&#34;{PROTOCOL_PACKAGE}.messages.da_permissions.DAPermissionsMessage&#34;
+        ),
+        THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES: (
+            f&#34;{PROTOCOL_PACKAGE}.messages.fetch_preferences.FetchPreferencesMessage&#34;
+        ),
+        THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES_RESPONSE: (
+            f&#34;{PROTOCOL_PACKAGE}.messages.fetch_preferences_response.FetchPreferencesResponseMessage&#34;
         ),
     },
 )</code></pre>

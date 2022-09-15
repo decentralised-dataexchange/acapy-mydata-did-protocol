@@ -27,31 +27,26 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import typing
-import datetime
 
-from marshmallow import EXCLUDE, fields, validate, validates
-from marshmallow.exceptions import ValidationError
 from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..models.data_agreement_model import (
+from marshmallow import fields, validate
+from mydata_did.v1_0.models.data_agreement_model import (
+    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
     DataAgreementDataPolicy,
     DataAgreementDataPolicySchema,
-    DataAgreementPersonalData,
-    DataAgreementPersonalDataSchema,
     DataAgreementDPIA,
     DataAgreementDPIASchema,
-    DATA_AGREEMENT_V1_SCHEMA_CONTEXT,
+    DataAgreementPersonalData,
+    DataAgreementPersonalDataSchema,
 )
-
-from ..models.data_agreement_negotiation_offer_model import (
+from mydata_did.v1_0.models.data_agreement_negotiation_offer_model import (
     DataAgreementEvent,
+    DataAgreementEventSchema,
     DataAgreementProof,
     DataAgreementProofSchema,
-    DataAgreementEventSchema
 )
-
-from ..utils.jsonld import ED25519_2018_CONTEXT_URL
+from mydata_did.v1_0.utils.jsonld import ED25519_2018_CONTEXT_URL
 
 
 class DataAgreementInstance(BaseModel):
@@ -82,7 +77,7 @@ class DataAgreementInstance(BaseModel):
         event: typing.List[DataAgreementEvent] = None,
         proof_chain: typing.List[DataAgreementProof] = None,
         principle_did: str = None,
-        proof:  DataAgreementProof = None,
+        proof: DataAgreementProof = None,
         **kwargs
     ):
         &#34;&#34;&#34;Data Agreement instance init&#34;&#34;&#34;
@@ -128,30 +123,26 @@ class DataAgreementInstanceSchema(BaseModelSchema):
 
     # Data agreement id
     data_agreement_id = fields.Str(
-        data_key=&#34;id&#34;,
-        example=UUIDFour.EXAMPLE,
-        description=&#34;Data agreement identifier&#34;
+        data_key=&#34;id&#34;, example=UUIDFour.EXAMPLE, description=&#34;Data agreement identifier&#34;
     )
 
     # Data agreement version
     data_agreement_version = fields.Int(
-        data_key=&#34;version&#34;,
-        example=1,
-        description=&#34;Data agreement version&#34;
+        data_key=&#34;version&#34;, example=1, description=&#34;Data agreement version&#34;
     )
 
     # Data agreement template id
     data_agreement_template_id = fields.Str(
         data_key=&#34;template_id&#34;,
         example=UUIDFour.EXAMPLE,
-        description=&#34;Data agreement template identifier&#34;
+        description=&#34;Data agreement template identifier&#34;,
     )
 
     # Data agreement template version
     data_agreement_template_version = fields.Int(
         data_key=&#34;template_version&#34;,
         example=1,
-        description=&#34;Data agreement template version&#34;
+        description=&#34;Data agreement template version&#34;,
     )
 
     # Data agreement data controller name
@@ -159,14 +150,14 @@ class DataAgreementInstanceSchema(BaseModelSchema):
     pii_controller_name = fields.Str(
         data_key=&#34;data_controller_name&#34;,
         example=&#34;Happy Shopping AB&#34;,
-        description=&#34;PII controller name&#34;
+        description=&#34;PII controller name&#34;,
     )
 
     # Data agreement data controller URL
     pii_controller_url = fields.Str(
         data_key=&#34;data_controller_url&#34;,
         example=&#34;https://www.happyshopping.com&#34;,
-        description=&#34;PII controller URL&#34;
+        description=&#34;PII controller URL&#34;,
     )
 
     # Data agreement usage purpose
@@ -174,7 +165,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         data_key=&#34;purpose&#34;,
         example=&#34;Customized shopping experience&#34;,
         description=&#34;Usage purpose title&#34;,
-        required=True
+        required=True,
     )
 
     # Data agreement usage purpose description
@@ -182,7 +173,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         data_key=&#34;purpose_description&#34;,
         example=&#34;Collecting user data for offering custom tailored shopping experience&#34;,
         description=&#34;Usage purpose description&#34;,
-        required=True
+        required=True,
     )
 
     # Data agreement legal basis
@@ -199,9 +190,8 @@ class DataAgreementInstanceSchema(BaseModelSchema):
                 &#34;vital_interest&#34;,
                 &#34;public_task&#34;,
                 &#34;legitimate_interest&#34;,
-
             ]
-        )
+        ),
     )
 
     # Data agreement method of use (i.e. how the data is used)
@@ -215,30 +205,24 @@ class DataAgreementInstanceSchema(BaseModelSchema):
             [
                 &#34;data-source&#34;,
                 &#34;data-using-service&#34;,
-
             ]
-        )
+        ),
     )
 
     # Data agreement data policy
     data_policy = fields.Nested(
-        DataAgreementDataPolicySchema,
-        required=True,
-        description=&#34;Data policy&#34;
+        DataAgreementDataPolicySchema, required=True, description=&#34;Data policy&#34;
     )
 
     # Data agreement personal data (attributes)
     personal_data = fields.List(
         fields.Nested(DataAgreementPersonalDataSchema),
         required=True,
-        description=&#34;Personal data (attributes)&#34;
+        description=&#34;Personal data (attributes)&#34;,
     )
 
     # Data agreement DPIA metadata
-    dpia = fields.Nested(
-        DataAgreementDPIASchema,
-        description=&#34;DPIA metadata&#34;
-    )
+    dpia = fields.Nested(DataAgreementDPIASchema, description=&#34;DPIA metadata&#34;)
 
     # Data agreement events
     event = fields.List(fields.Nested(DataAgreementEventSchema))
@@ -247,14 +231,14 @@ class DataAgreementInstanceSchema(BaseModelSchema):
     proof_chain = fields.List(
         fields.Nested(DataAgreementProofSchema),
         description=&#34;Data agreement proof chain&#34;,
-        data_key=&#34;proofChain&#34;
+        data_key=&#34;proofChain&#34;,
     )
 
     # Data agreement principle did
     principle_did = fields.Str(
         data_key=&#34;data_subject_did&#34;,
         example=&#34;did:mydata:123456789abcdefghi&#34;,
-        description=&#34;Principle did&#34;
+        description=&#34;Principle did&#34;,
     )
 
     # Data agreement proof
@@ -309,7 +293,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         event: typing.List[DataAgreementEvent] = None,
         proof_chain: typing.List[DataAgreementProof] = None,
         principle_did: str = None,
-        proof:  DataAgreementProof = None,
+        proof: DataAgreementProof = None,
         **kwargs
     ):
         &#34;&#34;&#34;Data Agreement instance init&#34;&#34;&#34;
@@ -383,30 +367,26 @@ class DataAgreementInstanceSchema(BaseModelSchema):
 
     # Data agreement id
     data_agreement_id = fields.Str(
-        data_key=&#34;id&#34;,
-        example=UUIDFour.EXAMPLE,
-        description=&#34;Data agreement identifier&#34;
+        data_key=&#34;id&#34;, example=UUIDFour.EXAMPLE, description=&#34;Data agreement identifier&#34;
     )
 
     # Data agreement version
     data_agreement_version = fields.Int(
-        data_key=&#34;version&#34;,
-        example=1,
-        description=&#34;Data agreement version&#34;
+        data_key=&#34;version&#34;, example=1, description=&#34;Data agreement version&#34;
     )
 
     # Data agreement template id
     data_agreement_template_id = fields.Str(
         data_key=&#34;template_id&#34;,
         example=UUIDFour.EXAMPLE,
-        description=&#34;Data agreement template identifier&#34;
+        description=&#34;Data agreement template identifier&#34;,
     )
 
     # Data agreement template version
     data_agreement_template_version = fields.Int(
         data_key=&#34;template_version&#34;,
         example=1,
-        description=&#34;Data agreement template version&#34;
+        description=&#34;Data agreement template version&#34;,
     )
 
     # Data agreement data controller name
@@ -414,14 +394,14 @@ class DataAgreementInstanceSchema(BaseModelSchema):
     pii_controller_name = fields.Str(
         data_key=&#34;data_controller_name&#34;,
         example=&#34;Happy Shopping AB&#34;,
-        description=&#34;PII controller name&#34;
+        description=&#34;PII controller name&#34;,
     )
 
     # Data agreement data controller URL
     pii_controller_url = fields.Str(
         data_key=&#34;data_controller_url&#34;,
         example=&#34;https://www.happyshopping.com&#34;,
-        description=&#34;PII controller URL&#34;
+        description=&#34;PII controller URL&#34;,
     )
 
     # Data agreement usage purpose
@@ -429,7 +409,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         data_key=&#34;purpose&#34;,
         example=&#34;Customized shopping experience&#34;,
         description=&#34;Usage purpose title&#34;,
-        required=True
+        required=True,
     )
 
     # Data agreement usage purpose description
@@ -437,7 +417,7 @@ class DataAgreementInstanceSchema(BaseModelSchema):
         data_key=&#34;purpose_description&#34;,
         example=&#34;Collecting user data for offering custom tailored shopping experience&#34;,
         description=&#34;Usage purpose description&#34;,
-        required=True
+        required=True,
     )
 
     # Data agreement legal basis
@@ -454,9 +434,8 @@ class DataAgreementInstanceSchema(BaseModelSchema):
                 &#34;vital_interest&#34;,
                 &#34;public_task&#34;,
                 &#34;legitimate_interest&#34;,
-
             ]
-        )
+        ),
     )
 
     # Data agreement method of use (i.e. how the data is used)
@@ -470,30 +449,24 @@ class DataAgreementInstanceSchema(BaseModelSchema):
             [
                 &#34;data-source&#34;,
                 &#34;data-using-service&#34;,
-
             ]
-        )
+        ),
     )
 
     # Data agreement data policy
     data_policy = fields.Nested(
-        DataAgreementDataPolicySchema,
-        required=True,
-        description=&#34;Data policy&#34;
+        DataAgreementDataPolicySchema, required=True, description=&#34;Data policy&#34;
     )
 
     # Data agreement personal data (attributes)
     personal_data = fields.List(
         fields.Nested(DataAgreementPersonalDataSchema),
         required=True,
-        description=&#34;Personal data (attributes)&#34;
+        description=&#34;Personal data (attributes)&#34;,
     )
 
     # Data agreement DPIA metadata
-    dpia = fields.Nested(
-        DataAgreementDPIASchema,
-        description=&#34;DPIA metadata&#34;
-    )
+    dpia = fields.Nested(DataAgreementDPIASchema, description=&#34;DPIA metadata&#34;)
 
     # Data agreement events
     event = fields.List(fields.Nested(DataAgreementEventSchema))
@@ -502,14 +475,14 @@ class DataAgreementInstanceSchema(BaseModelSchema):
     proof_chain = fields.List(
         fields.Nested(DataAgreementProofSchema),
         description=&#34;Data agreement proof chain&#34;,
-        data_key=&#34;proofChain&#34;
+        data_key=&#34;proofChain&#34;,
     )
 
     # Data agreement principle did
     principle_did = fields.Str(
         data_key=&#34;data_subject_did&#34;,
         example=&#34;did:mydata:123456789abcdefghi&#34;,
-        description=&#34;Principle did&#34;
+        description=&#34;Principle did&#34;,
     )
 
     # Data agreement proof

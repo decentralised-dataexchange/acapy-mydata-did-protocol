@@ -60,17 +60,22 @@ limitations under the License.
 
 import json
 import logging
-
 from typing import List, Sequence, Union
 
 if __name__ == &#34;__main__&#34;:
-    from mydata_did.v1_0.utils.verification_method import PublicKey, PublicKeyType
     from mydata_did.v1_0.utils.service import Service
-    from mydata_did.v1_0.utils.util import canon_did, canon_ref, ok_did, resource, derive_did_type
+    from mydata_did.v1_0.utils.util import (
+        canon_did,
+        canon_ref,
+        derive_did_type,
+        ok_did,
+        resource,
+    )
+    from mydata_did.v1_0.utils.verification_method import PublicKey, PublicKeyType
 else:
-    from .verification_method import PublicKey, PublicKeyType
     from .service import Service
-    from .util import canon_did, canon_ref, ok_did, resource, derive_did_type
+    from .util import canon_did, canon_ref, derive_did_type, ok_did, resource
+    from .verification_method import PublicKey, PublicKeyType
 
 LOGGER = logging.getLogger(__name__)
 
@@ -105,7 +110,7 @@ class DIDDoc:
         self._did_type = derive_did_type(did)
         self._pubkey = {}
         self._service = {}
-    
+
     @property
     def did_type(self) -&gt; str:
         return self._did_type
@@ -291,8 +296,7 @@ class DIDDoc:
                 if rv is None and section in did_doc:
                     for key_spec in did_doc[section]:
                         try:
-                            pubkey_did = canon_did(
-                                resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                            pubkey_did = canon_did(resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
                             if ok_did(pubkey_did):
                                 rv = DIDDoc(pubkey_did)
                                 break
@@ -343,16 +347,13 @@ class DIDDoc:
                 service.get(
                     &#34;id&#34;,
                     canon_ref(
-                        rv.did, &#34;assigned-service-{}&#34;.format(
-                            len(rv.service)), &#34;;&#34;
+                        rv.did, &#34;assigned-service-{}&#34;.format(len(rv.service)), &#34;;&#34;
                     ),
                 ),
                 service[&#34;type&#34;],
                 rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
-                rv.add_service_pubkeys(
-                    service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
-                canon_ref(rv.did, endpoint,
-                          &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+                rv.add_service_pubkeys(service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+                canon_ref(rv.did, endpoint, &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
                 service.get(&#34;priority&#34;, None),
             )
             rv.service[svc.id] = svc
@@ -372,29 +373,50 @@ class DIDDoc:
         &#34;&#34;&#34;
 
         return cls.deserialize(json.loads(did_doc_json))
-    
+
     def validate(self):
         # FIXME : Code refactor
 
         # check public key and authentication key is available and if so, a single match item
-        if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+        if (
+            self.pubkey
+            and self.authnkey
+            and len(self.pubkey.values()) == 1
+            and len(self.authnkey.values()) == 1
+        ):
             # check if public key and authentication key match
             if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
                 # check if controller and did and publicKeyBase58 matches
                 # check if public key type is Ed25519VerificationKey2018
                 public_key: PublicKey = list(self.pubkey.values())[0]
-                if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                if (
+                    public_key.controller == self.did
+                    and public_key.type == PublicKeyType.ED25519_SIG_2018
+                ):
                     # Optional check, if service is available
                     if self.service:
-                        if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                        if (
+                            len(self.service.values()) == 1
+                            and canon_ref(
+                                self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type
+                            )
+                            == list(self.service.keys())[0]
+                        ):
                             service: Service = list(self.service.values())[0]
-                            if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                            if (
+                                len(service.recip_keys) == 1
+                                and service.recip_keys[0].type == public_key.type
+                                and service.recip_keys[0].controller
+                                == public_key.controller
+                                and service.type == &#34;DIDComm&#34;
+                                and service.priority == 0
+                                and service.did == self.did
+                            ):
                                 return True
                     else:
                         return True
-        
-        return False
 
+        return False
 
     def __str__(self) -&gt; str:
         &#34;&#34;&#34;Return string representation for abbreviated display.&#34;&#34;&#34;
@@ -409,7 +431,9 @@ class DIDDoc:
 
 if __name__ == &#34;__main__&#34;:
     import json
+
     from mydata_did.v1_0.utils.diddoc import DIDDoc
+
     diddoc_json = {
         &#34;@context&#34;: &#34;https://w3id.org/did/v1&#34;,
         &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
@@ -418,13 +442,13 @@ if __name__ == &#34;__main__&#34;:
                 &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1&#34;,
                 &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
                 &#34;controller&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
-                &#34;publicKeyBase58&#34;: &#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
+                &#34;publicKeyBase58&#34;: &#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;,
             }
         ],
         &#34;authentication&#34;: [
             {
                 &#34;type&#34;: &#34;Ed25519VerificationKey2018&#34;,
-                &#34;publicKey&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1&#34;
+                &#34;publicKey&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E#1&#34;,
             }
         ],
         &#34;service&#34;: [
@@ -432,12 +456,10 @@ if __name__ == &#34;__main__&#34;:
                 &#34;id&#34;: &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E;didcomm&#34;,
                 &#34;type&#34;: &#34;DIDComm&#34;,
                 &#34;priority&#34;: 0,
-                &#34;recipientKeys&#34;: [
-                    &#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
-                ],
-                &#34;serviceEndpoint&#34;: &#34;https://ada-agent.example.com/service-x&#34;
+                &#34;recipientKeys&#34;: [&#34;z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;],
+                &#34;serviceEndpoint&#34;: &#34;https://ada-agent.example.com/service-x&#34;,
             }
-        ]
+        ],
     }
     diddoc_str = json.dumps(diddoc_json)
     diddoc = DIDDoc.from_json(diddoc_str)
@@ -511,7 +533,7 @@ and services to empty lists.</p>
         self._did_type = derive_did_type(did)
         self._pubkey = {}
         self._service = {}
-    
+
     @property
     def did_type(self) -&gt; str:
         return self._did_type
@@ -697,8 +719,7 @@ and services to empty lists.</p>
                 if rv is None and section in did_doc:
                     for key_spec in did_doc[section]:
                         try:
-                            pubkey_did = canon_did(
-                                resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                            pubkey_did = canon_did(resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
                             if ok_did(pubkey_did):
                                 rv = DIDDoc(pubkey_did)
                                 break
@@ -749,16 +770,13 @@ and services to empty lists.</p>
                 service.get(
                     &#34;id&#34;,
                     canon_ref(
-                        rv.did, &#34;assigned-service-{}&#34;.format(
-                            len(rv.service)), &#34;;&#34;
+                        rv.did, &#34;assigned-service-{}&#34;.format(len(rv.service)), &#34;;&#34;
                     ),
                 ),
                 service[&#34;type&#34;],
                 rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
-                rv.add_service_pubkeys(
-                    service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
-                canon_ref(rv.did, endpoint,
-                          &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+                rv.add_service_pubkeys(service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+                canon_ref(rv.did, endpoint, &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
                 service.get(&#34;priority&#34;, None),
             )
             rv.service[svc.id] = svc
@@ -778,29 +796,50 @@ and services to empty lists.</p>
         &#34;&#34;&#34;
 
         return cls.deserialize(json.loads(did_doc_json))
-    
+
     def validate(self):
         # FIXME : Code refactor
 
         # check public key and authentication key is available and if so, a single match item
-        if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+        if (
+            self.pubkey
+            and self.authnkey
+            and len(self.pubkey.values()) == 1
+            and len(self.authnkey.values()) == 1
+        ):
             # check if public key and authentication key match
             if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
                 # check if controller and did and publicKeyBase58 matches
                 # check if public key type is Ed25519VerificationKey2018
                 public_key: PublicKey = list(self.pubkey.values())[0]
-                if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+                if (
+                    public_key.controller == self.did
+                    and public_key.type == PublicKeyType.ED25519_SIG_2018
+                ):
                     # Optional check, if service is available
                     if self.service:
-                        if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                        if (
+                            len(self.service.values()) == 1
+                            and canon_ref(
+                                self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type
+                            )
+                            == list(self.service.keys())[0]
+                        ):
                             service: Service = list(self.service.values())[0]
-                            if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                            if (
+                                len(service.recip_keys) == 1
+                                and service.recip_keys[0].type == public_key.type
+                                and service.recip_keys[0].controller
+                                == public_key.controller
+                                and service.type == &#34;DIDComm&#34;
+                                and service.priority == 0
+                                and service.did == self.did
+                            ):
                                 return True
                     else:
                         return True
-        
-        return False
 
+        return False
 
     def __str__(self) -&gt; str:
         &#34;&#34;&#34;Return string representation for abbreviated display.&#34;&#34;&#34;
@@ -866,8 +905,7 @@ def deserialize(cls, did_doc: dict) -&gt; &#34;DIDDoc&#34;:
             if rv is None and section in did_doc:
                 for key_spec in did_doc[section]:
                     try:
-                        pubkey_did = canon_did(
-                            resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
+                        pubkey_did = canon_did(resource(key_spec.get(&#34;id&#34;, &#34;&#34;)))
                         if ok_did(pubkey_did):
                             rv = DIDDoc(pubkey_did)
                             break
@@ -918,16 +956,13 @@ def deserialize(cls, did_doc: dict) -&gt; &#34;DIDDoc&#34;:
             service.get(
                 &#34;id&#34;,
                 canon_ref(
-                    rv.did, &#34;assigned-service-{}&#34;.format(
-                        len(rv.service)), &#34;;&#34;
+                    rv.did, &#34;assigned-service-{}&#34;.format(len(rv.service)), &#34;;&#34;
                 ),
             ),
             service[&#34;type&#34;],
             rv.add_service_pubkeys(service, &#34;recipientKeys&#34;),
-            rv.add_service_pubkeys(
-                service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
-            canon_ref(rv.did, endpoint,
-                      &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
+            rv.add_service_pubkeys(service, [&#34;mediatorKeys&#34;, &#34;routingKeys&#34;]),
+            canon_ref(rv.did, endpoint, &#34;;&#34;) if &#34;;&#34; in endpoint else endpoint,
             service.get(&#34;priority&#34;, None),
         )
         rv.service[svc.id] = svc
@@ -1237,22 +1272,44 @@ def service(self) -&gt; dict:
     # FIXME : Code refactor
 
     # check public key and authentication key is available and if so, a single match item
-    if self.pubkey and self.authnkey and len(self.pubkey.values()) == 1 and len(self.authnkey.values()) == 1:
+    if (
+        self.pubkey
+        and self.authnkey
+        and len(self.pubkey.values()) == 1
+        and len(self.authnkey.values()) == 1
+    ):
         # check if public key and authentication key match
         if list(self.pubkey.keys())[0] == list(self.authnkey.keys())[0]:
             # check if controller and did and publicKeyBase58 matches
             # check if public key type is Ed25519VerificationKey2018
             public_key: PublicKey = list(self.pubkey.values())[0]
-            if public_key.controller == self.did and public_key.type == PublicKeyType.ED25519_SIG_2018:
+            if (
+                public_key.controller == self.did
+                and public_key.type == PublicKeyType.ED25519_SIG_2018
+            ):
                 # Optional check, if service is available
                 if self.service:
-                    if len(self.service.values()) == 1 and canon_ref(self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type) == list(self.service.keys())[0]:
+                    if (
+                        len(self.service.values()) == 1
+                        and canon_ref(
+                            self.did, &#34;didcomm&#34;, &#34;;&#34;, did_type=self.did_type
+                        )
+                        == list(self.service.keys())[0]
+                    ):
                         service: Service = list(self.service.values())[0]
-                        if len(service.recip_keys) == 1 and service.recip_keys[0].type == public_key.type and service.recip_keys[0].controller == public_key.controller and service.type == &#34;DIDComm&#34; and service.priority == 0 and service.did == self.did:
+                        if (
+                            len(service.recip_keys) == 1
+                            and service.recip_keys[0].type == public_key.type
+                            and service.recip_keys[0].controller
+                            == public_key.controller
+                            and service.type == &#34;DIDComm&#34;
+                            and service.priority == 0
+                            and service.did == self.did
+                        ):
                             return True
                 else:
                     return True
-    
+
     return False</code></pre>
 </details>
 </dd>

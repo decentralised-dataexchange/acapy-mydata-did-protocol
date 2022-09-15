@@ -27,40 +27,50 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import json
-import uuid
 import logging
+import uuid
+
 from aiohttp import web
 from aiohttp_apispec import (
     docs,
-    request_schema,
-    querystring_schema,
-    response_schema,
     match_info_schema,
+    querystring_schema,
+    request_schema,
+    response_schema,
 )
-from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.connections.models.connection_record import (
     ConnectionRecord,
+    ConnectionRecordSchema,
 )
+from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManager,
     ConnectionManagerError,
 )
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
+    ConnectionInvitation,
+)
+from aries_cloudagent.protocols.connections.v1_0.routes import (
+    ReceiveInvitationQueryStringSchema,
+)
+from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
-from ..utils.util import str_to_bool
-from ..manager import ADAManagerError
-from .openapi import (
-    V2CreateInvitationQueryStringSchema,
-    V2InvitationResultSchema,
+from mydata_did.v1_0.manager import ADAManagerError
+from mydata_did.v1_0.routes.openapi.schemas import (
+    ConnectionListSchema,
+    ConnectionsListQueryStringSchemaV2,
     GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema,
     GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema,
-    SendExistingConnectionsMessageHandlerMatchInfoSchema,
-    SendExistingConnectionsMessageHandlerRequestSchema,
     GetExistingConnectionMatchInfoSchema,
     GetExistingConnectionResponseSchema,
-    ConnectionsListQueryStringSchemaV2,
-    ConnectionListSchema,
+    SendExistingConnectionsMessageHandlerMatchInfoSchema,
+    SendExistingConnectionsMessageHandlerRequestSchema,
+    V2CreateInvitationQueryStringSchema,
+    V2InvitationResultSchema,
+    V2ReceiveConnectionInvitationRequestSchema,
 )
+from mydata_did.v1_0.utils.util import str_to_bool
 
 LOGGER = logging.getLogger(__name__)
 
@@ -186,9 +196,7 @@ async def generate_firebase_dynamic_link_for_connection_invitation_handler(
     mgr = V2ADAManager(context=context)
     try:
         # Call the function
-        res = await mgr.create_connection_qr_code(
-            conn_id
-        )
+        res = await mgr.create_connection_qr_code(conn_id)
 
     except (ConnectionManagerError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -222,10 +230,7 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 
     try:
         # Call the function
-        await mgr.send_existing_connections_message(
-            theirdid,
-            conn_id
-        )
+        await mgr.send_existing_connections_message(theirdid, conn_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -252,9 +257,7 @@ async def get_existing_connections_handler(request: web.BaseRequest):
     mgr = V2ADAManager(context=context)
 
     # Call the function
-    result = await mgr.get_existing_connection_record_for_new_connection_id(
-        conn_id
-    )
+    result = await mgr.get_existing_connection_record_for_new_connection_id(conn_id)
     result = result.serialize() if result else {}
 
     return web.json_response(result)
@@ -295,7 +298,7 @@ async def connections_list_v2(request: web.BaseRequest):
         &#34;my_did&#34;,
         &#34;their_did&#34;,
         &#34;request_id&#34;,
-        &#34;invitation_key&#34;
+        &#34;invitation_key&#34;,
     ):
         if param_name in request.query and request.query[param_name] != &#34;&#34;:
             tag_filter[param_name] = request.query[param_name]
@@ -327,10 +330,52 @@ async def connections_list_v2(request: web.BaseRequest):
         page if page else 1,
         page_size if page_size else 10,
         str_to_bool(org_flag) if org_flag else org_flag,
-        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag
+        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag,
     )
 
-    return web.json_response(pagination_result._asdict())</code></pre>
+    return web.json_response(pagination_result._asdict())
+
+
+@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Receive a new connection invitation&#34;,
+)
+@querystring_schema(ReceiveInvitationQueryStringSchema())
+@request_schema(V2ReceiveConnectionInvitationRequestSchema())
+@response_schema(ConnectionRecordSchema(), 200)
+async def v2_connections_receive_invitation(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for receiving a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The resulting connection record details
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    if context.settings.get(&#34;admin.no_receive_invites&#34;):
+        raise web.HTTPForbidden(
+            reason=&#34;Configuration does not allow receipt of invitations&#34;
+        )
+    connection_mgr = ConnectionManager(context)
+
+    body = await request.json()
+    connection_url = body.get(&#34;connection_url&#34;)
+
+    try:
+        invitation = ConnectionInvitation.from_url(connection_url)
+        auto_accept = json.loads(request.query.get(&#34;auto_accept&#34;, &#34;null&#34;))
+        alias = request.query.get(&#34;alias&#34;)
+        connection = await connection_mgr.receive_invitation(
+            invitation, auto_accept=auto_accept, alias=alias
+        )
+        result = connection.serialize()
+    except (ConnectionManagerError, StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)</code></pre>
 </details>
 </section>
 <section>
@@ -400,7 +445,7 @@ async def connections_list_v2(request: web.BaseRequest):
         &#34;my_did&#34;,
         &#34;their_did&#34;,
         &#34;request_id&#34;,
-        &#34;invitation_key&#34;
+        &#34;invitation_key&#34;,
     ):
         if param_name in request.query and request.query[param_name] != &#34;&#34;:
             tag_filter[param_name] = request.query[param_name]
@@ -432,7 +477,7 @@ async def connections_list_v2(request: web.BaseRequest):
         page if page else 1,
         page_size if page_size else 10,
         str_to_bool(org_flag) if org_flag else org_flag,
-        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag
+        str_to_bool(marketplace_flag) if marketplace_flag else marketplace_flag,
     )
 
     return web.json_response(pagination_result._asdict())</code></pre>
@@ -486,9 +531,7 @@ async def generate_firebase_dynamic_link_for_connection_invitation_handler(
     mgr = V2ADAManager(context=context)
     try:
         # Call the function
-        res = await mgr.create_connection_qr_code(
-            conn_id
-        )
+        res = await mgr.create_connection_qr_code(conn_id)
 
     except (ConnectionManagerError, BaseModelError) as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -524,9 +567,7 @@ async def get_existing_connections_handler(request: web.BaseRequest):
     mgr = V2ADAManager(context=context)
 
     # Call the function
-    result = await mgr.get_existing_connection_record_for_new_connection_id(
-        conn_id
-    )
+    result = await mgr.get_existing_connection_record_for_new_connection_id(conn_id)
     result = result.serialize() if result else {}
 
     return web.json_response(result)</code></pre>
@@ -567,10 +608,7 @@ async def send_existing_connections_message_handler(request: web.BaseRequest):
 
     try:
         # Call the function
-        await mgr.send_existing_connections_message(
-            theirdid,
-            conn_id
-        )
+        await mgr.send_existing_connections_message(theirdid, conn_id)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -645,6 +683,64 @@ async def v2_connections_create_invitation(request: web.BaseRequest):
     return web.json_response(result)</code></pre>
 </details>
 </dd>
+<dt id="mydata_did.v1_0.routes.connection_routes.v2_connections_receive_invitation"><code class="name flex">
+<span>async def <span class="ident">v2_connections_receive_invitation</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Request handler for receiving a new connection invitation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong></dt>
+<dd>aiohttp request object</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The resulting connection record details</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[&#34;connection&#34;],
+    summary=&#34;Receive a new connection invitation&#34;,
+)
+@querystring_schema(ReceiveInvitationQueryStringSchema())
+@request_schema(V2ReceiveConnectionInvitationRequestSchema())
+@response_schema(ConnectionRecordSchema(), 200)
+async def v2_connections_receive_invitation(request: web.BaseRequest):
+    &#34;&#34;&#34;
+    Request handler for receiving a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The resulting connection record details
+
+    &#34;&#34;&#34;
+    context = request.app[&#34;request_context&#34;]
+    if context.settings.get(&#34;admin.no_receive_invites&#34;):
+        raise web.HTTPForbidden(
+            reason=&#34;Configuration does not allow receipt of invitations&#34;
+        )
+    connection_mgr = ConnectionManager(context)
+
+    body = await request.json()
+    connection_url = body.get(&#34;connection_url&#34;)
+
+    try:
+        invitation = ConnectionInvitation.from_url(connection_url)
+        auto_accept = json.loads(request.query.get(&#34;auto_accept&#34;, &#34;null&#34;))
+        alias = request.query.get(&#34;alias&#34;)
+        connection = await connection_mgr.receive_invitation(
+            invitation, auto_accept=auto_accept, alias=alias
+        )
+        result = connection.serialize()
+    except (ConnectionManagerError, StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)</code></pre>
+</details>
+</dd>
 <dt id="mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler"><code class="name flex">
 <span>async def <span class="ident">wellknown_connection_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
 </code></dt>
@@ -714,6 +810,7 @@ async def wellknown_connection_handler(request: web.BaseRequest):
 <li><code><a title="mydata_did.v1_0.routes.connection_routes.get_existing_connections_handler" href="#mydata_did.v1_0.routes.connection_routes.get_existing_connections_handler">get_existing_connections_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.connection_routes.send_existing_connections_message_handler" href="#mydata_did.v1_0.routes.connection_routes.send_existing_connections_message_handler">send_existing_connections_message_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.connection_routes.v2_connections_create_invitation" href="#mydata_did.v1_0.routes.connection_routes.v2_connections_create_invitation">v2_connections_create_invitation</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.connection_routes.v2_connections_receive_invitation" href="#mydata_did.v1_0.routes.connection_routes.v2_connections_receive_invitation">v2_connections_receive_invitation</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler" href="#mydata_did.v1_0.routes.connection_routes.wellknown_connection_handler">wellknown_connection_handler</a></code></li>
 </ul>
 </li>

@@ -2396,7 +2396,7 @@ async def send_presentation_request_for_data_agreement(request: web.BaseRequest)
 <dl>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.CredentialsFetchQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">CredentialsFetchQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for credentials fetch request query string.</p></div>
@@ -2438,7 +2438,7 @@ async def send_presentation_request_for_data_agreement(request: web.BaseRequest)
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.DAIndyProofReqAttrSpecSchema"><code class="flex name class">
 <span>class <span class="ident">DAIndyProofReqAttrSpecSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for attribute specification in indy proof request.</p></div>
@@ -2575,7 +2575,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.DAIndyProofReqNonRevokedSchema"><code class="flex name class">
 <span>class <span class="ident">DAIndyProofReqNonRevokedSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Non-revocation times specification in indy proof request.</p></div>
@@ -2673,7 +2673,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.DAIndyProofReqPredSpecRestrictionsSchema"><code class="flex name class">
 <span>class <span class="ident">DAIndyProofReqPredSpecRestrictionsSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for restrictions in attr or pred specifier indy proof request.</p></div>
@@ -2721,7 +2721,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.DAIndyProofReqPredSpecSchema"><code class="flex name class">
 <span>class <span class="ident">DAIndyProofReqPredSpecSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for predicate specification in indy proof request.</p></div>
@@ -2764,7 +2764,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.DAIndyProofRequestSchema"><code class="flex name class">
 <span>class <span class="ident">DAIndyProofRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for indy proof request.</p></div>
@@ -2822,7 +2822,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.IndyRequestedCredsRequestedAttrSchema"><code class="flex name class">
 <span>class <span class="ident">IndyRequestedCredsRequestedAttrSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for requested attributes within indy requested credentials structure.</p></div>
@@ -2865,7 +2865,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.IndyRequestedCredsRequestedPredSchema"><code class="flex name class">
 <span>class <span class="ident">IndyRequestedCredsRequestedPredSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for requested predicates within indy requested credentials structure.</p></div>
@@ -2905,7 +2905,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.PresExIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">PresExIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Path parameters and validators for request taking presentation exchange id.</p></div>
@@ -2936,7 +2936,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.SendPresentationRequestForDataAgreementRequestSchema"><code class="flex name class">
 <span>class <span class="ident">SendPresentationRequestForDataAgreementRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending a presentation request for a data agreement.</p></div>
@@ -2969,7 +2969,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationCreateRequestRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationCreateRequestRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for creating a proof request free of any connection.</p></div>
@@ -3009,7 +3009,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationExchangeListQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationExchangeListQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for presentation exchange list query.</p></div>
@@ -3078,7 +3078,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationExchangeListSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationExchangeListSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Result schema for an Aries RFC 37 v1.0 presentation exchange query.</p></div>
@@ -3110,7 +3110,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationProposalRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationProposalRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending a presentation proposal admin message.</p></div>
@@ -3160,7 +3160,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending a presentation.</p></div>
@@ -3227,7 +3227,7 @@ def validate_fields(self, data, **kwargs):
 </dd>
 <dt id="mydata_did.patched_protocols.present_proof.v1_0.routes.V10PresentationSendRequestRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10PresentationSendRequestRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending a proof request on a connection.</p></div>

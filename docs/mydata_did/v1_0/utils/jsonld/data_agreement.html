@@ -32,6 +32,7 @@
 import json
 import typing
 
+from aries_cloudagent.wallet.base import BaseWallet
 from aries_cloudagent.wallet.util import (
     b58_to_bytes,
     b64_to_bytes,
@@ -40,11 +41,7 @@ from aries_cloudagent.wallet.util import (
     bytes_to_b64,
     str_to_b64,
 )
-
-from aries_cloudagent.wallet.base import BaseWallet
-
-from .create_verify_data import create_verify_data
-
+from mydata_did.v1_0.utils.jsonld.create_verify_data import create_verify_data
 
 MULTIBASE_B58_BTC = &#34;z&#34;
 MULTICODEC_ED25519_PUB = b&#34;\xed&#34;
@@ -129,15 +126,15 @@ async def sign_data_agreement(data_agreement, signature_options, verkey, wallet)
     &#34;&#34;&#34;Sign data agreement.&#34;&#34;&#34;
 
     proof_chain = False
-    if (
-        &#34;proof&#34; in data_agreement
-    ):
-        # Detected the document is being signed more than once, 
+    if &#34;proof&#34; in data_agreement:
+        # Detected the document is being signed more than once,
         # therefore expected output is a proof chain of 2 elements.
 
         proof_chain = True
 
-    framed, verify_data_hex_string = create_verify_data(data_agreement, signature_options, proof_chain)
+    framed, verify_data_hex_string = create_verify_data(
+        data_agreement, signature_options, proof_chain
+    )
 
     verify_data_bytes = bytes.fromhex(verify_data_hex_string)
 
@@ -147,34 +144,38 @@ async def sign_data_agreement(data_agreement, signature_options, verkey, wallet)
         if not proof_chain:
             # For single proof
 
-            document_with_proof = {**data_agreement, &#34;proof&#34;: {**signature_options, &#34;proofValue&#34;: jws}}
+            document_with_proof = {
+                **data_agreement,
+                &#34;proof&#34;: {**signature_options, &#34;proofValue&#34;: jws},
+            }
         else:
             # For proof chain with 2 elements
 
             old_proof = data_agreement.pop(&#34;proof&#34;, None)
             new_proof = {**signature_options, &#34;proofValue&#34;: jws}
-            document_with_proof = {**data_agreement, &#34;proofChain&#34;: [old_proof, new_proof]}
+            document_with_proof = {
+                **data_agreement,
+                &#34;proofChain&#34;: [old_proof, new_proof],
+            }
     else:
 
         # For proof chain with more than 2 elements
 
         document_with_proof = {**data_agreement}
-        document_with_proof[&#34;proofChain&#34;].append({
-            **signature_options, &#34;proofValue&#34;: jws
-        })
+        document_with_proof[&#34;proofChain&#34;].append(
+            {**signature_options, &#34;proofValue&#34;: jws}
+        )
 
     return document_with_proof
 
 
-async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain:bool = True):
+async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain: bool = True):
     &#34;&#34;&#34;Verify data agreement.&#34;&#34;&#34;
 
     proof_chain = False
     old_proof = None
     new_proof = None
-    if (
-        &#34;proofChain&#34; in doc
-    ):
+    if &#34;proofChain&#34; in doc:
         # Detected the document is being signed more than once, therefore it is a proof chain.
         proof_chain = True
 
@@ -185,7 +186,7 @@ async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain:bool = Tru
             new_proof = doc[&#34;proofChain&#34;][1]
 
             doc.pop(&#34;proofChain&#34;, None)
-            
+
             doc[&#34;proof&#34;] = old_proof
         else:
             # For proof chain with more than 2 elements
@@ -194,15 +195,25 @@ async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain:bool = Tru
 
             doc[&#34;proofChain&#34;] = doc[&#34;proofChain&#34;][:-1]
 
-    framed, verify_data_hex_string = create_verify_data(doc, doc[&#34;proof&#34;] if not proof_chain else new_proof, proof_chain)
+    framed, verify_data_hex_string = create_verify_data(
+        doc, doc[&#34;proof&#34;] if not proof_chain else new_proof, proof_chain
+    )
 
     verify_data_bytes = bytes.fromhex(verify_data_hex_string)
 
-    valid = await jws_verify(verify_data_bytes, framed[&#34;proof&#34;][&#34;proofValue&#34;] if not proof_chain else new_proof[&#34;proofValue&#34;], verkey, wallet)
+    valid = await jws_verify(
+        verify_data_bytes,
+        framed[&#34;proof&#34;][&#34;proofValue&#34;] if not proof_chain else new_proof[&#34;proofValue&#34;],
+        verkey,
+        wallet,
+    )
 
     return valid
 
-async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typing.List[str] = None, wallet: BaseWallet = None) -&gt; bool:
+
+async def verify_data_agreement_with_proof_chain(
+    doc: dict = None, verkeys: typing.List[str] = None, wallet: BaseWallet = None
+) -&gt; bool:
 
     proof_chain = doc.pop(&#34;proofChain&#34;, None)
     genesis_proof = proof_chain[0]
@@ -352,15 +363,15 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
     &#34;&#34;&#34;Sign data agreement.&#34;&#34;&#34;
 
     proof_chain = False
-    if (
-        &#34;proof&#34; in data_agreement
-    ):
-        # Detected the document is being signed more than once, 
+    if &#34;proof&#34; in data_agreement:
+        # Detected the document is being signed more than once,
         # therefore expected output is a proof chain of 2 elements.
 
         proof_chain = True
 
-    framed, verify_data_hex_string = create_verify_data(data_agreement, signature_options, proof_chain)
+    framed, verify_data_hex_string = create_verify_data(
+        data_agreement, signature_options, proof_chain
+    )
 
     verify_data_bytes = bytes.fromhex(verify_data_hex_string)
 
@@ -370,21 +381,27 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
         if not proof_chain:
             # For single proof
 
-            document_with_proof = {**data_agreement, &#34;proof&#34;: {**signature_options, &#34;proofValue&#34;: jws}}
+            document_with_proof = {
+                **data_agreement,
+                &#34;proof&#34;: {**signature_options, &#34;proofValue&#34;: jws},
+            }
         else:
             # For proof chain with 2 elements
 
             old_proof = data_agreement.pop(&#34;proof&#34;, None)
             new_proof = {**signature_options, &#34;proofValue&#34;: jws}
-            document_with_proof = {**data_agreement, &#34;proofChain&#34;: [old_proof, new_proof]}
+            document_with_proof = {
+                **data_agreement,
+                &#34;proofChain&#34;: [old_proof, new_proof],
+            }
     else:
 
         # For proof chain with more than 2 elements
 
         document_with_proof = {**data_agreement}
-        document_with_proof[&#34;proofChain&#34;].append({
-            **signature_options, &#34;proofValue&#34;: jws
-        })
+        document_with_proof[&#34;proofChain&#34;].append(
+            {**signature_options, &#34;proofValue&#34;: jws}
+        )
 
     return document_with_proof</code></pre>
 </details>
@@ -398,15 +415,13 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain:bool = True):
+<pre><code class="python">async def verify_data_agreement(doc, verkey, wallet, drop_proof_chain: bool = True):
     &#34;&#34;&#34;Verify data agreement.&#34;&#34;&#34;
 
     proof_chain = False
     old_proof = None
     new_proof = None
-    if (
-        &#34;proofChain&#34; in doc
-    ):
+    if &#34;proofChain&#34; in doc:
         # Detected the document is being signed more than once, therefore it is a proof chain.
         proof_chain = True
 
@@ -417,7 +432,7 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
             new_proof = doc[&#34;proofChain&#34;][1]
 
             doc.pop(&#34;proofChain&#34;, None)
-            
+
             doc[&#34;proof&#34;] = old_proof
         else:
             # For proof chain with more than 2 elements
@@ -426,11 +441,18 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
 
             doc[&#34;proofChain&#34;] = doc[&#34;proofChain&#34;][:-1]
 
-    framed, verify_data_hex_string = create_verify_data(doc, doc[&#34;proof&#34;] if not proof_chain else new_proof, proof_chain)
+    framed, verify_data_hex_string = create_verify_data(
+        doc, doc[&#34;proof&#34;] if not proof_chain else new_proof, proof_chain
+    )
 
     verify_data_bytes = bytes.fromhex(verify_data_hex_string)
 
-    valid = await jws_verify(verify_data_bytes, framed[&#34;proof&#34;][&#34;proofValue&#34;] if not proof_chain else new_proof[&#34;proofValue&#34;], verkey, wallet)
+    valid = await jws_verify(
+        verify_data_bytes,
+        framed[&#34;proof&#34;][&#34;proofValue&#34;] if not proof_chain else new_proof[&#34;proofValue&#34;],
+        verkey,
+        wallet,
+    )
 
     return valid</code></pre>
 </details>
@@ -444,7 +466,9 @@ async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typi
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def verify_data_agreement_with_proof_chain(doc: dict = None, verkeys: typing.List[str] = None, wallet: BaseWallet = None) -&gt; bool:
+<pre><code class="python">async def verify_data_agreement_with_proof_chain(
+    doc: dict = None, verkeys: typing.List[str] = None, wallet: BaseWallet = None
+) -&gt; bool:
 
     proof_chain = doc.pop(&#34;proofChain&#34;, None)
     genesis_proof = proof_chain[0]

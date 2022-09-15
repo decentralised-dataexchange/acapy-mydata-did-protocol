@@ -26,54 +26,39 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import base64
+<pre><code class="python">import json
 import logging
-import json
 import time
 import typing
 
 import aiohttp
-
 from aries_cloudagent.config.injection_context import InjectionContext
-from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 from aries_cloudagent.connections.models.connection_target import ConnectionTarget
-from aries_cloudagent.messaging.responder import BaseResponder
 from aries_cloudagent.core.dispatcher import DispatcherResponder
-from aries_cloudagent.transport.inbound.receipt import MessageReceipt
 from aries_cloudagent.core.error import BaseError
+from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
+from aries_cloudagent.messaging.responder import BaseResponder
+from aries_cloudagent.protocols.connections.v1_0.manager import ConnectionManager
 from aries_cloudagent.storage.base import BaseStorage, StorageRecord
+from aries_cloudagent.storage.error import StorageDuplicateError, StorageNotFoundError
 from aries_cloudagent.storage.indy import IndyStorage
-from aries_cloudagent.storage.error import (
-    StorageNotFoundError,
-    StorageDuplicateError,
-    StorageError
-)
-from aries_cloudagent.wallet.indy import IndyWallet
-from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.transport.inbound.receipt import MessageReceipt
 from aries_cloudagent.transport.pack_format import PackWireFormat
 from aries_cloudagent.transport.wire_format import BaseWireFormat
-from aries_cloudagent.messaging.decorators.transport_decorator import TransportDecorator
-from aries_cloudagent.protocols.connections.v1_0.manager import (
-    ConnectionManager,
-)
-from .messages.read_did import ReadDIDMessage, ReadDIDMessageBody
-from .messages.read_did_response import ReadDIDResponseMessage, ReadDIDResponseMessageSchema
-from .messages.problem_report import (
+from aries_cloudagent.wallet.base import BaseWallet
+from aries_cloudagent.wallet.indy import IndyWallet
+from mydata_did.v1_0.messages.problem_report import (
     MyDataDIDProblemReportMessage,
-    MyDataDIDProblemReportMessageReason
+    MyDataDIDProblemReportMessageReason,
 )
-from .messages.json_ld_processed import JSONLDProcessedMessage
-from .messages.json_ld_processed_response import JSONLDProcessedResponseMessage
-from .messages.json_ld_problem_report import JSONLDProblemReport, JSONLDProblemReportReason
-from .models.diddoc_model import (
-    MyDataDIDResponseBody,
-    MyDataDIDDoc,
+from mydata_did.v1_0.messages.read_did import ReadDIDMessage, ReadDIDMessageBody
+from mydata_did.v1_0.messages.read_did_response import (
+    ReadDIDResponseMessage,
+    ReadDIDResponseMessageSchema,
 )
-from .models.json_ld_processed_response_model import JSONLDProcessedResponseBody
-from .models.json_ld_processed_model import JSONLDProcessedBody
-from .utils.did.mydata_did import DIDMyData
-from .utils.wallet.key_type import KeyType
-from .utils.jsonld.create_verify_data import create_verify_data
+from mydata_did.v1_0.models.diddoc_model import MyDataDIDDoc, MyDataDIDResponseBody
+from mydata_did.v1_0.utils.did.mydata_did import DIDMyData
+from mydata_did.v1_0.utils.wallet.key_type import KeyType
 
 
 class ADAManagerError(BaseError):
@@ -92,7 +77,9 @@ class ADAManager:
     RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = &#34;data_agreement_qr_code_metadata&#34;
 
     # Temporary record for keeping personal data of unpublished (or draft) data agreements
-    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = &#34;temporary_data_agreement_personal_data&#34;
+    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = (
+        &#34;temporary_data_agreement_personal_data&#34;
+    )
 
     # Record for data controller details
     RECORD_TYPE_DATA_CONTROLLER_DETAILS = &#34;data_controller_details&#34;
@@ -110,9 +97,9 @@ class ADAManager:
     def context(self) -&gt; InjectionContext:
         return self._context
 
-    async def process_read_did_message(self,
-                                       read_did_message: ReadDIDMessage,
-                                       receipt: MessageReceipt):
+    async def process_read_did_message(
+        self, read_did_message: ReadDIDMessage, receipt: MessageReceipt
+    ):
         &#34;&#34;&#34;
         Process read-did DIDComm message
         &#34;&#34;&#34;
@@ -121,13 +108,17 @@ class ADAManager:
         storage: IndyStorage = await self.context.inject(BaseStorage)
 
         # Responder instance from context
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+        responder: DispatcherResponder = await self.context.inject(
+            BaseResponder, required=False
+        )
 
         # From and To DIDs of the recieved message
         create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
+            receipt.sender_verkey, key_type=KeyType.ED25519
+        )
         create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
+            receipt.recipient_verkey, key_type=KeyType.ED25519
+        )
 
         # From and To DIDs for the response messages
         response_message_from_did = create_did_message_to_did
@@ -139,7 +130,7 @@ class ADAManager:
             # Fetch DID from wallet
             mydata_did_registry_did_info_record = await storage.search_records(
                 type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-                tag_query={&#34;did&#34;: read_did_message.body.did}
+                tag_query={&#34;did&#34;: read_did_message.body.did},
             ).fetch_single()
 
         except (StorageNotFoundError, StorageDuplicateError):
@@ -150,12 +141,11 @@ class ADAManager:
                 explain=&#34;DID not found.&#34;,
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
+                created_time=round(time.time() * 1000),
             )
 
             # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=read_did_message._id)
+            mydata_did_problem_report.assign_thread_id(thid=read_did_message._id)
 
             if responder:
                 await responder.send_reply(mydata_did_problem_report)
@@ -169,24 +159,21 @@ class ADAManager:
             created_time=round(time.time() * 1000),
             body=MyDataDIDResponseBody(
                 did_doc=MyDataDIDDoc.from_json(
-                    mydata_did_registry_did_info_record.value),
-                version=mydata_did_registry_did_info_record.tags.get(
-                    &#34;version&#34;),
-                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
-            )
+                    mydata_did_registry_did_info_record.value
+                ),
+                version=mydata_did_registry_did_info_record.tags.get(&#34;version&#34;),
+                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;),
+            ),
         )
 
         # Assign thread id
-        read_did_response_message.assign_thread_id(
-            thid=read_did_message._id)
+        read_did_response_message.assign_thread_id(thid=read_did_message._id)
 
         if responder:
             await responder.send_reply(read_did_response_message)
 
     async def process_read_did_response_message(
-        self,
-        read_did_response_message: ReadDIDResponseMessage,
-        receipt: MessageReceipt
+        self, read_did_response_message: ReadDIDResponseMessage, receipt: MessageReceipt
     ):
         &#34;&#34;&#34;
         Process read-did-response DIDComm message
@@ -207,7 +194,7 @@ class ADAManager:
         data_agreement_id: str = None,
         data_agreement_template_id: str = None,
         method_of_use: str = None,
-        data_exchange_record_id: str = None
+        data_exchange_record_id: str = None,
     ) -&gt; None:
         &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
@@ -221,13 +208,15 @@ class ADAManager:
                 &#34;data_agreement_id&#34;: data_agreement_id,
                 &#34;data_agreement_template_id&#34;: data_agreement_template_id,
                 &#34;method_of_use&#34;: method_of_use,
-                &#34;data_exchange_record_id&#34;: data_exchange_record_id
-            }
+                &#34;data_exchange_record_id&#34;: data_exchange_record_id,
+            },
         )
 
         await storage.add_record(data_instance_metadata_record)
 
-    async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+    async def delete_data_agreement_instance_metadata(
+        self, *, tag_query: dict = None
+    ) -&gt; None:
         &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -235,13 +224,15 @@ class ADAManager:
 
         storage_records = await storage.search_records(
             type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-            tag_query=tag_query
+            tag_query=tag_query,
         ).fetch_all()
 
         for storage_record in storage_records:
             await storage.delete_record(storage_record)
 
-    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+    async def query_data_agreement_instance_metadata(
+        self, *, tag_query: dict = None
+    ) -&gt; typing.List[StorageRecord]:
         &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -249,12 +240,14 @@ class ADAManager:
 
         storage_records = await storage.search_records(
             type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-            tag_query=tag_query
+            tag_query=tag_query,
         ).fetch_all()
 
         return storage_records
 
-    async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+    async def resolve_remote_mydata_did(
+        self, *, mydata_did: str
+    ) -&gt; MyDataDIDResponseBody:
         &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
 
         # Initialize DID MyData
@@ -267,29 +260,33 @@ class ADAManager:
         pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
 
         # Fetch connection record marked as MyData DID registry
-        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+        (
+            connection_record,
+            err,
+        ) = await self.fetch_mydata_did_registry_connection_record()
         if err:
             raise ADAManagerError(
-                &#34;Failed to fetch MyData DID registry connection record&#34;)
+                &#34;Failed to fetch MyData DID registry connection record&#34;
+            )
 
         # Construct read-did message
         # from_did
         pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
         from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519
+        )
 
         # to_did
         to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
 
         # Create read-did message
         read_did_message = ReadDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
             created_time=round(time.time() * 1000),
-            body=ReadDIDMessageBody(
-                did=mydata_did.did
-            )
+            body=ReadDIDMessageBody(did=mydata_did.did),
         )
 
         # Add transport decorator
@@ -301,7 +298,9 @@ class ADAManager:
         connection_manager = ConnectionManager(self.context)
 
         # Fetch connection targets
-        connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+        connection_targets = await connection_manager.fetch_connection_targets(
+            connection_record
+        )
 
         if len(connection_targets) == 0:
             raise ADAManagerError(&#34;No connection targets found&#34;)
@@ -317,14 +316,15 @@ class ADAManager:
             sender_key=connection_target.sender_key,
         )
 
-        headers = {
-            &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
-        }
+        headers = {&#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;}
         async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.post(connection_target.endpoint, data=packed_message) as response:
+            async with session.post(
+                connection_target.endpoint, data=packed_message
+            ) as response:
                 if response.status != 200:
                     raise ADAManagerError(
-                        f&#34;HTTP request failed with status code {response.status}&#34;)
+                        f&#34;HTTP request failed with status code {response.status}&#34;
+                    )
 
                 message_body = await response.read()
 
@@ -340,156 +340,18 @@ class ADAManager:
 
                 if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
                     raise ADAManagerError(
-                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;
+                    )
 
                 if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                    read_did_response_message: ReadDIDResponseMessage = \
+                    read_did_response_message: ReadDIDResponseMessage = (
                         ReadDIDResponseMessageSchema().load(message_json)
+                    )
 
                     if read_did_response_message.body.status == &#34;revoked&#34;:
-                        raise ADAManagerError(
-                            f&#34;MyData DID {mydata_did.did} is revoked&#34;
-                        )
+                        raise ADAManagerError(f&#34;MyData DID {mydata_did.did} is revoked&#34;)
 
-                    return read_did_response_message.body
-
-    async def process_json_ld_processed_message(
-        self,
-        json_ld_processed_message: JSONLDProcessedMessage,
-        receipt: MessageReceipt
-    ) -&gt; None:
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # From and To MyData DIDs
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-        try:
-            # Base64 decode data_base64
-            data_base64_decoded = base64.b64decode(
-                json_ld_processed_message.body.data_base64)
-
-            # JSON load data_base64
-            data_json = json.loads(data_base64_decoded)
-
-            # Base64 decode signature_options_base64
-            signature_options_base64_decoded = base64.b64decode(
-                json_ld_processed_message.body.signature_options_base64)
-
-            # JSON load signature_options_base64
-            signature_options_json = json.loads(
-                signature_options_base64_decoded)
-
-            # verify_data function
-            framed, combine_hash = create_verify_data(
-                data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
-
-            # Base64 encode framed
-            framed_base64_encoded = base64.b64encode(
-                json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-            # Base64 encode combine_hash
-            combine_hash_base64_encoded = base64.b64encode(
-                combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-            # Construct JSONLD Processed Response Message
-            json_ld_processed_response_message = JSONLDProcessedResponseMessage(
-                from_did=from_did.did,
-                to_did=to_did.did,
-                created_time=round(time.time() * 1000),
-                body=JSONLDProcessedResponseBody(
-                    framed_base64=framed_base64_encoded,
-                    combined_hash_base64=combine_hash_base64_encoded
-                )
-            )
-
-            if responder:
-                await responder.send_reply(
-                    json_ld_processed_response_message,
-                    connection_id=self.context.connection_record.connection_id
-                )
-
-        except Exception as err:
-            # Send problem report
-            json_ld_problem_report_message = JSONLDProblemReport(
-                problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
-                explain=str(err),
-                from_did=from_did.did,
-                to_did=to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            if responder:
-                await responder.send_reply(
-                    json_ld_problem_report_message,
-                    connection_id=self.context.connection_record.connection_id
-                )
-
-    async def send_json_ld_processed_message(
-        self,
-        *,
-        connection_id: str,
-        data: dict,
-        signature_options: dict,
-        proof_chain: bool
-    ) -&gt; None:
-        &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        try:
-
-            # Retrieve connection record by id
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                connection_id
-            )
-
-        except StorageError as err:
-
-            raise ADAManagerError(
-                f&#34;Failed to retrieve connection record: {err}&#34;
-            )
-
-        # From and to mydata dids
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.my_did, key_type=KeyType.ED25519
-        )
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519
-        )
-
-        # Base64 encode data
-        data_base64 = base64.b64encode(json.dumps(
-            data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Base64 encode signature_options
-        signature_options_base64 = base64.b64encode(json.dumps(
-            signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Construct JSONLD Processed Message
-        json_ld_processed_message = JSONLDProcessedMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=JSONLDProcessedBody(
-                data_base64=data_base64,
-                signature_options_base64=signature_options_base64,
-                proof_chain=proof_chain
-            )
-        )
-
-        # Send JSONLD Processed Message
-        if responder:
-            await responder.send_reply(
-                json_ld_processed_message,
-                connection_id=connection_record.connection_id
-            )</code></pre>
+                    return read_did_response_message.body</code></pre>
 </details>
 </section>
 <section>
@@ -523,7 +385,9 @@ class ADAManager:
     RECORD_TYPE_DATA_AGREEMENT_QR_CODE_METADATA = &#34;data_agreement_qr_code_metadata&#34;
 
     # Temporary record for keeping personal data of unpublished (or draft) data agreements
-    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = &#34;temporary_data_agreement_personal_data&#34;
+    RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA = (
+        &#34;temporary_data_agreement_personal_data&#34;
+    )
 
     # Record for data controller details
     RECORD_TYPE_DATA_CONTROLLER_DETAILS = &#34;data_controller_details&#34;
@@ -541,9 +405,9 @@ class ADAManager:
     def context(self) -&gt; InjectionContext:
         return self._context
 
-    async def process_read_did_message(self,
-                                       read_did_message: ReadDIDMessage,
-                                       receipt: MessageReceipt):
+    async def process_read_did_message(
+        self, read_did_message: ReadDIDMessage, receipt: MessageReceipt
+    ):
         &#34;&#34;&#34;
         Process read-did DIDComm message
         &#34;&#34;&#34;
@@ -552,13 +416,17 @@ class ADAManager:
         storage: IndyStorage = await self.context.inject(BaseStorage)
 
         # Responder instance from context
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+        responder: DispatcherResponder = await self.context.inject(
+            BaseResponder, required=False
+        )
 
         # From and To DIDs of the recieved message
         create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
+            receipt.sender_verkey, key_type=KeyType.ED25519
+        )
         create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
+            receipt.recipient_verkey, key_type=KeyType.ED25519
+        )
 
         # From and To DIDs for the response messages
         response_message_from_did = create_did_message_to_did
@@ -570,7 +438,7 @@ class ADAManager:
             # Fetch DID from wallet
             mydata_did_registry_did_info_record = await storage.search_records(
                 type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-                tag_query={&#34;did&#34;: read_did_message.body.did}
+                tag_query={&#34;did&#34;: read_did_message.body.did},
             ).fetch_single()
 
         except (StorageNotFoundError, StorageDuplicateError):
@@ -581,12 +449,11 @@ class ADAManager:
                 explain=&#34;DID not found.&#34;,
                 from_did=response_message_from_did.did,
                 to_did=response_message_to_did.did,
-                created_time=round(time.time() * 1000)
+                created_time=round(time.time() * 1000),
             )
 
             # Assign thread id
-            mydata_did_problem_report.assign_thread_id(
-                thid=read_did_message._id)
+            mydata_did_problem_report.assign_thread_id(thid=read_did_message._id)
 
             if responder:
                 await responder.send_reply(mydata_did_problem_report)
@@ -600,24 +467,21 @@ class ADAManager:
             created_time=round(time.time() * 1000),
             body=MyDataDIDResponseBody(
                 did_doc=MyDataDIDDoc.from_json(
-                    mydata_did_registry_did_info_record.value),
-                version=mydata_did_registry_did_info_record.tags.get(
-                    &#34;version&#34;),
-                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
-            )
+                    mydata_did_registry_did_info_record.value
+                ),
+                version=mydata_did_registry_did_info_record.tags.get(&#34;version&#34;),
+                status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;),
+            ),
         )
 
         # Assign thread id
-        read_did_response_message.assign_thread_id(
-            thid=read_did_message._id)
+        read_did_response_message.assign_thread_id(thid=read_did_message._id)
 
         if responder:
             await responder.send_reply(read_did_response_message)
 
     async def process_read_did_response_message(
-        self,
-        read_did_response_message: ReadDIDResponseMessage,
-        receipt: MessageReceipt
+        self, read_did_response_message: ReadDIDResponseMessage, receipt: MessageReceipt
     ):
         &#34;&#34;&#34;
         Process read-did-response DIDComm message
@@ -638,7 +502,7 @@ class ADAManager:
         data_agreement_id: str = None,
         data_agreement_template_id: str = None,
         method_of_use: str = None,
-        data_exchange_record_id: str = None
+        data_exchange_record_id: str = None,
     ) -&gt; None:
         &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
@@ -652,13 +516,15 @@ class ADAManager:
                 &#34;data_agreement_id&#34;: data_agreement_id,
                 &#34;data_agreement_template_id&#34;: data_agreement_template_id,
                 &#34;method_of_use&#34;: method_of_use,
-                &#34;data_exchange_record_id&#34;: data_exchange_record_id
-            }
+                &#34;data_exchange_record_id&#34;: data_exchange_record_id,
+            },
         )
 
         await storage.add_record(data_instance_metadata_record)
 
-    async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+    async def delete_data_agreement_instance_metadata(
+        self, *, tag_query: dict = None
+    ) -&gt; None:
         &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -666,13 +532,15 @@ class ADAManager:
 
         storage_records = await storage.search_records(
             type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-            tag_query=tag_query
+            tag_query=tag_query,
         ).fetch_all()
 
         for storage_record in storage_records:
             await storage.delete_record(storage_record)
 
-    async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+    async def query_data_agreement_instance_metadata(
+        self, *, tag_query: dict = None
+    ) -&gt; typing.List[StorageRecord]:
         &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
 
         # Fetch storage from context
@@ -680,12 +548,14 @@ class ADAManager:
 
         storage_records = await storage.search_records(
             type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-            tag_query=tag_query
+            tag_query=tag_query,
         ).fetch_all()
 
         return storage_records
 
-    async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+    async def resolve_remote_mydata_did(
+        self, *, mydata_did: str
+    ) -&gt; MyDataDIDResponseBody:
         &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
 
         # Initialize DID MyData
@@ -698,29 +568,33 @@ class ADAManager:
         pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
 
         # Fetch connection record marked as MyData DID registry
-        connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+        (
+            connection_record,
+            err,
+        ) = await self.fetch_mydata_did_registry_connection_record()
         if err:
             raise ADAManagerError(
-                &#34;Failed to fetch MyData DID registry connection record&#34;)
+                &#34;Failed to fetch MyData DID registry connection record&#34;
+            )
 
         # Construct read-did message
         # from_did
         pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
         from_did = DIDMyData.from_public_key_b58(
-            pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+            pairwise_local_did_record.verkey, key_type=KeyType.ED25519
+        )
 
         # to_did
         to_did = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519)
+            connection_record.their_did, key_type=KeyType.ED25519
+        )
 
         # Create read-did message
         read_did_message = ReadDIDMessage(
             from_did=from_did.did,
             to_did=to_did.did,
             created_time=round(time.time() * 1000),
-            body=ReadDIDMessageBody(
-                did=mydata_did.did
-            )
+            body=ReadDIDMessageBody(did=mydata_did.did),
         )
 
         # Add transport decorator
@@ -732,7 +606,9 @@ class ADAManager:
         connection_manager = ConnectionManager(self.context)
 
         # Fetch connection targets
-        connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+        connection_targets = await connection_manager.fetch_connection_targets(
+            connection_record
+        )
 
         if len(connection_targets) == 0:
             raise ADAManagerError(&#34;No connection targets found&#34;)
@@ -748,14 +624,15 @@ class ADAManager:
             sender_key=connection_target.sender_key,
         )
 
-        headers = {
-            &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
-        }
+        headers = {&#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;}
         async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.post(connection_target.endpoint, data=packed_message) as response:
+            async with session.post(
+                connection_target.endpoint, data=packed_message
+            ) as response:
                 if response.status != 200:
                     raise ADAManagerError(
-                        f&#34;HTTP request failed with status code {response.status}&#34;)
+                        f&#34;HTTP request failed with status code {response.status}&#34;
+                    )
 
                 message_body = await response.read()
 
@@ -771,156 +648,18 @@ class ADAManager:
 
                 if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
                     raise ADAManagerError(
-                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+                        f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;
+                    )
 
                 if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                    read_did_response_message: ReadDIDResponseMessage = \
+                    read_did_response_message: ReadDIDResponseMessage = (
                         ReadDIDResponseMessageSchema().load(message_json)
+                    )
 
                     if read_did_response_message.body.status == &#34;revoked&#34;:
-                        raise ADAManagerError(
-                            f&#34;MyData DID {mydata_did.did} is revoked&#34;
-                        )
+                        raise ADAManagerError(f&#34;MyData DID {mydata_did.did} is revoked&#34;)
 
-                    return read_did_response_message.body
-
-    async def process_json_ld_processed_message(
-        self,
-        json_ld_processed_message: JSONLDProcessedMessage,
-        receipt: MessageReceipt
-    ) -&gt; None:
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        # From and To MyData DIDs
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.sender_verkey, key_type=KeyType.ED25519)
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-        try:
-            # Base64 decode data_base64
-            data_base64_decoded = base64.b64decode(
-                json_ld_processed_message.body.data_base64)
-
-            # JSON load data_base64
-            data_json = json.loads(data_base64_decoded)
-
-            # Base64 decode signature_options_base64
-            signature_options_base64_decoded = base64.b64decode(
-                json_ld_processed_message.body.signature_options_base64)
-
-            # JSON load signature_options_base64
-            signature_options_json = json.loads(
-                signature_options_base64_decoded)
-
-            # verify_data function
-            framed, combine_hash = create_verify_data(
-                data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
-
-            # Base64 encode framed
-            framed_base64_encoded = base64.b64encode(
-                json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-            # Base64 encode combine_hash
-            combine_hash_base64_encoded = base64.b64encode(
-                combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-            # Construct JSONLD Processed Response Message
-            json_ld_processed_response_message = JSONLDProcessedResponseMessage(
-                from_did=from_did.did,
-                to_did=to_did.did,
-                created_time=round(time.time() * 1000),
-                body=JSONLDProcessedResponseBody(
-                    framed_base64=framed_base64_encoded,
-                    combined_hash_base64=combine_hash_base64_encoded
-                )
-            )
-
-            if responder:
-                await responder.send_reply(
-                    json_ld_processed_response_message,
-                    connection_id=self.context.connection_record.connection_id
-                )
-
-        except Exception as err:
-            # Send problem report
-            json_ld_problem_report_message = JSONLDProblemReport(
-                problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
-                explain=str(err),
-                from_did=from_did.did,
-                to_did=to_did.did,
-                created_time=round(time.time() * 1000)
-            )
-
-            if responder:
-                await responder.send_reply(
-                    json_ld_problem_report_message,
-                    connection_id=self.context.connection_record.connection_id
-                )
-
-    async def send_json_ld_processed_message(
-        self,
-        *,
-        connection_id: str,
-        data: dict,
-        signature_options: dict,
-        proof_chain: bool
-    ) -&gt; None:
-        &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
-
-        # Responder instance
-        responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-        try:
-
-            # Retrieve connection record by id
-            connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-                self.context,
-                connection_id
-            )
-
-        except StorageError as err:
-
-            raise ADAManagerError(
-                f&#34;Failed to retrieve connection record: {err}&#34;
-            )
-
-        # From and to mydata dids
-        from_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.my_did, key_type=KeyType.ED25519
-        )
-        to_did: DIDMyData = DIDMyData.from_public_key_b58(
-            connection_record.their_did, key_type=KeyType.ED25519
-        )
-
-        # Base64 encode data
-        data_base64 = base64.b64encode(json.dumps(
-            data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Base64 encode signature_options
-        signature_options_base64 = base64.b64encode(json.dumps(
-            signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Construct JSONLD Processed Message
-        json_ld_processed_message = JSONLDProcessedMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=JSONLDProcessedBody(
-                data_base64=data_base64,
-                signature_options_base64=signature_options_base64,
-                proof_chain=proof_chain
-            )
-        )
-
-        # Send JSONLD Processed Message
-        if responder:
-            await responder.send_reply(
-                json_ld_processed_message,
-                connection_id=connection_record.connection_id
-            )</code></pre>
+                    return read_did_response_message.body</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -979,7 +718,9 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def delete_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; None:
+<pre><code class="python">async def delete_data_agreement_instance_metadata(
+    self, *, tag_query: dict = None
+) -&gt; None:
     &#34;&#34;&#34;Delete data agreement instance metadata&#34;&#34;&#34;
 
     # Fetch storage from context
@@ -987,97 +728,11 @@ def context(self) -&gt; InjectionContext:
 
     storage_records = await storage.search_records(
         type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-        tag_query=tag_query
+        tag_query=tag_query,
     ).fetch_all()
 
     for storage_record in storage_records:
         await storage.delete_record(storage_record)</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message"><code class="name flex">
-<span>async def <span class="ident">process_json_ld_processed_message</span></span>(<span>self, json_ld_processed_message: <a title="mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage" href="messages/json_ld_processed.html#mydata_did.v1_0.messages.json_ld_processed.JSONLDProcessedMessage">JSONLDProcessedMessage</a>, receipt: aries_cloudagent.transport.inbound.receipt.MessageReceipt) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def process_json_ld_processed_message(
-    self,
-    json_ld_processed_message: JSONLDProcessedMessage,
-    receipt: MessageReceipt
-) -&gt; None:
-
-    # Responder instance
-    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-    # From and To MyData DIDs
-    to_did: DIDMyData = DIDMyData.from_public_key_b58(
-        receipt.sender_verkey, key_type=KeyType.ED25519)
-    from_did: DIDMyData = DIDMyData.from_public_key_b58(
-        receipt.recipient_verkey, key_type=KeyType.ED25519)
-
-    try:
-        # Base64 decode data_base64
-        data_base64_decoded = base64.b64decode(
-            json_ld_processed_message.body.data_base64)
-
-        # JSON load data_base64
-        data_json = json.loads(data_base64_decoded)
-
-        # Base64 decode signature_options_base64
-        signature_options_base64_decoded = base64.b64decode(
-            json_ld_processed_message.body.signature_options_base64)
-
-        # JSON load signature_options_base64
-        signature_options_json = json.loads(
-            signature_options_base64_decoded)
-
-        # verify_data function
-        framed, combine_hash = create_verify_data(
-            data_json, signature_options_json, json_ld_processed_message.body.proof_chain)
-
-        # Base64 encode framed
-        framed_base64_encoded = base64.b64encode(
-            json.dumps(framed).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Base64 encode combine_hash
-        combine_hash_base64_encoded = base64.b64encode(
-            combine_hash.encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-        # Construct JSONLD Processed Response Message
-        json_ld_processed_response_message = JSONLDProcessedResponseMessage(
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000),
-            body=JSONLDProcessedResponseBody(
-                framed_base64=framed_base64_encoded,
-                combined_hash_base64=combine_hash_base64_encoded
-            )
-        )
-
-        if responder:
-            await responder.send_reply(
-                json_ld_processed_response_message,
-                connection_id=self.context.connection_record.connection_id
-            )
-
-    except Exception as err:
-        # Send problem report
-        json_ld_problem_report_message = JSONLDProblemReport(
-            problem_code=JSONLDProblemReportReason.INVALID_INPUT.value,
-            explain=str(err),
-            from_did=from_did.did,
-            to_did=to_did.did,
-            created_time=round(time.time() * 1000)
-        )
-
-        if responder:
-            await responder.send_reply(
-                json_ld_problem_report_message,
-                connection_id=self.context.connection_record.connection_id
-            )</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.process_read_did_message"><code class="name flex">
@@ -1089,9 +744,9 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def process_read_did_message(self,
-                                   read_did_message: ReadDIDMessage,
-                                   receipt: MessageReceipt):
+<pre><code class="python">async def process_read_did_message(
+    self, read_did_message: ReadDIDMessage, receipt: MessageReceipt
+):
     &#34;&#34;&#34;
     Process read-did DIDComm message
     &#34;&#34;&#34;
@@ -1100,13 +755,17 @@ def context(self) -&gt; InjectionContext:
     storage: IndyStorage = await self.context.inject(BaseStorage)
 
     # Responder instance from context
-    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
+    responder: DispatcherResponder = await self.context.inject(
+        BaseResponder, required=False
+    )
 
     # From and To DIDs of the recieved message
     create_did_message_from_did: DIDMyData = DIDMyData.from_public_key_b58(
-        receipt.sender_verkey, key_type=KeyType.ED25519)
+        receipt.sender_verkey, key_type=KeyType.ED25519
+    )
     create_did_message_to_did: DIDMyData = DIDMyData.from_public_key_b58(
-        receipt.recipient_verkey, key_type=KeyType.ED25519)
+        receipt.recipient_verkey, key_type=KeyType.ED25519
+    )
 
     # From and To DIDs for the response messages
     response_message_from_did = create_did_message_to_did
@@ -1118,7 +777,7 @@ def context(self) -&gt; InjectionContext:
         # Fetch DID from wallet
         mydata_did_registry_did_info_record = await storage.search_records(
             type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
-            tag_query={&#34;did&#34;: read_did_message.body.did}
+            tag_query={&#34;did&#34;: read_did_message.body.did},
         ).fetch_single()
 
     except (StorageNotFoundError, StorageDuplicateError):
@@ -1129,12 +788,11 @@ def context(self) -&gt; InjectionContext:
             explain=&#34;DID not found.&#34;,
             from_did=response_message_from_did.did,
             to_did=response_message_to_did.did,
-            created_time=round(time.time() * 1000)
+            created_time=round(time.time() * 1000),
         )
 
         # Assign thread id
-        mydata_did_problem_report.assign_thread_id(
-            thid=read_did_message._id)
+        mydata_did_problem_report.assign_thread_id(thid=read_did_message._id)
 
         if responder:
             await responder.send_reply(mydata_did_problem_report)
@@ -1148,16 +806,15 @@ def context(self) -&gt; InjectionContext:
         created_time=round(time.time() * 1000),
         body=MyDataDIDResponseBody(
             did_doc=MyDataDIDDoc.from_json(
-                mydata_did_registry_did_info_record.value),
-            version=mydata_did_registry_did_info_record.tags.get(
-                &#34;version&#34;),
-            status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;)
-        )
+                mydata_did_registry_did_info_record.value
+            ),
+            version=mydata_did_registry_did_info_record.tags.get(&#34;version&#34;),
+            status=mydata_did_registry_did_info_record.tags.get(&#34;status&#34;),
+        ),
     )
 
     # Assign thread id
-    read_did_response_message.assign_thread_id(
-        thid=read_did_message._id)
+    read_did_response_message.assign_thread_id(thid=read_did_message._id)
 
     if responder:
         await responder.send_reply(read_did_response_message)</code></pre>
@@ -1173,9 +830,7 @@ def context(self) -&gt; InjectionContext:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def process_read_did_response_message(
-    self,
-    read_did_response_message: ReadDIDResponseMessage,
-    receipt: MessageReceipt
+    self, read_did_response_message: ReadDIDResponseMessage, receipt: MessageReceipt
 ):
     &#34;&#34;&#34;
     Process read-did-response DIDComm message
@@ -1193,7 +848,9 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def query_data_agreement_instance_metadata(self, *, tag_query: dict = None) -&gt; typing.List[StorageRecord]:
+<pre><code class="python">async def query_data_agreement_instance_metadata(
+    self, *, tag_query: dict = None
+) -&gt; typing.List[StorageRecord]:
     &#34;&#34;&#34;Query data agreement instance metadata&#34;&#34;&#34;
 
     # Fetch storage from context
@@ -1201,7 +858,7 @@ def context(self) -&gt; InjectionContext:
 
     storage_records = await storage.search_records(
         type_filter=self.RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA,
-        tag_query=tag_query
+        tag_query=tag_query,
     ).fetch_all()
 
     return storage_records</code></pre>
@@ -1216,7 +873,9 @@ def context(self) -&gt; InjectionContext:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def resolve_remote_mydata_did(self, *, mydata_did: str) -&gt; MyDataDIDResponseBody:
+<pre><code class="python">async def resolve_remote_mydata_did(
+    self, *, mydata_did: str
+) -&gt; MyDataDIDResponseBody:
     &#34;&#34;&#34;Resolve remote MyData DID&#34;&#34;&#34;
 
     # Initialize DID MyData
@@ -1229,29 +888,33 @@ def context(self) -&gt; InjectionContext:
     pack_format: PackWireFormat = await self.context.inject(BaseWireFormat)
 
     # Fetch connection record marked as MyData DID registry
-    connection_record, err = await self.fetch_mydata_did_registry_connection_record()
+    (
+        connection_record,
+        err,
+    ) = await self.fetch_mydata_did_registry_connection_record()
     if err:
         raise ADAManagerError(
-            &#34;Failed to fetch MyData DID registry connection record&#34;)
+            &#34;Failed to fetch MyData DID registry connection record&#34;
+        )
 
     # Construct read-did message
     # from_did
     pairwise_local_did_record = await wallet.get_local_did(connection_record.my_did)
     from_did = DIDMyData.from_public_key_b58(
-        pairwise_local_did_record.verkey, key_type=KeyType.ED25519)
+        pairwise_local_did_record.verkey, key_type=KeyType.ED25519
+    )
 
     # to_did
     to_did = DIDMyData.from_public_key_b58(
-        connection_record.their_did, key_type=KeyType.ED25519)
+        connection_record.their_did, key_type=KeyType.ED25519
+    )
 
     # Create read-did message
     read_did_message = ReadDIDMessage(
         from_did=from_did.did,
         to_did=to_did.did,
         created_time=round(time.time() * 1000),
-        body=ReadDIDMessageBody(
-            did=mydata_did.did
-        )
+        body=ReadDIDMessageBody(did=mydata_did.did),
     )
 
     # Add transport decorator
@@ -1263,7 +926,9 @@ def context(self) -&gt; InjectionContext:
     connection_manager = ConnectionManager(self.context)
 
     # Fetch connection targets
-    connection_targets = await connection_manager.fetch_connection_targets(connection_record)
+    connection_targets = await connection_manager.fetch_connection_targets(
+        connection_record
+    )
 
     if len(connection_targets) == 0:
         raise ADAManagerError(&#34;No connection targets found&#34;)
@@ -1279,14 +944,15 @@ def context(self) -&gt; InjectionContext:
         sender_key=connection_target.sender_key,
     )
 
-    headers = {
-        &#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;
-    }
+    headers = {&#34;Content-Type&#34;: &#34;application/ssi-agent-wire&#34;}
     async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.post(connection_target.endpoint, data=packed_message) as response:
+        async with session.post(
+            connection_target.endpoint, data=packed_message
+        ) as response:
             if response.status != 200:
                 raise ADAManagerError(
-                    f&#34;HTTP request failed with status code {response.status}&#34;)
+                    f&#34;HTTP request failed with status code {response.status}&#34;
+                )
 
             message_body = await response.read()
 
@@ -1302,90 +968,18 @@ def context(self) -&gt; InjectionContext:
 
             if &#34;problem-report&#34; in message_json[&#34;@type&#34;]:
                 raise ADAManagerError(
-                    f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;)
+                    f&#34;Problem report received with problem-code:{message_json[&#39;problem-code&#39;]} and reason: {message_json[&#39;explain&#39;]}&#34;
+                )
 
             if &#34;read-did-response&#34; in message_json[&#34;@type&#34;]:
-                read_did_response_message: ReadDIDResponseMessage = \
+                read_did_response_message: ReadDIDResponseMessage = (
                     ReadDIDResponseMessageSchema().load(message_json)
+                )
 
                 if read_did_response_message.body.status == &#34;revoked&#34;:
-                    raise ADAManagerError(
-                        f&#34;MyData DID {mydata_did.did} is revoked&#34;
-                    )
+                    raise ADAManagerError(f&#34;MyData DID {mydata_did.did} is revoked&#34;)
 
                 return read_did_response_message.body</code></pre>
-</details>
-</dd>
-<dt id="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message"><code class="name flex">
-<span>async def <span class="ident">send_json_ld_processed_message</span></span>(<span>self, *, connection_id: str, data: dict, signature_options: dict, proof_chain: bool) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Send JSON-LD Processed Message to remote agent.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def send_json_ld_processed_message(
-    self,
-    *,
-    connection_id: str,
-    data: dict,
-    signature_options: dict,
-    proof_chain: bool
-) -&gt; None:
-    &#34;&#34;&#34;Send JSON-LD Processed Message to remote agent.&#34;&#34;&#34;
-
-    # Responder instance
-    responder: DispatcherResponder = await self.context.inject(BaseResponder, required=False)
-
-    try:
-
-        # Retrieve connection record by id
-        connection_record: ConnectionRecord = await ConnectionRecord.retrieve_by_id(
-            self.context,
-            connection_id
-        )
-
-    except StorageError as err:
-
-        raise ADAManagerError(
-            f&#34;Failed to retrieve connection record: {err}&#34;
-        )
-
-    # From and to mydata dids
-    from_did: DIDMyData = DIDMyData.from_public_key_b58(
-        connection_record.my_did, key_type=KeyType.ED25519
-    )
-    to_did: DIDMyData = DIDMyData.from_public_key_b58(
-        connection_record.their_did, key_type=KeyType.ED25519
-    )
-
-    # Base64 encode data
-    data_base64 = base64.b64encode(json.dumps(
-        data).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-    # Base64 encode signature_options
-    signature_options_base64 = base64.b64encode(json.dumps(
-        signature_options).encode(&#34;utf-8&#34;)).decode(&#34;utf-8&#34;)
-
-    # Construct JSONLD Processed Message
-    json_ld_processed_message = JSONLDProcessedMessage(
-        from_did=from_did.did,
-        to_did=to_did.did,
-        created_time=round(time.time() * 1000),
-        body=JSONLDProcessedBody(
-            data_base64=data_base64,
-            signature_options_base64=signature_options_base64,
-            proof_chain=proof_chain
-        )
-    )
-
-    # Send JSONLD Processed Message
-    if responder:
-        await responder.send_reply(
-            json_ld_processed_message,
-            connection_id=connection_record.connection_id
-        )</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.manager.ADAManager.send_read_did_message"><code class="name flex">
@@ -1420,7 +1014,7 @@ def context(self) -&gt; InjectionContext:
     data_agreement_id: str = None,
     data_agreement_template_id: str = None,
     method_of_use: str = None,
-    data_exchange_record_id: str = None
+    data_exchange_record_id: str = None,
 ) -&gt; None:
     &#34;&#34;&#34;Store data agreement instance metadata&#34;&#34;&#34;
 
@@ -1434,8 +1028,8 @@ def context(self) -&gt; InjectionContext:
             &#34;data_agreement_id&#34;: data_agreement_id,
             &#34;data_agreement_template_id&#34;: data_agreement_template_id,
             &#34;method_of_use&#34;: method_of_use,
-            &#34;data_exchange_record_id&#34;: data_exchange_record_id
-        }
+            &#34;data_exchange_record_id&#34;: data_exchange_record_id,
+        },
     )
 
     await storage.add_record(data_instance_metadata_record)</code></pre>
@@ -1492,12 +1086,10 @@ def context(self) -&gt; InjectionContext:
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA" href="#mydata_did.v1_0.manager.ADAManager.RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA">RECORD_TYPE_TEMPORARY_DATA_AGREEMENT_PERSONAL_DATA</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.context" href="#mydata_did.v1_0.manager.ADAManager.context">context</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.delete_data_agreement_instance_metadata">delete_data_agreement_instance_metadata</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.process_json_ld_processed_message">process_json_ld_processed_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_message">process_read_did_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.process_read_did_response_message" href="#mydata_did.v1_0.manager.ADAManager.process_read_did_response_message">process_read_did_response_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.query_data_agreement_instance_metadata">query_data_agreement_instance_metadata</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did" href="#mydata_did.v1_0.manager.ADAManager.resolve_remote_mydata_did">resolve_remote_mydata_did</a></code></li>
-<li><code><a title="mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message" href="#mydata_did.v1_0.manager.ADAManager.send_json_ld_processed_message">send_json_ld_processed_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.send_read_did_message" href="#mydata_did.v1_0.manager.ADAManager.send_read_did_message">send_read_did_message</a></code></li>
 <li><code><a title="mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata" href="#mydata_did.v1_0.manager.ADAManager.store_data_agreement_instance_metadata">store_data_agreement_instance_metadata</a></code></li>
 </ul>

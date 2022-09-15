@@ -26,21 +26,26 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from os import environ
-import typing
+<pre><code class="python">import typing
 from typing import Any
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
+from mydata_did.v1_0.models.data_agreement_model import (
+    DataAgreementPersonalDataRestrictionSchema,
+)
 
-from ..data_agreement_model import DataAgreementPersonalDataRestriction, DataAgreementPersonalDataRestrictionSchema
 
 class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     &#34;&#34;&#34;
-    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of data agreement personal data records to/from wallet.
+    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of
+    data agreement personal data records to/from wallet.
     &#34;&#34;&#34;
+
     class Meta:
         # Data Agreement Personal Data Record schema class
         schema_class = &#34;DataAgreementPersonalDataRecordSchema&#34;
@@ -115,7 +120,7 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
                 &#34;attribute_description&#34;,
                 &#34;restrictions&#34;,
                 &#34;da_template_id&#34;,
-                &#34;da_template_version&#34;
+                &#34;da_template_version&#34;,
             )
         }
 
@@ -125,55 +130,46 @@ class DataAgreementPersonalDataRecord(BaseExchangeRecord):
 
 
 class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
-
     class Meta:
         &#34;&#34;&#34;DataAgreementPersonalDataRecordSchema metadata.&#34;&#34;&#34;
 
         # Model class
         model_class = DataAgreementPersonalDataRecord
-    
 
-    personal_data_id = fields.Str(
-        required=True,
-        example=UUIDFour.EXAMPLE
-    )
+    personal_data_id = fields.Str(required=True, example=UUIDFour.EXAMPLE)
 
     attribute_name = fields.Str(
-        required=True,
-        description=&#34;The name of the attribute.&#34;,
-        example=&#34;name&#34;
+        required=True, description=&#34;The name of the attribute.&#34;, example=&#34;name&#34;
     )
 
     attribute_description = fields.Str(
         required=True,
         description=&#34;The description of the attribute.&#34;,
-        example=&#34;Name of the customer&#34;
+        example=&#34;Name of the customer&#34;,
     )
 
     attribute_category = fields.Str(
-        required=True,
-        description=&#34;The category of the attribute.&#34;,
-        example=&#34;personal&#34;
+        required=True, description=&#34;The category of the attribute.&#34;, example=&#34;personal&#34;
     )
-
 
     attribute_sensitive = fields.Str(
         required=True,
         description=&#34;The sensitive flag of the attribute.&#34;,
-        example=&#34;true&#34;
+        example=&#34;true&#34;,
     )
 
-    restrictions = fields.List(fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False)
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False
+    )
 
     da_template_id = fields.Str(
         required=True,
         description=&#34;The data agreement template identifier.&#34;,
-        example=UUIDFour.EXAMPLE
+        example=UUIDFour.EXAMPLE,
     )
 
     da_template_version = fields.Int(
-        example=1,
-        description=&#34;Data agreement template version&#34;
+        example=1, description=&#34;Data agreement template version&#34;
     )</code></pre>
 </details>
 </section>
@@ -191,7 +187,8 @@ class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
 <span>(</span><span>*, personal_data_id: str = None, attribute_name: str = None, attribute_category: str = 'Other', attribute_sensitive: str = 'true', attribute_description: str = 'Nil', state: str = None, restrictions: List[dict] = None, da_template_id: str = None, da_template_version: int = None, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>DataAgreementPersonalDataRecord model class for serialisation/deserialisation of data agreement personal data records to/from wallet.</p>
+<div class="desc"><p>DataAgreementPersonalDataRecord model class for serialisation/deserialisation of
+data agreement personal data records to/from wallet.</p>
 <p>Initialise a new DataAgreementPersonalDataRecord instance.</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -212,8 +209,10 @@ class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
 </summary>
 <pre><code class="python">class DataAgreementPersonalDataRecord(BaseExchangeRecord):
     &#34;&#34;&#34;
-    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of data agreement personal data records to/from wallet.
+    DataAgreementPersonalDataRecord model class for serialisation/deserialisation of
+    data agreement personal data records to/from wallet.
     &#34;&#34;&#34;
+
     class Meta:
         # Data Agreement Personal Data Record schema class
         schema_class = &#34;DataAgreementPersonalDataRecordSchema&#34;
@@ -288,7 +287,7 @@ class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
                 &#34;attribute_description&#34;,
                 &#34;restrictions&#34;,
                 &#34;da_template_id&#34;,
-                &#34;da_template_version&#34;
+                &#34;da_template_version&#34;,
             )
         }
 
@@ -367,7 +366,7 @@ def record_value(self) -&gt; dict:
             &#34;attribute_description&#34;,
             &#34;restrictions&#34;,
             &#34;da_template_id&#34;,
-            &#34;da_template_version&#34;
+            &#34;da_template_version&#34;,
         )
     }</code></pre>
 </details>
@@ -391,55 +390,46 @@ def record_value(self) -&gt; dict:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataAgreementPersonalDataRecordSchema(BaseExchangeSchema):
-
     class Meta:
         &#34;&#34;&#34;DataAgreementPersonalDataRecordSchema metadata.&#34;&#34;&#34;
 
         # Model class
         model_class = DataAgreementPersonalDataRecord
-    
 
-    personal_data_id = fields.Str(
-        required=True,
-        example=UUIDFour.EXAMPLE
-    )
+    personal_data_id = fields.Str(required=True, example=UUIDFour.EXAMPLE)
 
     attribute_name = fields.Str(
-        required=True,
-        description=&#34;The name of the attribute.&#34;,
-        example=&#34;name&#34;
+        required=True, description=&#34;The name of the attribute.&#34;, example=&#34;name&#34;
     )
 
     attribute_description = fields.Str(
         required=True,
         description=&#34;The description of the attribute.&#34;,
-        example=&#34;Name of the customer&#34;
+        example=&#34;Name of the customer&#34;,
     )
 
     attribute_category = fields.Str(
-        required=True,
-        description=&#34;The category of the attribute.&#34;,
-        example=&#34;personal&#34;
+        required=True, description=&#34;The category of the attribute.&#34;, example=&#34;personal&#34;
     )
-
 
     attribute_sensitive = fields.Str(
         required=True,
         description=&#34;The sensitive flag of the attribute.&#34;,
-        example=&#34;true&#34;
+        example=&#34;true&#34;,
     )
 
-    restrictions = fields.List(fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False)
+    restrictions = fields.List(
+        fields.Nested(DataAgreementPersonalDataRestrictionSchema), required=False
+    )
 
     da_template_id = fields.Str(
         required=True,
         description=&#34;The data agreement template identifier.&#34;,
-        example=UUIDFour.EXAMPLE
+        example=UUIDFour.EXAMPLE,
     )
 
     da_template_version = fields.Int(
-        example=1,
-        description=&#34;Data agreement template version&#34;
+        example=1, description=&#34;Data agreement template version&#34;
     )</code></pre>
 </details>
 <h3>Ancestors</h3>

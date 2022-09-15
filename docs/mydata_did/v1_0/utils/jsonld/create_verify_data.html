@@ -42,6 +42,8 @@ import hashlib
 from pyld import jsonld
 
 cache = {}
+
+
 def caching_document_loader(url, options):
     loader = jsonld.requests_document_loader()
     if url in cache:
@@ -49,6 +51,7 @@ def caching_document_loader(url, options):
     resp = loader(url)
     cache[url] = resp
     return resp
+
 
 jsonld.set_document_loader(caching_document_loader)
 
@@ -64,8 +67,7 @@ def _sha256(data):
 
 
 def _cannonize_signature_options(signatureOptions):
-    _signatureOptions = {**signatureOptions,
-                        &#34;@context&#34;: &#34;https://w3id.org/security/v2&#34;}
+    _signatureOptions = {**signatureOptions, &#34;@context&#34;: &#34;https://w3id.org/security/v2&#34;}
     _signatureOptions.pop(&#34;jws&#34;, None)
     _signatureOptions.pop(&#34;signatureValue&#34;, None)
     _signatureOptions.pop(&#34;proofValue&#34;, None)
@@ -121,11 +123,9 @@ def create_verify_data(data, signature_options, proof_chain: bool = False):
     ):
         raise DroppedAttributeException(&#34;Extra Attribute Detected&#34;)
 
-    cannonized_signature_options = _cannonize_signature_options(
-        signature_options)
+    cannonized_signature_options = _cannonize_signature_options(signature_options)
 
-    hash_of_cannonized_signature_options = _sha256(
-        cannonized_signature_options)
+    hash_of_cannonized_signature_options = _sha256(cannonized_signature_options)
 
     cannonized_document = _cannonize_document(framed, proof_chain)
 
@@ -204,11 +204,9 @@ def create_verify_data(data, signature_options, proof_chain: bool = False):
     ):
         raise DroppedAttributeException(&#34;Extra Attribute Detected&#34;)
 
-    cannonized_signature_options = _cannonize_signature_options(
-        signature_options)
+    cannonized_signature_options = _cannonize_signature_options(signature_options)
 
-    hash_of_cannonized_signature_options = _sha256(
-        cannonized_signature_options)
+    hash_of_cannonized_signature_options = _sha256(cannonized_signature_options)
 
     cannonized_document = _cannonize_document(framed, proof_chain)
 

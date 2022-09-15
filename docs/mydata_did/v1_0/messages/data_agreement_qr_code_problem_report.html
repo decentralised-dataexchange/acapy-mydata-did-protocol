@@ -27,14 +27,13 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from enum import Enum
-from marshmallow import EXCLUDE, fields, validate
 
 from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from aries_cloudagent.messaging.valid import UUIDFour
-
-from ..message_types import (
+from marshmallow import EXCLUDE, fields, validate
+from mydata_did.v1_0.message_types import (
+    DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT,
     PROTOCOL_PACKAGE,
-    DATA_AGREEMENT_QR_CODE_WORKFLOW_PROBLEM_REPORT
 )
 
 # Handler class path for Data Agreement Qr code workflow
@@ -55,7 +54,9 @@ class DataAgreementQrCodeProblemReportReason(str, Enum):
     QR_CODE_SCANNED_ONCE = &#34;qr_code_scanned_once&#34;
 
     # Failed to process qr code workflow initiate message due to an internal error.
-    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = &#34;failed_to_process_qr_code_initiate_message&#34;
+    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = (
+        &#34;failed_to_process_qr_code_initiate_message&#34;
+    )
 
 
 class DataAgreementQrCodeProblemReport(AgentMessage):
@@ -74,7 +75,7 @@ class DataAgreementQrCodeProblemReport(AgentMessage):
         problem_code: str = None,
         explain: str = None,
         qr_id: str = None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;
         Initialize a DataAgreementQrCodeProblemReport message instance.
@@ -97,6 +98,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
     &#34;&#34;&#34;
     Data agreement qr code problem report schema.
     &#34;&#34;&#34;
+
     class Meta:
         &#34;&#34;&#34;Metadata for data agreement qr code problem report schema.&#34;&#34;&#34;
 
@@ -113,8 +115,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
         required=False,
         description=&#34;Standard error identifier&#34;,
         validate=validate.OneOf(
-            choices=[
-                dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
+            choices=[dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
             error=&#34;Value {input} must be one of {choices}.&#34;,
         ),
         example=DataAgreementQrCodeProblemReportReason.QR_CODE_SCANNED_ONCE.value,
@@ -178,7 +179,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
         problem_code: str = None,
         explain: str = None,
         qr_id: str = None,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;
         Initialize a DataAgreementQrCodeProblemReport message instance.
@@ -230,7 +231,9 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
     QR_CODE_SCANNED_ONCE = &#34;qr_code_scanned_once&#34;
 
     # Failed to process qr code workflow initiate message due to an internal error.
-    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = &#34;failed_to_process_qr_code_initiate_message&#34;</code></pre>
+    FAILED_TO_PROCESS_QR_CODE_INITIATE_MESSAGE = (
+        &#34;failed_to_process_qr_code_initiate_message&#34;
+    )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -273,6 +276,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
     &#34;&#34;&#34;
     Data agreement qr code problem report schema.
     &#34;&#34;&#34;
+
     class Meta:
         &#34;&#34;&#34;Metadata for data agreement qr code problem report schema.&#34;&#34;&#34;
 
@@ -289,8 +293,7 @@ class DataAgreementQrCodeProblemReportSchema(AgentMessageSchema):
         required=False,
         description=&#34;Standard error identifier&#34;,
         validate=validate.OneOf(
-            choices=[
-                dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
+            choices=[dapr.value for dapr in DataAgreementQrCodeProblemReportReason],
             error=&#34;Value {input} must be one of {choices}.&#34;,
         ),
         example=DataAgreementQrCodeProblemReportReason.QR_CODE_SCANNED_ONCE.value,

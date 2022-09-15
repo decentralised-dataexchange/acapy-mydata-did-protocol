@@ -26,9 +26,9 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from marshmallow import fields
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class DataAgreementQrCodeInitiateBody(BaseModel):
@@ -39,12 +39,7 @@ class DataAgreementQrCodeInitiateBody(BaseModel):
 
         schema_class = &#34;DataAgreementQrCodeInitiateBodySchema&#34;
 
-    def __init__(
-        self,
-        *,
-        qr_id: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, qr_id: str = None, **kwargs):
         &#34;&#34;&#34;Data Agreement Qr Code Initiate Body init&#34;&#34;&#34;
 
         super().__init__(**kwargs)
@@ -62,10 +57,7 @@ class DataAgreementQrCodeInitiateBodySchema(BaseModelSchema):
         model_class = DataAgreementQrCodeInitiateBody
 
     # Data agreement id
-    qr_id = fields.Str(
-        example=UUIDFour.EXAMPLE,
-        description=&#34;Qr code identifier&#34;
-    )</code></pre>
+    qr_id = fields.Str(example=UUIDFour.EXAMPLE, description=&#34;Qr code identifier&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -96,12 +88,7 @@ class DataAgreementQrCodeInitiateBodySchema(BaseModelSchema):
 
         schema_class = &#34;DataAgreementQrCodeInitiateBodySchema&#34;
 
-    def __init__(
-        self,
-        *,
-        qr_id: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, qr_id: str = None, **kwargs):
         &#34;&#34;&#34;Data Agreement Qr Code Initiate Body init&#34;&#34;&#34;
 
         super().__init__(**kwargs)
@@ -147,10 +134,7 @@ class DataAgreementQrCodeInitiateBodySchema(BaseModelSchema):
         model_class = DataAgreementQrCodeInitiateBody
 
     # Data agreement id
-    qr_id = fields.Str(
-        example=UUIDFour.EXAMPLE,
-        description=&#34;Qr code identifier&#34;
-    )</code></pre>
+    qr_id = fields.Str(example=UUIDFour.EXAMPLE, description=&#34;Qr code identifier&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

@@ -30,18 +30,22 @@
 <pre><code class="python">&#34;&#34;&#34;Cryptography functions used by BasicWallet.&#34;&#34;&#34;
 
 from collections import OrderedDict
-from typing import Callable, Optional, Sequence, Tuple, Union, List
+from typing import Callable, List, Optional, Sequence, Tuple, Union
 
 import nacl.bindings
 import nacl.exceptions
 import nacl.utils
-
 from marshmallow import ValidationError
+from mydata_did.v1_0.utils.jwe import JweEnvelope, JweRecipient, b64url, from_b64url
+from mydata_did.v1_0.utils.wallet.error import WalletError
+from mydata_did.v1_0.utils.wallet.key_type import KeyType
+from mydata_did.v1_0.utils.wallet.util import (
+    b58_to_bytes,
+    b64_to_bytes,
+    bytes_to_b58,
+    random_seed,
+)
 
-from ..jwe import JweRecipient, b64url, JweEnvelope, from_b64url
-from .error import WalletError
-from .util import bytes_to_b58, b64_to_bytes, b58_to_bytes, random_seed
-from .key_type import KeyType
 
 def create_keypair(key_type: KeyType, seed: bytes = None) -&gt; Tuple[bytes, bytes]:
     &#34;&#34;&#34;

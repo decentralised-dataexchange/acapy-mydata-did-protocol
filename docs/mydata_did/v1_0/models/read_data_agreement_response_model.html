@@ -26,28 +26,26 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import datetime
+<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.models.data_agreement_instance_model import (
+    DataAgreementInstance,
+    DataAgreementInstanceSchema,
+)
 
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
-from marshmallow import fields, EXCLUDE
-from marshmallow.exceptions import ValidationError
-from typing import List
-
-from ..utils.regex import MYDATA_DID
-from .data_agreement_instance_model import DataAgreementInstanceSchema, DataAgreementInstance
 
 class ReadDataAgreementResponseBody(BaseModel):
     &#34;&#34;&#34;ReadDataAgreementResponseBody model class&#34;&#34;&#34;
 
     class Meta:
         &#34;&#34;&#34;ReadDataAgreementResponseBody metadata&#34;&#34;&#34;
+
         schema_class = &#34;ReadDataAgreementResponseBodySchema&#34;
 
     def __init__(
         self,
         *,
-        data_agreement :DataAgreementInstance = None,
+        data_agreement: DataAgreementInstance = None,
         **kwargs,
     ):
         &#34;&#34;&#34;
@@ -65,6 +63,7 @@ class ReadDataAgreementResponseBodySchema(BaseModelSchema):
 
     class Meta:
         &#34;&#34;&#34;ReadDataAgreementResponseBodySchema metadata&#34;&#34;&#34;
+
         model_class = ReadDataAgreementResponseBody
         unknown = EXCLUDE
 
@@ -98,12 +97,13 @@ class ReadDataAgreementResponseBodySchema(BaseModelSchema):
 
     class Meta:
         &#34;&#34;&#34;ReadDataAgreementResponseBody metadata&#34;&#34;&#34;
+
         schema_class = &#34;ReadDataAgreementResponseBodySchema&#34;
 
     def __init__(
         self,
         *,
-        data_agreement :DataAgreementInstance = None,
+        data_agreement: DataAgreementInstance = None,
         **kwargs,
     ):
         &#34;&#34;&#34;
@@ -149,6 +149,7 @@ class ReadDataAgreementResponseBodySchema(BaseModelSchema):
 
     class Meta:
         &#34;&#34;&#34;ReadDataAgreementResponseBodySchema metadata&#34;&#34;&#34;
+
         model_class = ReadDataAgreementResponseBody
         unknown = EXCLUDE
 

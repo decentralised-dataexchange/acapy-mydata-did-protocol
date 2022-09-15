@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>mydata_did.v1_0.models.read_data_agreement_model API documentation</title>
+<title>mydata_did.v1_0.handlers.da_permissions_handler API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,44 +19,43 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>mydata_did.v1_0.models.read_data_agreement_model</code></h1>
+<h1 class="title">Module <code>mydata_did.v1_0.handlers.da_permissions_handler</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from marshmallow import EXCLUDE, fields
+<pre><code class="python">from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from mydata_did.v1_0.messages.da_permissions import DAPermissionsMessage
 
 
-class ReadDataAgreementBody(BaseModel):
-    &#34;&#34;&#34;
-    Read data agreement body model class
-    &#34;&#34;&#34;
+class DAPermissionsMessageHandler(BaseHandler):
+    &#34;&#34;&#34;Data agreement permissions message handler.&#34;&#34;&#34;
 
-    class Meta:
-        schema_class = &#34;ReadDataAgreementBodySchema&#34;
+    async def handle(self, context: RequestContext, responder: BaseResponder):
+        &#34;&#34;&#34;Handle function
 
-    def __init__(self, *, data_agreement_id: str, **kwargs):
-        super().__init__(**kwargs)
-        self.data_agreement_id = data_agreement_id
+        Args:
+            context (RequestContext): Request context.
+            responder (BaseResponder): Responder.
+        &#34;&#34;&#34;
 
+        # Assert the message type.
+        assert isinstance(context.message, DAPermissionsMessage)
 
-class ReadDataAgreementBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;
-    Read data agreement body schema class
-    &#34;&#34;&#34;
+        # Initialize manager.
+        mgr = V2ADAManager(context)
 
-    class Meta:
-        model_class = ReadDataAgreementBody
-        unknown = EXCLUDE
-
-    data_agreement_id = fields.Str(
-        data_key=&#34;data_agreement_id&#34;,
-        example=&#34;45988dd2-62b9-4ede-8189-fb99c64b42d1&#34;,
-        description=&#34;Data agreement identifier&#34;,
-    )</code></pre>
+        # Process message.
+        await mgr.process_da_permissions_message(
+            context.message, context.message_receipt
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -68,93 +67,80 @@ class ReadDataAgreementBodySchema(BaseModelSchema):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody"><code class="flex name class">
-<span>class <span class="ident">ReadDataAgreementBody</span></span>
-<span>(</span><span>*, data_agreement_id: str, **kwargs)</span>
+<dt id="mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler"><code class="flex name class">
+<span>class <span class="ident">DAPermissionsMessageHandler</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read data agreement body model class</p>
-<p>Initialize BaseModel.</p>
-<h2 id="raises">Raises</h2>
-<dl>
-<dt><code>TypeError</code></dt>
-<dd>If schema_class is not set on Meta</dd>
-</dl></div>
+<div class="desc"><p>Data agreement permissions message handler.</p>
+<p>Initialize a BaseHandler instance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ReadDataAgreementBody(BaseModel):
-    &#34;&#34;&#34;
-    Read data agreement body model class
-    &#34;&#34;&#34;
+<pre><code class="python">class DAPermissionsMessageHandler(BaseHandler):
+    &#34;&#34;&#34;Data agreement permissions message handler.&#34;&#34;&#34;
 
-    class Meta:
-        schema_class = &#34;ReadDataAgreementBodySchema&#34;
+    async def handle(self, context: RequestContext, responder: BaseResponder):
+        &#34;&#34;&#34;Handle function
 
-    def __init__(self, *, data_agreement_id: str, **kwargs):
-        super().__init__(**kwargs)
-        self.data_agreement_id = data_agreement_id</code></pre>
+        Args:
+            context (RequestContext): Request context.
+            responder (BaseResponder): Responder.
+        &#34;&#34;&#34;
+
+        # Assert the message type.
+        assert isinstance(context.message, DAPermissionsMessage)
+
+        # Initialize manager.
+        mgr = V2ADAManager(context)
+
+        # Process message.
+        await mgr.process_da_permissions_message(
+            context.message, context.message_receipt
+        )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li>aries_cloudagent.messaging.models.base.BaseModel</li>
+<li>aries_cloudagent.messaging.base_handler.BaseHandler</li>
 <li>abc.ABC</li>
 </ul>
-<h3>Class variables</h3>
+<h3>Methods</h3>
 <dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-</dd>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema"><code class="flex name class">
-<span>class <span class="ident">ReadDataAgreementBodySchema</span></span>
-<span>(</span><span>*args, **kwargs)</span>
+<dt id="mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler.handle"><code class="name flex">
+<span>async def <span class="ident">handle</span></span>(<span>self, context: aries_cloudagent.messaging.request_context.RequestContext, responder: aries_cloudagent.messaging.responder.BaseResponder)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read data agreement body schema class</p>
-<p>Initialize BaseModelSchema.</p>
-<h2 id="raises">Raises</h2>
+<div class="desc"><p>Handle function</p>
+<h2 id="args">Args</h2>
 <dl>
-<dt><code>TypeError</code></dt>
-<dd>If model_class is not set on Meta</dd>
+<dt><strong><code>context</code></strong> :&ensp;<code>RequestContext</code></dt>
+<dd>Request context.</dd>
+<dt><strong><code>responder</code></strong> :&ensp;<code>BaseResponder</code></dt>
+<dd>Responder.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ReadDataAgreementBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;
-    Read data agreement body schema class
+<pre><code class="python">async def handle(self, context: RequestContext, responder: BaseResponder):
+    &#34;&#34;&#34;Handle function
+
+    Args:
+        context (RequestContext): Request context.
+        responder (BaseResponder): Responder.
     &#34;&#34;&#34;
 
-    class Meta:
-        model_class = ReadDataAgreementBody
-        unknown = EXCLUDE
+    # Assert the message type.
+    assert isinstance(context.message, DAPermissionsMessage)
 
-    data_agreement_id = fields.Str(
-        data_key=&#34;data_agreement_id&#34;,
-        example=&#34;45988dd2-62b9-4ede-8189-fb99c64b42d1&#34;,
-        description=&#34;Data agreement identifier&#34;,
+    # Initialize manager.
+    mgr = V2ADAManager(context)
+
+    # Process message.
+    await mgr.process_da_permissions_message(
+        context.message, context.message_receipt
     )</code></pre>
 </details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
-<li>marshmallow.schema.Schema</li>
-<li>marshmallow.base.SchemaABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
-<dd>
-<div class="desc"></div>
 </dd>
 </dl>
 </dd>
@@ -169,22 +155,15 @@ class ReadDataAgreementBodySchema(BaseModelSchema):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="mydata_did.v1_0.models" href="index.html">mydata_did.v1_0.models</a></code></li>
+<li><code><a title="mydata_did.v1_0.handlers" href="index.html">mydata_did.v1_0.handlers</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody">ReadDataAgreementBody</a></code></h4>
+<h4><code><a title="mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler" href="#mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler">DAPermissionsMessageHandler</a></code></h4>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta">Meta</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema">ReadDataAgreementBodySchema</a></code></h4>
-<ul class="">
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta">Meta</a></code></li>
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler.handle" href="#mydata_did.v1_0.handlers.da_permissions_handler.DAPermissionsMessageHandler.handle">handle</a></code></li>
 </ul>
 </li>
 </ul>

@@ -2766,7 +2766,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 <dl>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredExIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">CredExIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Path parameters and validators for request taking credential exchange id.</p></div>
@@ -2797,7 +2797,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.CredIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">CredIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Path parameters and validators for request taking credential id.</p></div>
@@ -2828,7 +2828,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.DataAgreementBoundCredentialOfferMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementBoundCredentialOfferMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Path parameters and validators for request taking data agreement bound credential offer id.</p></div>
@@ -2868,7 +2868,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.RevokeQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">RevokeQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for revocation request.</p></div>
@@ -2913,7 +2913,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.SendDataAgreementNegotiationProblemReportRequestSchema"><code class="flex name class">
 <span>class <span class="ident">SendDataAgreementNegotiationProblemReportRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending problem report.</p></div>
@@ -2945,7 +2945,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10ClearPendingRevocationsRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10ClearPendingRevocationsRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for clear pending revocations API call.</p></div>
@@ -2987,7 +2987,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialCreateSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialCreateSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for request schema for sending credential proposal admin message.</p></div>
@@ -3052,7 +3052,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialExchangeListQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for credential exchange list query.</p></div>
@@ -3121,7 +3121,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialExchangeListResultSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialExchangeListResultSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Result schema for Aries#0036 v1.0 credential exchange query.</p></div>
@@ -3153,7 +3153,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialIssueRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialIssueRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending credential issue admin message.</p></div>
@@ -3184,7 +3184,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialOfferRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialOfferRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending credential offer admin message.</p></div>
@@ -3252,7 +3252,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProblemReportRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialProblemReportRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending problem report.</p></div>
@@ -3281,7 +3281,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestMandSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialProposalRequestMandSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending credential proposal on mandatory proposal preview.</p></div>
@@ -3312,7 +3312,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestOptSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialProposalRequestOptSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending credential proposal on optional proposal preview.</p></div>
@@ -3344,7 +3344,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialProposalRequestSchemaBase"><code class="flex name class">
 <span>class <span class="ident">V10CredentialProposalRequestSchemaBase</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for request schema for sending credential proposal admin message.</p></div>
@@ -3418,7 +3418,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10CredentialStoreRequestSchema"><code class="flex name class">
 <span>class <span class="ident">V10CredentialStoreRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request schema for sending a credential store admin message.</p></div>
@@ -3447,7 +3447,7 @@ async def credential_exchange_store(request: web.BaseRequest):
 </dd>
 <dt id="mydata_did.patched_protocols.issue_credential.v1_0.routes.V10PublishRevocationsSchema"><code class="flex name class">
 <span>class <span class="ident">V10PublishRevocationsSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Request and result schema for revocation publication API call.</p></div>

@@ -26,36 +26,38 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+<pre><code class="python">import json
 
-from ..messages.json_ld_processed import JSONLDProcessedMessage
-from ..manager import ADAManager
-
-import json
+from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from dexa_sdk.managers.ada_manager import V2ADAManager
+from mydata_did.v1_0.messages.json_ld_processed import JSONLDProcessedMessage
 
 
 class JSONLDProcessedHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for json-ld/1.0/processed-data message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for JSONLD processed message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for json-ld/1.0/processed-data message.
+        Message handler logic.
         &#34;&#34;&#34;
 
-        # Assert if received message is of type JSONLDProcessedMessage
         assert isinstance(context.message, JSONLDProcessedMessage)
 
         self._logger.info(
-            &#34;Received json-ld/1.0/processed-data message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            &#34;Received JSONLD processed message: \n%s&#34;,
+            json.dumps(context.message.serialize(), indent=4),
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
 
-        await ada_manager.process_json_ld_processed_message(
+        await mgr.process_json_ld_processed_message(
             json_ld_processed_message=context.message,
             receipt=context.message_receipt,
         )</code></pre>
@@ -74,34 +76,33 @@ class JSONLDProcessedHandler(BaseHandler):
 <span>class <span class="ident">JSONLDProcessedHandler</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handle for json-ld/1.0/processed-data message</p>
+<div class="desc"><p>Handle for JSONLD processed message</p>
 <p>Initialize a BaseHandler instance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class JSONLDProcessedHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for json-ld/1.0/processed-data message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for JSONLD processed message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for json-ld/1.0/processed-data message.
+        Message handler logic.
         &#34;&#34;&#34;
 
-        # Assert if received message is of type JSONLDProcessedMessage
         assert isinstance(context.message, JSONLDProcessedMessage)
 
         self._logger.info(
-            &#34;Received json-ld/1.0/processed-data message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            &#34;Received JSONLD processed message: \n%s&#34;,
+            json.dumps(context.message.serialize(), indent=4),
         )
 
         # Initialize ADA manager
-        ada_manager = ADAManager(context)
+        mgr = V2ADAManager(context)
 
         # Call the function
 
-        await ada_manager.process_json_ld_processed_message(
+        await mgr.process_json_ld_processed_message(
             json_ld_processed_message=context.message,
             receipt=context.message_receipt,
         )</code></pre>
@@ -117,30 +118,29 @@ class JSONLDProcessedHandler(BaseHandler):
 <span>async def <span class="ident">handle</span></span>(<span>self, context: aries_cloudagent.messaging.request_context.RequestContext, responder: aries_cloudagent.messaging.responder.BaseResponder)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message handler logic for json-ld/1.0/processed-data message.</p></div>
+<div class="desc"><p>Message handler logic.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def handle(self, context: RequestContext, responder: BaseResponder):
     &#34;&#34;&#34;
-    Message handler logic for json-ld/1.0/processed-data message.
+    Message handler logic.
     &#34;&#34;&#34;
 
-    # Assert if received message is of type JSONLDProcessedMessage
     assert isinstance(context.message, JSONLDProcessedMessage)
 
     self._logger.info(
-        &#34;Received json-ld/1.0/processed-data message: \n%s&#34;,
-        json.dumps(context.message.serialize(), indent=4)
+        &#34;Received JSONLD processed message: \n%s&#34;,
+        json.dumps(context.message.serialize(), indent=4),
     )
 
     # Initialize ADA manager
-    ada_manager = ADAManager(context)
+    mgr = V2ADAManager(context)
 
     # Call the function
 
-    await ada_manager.process_json_ld_processed_message(
+    await mgr.process_json_ld_processed_message(
         json_ld_processed_message=context.message,
         receipt=context.message_receipt,
     )</code></pre>

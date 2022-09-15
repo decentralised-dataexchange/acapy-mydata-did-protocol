@@ -26,8 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from marshmallow import fields
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import fields
 
 
 class ExistingConnectionsBody(BaseModel):
@@ -38,12 +38,7 @@ class ExistingConnectionsBody(BaseModel):
 
         schema_class = &#34;ExistingConnectionsBodySchema&#34;
 
-    def __init__(
-        self,
-        *,
-        theirdid: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, theirdid: str = None, **kwargs):
         &#34;&#34;&#34;ExistingConnectionsBody init&#34;&#34;&#34;
 
         super().__init__(**kwargs)
@@ -92,12 +87,7 @@ class ExistingConnectionsBodySchema(BaseModelSchema):
 
         schema_class = &#34;ExistingConnectionsBodySchema&#34;
 
-    def __init__(
-        self,
-        *,
-        theirdid: str = None,
-        **kwargs
-    ):
+    def __init__(self, *, theirdid: str = None, **kwargs):
         &#34;&#34;&#34;ExistingConnectionsBody init&#34;&#34;&#34;
 
         super().__init__(**kwargs)

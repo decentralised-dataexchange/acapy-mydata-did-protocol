@@ -60,8 +60,8 @@ limitations under the License.
 
 from typing import List, Sequence, Union
 
-from .util import canon_did, canon_ref
-from .verification_method import PublicKey
+from mydata_did.v1_0.utils.util import canon_did, canon_ref
+from mydata_did.v1_0.utils.verification_method import PublicKey
 
 
 class Service:
@@ -188,7 +188,7 @@ class Service:
 <dl>
 <dt id="mydata_did.v1_0.utils.service.Service"><code class="flex name class">
 <span>class <span class="ident">Service</span></span>
-<span>(</span><span>did: str, ident: str, typ: str, recip_keys: Union[Sequence[+T_co], <a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>], routing_keys: Union[Sequence[+T_co], <a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>], endpoint: str, priority: int = 0)</span>
+<span>(</span><span>did: str, ident: str, typ: str, recip_keys: Union[Sequence, <a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>], routing_keys: Union[Sequence, <a title="mydata_did.v1_0.utils.verification_method.PublicKey" href="verification_method.html#mydata_did.v1_0.utils.verification_method.PublicKey">PublicKey</a>], endpoint: str, priority: int = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Service specification to embed in DID document.</p>

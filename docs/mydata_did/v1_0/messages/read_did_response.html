@@ -27,24 +27,25 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
-
 from marshmallow import EXCLUDE, fields
-
-from ..message_types import PROTOCOL_PACKAGE, READ_DID_RESPONSE
-from ..models.diddoc_model import MyDataDIDResponseBody, MyDataDIDResponseBodySchema
-from ..utils.regex import MYDATA_DID
-
+from mydata_did.v1_0.message_types import PROTOCOL_PACKAGE, READ_DID_RESPONSE
+from mydata_did.v1_0.models.diddoc_model import (
+    MyDataDIDResponseBody,
+    MyDataDIDResponseBodySchema,
+)
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 # Handler class for /mydata/v1.0/read-did-response
 HANDLER_CLASS = (
-    f&#34;{PROTOCOL_PACKAGE}.handlers&#34;
-    &#34;.read_did_response_handler.ReadDIDResponseHandler&#34;
+    f&#34;{PROTOCOL_PACKAGE}.handlers&#34; &#34;.read_did_response_handler.ReadDIDResponseHandler&#34;
 )
+
 
 class ReadDIDResponseMessage(AgentMessage):
     &#34;&#34;&#34;
     Message class for response to reading a DID.
     &#34;&#34;&#34;
+
     class Meta:
 
         # Handler class that can handle this message
@@ -56,7 +57,9 @@ class ReadDIDResponseMessage(AgentMessage):
         # Message schema class
         schema_class = &#34;ReadDIDResponseMessageSchema&#34;
 
-    def __init__(self, *, from_did, to_did, created_time, body: MyDataDIDResponseBody, **kwargs):
+    def __init__(
+        self, *, from_did, to_did, created_time, body: MyDataDIDResponseBody, **kwargs
+    ):
         &#34;&#34;&#34;
         Initialize a ReadDIDResponseMessage message instance.
         &#34;&#34;&#34;
@@ -68,17 +71,19 @@ class ReadDIDResponseMessage(AgentMessage):
         self.created_time = created_time
         self.body = body
 
+
 class ReadDIDResponseMessageSchema(AgentMessageSchema):
     &#34;&#34;&#34;
     Schema class for response to reading a DID.
     &#34;&#34;&#34;
+
     class Meta:
         # Model class
         model_class = ReadDIDResponseMessage
 
         # Unknown fields to exclude from the schema (handled by marshmallow)
         unknown = EXCLUDE
-    
+
     # From DID
     from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
 
@@ -116,6 +121,7 @@ class ReadDIDResponseMessageSchema(AgentMessageSchema):
     &#34;&#34;&#34;
     Message class for response to reading a DID.
     &#34;&#34;&#34;
+
     class Meta:
 
         # Handler class that can handle this message
@@ -127,7 +133,9 @@ class ReadDIDResponseMessageSchema(AgentMessageSchema):
         # Message schema class
         schema_class = &#34;ReadDIDResponseMessageSchema&#34;
 
-    def __init__(self, *, from_did, to_did, created_time, body: MyDataDIDResponseBody, **kwargs):
+    def __init__(
+        self, *, from_did, to_did, created_time, body: MyDataDIDResponseBody, **kwargs
+    ):
         &#34;&#34;&#34;
         Initialize a ReadDIDResponseMessage message instance.
         &#34;&#34;&#34;
@@ -173,13 +181,14 @@ class ReadDIDResponseMessageSchema(AgentMessageSchema):
     &#34;&#34;&#34;
     Schema class for response to reading a DID.
     &#34;&#34;&#34;
+
     class Meta:
         # Model class
         model_class = ReadDIDResponseMessage
 
         # Unknown fields to exclude from the schema (handled by marshmallow)
         unknown = EXCLUDE
-    
+
     # From DID
     from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
 

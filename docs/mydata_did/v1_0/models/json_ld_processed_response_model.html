@@ -26,9 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from marshmallow import fields
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
+<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import fields
 
 
 class JSONLDProcessedResponseBody(BaseModel):
@@ -40,11 +39,7 @@ class JSONLDProcessedResponseBody(BaseModel):
         schema_class = &#34;JSONLDProcessedResponseBodySchema&#34;
 
     def __init__(
-        self,
-        *,
-        framed_base64: str = None,
-        combined_hash_base64: str = None,
-        **kwargs
+        self, *, framed_base64: str = None, combined_hash_base64: str = None, **kwargs
     ):
         &#34;&#34;&#34;json-ld/1.0/processed-data-response message body init&#34;&#34;&#34;
 
@@ -103,11 +98,7 @@ class JSONLDProcessedResponseBodySchema(BaseModelSchema):
         schema_class = &#34;JSONLDProcessedResponseBodySchema&#34;
 
     def __init__(
-        self,
-        *,
-        framed_base64: str = None,
-        combined_hash_base64: str = None,
-        **kwargs
+        self, *, framed_base64: str = None, combined_hash_base64: str = None, **kwargs
     ):
         &#34;&#34;&#34;json-ld/1.0/processed-data-response message body init&#34;&#34;&#34;
 

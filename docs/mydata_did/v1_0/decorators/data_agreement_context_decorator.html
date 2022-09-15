@@ -27,7 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from marshmallow import fields, EXCLUDE, validate
+from marshmallow import EXCLUDE, fields, validate
 
 
 class DataAgreementContextDecorator(BaseModel):
@@ -40,13 +40,7 @@ class DataAgreementContextDecorator(BaseModel):
 
         schema_class = &#34;DataAgreementContextDecoratorSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        message_type: str = None,
-        message: dict = None,
-        **kwargs
-    ):
+    def __init__(self, *, message_type: str = None, message: dict = None, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementContextDecorator instance.
 
@@ -124,13 +118,7 @@ class DataAgreementContextDecoratorSchema(BaseModelSchema):
 
         schema_class = &#34;DataAgreementContextDecoratorSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        message_type: str = None,
-        message: dict = None,
-        **kwargs
-    ):
+    def __init__(self, *, message_type: str = None, message: dict = None, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementContextDecorator instance.
 

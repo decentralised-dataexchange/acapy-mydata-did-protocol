@@ -27,12 +27,12 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
-from marshmallow import EXCLUDE, fields
 from dexa_sdk.agreements.da.v1_0.models.da_instance_models import (
+    DataAgreementInstanceModel,
     DataAgreementInstanceSchema,
-    DataAgreementInstanceModel
 )
-from ..message_types import DATA_AGREEMENT_NEGOTIATION_ACCEPT
+from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.message_types import DATA_AGREEMENT_NEGOTIATION_ACCEPT
 
 
 class DataAgreementNegotiationAcceptMessage(AgentMessage):
@@ -48,12 +48,7 @@ class DataAgreementNegotiationAcceptMessage(AgentMessage):
         # Message schema class
         schema_class = &#34;DataAgreementNegotiationAcceptMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementInstanceModel,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementInstanceModel, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementNegotiationAcceptMessage message instance.
         &#34;&#34;&#34;
@@ -76,10 +71,7 @@ class DataAgreementNegotiationAcceptMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementInstanceSchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(DataAgreementInstanceSchema, required=True)</code></pre>
 </details>
 </section>
 <section>
@@ -115,12 +107,7 @@ class DataAgreementNegotiationAcceptMessageSchema(AgentMessageSchema):
         # Message schema class
         schema_class = &#34;DataAgreementNegotiationAcceptMessageSchema&#34;
 
-    def __init__(
-        self,
-        *,
-        body: DataAgreementInstanceModel,
-        **kwargs
-    ):
+    def __init__(self, *, body: DataAgreementInstanceModel, **kwargs):
         &#34;&#34;&#34;
         Initialize a DataAgreementNegotiationAcceptMessage message instance.
         &#34;&#34;&#34;
@@ -172,10 +159,7 @@ class DataAgreementNegotiationAcceptMessageSchema(AgentMessageSchema):
         unknown = EXCLUDE
 
     # Message body
-    body = fields.Nested(
-        DataAgreementInstanceSchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(DataAgreementInstanceSchema, required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

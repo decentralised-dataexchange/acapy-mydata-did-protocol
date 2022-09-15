@@ -28,12 +28,16 @@
 </summary>
 <pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.message_types import (
+    JSON_LD_PROCESSED_RESPONSE_DATA,
+    PROTOCOL_PACKAGE,
+)
+from mydata_did.v1_0.models.json_ld_processed_response_model import (
+    JSONLDProcessedResponseBody,
+    JSONLDProcessedResponseBodySchema,
+)
 
-from ..message_types import JSON_LD_PROCESSED_RESPONSE_DATA, PROTOCOL_PACKAGE
-from ..models.json_ld_processed_response_model import JSONLDProcessedResponseBody, JSONLDProcessedResponseBodySchema
-from ..utils.regex import MYDATA_DID
-
-# Handler class for json-ld/1.0/processed-data-response message
+# Handler class for JSONLD processed response message
 HANDLER_CLASS = (
     f&#34;{PROTOCOL_PACKAGE}.handlers&#34;
     &#34;.json_ld_processed_response_handler.JSONLDProcessedResponseHandler&#34;
@@ -42,7 +46,7 @@ HANDLER_CLASS = (
 
 class JSONLDProcessedResponseMessage(AgentMessage):
     &#34;&#34;&#34;
-    Message class for json-ld/1.0/processed-data-response message.
+    Message class for JSONLD processed response message.
     &#34;&#34;&#34;
 
     class Meta:
@@ -59,25 +63,13 @@ class JSONLDProcessedResponseMessage(AgentMessage):
     def __init__(
         self,
         *,
-        from_did,
-        to_did,
-        created_time,
         body: JSONLDProcessedResponseBody,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;
         Initialize a JSONLDProcessedResponseMessage message instance.
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-
-        # Sender DID
-        self.from_did = from_did
-
-        # Recipient DID
-        self.to_did = to_did
-
-        # The time the message was created
-        self.created_time = created_time
 
         # Message body
         self.body = body
@@ -85,7 +77,7 @@ class JSONLDProcessedResponseMessage(AgentMessage):
 
 class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
     &#34;&#34;&#34;
-    Schema class for json-ld/1.0/processed-data-response message
+    Schema class for JSONLD processed response message
     &#34;&#34;&#34;
 
     class Meta:
@@ -95,20 +87,8 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
         # Unknown fields to exclude from the schema (handled by marshmallow)
         unknown = EXCLUDE
 
-    # From DID
-    from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
-
-    # To DID
-    to_did = fields.Str(data_key=&#34;to&#34;, **MYDATA_DID)
-
-    # Created time
-    created_time = fields.Str(data_key=&#34;created_time&#34;)
-
     # Message body
-    body = fields.Nested(
-        JSONLDProcessedResponseBodySchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(JSONLDProcessedResponseBodySchema, required=True)</code></pre>
 </details>
 </section>
 <section>
@@ -122,10 +102,10 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
 <dl>
 <dt id="mydata_did.v1_0.messages.json_ld_processed_response.JSONLDProcessedResponseMessage"><code class="flex name class">
 <span>class <span class="ident">JSONLDProcessedResponseMessage</span></span>
-<span>(</span><span>*, from_did, to_did, created_time, body: <a title="mydata_did.v1_0.models.json_ld_processed_response_model.JSONLDProcessedResponseBody" href="../models/json_ld_processed_response_model.html#mydata_did.v1_0.models.json_ld_processed_response_model.JSONLDProcessedResponseBody">JSONLDProcessedResponseBody</a>, **kwargs)</span>
+<span>(</span><span>*, body: <a title="mydata_did.v1_0.models.json_ld_processed_response_model.JSONLDProcessedResponseBody" href="../models/json_ld_processed_response_model.html#mydata_did.v1_0.models.json_ld_processed_response_model.JSONLDProcessedResponseBody">JSONLDProcessedResponseBody</a>, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message class for json-ld/1.0/processed-data-response message.</p>
+<div class="desc"><p>Message class for JSONLD processed response message.</p>
 <p>Initialize a JSONLDProcessedResponseMessage message instance.</p></div>
 <details class="source">
 <summary>
@@ -133,7 +113,7 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
 </summary>
 <pre><code class="python">class JSONLDProcessedResponseMessage(AgentMessage):
     &#34;&#34;&#34;
-    Message class for json-ld/1.0/processed-data-response message.
+    Message class for JSONLD processed response message.
     &#34;&#34;&#34;
 
     class Meta:
@@ -150,25 +130,13 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
     def __init__(
         self,
         *,
-        from_did,
-        to_did,
-        created_time,
         body: JSONLDProcessedResponseBody,
-        **kwargs
+        **kwargs,
     ):
         &#34;&#34;&#34;
         Initialize a JSONLDProcessedResponseMessage message instance.
         &#34;&#34;&#34;
         super().__init__(**kwargs)
-
-        # Sender DID
-        self.from_did = from_did
-
-        # Recipient DID
-        self.to_did = to_did
-
-        # The time the message was created
-        self.created_time = created_time
 
         # Message body
         self.body = body</code></pre>
@@ -192,7 +160,7 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Schema class for json-ld/1.0/processed-data-response message</p>
+<div class="desc"><p>Schema class for JSONLD processed response message</p>
 <p>Initialize an instance of AgentMessageSchema.</p>
 <h2 id="raises">Raises</h2>
 <dl>
@@ -205,7 +173,7 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
 </summary>
 <pre><code class="python">class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
     &#34;&#34;&#34;
-    Schema class for json-ld/1.0/processed-data-response message
+    Schema class for JSONLD processed response message
     &#34;&#34;&#34;
 
     class Meta:
@@ -215,20 +183,8 @@ class JSONLDProcessedResponseMessageSchema(AgentMessageSchema):
         # Unknown fields to exclude from the schema (handled by marshmallow)
         unknown = EXCLUDE
 
-    # From DID
-    from_did = fields.Str(data_key=&#34;from&#34;, **MYDATA_DID)
-
-    # To DID
-    to_did = fields.Str(data_key=&#34;to&#34;, **MYDATA_DID)
-
-    # Created time
-    created_time = fields.Str(data_key=&#34;created_time&#34;)
-
     # Message body
-    body = fields.Nested(
-        JSONLDProcessedResponseBodySchema,
-        required=True
-    )</code></pre>
+    body = fields.Nested(JSONLDProcessedResponseBodySchema, required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">

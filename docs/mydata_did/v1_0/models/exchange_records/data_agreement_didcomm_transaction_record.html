@@ -26,14 +26,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from os import environ
+<pre><code class="python">import typing
 from typing import Any
-import typing
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
@@ -48,9 +49,10 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
     Each transaction record will have 2 tags: thread_id and message_type.
 
     1. thread_id - identifier of the initial message that triggered the transaction.
-    2. message_type - identifier of the message family that triggered the transaction 
+    2. message_type - identifier of the message family that triggered the transaction
                         for .e.g. create-data-agreement
     &#34;&#34;&#34;
+
     class Meta:
         # Schema class
         schema_class = &#34;DataAgreementCRUDDIDCommTransactionSchema&#34;
@@ -112,18 +114,17 @@ class DataAgreementCRUDDIDCommTransaction(BaseExchangeRecord):
 
 
 class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
-
     class Meta:
         # Model class
         model_class = DataAgreementCRUDDIDCommTransaction
-    
+
     # Transaction record id
     da_crud_didcomm_tx_id = fields.Str(
         required=True,
         description=&#34;Transaction record id&#34;,
         example=UUIDFour.EXAMPLE,
     )
-    
+
     # Parent message id of the transaction record
     thread_id = fields.Str(
         required=False,
@@ -137,7 +138,9 @@ class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
         example=&#34;create-data-agreement&#34;,
     )
     # List of messages in the transaction record
-    messages_list = fields.List(fields.Dict(), required=False, description=&#34;Messages list&#34;)
+    messages_list = fields.List(
+        fields.Dict(), required=False, description=&#34;Messages list&#34;
+    )
 
     # Connection identifier
     connection_id = fields.Str(
@@ -189,9 +192,10 @@ for .e.g. create-data-agreement</li>
     Each transaction record will have 2 tags: thread_id and message_type.
 
     1. thread_id - identifier of the initial message that triggered the transaction.
-    2. message_type - identifier of the message family that triggered the transaction 
+    2. message_type - identifier of the message family that triggered the transaction
                         for .e.g. create-data-agreement
     &#34;&#34;&#34;
+
     class Meta:
         # Schema class
         schema_class = &#34;DataAgreementCRUDDIDCommTransactionSchema&#34;
@@ -354,18 +358,17 @@ def record_value(self) -&gt; dict:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class DataAgreementCRUDDIDCommTransactionSchema(BaseExchangeSchema):
-
     class Meta:
         # Model class
         model_class = DataAgreementCRUDDIDCommTransaction
-    
+
     # Transaction record id
     da_crud_didcomm_tx_id = fields.Str(
         required=True,
         description=&#34;Transaction record id&#34;,
         example=UUIDFour.EXAMPLE,
     )
-    
+
     # Parent message id of the transaction record
     thread_id = fields.Str(
         required=False,
@@ -379,7 +382,9 @@ def record_value(self) -&gt; dict:
         example=&#34;create-data-agreement&#34;,
     )
     # List of messages in the transaction record
-    messages_list = fields.List(fields.Dict(), required=False, description=&#34;Messages list&#34;)
+    messages_list = fields.List(
+        fields.Dict(), required=False, description=&#34;Messages list&#34;
+    )
 
     # Connection identifier
     connection_id = fields.Str(

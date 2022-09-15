@@ -26,42 +26,35 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from marshmallow import fields
-from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
-from aries_cloudagent.messaging.valid import UUIDFour
+<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+from marshmallow import fields
 
 
 class JSONLDProcessedBody(BaseModel):
-    &#34;&#34;&#34;json-ld/1.0/processed-data message body&#34;&#34;&#34;
+    &#34;&#34;&#34;JSONLD processed message body&#34;&#34;&#34;
 
     class Meta:
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body metadata&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body metadata&#34;&#34;&#34;
 
         schema_class = &#34;JSONLDProcessedBodySchema&#34;
 
     def __init__(
-        self,
-        *,
-        data_base64: str = None,
-        signature_options_base64: str = None,
-        proof_chain: bool = False,
-        **kwargs
+        self, *, data_base64: str = None, signature_options_base64: str = None, **kwargs
     ):
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body init&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body init&#34;&#34;&#34;
 
         super().__init__(**kwargs)
 
         # Set attributes
         self.data_base64 = data_base64
         self.signature_options_base64 = signature_options_base64
-        self.proof_chain = proof_chain
 
 
 class JSONLDProcessedBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;json-ld/1.0/processed-data message body schema&#34;&#34;&#34;
+    &#34;&#34;&#34;JSONLD processed message body schema&#34;&#34;&#34;
 
     class Meta:
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body schema metadata&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body schema metadata&#34;&#34;&#34;
 
         model_class = JSONLDProcessedBody
 
@@ -73,11 +66,6 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
     # Signature options
     signature_options_base64 = fields.Str(
         description=&#34;Signature options&#34;,
-    )
-
-    # Proof chain
-    proof_chain = fields.Boolean(
-        description=&#34;Proof chain&#34;,
     )</code></pre>
 </details>
 </section>
@@ -92,39 +80,33 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
 <dl>
 <dt id="mydata_did.v1_0.models.json_ld_processed_model.JSONLDProcessedBody"><code class="flex name class">
 <span>class <span class="ident">JSONLDProcessedBody</span></span>
-<span>(</span><span>*, data_base64: str = None, signature_options_base64: str = None, proof_chain: bool = False, **kwargs)</span>
+<span>(</span><span>*, data_base64: str = None, signature_options_base64: str = None, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>json-ld/1.0/processed-data message body</p>
-<p>json-ld/1.0/processed-data message body init</p></div>
+<div class="desc"><p>JSONLD processed message body</p>
+<p>JSONLD processed message body init</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class JSONLDProcessedBody(BaseModel):
-    &#34;&#34;&#34;json-ld/1.0/processed-data message body&#34;&#34;&#34;
+    &#34;&#34;&#34;JSONLD processed message body&#34;&#34;&#34;
 
     class Meta:
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body metadata&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body metadata&#34;&#34;&#34;
 
         schema_class = &#34;JSONLDProcessedBodySchema&#34;
 
     def __init__(
-        self,
-        *,
-        data_base64: str = None,
-        signature_options_base64: str = None,
-        proof_chain: bool = False,
-        **kwargs
+        self, *, data_base64: str = None, signature_options_base64: str = None, **kwargs
     ):
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body init&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body init&#34;&#34;&#34;
 
         super().__init__(**kwargs)
 
         # Set attributes
         self.data_base64 = data_base64
-        self.signature_options_base64 = signature_options_base64
-        self.proof_chain = proof_chain</code></pre>
+        self.signature_options_base64 = signature_options_base64</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -135,7 +117,7 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
 <dl>
 <dt id="mydata_did.v1_0.models.json_ld_processed_model.JSONLDProcessedBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
 <dd>
-<div class="desc"><p>json-ld/1.0/processed-data message body metadata</p></div>
+<div class="desc"><p>JSONLD processed message body metadata</p></div>
 </dd>
 </dl>
 </dd>
@@ -144,7 +126,7 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>json-ld/1.0/processed-data message body schema</p>
+<div class="desc"><p>JSONLD processed message body schema</p>
 <p>Initialize BaseModelSchema.</p>
 <h2 id="raises">Raises</h2>
 <dl>
@@ -156,10 +138,10 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class JSONLDProcessedBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;json-ld/1.0/processed-data message body schema&#34;&#34;&#34;
+    &#34;&#34;&#34;JSONLD processed message body schema&#34;&#34;&#34;
 
     class Meta:
-        &#34;&#34;&#34;json-ld/1.0/processed-data message body schema metadata&#34;&#34;&#34;
+        &#34;&#34;&#34;JSONLD processed message body schema metadata&#34;&#34;&#34;
 
         model_class = JSONLDProcessedBody
 
@@ -171,11 +153,6 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
     # Signature options
     signature_options_base64 = fields.Str(
         description=&#34;Signature options&#34;,
-    )
-
-    # Proof chain
-    proof_chain = fields.Boolean(
-        description=&#34;Proof chain&#34;,
     )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -188,7 +165,7 @@ class JSONLDProcessedBodySchema(BaseModelSchema):
 <dl>
 <dt id="mydata_did.v1_0.models.json_ld_processed_model.JSONLDProcessedBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
 <dd>
-<div class="desc"><p>json-ld/1.0/processed-data message body schema metadata</p></div>
+<div class="desc"><p>JSONLD processed message body schema metadata</p></div>
 </dd>
 <dt id="mydata_did.v1_0.models.json_ld_processed_model.JSONLDProcessedBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
 <dd>

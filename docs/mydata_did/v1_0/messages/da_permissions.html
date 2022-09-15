@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>mydata_did.v1_0.models.read_data_agreement_model API documentation</title>
+<title>mydata_did.v1_0.messages.da_permissions API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,44 +19,44 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>mydata_did.v1_0.models.read_data_agreement_model</code></h1>
+<h1 class="title">Module <code>mydata_did.v1_0.messages.da_permissions</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.models.base import BaseModel, BaseModelSchema
+<pre><code class="python">from aries_cloudagent.messaging.agent_message import AgentMessage, AgentMessageSchema
 from marshmallow import EXCLUDE, fields
+from mydata_did.v1_0.message_types import DA_PERMISSIONS, PROTOCOL_PACKAGE
+from mydata_did.v1_0.models.da_permissions_model import (
+    DAPermissionsBodyModel,
+    DAPermissionsBodyModelSchema,
+)
+
+HANDLER_CLASS = (
+    f&#34;{PROTOCOL_PACKAGE}.handlers.da_permissions_handler.DAPermissionsMessageHandler&#34;
+)
 
 
-class ReadDataAgreementBody(BaseModel):
-    &#34;&#34;&#34;
-    Read data agreement body model class
-    &#34;&#34;&#34;
-
+class DAPermissionsMessage(AgentMessage):
     class Meta:
-        schema_class = &#34;ReadDataAgreementBodySchema&#34;
+        handler_class = HANDLER_CLASS
+        message_type = DA_PERMISSIONS
+        schema_class = &#34;DAPermissionsMessageSchema&#34;
 
-    def __init__(self, *, data_agreement_id: str, **kwargs):
+    def __init__(self, *, body: DAPermissionsBodyModel, **kwargs):
         super().__init__(**kwargs)
-        self.data_agreement_id = data_agreement_id
+
+        self.body = body
 
 
-class ReadDataAgreementBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;
-    Read data agreement body schema class
-    &#34;&#34;&#34;
-
+class DAPermissionsMessageSchema(AgentMessageSchema):
     class Meta:
-        model_class = ReadDataAgreementBody
+        model_class = DAPermissionsMessage
         unknown = EXCLUDE
 
-    data_agreement_id = fields.Str(
-        data_key=&#34;data_agreement_id&#34;,
-        example=&#34;45988dd2-62b9-4ede-8189-fb99c64b42d1&#34;,
-        description=&#34;Data agreement identifier&#34;,
-    )</code></pre>
+    body = fields.Nested(DAPermissionsBodyModelSchema)</code></pre>
 </details>
 </section>
 <section>
@@ -68,91 +68,91 @@ class ReadDataAgreementBodySchema(BaseModelSchema):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody"><code class="flex name class">
-<span>class <span class="ident">ReadDataAgreementBody</span></span>
-<span>(</span><span>*, data_agreement_id: str, **kwargs)</span>
+<dt id="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage"><code class="flex name class">
+<span>class <span class="ident">DAPermissionsMessage</span></span>
+<span>(</span><span>*, body: <a title="mydata_did.v1_0.models.da_permissions_model.DAPermissionsBodyModel" href="../models/da_permissions_model.html#mydata_did.v1_0.models.da_permissions_model.DAPermissionsBodyModel">DAPermissionsBodyModel</a>, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read data agreement body model class</p>
-<p>Initialize BaseModel.</p>
+<div class="desc"><p>Agent message base class.</p>
+<p>Initialize base agent message object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>_id</code></strong></dt>
+<dd>Agent message id</dd>
+<dt><strong><code>_decorators</code></strong></dt>
+<dd>Message decorators</dd>
+</dl>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>TypeError</code></dt>
-<dd>If schema_class is not set on Meta</dd>
+<dd>If message type is missing on subclass Meta class</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ReadDataAgreementBody(BaseModel):
-    &#34;&#34;&#34;
-    Read data agreement body model class
-    &#34;&#34;&#34;
-
+<pre><code class="python">class DAPermissionsMessage(AgentMessage):
     class Meta:
-        schema_class = &#34;ReadDataAgreementBodySchema&#34;
+        handler_class = HANDLER_CLASS
+        message_type = DA_PERMISSIONS
+        schema_class = &#34;DAPermissionsMessageSchema&#34;
 
-    def __init__(self, *, data_agreement_id: str, **kwargs):
+    def __init__(self, *, body: DAPermissionsBodyModel, **kwargs):
         super().__init__(**kwargs)
-        self.data_agreement_id = data_agreement_id</code></pre>
+
+        self.body = body</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>aries_cloudagent.messaging.agent_message.AgentMessage</li>
 <li>aries_cloudagent.messaging.models.base.BaseModel</li>
 <li>abc.ABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dt id="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 </dd>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema"><code class="flex name class">
-<span>class <span class="ident">ReadDataAgreementBodySchema</span></span>
+<dt id="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema"><code class="flex name class">
+<span>class <span class="ident">DAPermissionsMessageSchema</span></span>
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read data agreement body schema class</p>
-<p>Initialize BaseModelSchema.</p>
+<div class="desc"><p>AgentMessage schema.</p>
+<p>Initialize an instance of AgentMessageSchema.</p>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>TypeError</code></dt>
-<dd>If model_class is not set on Meta</dd>
+<dd>If Meta.model_class has not been set</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ReadDataAgreementBodySchema(BaseModelSchema):
-    &#34;&#34;&#34;
-    Read data agreement body schema class
-    &#34;&#34;&#34;
-
+<pre><code class="python">class DAPermissionsMessageSchema(AgentMessageSchema):
     class Meta:
-        model_class = ReadDataAgreementBody
+        model_class = DAPermissionsMessage
         unknown = EXCLUDE
 
-    data_agreement_id = fields.Str(
-        data_key=&#34;data_agreement_id&#34;,
-        example=&#34;45988dd2-62b9-4ede-8189-fb99c64b42d1&#34;,
-        description=&#34;Data agreement identifier&#34;,
-    )</code></pre>
+    body = fields.Nested(DAPermissionsBodyModelSchema)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>aries_cloudagent.messaging.agent_message.AgentMessageSchema</li>
 <li>aries_cloudagent.messaging.models.base.BaseModelSchema</li>
 <li>marshmallow.schema.Schema</li>
 <li>marshmallow.base.SchemaABC</li>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
+<dt id="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.Meta"><code class="name">var <span class="ident">Meta</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dt id="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -169,22 +169,22 @@ class ReadDataAgreementBodySchema(BaseModelSchema):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="mydata_did.v1_0.models" href="index.html">mydata_did.v1_0.models</a></code></li>
+<li><code><a title="mydata_did.v1_0.messages" href="index.html">mydata_did.v1_0.messages</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody">ReadDataAgreementBody</a></code></h4>
+<h4><code><a title="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage" href="#mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage">DAPermissionsMessage</a></code></h4>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBody.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage.Meta" href="#mydata_did.v1_0.messages.da_permissions.DAPermissionsMessage.Meta">Meta</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema">ReadDataAgreementBodySchema</a></code></h4>
+<h4><code><a title="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema" href="#mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema">DAPermissionsMessageSchema</a></code></h4>
 <ul class="">
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.Meta">Meta</a></code></li>
-<li><code><a title="mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts" href="#mydata_did.v1_0.models.read_data_agreement_model.ReadDataAgreementBodySchema.opts">opts</a></code></li>
+<li><code><a title="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.Meta" href="#mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.Meta">Meta</a></code></li>
+<li><code><a title="mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.opts" href="#mydata_did.v1_0.messages.da_permissions.DAPermissionsMessageSchema.opts">opts</a></code></li>
 </ul>
 </li>
 </ul>

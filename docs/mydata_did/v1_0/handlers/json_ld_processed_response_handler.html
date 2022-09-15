@@ -26,28 +26,32 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from aries_cloudagent.messaging.base_handler import BaseHandler, BaseResponder, RequestContext
+<pre><code class="python">import json
 
-from ..messages.json_ld_processed_response import JSONLDProcessedResponseMessage
-from ..manager import ADAManager
-
-import json
+from aries_cloudagent.messaging.base_handler import (
+    BaseHandler,
+    BaseResponder,
+    RequestContext,
+)
+from mydata_did.v1_0.messages.json_ld_processed_response import (
+    JSONLDProcessedResponseMessage,
+)
 
 
 class JSONLDProcessedResponseHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for json-ld/1.0/processed message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for JSONLD processed response message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for json-ld/1.0/processed-data-response message.
+        Message handler logic for JSONLD processed response-data-response message.
         &#34;&#34;&#34;
 
         # Assert if received message is of type JSONLDProcessedResponseMessage
         assert isinstance(context.message, JSONLDProcessedResponseMessage)
 
         self._logger.info(
-            &#34;Received json-ld/1.0/processed-data-response message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            &#34;Received JSONLD processed response-data-response message: \n%s&#34;,
+            json.dumps(context.message.serialize(), indent=4),
         )</code></pre>
 </details>
 </section>
@@ -64,26 +68,26 @@ class JSONLDProcessedResponseHandler(BaseHandler):
 <span>class <span class="ident">JSONLDProcessedResponseHandler</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handle for json-ld/1.0/processed message</p>
+<div class="desc"><p>Handle for JSONLD processed response message</p>
 <p>Initialize a BaseHandler instance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class JSONLDProcessedResponseHandler(BaseHandler):
-    &#34;&#34;&#34;Handle for json-ld/1.0/processed message&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle for JSONLD processed response message&#34;&#34;&#34;
 
     async def handle(self, context: RequestContext, responder: BaseResponder):
         &#34;&#34;&#34;
-        Message handler logic for json-ld/1.0/processed-data-response message.
+        Message handler logic for JSONLD processed response-data-response message.
         &#34;&#34;&#34;
 
         # Assert if received message is of type JSONLDProcessedResponseMessage
         assert isinstance(context.message, JSONLDProcessedResponseMessage)
 
         self._logger.info(
-            &#34;Received json-ld/1.0/processed-data-response message: \n%s&#34;,
-            json.dumps(context.message.serialize(), indent=4)
+            &#34;Received JSONLD processed response-data-response message: \n%s&#34;,
+            json.dumps(context.message.serialize(), indent=4),
         )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -97,22 +101,22 @@ class JSONLDProcessedResponseHandler(BaseHandler):
 <span>async def <span class="ident">handle</span></span>(<span>self, context: aries_cloudagent.messaging.request_context.RequestContext, responder: aries_cloudagent.messaging.responder.BaseResponder)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Message handler logic for json-ld/1.0/processed-data-response message.</p></div>
+<div class="desc"><p>Message handler logic for JSONLD processed response-data-response message.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def handle(self, context: RequestContext, responder: BaseResponder):
     &#34;&#34;&#34;
-    Message handler logic for json-ld/1.0/processed-data-response message.
+    Message handler logic for JSONLD processed response-data-response message.
     &#34;&#34;&#34;
 
     # Assert if received message is of type JSONLDProcessedResponseMessage
     assert isinstance(context.message, JSONLDProcessedResponseMessage)
 
     self._logger.info(
-        &#34;Received json-ld/1.0/processed-data-response message: \n%s&#34;,
-        json.dumps(context.message.serialize(), indent=4)
+        &#34;Received JSONLD processed response-data-response message: \n%s&#34;,
+        json.dumps(context.message.serialize(), indent=4),
     )</code></pre>
 </details>
 </dd>

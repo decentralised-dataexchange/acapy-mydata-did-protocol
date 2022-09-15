@@ -26,33 +26,33 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from marshmallow import fields, validate, validates
-from marshmallow.exceptions import ValidationError
-
+<pre><code class="python">from aries_cloudagent.connections.models.connection_record import (
+    ConnectionRecord,
+    ConnectionRecordSchema,
+)
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
 from aries_cloudagent.messaging.valid import (
     INDY_DID,
-    UUIDFour,
-    UUID4,
     INDY_RAW_PUBLIC_KEY,
-)
-from aries_cloudagent.connections.models.connection_record import (
-    ConnectionRecord,
-    ConnectionRecordSchema,
+    UUID4,
+    UUIDFour,
 )
 from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
     ConnectionInvitationSchema,
 )
-
-from ...models.exchange_records.data_agreement_didcomm_transaction_record import (
+from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import (
+    DAInstancePermissionRecord,
+)
+from marshmallow import fields, validate, validates
+from marshmallow.exceptions import ValidationError
+from mydata_did.v1_0.models.diddoc_model import MyDataDIDDocSchema
+from mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record import (
     DataAgreementCRUDDIDCommTransaction,
 )
-from ...models.exchange_records.data_agreement_record import (
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import (
     DataAgreementV1Record,
 )
-from ...models.diddoc_model import MyDataDIDDocSchema
-
-from ...utils.regex import MYDATA_DID
+from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 
 class ReadDataAgreementRequestSchema(OpenAPISchema):
@@ -203,8 +203,7 @@ class PersonalDataOpenAPISchema(OpenAPISchema):
     attribute_category = fields.Str(data_key=&#34;attributeCategory&#34;)
     attribute_description = fields.Str(data_key=&#34;attributeDescription&#34;)
     restrictions = fields.List(
-        fields.Nested(PersonalDataRestrictionOpenAPISchema),
-        data_key=&#34;restrictions&#34;
+        fields.Nested(PersonalDataRestrictionOpenAPISchema), data_key=&#34;restrictions&#34;
     )
 
 
@@ -227,7 +226,9 @@ class CreateOrUpdateDataAgreementInWalletRequestSchema(OpenAPISchema):
     purpose_descripton = fields.Str(data_key=&#34;purposeDescription&#34;)
     lawful_basis = fields.Str(data_key=&#34;lawfulBasis&#34;)
     method_of_use = fields.Str(data_key=&#34;methodOfUse&#34;)
-    personal_data = fields.List(fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;)
+    personal_data = fields.List(
+        fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;
+    )
     dpia = fields.Nested(DPIAOpenAPISchema, data_key=&#34;dpia&#34;)
 
 
@@ -277,6 +278,7 @@ class DataAgreementV1RecordResponseSchema(OpenAPISchema):
     &#34;&#34;&#34;
     Schema for data agreement v1 record response
     &#34;&#34;&#34;
+
     template_id = fields.Str()
     state = fields.Str()
     method_of_use = fields.Str()
@@ -394,9 +396,7 @@ class UpdateDataAgreementMatchInfoSchema(OpenAPISchema):
     Schema to match info for the update data agreement endpoint
     &#34;&#34;&#34;
 
-    template_id = fields.Str(
-        description=&#34;Template identifier&#34;, required=True
-    )
+    template_id = fields.Str(description=&#34;Template identifier&#34;, required=True)
 
 
 class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
@@ -404,9 +404,7 @@ class DeleteDataAgreementMatchInfoSchema(OpenAPISchema):
     Schema to match info for the delete data agreement endpoint
     &#34;&#34;&#34;
 
-    template_id = fields.Str(
-        description=&#34;Template identifier&#34;, required=True
-    )
+    template_id = fields.Str(description=&#34;Template identifier&#34;, required=True)
 
 
 class CreateAndStoreDAPersonalDataInWalletRequestSchema(OpenAPISchema):
@@ -619,8 +617,9 @@ class MyDataDIDRemoteRecordResponseSchema(OpenAPISchema):
 class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     &#34;&#34;&#34;Query string schema for create data agreement handler&#34;&#34;&#34;
 
-    publish_flag = fields.Boolean(description=&#34;Publish the agreement&#34;,
-                                  required=False, example=False)
+    publish_flag = fields.Boolean(
+        description=&#34;Publish the agreement&#34;, required=False, example=False
+    )
 
     existing_schema_id = fields.Str(
         description=&#34;Existing schema identifier&#34;,
@@ -960,6 +959,7 @@ class ConnectionListSchema(OpenAPISchema):
 
 class UpdateControllerDetailsRequestSchema(OpenAPISchema):
     &#34;&#34;&#34;Update controller details request schema&#34;&#34;&#34;
+
     organisation_did = fields.Str(required=False)
     organisation_name = fields.Str(required=False)
     cover_image_url = fields.Str(required=False)
@@ -974,7 +974,47 @@ class UpdateControllerDetailsRequestSchema(OpenAPISchema):
 class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
     &#34;&#34;&#34;Configure customer identification DA match info schema&#34;&#34;&#34;
 
-    template_id = fields.Str()</code></pre>
+    template_id = fields.Str()
+
+
+class SetDAPermissionMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Set DA permission match info schema&#34;&#34;&#34;
+
+    instance_id = fields.Str()
+
+
+class SetDAPermissionQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Set DA permission query string schema&#34;&#34;&#34;
+
+    state = fields.Str(
+        description=&#34;Permission state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DAInstancePermissionRecord, m)
+                for m in vars(DAInstancePermissionRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )
+
+
+class V2ReceiveConnectionInvitationRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;V2 receive connection invitation request schema&#34;&#34;&#34;
+
+    connection_url = fields.Str()
+
+
+class ListDUSForThirdpartySharingDAMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;List DUS for third party sharing DA match info schema.&#34;&#34;&#34;
+
+    instance_id = fields.Str()
+
+
+class SendFetchPreferenceMessageQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send fetch preference message query string schema&#34;&#34;&#34;
+
+    connection_id = fields.Str()</code></pre>
 </details>
 </section>
 <section>
@@ -988,7 +1028,7 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
 <dl>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordListQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">AuditorDIDCommTransactionRecordListQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query string schema for listing Auditor DIDComm transaction records.</p></div>
@@ -1031,7 +1071,7 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">AuditorDIDCommTransactionRecordsDeleteByIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete a transaction record by its identifier.</p></div>
@@ -1064,7 +1104,7 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">AuditorDIDCommTransactionRecordsRetrieveByIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieve a transaction record by its identifier.</p></div>
@@ -1097,7 +1137,7 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.AuditorSendDataAgreementVerifyRequestMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">AuditorSendDataAgreementVerifyRequestMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema to send data agreement verify request to the auditor</p></div>
@@ -1132,7 +1172,7 @@ class ConfigureCustomerIdentificationDAMatchInfoSchema(OpenAPISchema):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.Base64EncodeDataAgreementQrCodeMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">Base64EncodeDataAgreementQrCodeMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Match info (URL path params) schema for base64 encode
@@ -1171,7 +1211,7 @@ data agreement QR code payload endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ConfigureCustomerIdentificationDAMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">ConfigureCustomerIdentificationDAMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Configure customer identification DA match info schema</p></div>
@@ -1200,7 +1240,7 @@ data agreement QR code payload endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionListSchema"><code class="flex name class">
 <span>class <span class="ident">ConnectionListSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Result schema for connection list.</p></div>
@@ -1232,7 +1272,7 @@ data agreement QR code payload endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ConnectionsListQueryStringSchemaV2"><code class="flex name class">
 <span>class <span class="ident">ConnectionsListQueryStringSchemaV2</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for connections list request query string.</p></div>
@@ -1317,7 +1357,7 @@ data agreement QR code payload endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateAndStoreDAPersonalDataInWalletRequestSchema"><code class="flex name class">
 <span>class <span class="ident">CreateAndStoreDAPersonalDataInWalletRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the create and store personal data in wallet request</p></div>
@@ -1438,7 +1478,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementInWalletQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query string schema for create data agreement handler</p></div>
@@ -1449,8 +1489,9 @@ def validate_attribute_name(self, attribute_name):
 <pre><code class="python">class CreateOrUpdateDataAgreementInWalletQueryStringSchema(OpenAPISchema):
     &#34;&#34;&#34;Query string schema for create data agreement handler&#34;&#34;&#34;
 
-    publish_flag = fields.Boolean(description=&#34;Publish the agreement&#34;,
-                                  required=False, example=False)
+    publish_flag = fields.Boolean(
+        description=&#34;Publish the agreement&#34;, required=False, example=False
+    )
 
     existing_schema_id = fields.Str(
         description=&#34;Existing schema identifier&#34;,
@@ -1474,7 +1515,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchema"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementInWalletRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -1491,7 +1532,9 @@ def validate_attribute_name(self, attribute_name):
     purpose_descripton = fields.Str(data_key=&#34;purposeDescription&#34;)
     lawful_basis = fields.Str(data_key=&#34;lawfulBasis&#34;)
     method_of_use = fields.Str(data_key=&#34;methodOfUse&#34;)
-    personal_data = fields.List(fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;)
+    personal_data = fields.List(
+        fields.Nested(PersonalDataOpenAPISchema), data_key=&#34;personalData&#34;
+    )
     dpia = fields.Nested(DPIAOpenAPISchema, data_key=&#34;dpia&#34;)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1514,7 +1557,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementInWalletRequestSchemaV2"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementInWalletRequestSchemaV2</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -1548,7 +1591,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRequestSchema"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the create or update data agreement personal data request</p></div>
@@ -1589,7 +1632,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataRestrictionSchema"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataRestrictionSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the create or update data agreement personal data restriction</p></div>
@@ -1628,7 +1671,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema"><code class="flex name class">
 <span>class <span class="ident">CreateOrUpdateDataAgreementPersonalDataWithoutAttributeIdSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Personal data schema class</p></div>
@@ -1704,7 +1747,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DACRUDDIDCommTransactionRecordListQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">DACRUDDIDCommTransactionRecordListQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query string schema for listing data agreement CRUD DIDComm transaction records.</p></div>
@@ -1760,7 +1803,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DPIAOpenAPISchema"><code class="flex name class">
 <span>class <span class="ident">DPIAOpenAPISchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -1788,7 +1831,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementCRUDDIDCommTransactionRecordDeleteByIdMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Delete a transaction record by its identifier.</p></div>
@@ -1821,7 +1864,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementCRUDDIDCommTransactionResponseSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementCRUDDIDCommTransactionResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the data agreement CRUD DID comm transaction response</p></div>
@@ -1885,7 +1928,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeInvitationSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementQRCodeInvitationSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for connection invitation details inside in data agreement qr code payload.</p></div>
@@ -1917,7 +1960,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQRCodeMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementQRCodeMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for data agreement QR code match info</p></div>
@@ -1948,7 +1991,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query string schema for data agreements</p></div>
@@ -2030,7 +2073,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataAgreementV1RecordResponseSchema"><code class="flex name class">
 <span>class <span class="ident">DataAgreementV1RecordResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for data agreement v1 record response</p></div>
@@ -2042,6 +2085,7 @@ def validate_attribute_name(self, attribute_name):
     &#34;&#34;&#34;
     Schema for data agreement v1 record response
     &#34;&#34;&#34;
+
     template_id = fields.Str()
     state = fields.Str()
     method_of_use = fields.Str()
@@ -2070,7 +2114,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DataPolicyOpenAPISchema"><code class="flex name class">
 <span>class <span class="ident">DataPolicyOpenAPISchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2103,7 +2147,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDaPersonalDataInWalletMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">DeleteDaPersonalDataInWalletMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2133,7 +2177,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.DeleteDataAgreementMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">DeleteDataAgreementMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema to match info for the delete data agreement endpoint</p></div>
@@ -2146,9 +2190,7 @@ def validate_attribute_name(self, attribute_name):
     Schema to match info for the delete data agreement endpoint
     &#34;&#34;&#34;
 
-    template_id = fields.Str(
-        description=&#34;Template identifier&#34;, required=True
-    )</code></pre>
+    template_id = fields.Str(description=&#34;Template identifier&#34;, required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2166,7 +2208,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">GenerateDataAgreementQrCodePayloadQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for query string parameters to generate data agreement qr code payload</p></div>
@@ -2195,7 +2237,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateDataAgreementQrCodePayloadResponseSchema"><code class="flex name class">
 <span>class <span class="ident">GenerateDataAgreementQrCodePayloadResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for Data Agreement QR code payload</p></div>
@@ -2231,7 +2273,7 @@ def validate_attribute_name(self, attribute_name):
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">GenerateFirebaseDynamicLinkForConnectionInvitationMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for matching path parameters in generate firebase
@@ -2264,7 +2306,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema"><code class="flex name class">
 <span>class <span class="ident">GenerateFirebaseDynamicLinkForConnectionInvitationResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for response of generate firebase dynamic link for connection invitation handler</p></div>
@@ -2297,7 +2339,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">GetExistingConnectionMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for matching path parameters in get existing connection handler</p></div>
@@ -2328,7 +2370,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.GetExistingConnectionResponseSchema"><code class="flex name class">
 <span>class <span class="ident">GetExistingConnectionResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for response of get existing connection handler</p></div>
@@ -2360,7 +2402,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ListDAPersonalDataCategoryFromWalletResponseSchema"><code class="flex name class">
 <span>class <span class="ident">ListDAPersonalDataCategoryFromWalletResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the list personal data category from wallet response</p></div>
@@ -2394,9 +2436,38 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">ListDUSForThirdpartySharingDAMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List DUS for third party sharing DA match info schema.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ListDUSForThirdpartySharingDAMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;List DUS for third party sharing DA match info schema.&#34;&#34;&#34;
+
+    instance_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">MarkExistingConnectionAsAuditorMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the mark existing connection as auditor match info</p></div>
@@ -2429,7 +2500,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordResponseSchema"><code class="flex name class">
 <span>class <span class="ident">MyDataDIDRemoteRecordResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Response schema for MyData DID remote record.</p></div>
@@ -2475,7 +2546,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.MyDataDIDRemoteRecordsQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">MyDataDIDRemoteRecordsQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query string schema for listing MyData DID remote records.</p></div>
@@ -2519,7 +2590,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataOpenAPISchema"><code class="flex name class">
 <span>class <span class="ident">PersonalDataOpenAPISchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2534,8 +2605,7 @@ dynamic link for connection invitation handler</p></div>
     attribute_category = fields.Str(data_key=&#34;attributeCategory&#34;)
     attribute_description = fields.Str(data_key=&#34;attributeDescription&#34;)
     restrictions = fields.List(
-        fields.Nested(PersonalDataRestrictionOpenAPISchema),
-        data_key=&#34;restrictions&#34;
+        fields.Nested(PersonalDataRestrictionOpenAPISchema), data_key=&#34;restrictions&#34;
     )</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -2554,7 +2624,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.PersonalDataRestrictionOpenAPISchema"><code class="flex name class">
 <span>class <span class="ident">PersonalDataRestrictionOpenAPISchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2582,7 +2652,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.PublishDataAgreementMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">PublishDataAgreementMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema to match info for the publish data agreement endpoint</p></div>
@@ -2613,7 +2683,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDAPersonalDataInWalletQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDAPersonalDataInWalletQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for the query personal data in wallet query string</p></div>
@@ -2650,7 +2720,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDaPersonalDataInWalletQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDaPersonalDataInWalletQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2689,7 +2759,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementInstanceQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDataAgreementInstanceQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Query data agreement instances</p></div>
@@ -2736,7 +2806,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQRCodeMetadataRecordsResponseSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDataAgreementQRCodeMetadataRecordsResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for querying data agreement qr code metadata records response</p></div>
@@ -2781,7 +2851,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDataAgreementQrCodeMetadataRecordsMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema to validate path parameters for query data agreement qr code metadata records.</p></div>
@@ -2814,7 +2884,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">QueryDataAgreementQrCodeMetadataRecordsQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for querying data agreement qr code metadata records</p></div>
@@ -2845,7 +2915,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.ReadDataAgreementRequestSchema"><code class="flex name class">
 <span>class <span class="ident">ReadDataAgreementRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2881,7 +2951,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -2909,7 +2979,7 @@ dynamic link for connection invitation handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Match info (URL path params) schema for send
@@ -2948,7 +3018,7 @@ data agreement qr code workflow initiate endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SendExistingConnectionsMessageHandlerMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for matching path parameters in send existing connections message handler</p></div>
@@ -2979,7 +3049,7 @@ data agreement qr code workflow initiate endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendExistingConnectionsMessageHandlerRequestSchema"><code class="flex name class">
 <span>class <span class="ident">SendExistingConnectionsMessageHandlerRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for request body of send existing connections message handler</p></div>
@@ -3008,9 +3078,38 @@ data agreement qr code workflow initiate endpoint</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">SendFetchPreferenceMessageQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send fetch preference message query string schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendFetchPreferenceMessageQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send fetch preference message query string schema&#34;&#34;&#34;
+
+    connection_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3040,7 +3139,7 @@ data agreement qr code workflow initiate endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema"><code class="flex name class">
 <span>class <span class="ident">SendJSONLDDIDCommProcessedDataMessageHandlerRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3069,7 +3168,7 @@ data agreement qr code workflow initiate endpoint</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SendReadAllDataAgreementTemplateMessageHandlerMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for matching path parameters in send read all
@@ -3102,7 +3201,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SendReadDIDMessageMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Send a read-did message to the MyData DID registry service.</p></div>
@@ -3131,9 +3230,77 @@ data agreement template message handler</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SetDAPermissionMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set DA permission match info schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SetDAPermissionMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Set DA permission match info schema&#34;&#34;&#34;
+
+    instance_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">SetDAPermissionQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set DA permission query string schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SetDAPermissionQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Set DA permission query string schema&#34;&#34;&#34;
+
+    state = fields.Str(
+        description=&#34;Permission state&#34;,
+        required=False,
+        validate=validate.OneOf(
+            [
+                getattr(DAInstancePermissionRecord, m)
+                for m in vars(DAInstancePermissionRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateControllerDetailsRequestSchema"><code class="flex name class">
 <span>class <span class="ident">UpdateControllerDetailsRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Update controller details request schema</p></div>
@@ -3143,6 +3310,7 @@ data agreement template message handler</p></div>
 </summary>
 <pre><code class="python">class UpdateControllerDetailsRequestSchema(OpenAPISchema):
     &#34;&#34;&#34;Update controller details request schema&#34;&#34;&#34;
+
     organisation_did = fields.Str(required=False)
     organisation_name = fields.Str(required=False)
     cover_image_url = fields.Str(required=False)
@@ -3169,7 +3337,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">UpdateDaPersonalDataInWalletMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3199,7 +3367,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletRequestSchema"><code class="flex name class">
 <span>class <span class="ident">UpdateDaPersonalDataInWalletRequestSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3228,7 +3396,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDaPersonalDataInWalletResponseSchema"><code class="flex name class">
 <span>class <span class="ident">UpdateDaPersonalDataInWalletResponseSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3272,7 +3440,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">UpdateDataAgreementMatchInfoSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema to match info for the update data agreement endpoint</p></div>
@@ -3285,9 +3453,7 @@ data agreement template message handler</p></div>
     Schema to match info for the update data agreement endpoint
     &#34;&#34;&#34;
 
-    template_id = fields.Str(
-        description=&#34;Template identifier&#34;, required=True
-    )</code></pre>
+    template_id = fields.Str(description=&#34;Template identifier&#34;, required=True)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -3305,7 +3471,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.UpdateDataAgreementTemplateOpenAPISchema"><code class="flex name class">
 <span>class <span class="ident">UpdateDataAgreementTemplateOpenAPISchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Schema for OpenAPI artifacts: excluding unknown fields, not raising exception.</p></div>
@@ -3333,7 +3499,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.V2CreateInvitationQueryStringSchema"><code class="flex name class">
 <span>class <span class="ident">V2CreateInvitationQueryStringSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parameters and validators for create invitation request query string.</p></div>
@@ -3376,7 +3542,7 @@ data agreement template message handler</p></div>
 </dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema"><code class="flex name class">
 <span>class <span class="ident">V2InvitationResultSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Result schema for a new connection invitation.</p></div>
@@ -3405,6 +3571,35 @@ data agreement template message handler</p></div>
 <h3>Class variables</h3>
 <dl>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema"><code class="flex name class">
+<span>class <span class="ident">V2ReceiveConnectionInvitationRequestSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>V2 receive connection invitation request schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class V2ReceiveConnectionInvitationRequestSchema(OpenAPISchema):
+    &#34;&#34;&#34;V2 receive connection invitation request schema&#34;&#34;&#34;
+
+    connection_url = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -3628,6 +3823,12 @@ data agreement template message handler</p></div>
 </ul>
 </li>
 <li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema">ListDUSForThirdpartySharingDAMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.ListDUSForThirdpartySharingDAMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema">MarkExistingConnectionAsAuditorMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.MarkExistingConnectionAsAuditorMatchInfoSchema.opts">opts</a></code></li>
@@ -3730,6 +3931,12 @@ data agreement template message handler</p></div>
 </ul>
 </li>
 <li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema">SendFetchPreferenceMessageQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendFetchPreferenceMessageQueryStringSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema">SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendJSONLDDIDCommProcessedDataMessageHandlerMatchInfoSchema.opts">opts</a></code></li>
@@ -3751,6 +3958,18 @@ data agreement template message handler</p></div>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema">SendReadDIDMessageMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema">SetDAPermissionMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema">SetDAPermissionQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionQueryStringSchema.opts">opts</a></code></li>
 </ul>
 </li>
 <li>
@@ -3799,6 +4018,12 @@ data agreement template message handler</p></div>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema" href="#mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema">V2InvitationResultSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.V2InvitationResultSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema" href="#mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema">V2ReceiveConnectionInvitationRequestSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.V2ReceiveConnectionInvitationRequestSchema.opts">opts</a></code></li>
 </ul>
 </li>
 </ul>

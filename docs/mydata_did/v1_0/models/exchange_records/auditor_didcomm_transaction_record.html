@@ -26,14 +26,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from os import environ
+<pre><code class="python">import typing
 from typing import Any
-import typing
 
-from marshmallow import fields, validate
-
-from aries_cloudagent.messaging.models.base_record import BaseExchangeRecord, BaseExchangeSchema
+from aries_cloudagent.messaging.models.base_record import (
+    BaseExchangeRecord,
+    BaseExchangeSchema,
+)
 from aries_cloudagent.messaging.valid import UUIDFour
+from marshmallow import fields
 
 
 class AuditorDIDCommTransactionRecord(BaseExchangeRecord):
@@ -125,7 +126,8 @@ class AuditorDIDCommTransactionRecordSchema(BaseExchangeSchema):
 
     # List of messages for the transaction record
     messages_list = fields.List(
-        fields.Dict(), required=False, description=&#34;Messages list&#34;)
+        fields.Dict(), required=False, description=&#34;Messages list&#34;
+    )
 
     # Connection identifier
     connection_id = fields.Str(
@@ -330,7 +332,8 @@ def record_value(self) -&gt; dict:
 
     # List of messages for the transaction record
     messages_list = fields.List(
-        fields.Dict(), required=False, description=&#34;Messages list&#34;)
+        fields.Dict(), required=False, description=&#34;Messages list&#34;
+    )
 
     # Connection identifier
     connection_id = fields.Str(

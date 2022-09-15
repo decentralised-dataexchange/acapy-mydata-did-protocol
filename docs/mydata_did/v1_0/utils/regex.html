@@ -30,8 +30,11 @@
 
 from marshmallow.validate import Regexp
 
-MYDATA_DID_REGEX = &#34;did:mydata(:?(?P&lt;did_type&gt;0|1|2|3|4))?:(?P&lt;identifier&gt;z[a-km-zA-HJ-NP-Z1-9]+)&#34;
+MYDATA_DID_REGEX = (
+    &#34;did:mydata(:?(?P&lt;did_type&gt;0|1|2|3|4))?:(?P&lt;identifier&gt;z[a-km-zA-HJ-NP-Z1-9]+)&#34;
+)
 MYDATA_DID_PATTERN = re.compile(f&#34;^{MYDATA_DID_REGEX}$&#34;)
+
 
 class MyDataDID(Regexp):
     &#34;&#34;&#34;Validate value against MyData DID.&#34;&#34;&#34;
@@ -47,12 +50,21 @@ class MyDataDID(Regexp):
             error=&#34;Value {input} is not an mydata decentralized identifier (DID)&#34;,
         )
 
+
 MYDATA_DID = {&#34;validate&#34;: MyDataDID(), &#34;example&#34;: MyDataDID.EXAMPLE}
 
 
 if __name__ == &#34;__main__&#34;:
-    print(MYDATA_DID_PATTERN.match(&#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;).group(&#39;did_type&#39;))
-    print(MYDATA_DID_PATTERN.match(&#34;did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;).group(&#39;did_type&#39;))</code></pre>
+    print(
+        MYDATA_DID_PATTERN.match(
+            &#34;did:mydata:0:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
+        ).group(&#34;did_type&#34;)
+    )
+    print(
+        MYDATA_DID_PATTERN.match(
+            &#34;did:mydata:z6MkfiSdYhnLnS6jfwSf2yS2CiwwjZGmFUFL5QbyL2Xu8z2E&#34;
+        ).group(&#34;did_type&#34;)
+    )</code></pre>
 </details>
 </section>
 <section>

@@ -30,13 +30,11 @@
 <pre><code class="python">&#34;&#34;&#34;JSON Web Encryption utilities.&#34;&#34;&#34;
 
 import json
-
 from collections import OrderedDict
 from typing import Any, Iterable, List, Mapping, Optional, Union
 
-from marshmallow import fields, Schema, ValidationError
-
-from .wallet.util import b64_to_bytes, bytes_to_b64
+from marshmallow import Schema, ValidationError, fields
+from mydata_did.v1_0.utils.wallet.util import b64_to_bytes, bytes_to_b64
 
 IDENT_ENC_KEY = &#34;encrypted_key&#34;
 IDENT_HEADER = &#34;header&#34;
@@ -811,7 +809,7 @@ def deserialize(cls, entry: Mapping[str, Any]) -&gt; &#34;JweRecipient&#34;:
 </dd>
 <dt id="mydata_did.v1_0.utils.jwe.JweRecipientSchema"><code class="flex name class">
 <span>class <span class="ident">JweRecipientSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>JWE recipient schema.</p></div>
@@ -840,7 +838,7 @@ def deserialize(cls, entry: Mapping[str, Any]) -&gt; &#34;JweRecipient&#34;:
 </dd>
 <dt id="mydata_did.v1_0.utils.jwe.JweSchema"><code class="flex name class">
 <span>class <span class="ident">JweSchema</span></span>
-<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict[~KT, ~VT] = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>JWE envelope schema.</p></div>

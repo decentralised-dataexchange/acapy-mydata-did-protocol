@@ -26,25 +26,20 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">import logging
 import typing
-import logging
+
 import jwt
-
-from aiohttp import web
-from aiohttp import frozenlist
-from ..manager import ADAManager, ADAManagerError
-
-from .maps.tag_maps import (
-    TAGS_MYDATA_DID_OPERATIONS,
-    TAGS_DATA_AGREEMENT_CORE_FUNCTIONS,
+from aiohttp import frozenlist, web
+from mydata_did.v1_0.routes.maps.route_maps import ROUTES_ADA
+from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS,
+    TAGS_DATA_AGREEMENT_CORE_FUNCTIONS,
+    TAGS_DATA_CONTROLLER_FUNCTIONS,
+    TAGS_DATA_SUBJECT_FUNCTIONS,
     TAGS_JSONLD_FUNCTIONS,
-    TAGS_DATA_CONTROLLER_FUNCTIONS
+    TAGS_MYDATA_DID_OPERATIONS,
 )
-
-from .maps.route_maps import ROUTES_ADA
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -66,10 +61,14 @@ async def authentication_middleware(
     context = request.app[&#34;request_context&#34;]
 
     # Fetch iGrant.io config from os environment.
-    config_org_id = context.settings.get(&#34;intermediary.igrantio_org_id&#34;)
-    config_api_key_secret = context.settings.get(&#34;intermediary.igrantio_org_api_key_secret&#34;)
+    config_api_key_secret = context.settings.get(
+        &#34;intermediary.igrantio_org_api_key_secret&#34;
+    )
+    config_igrantio_authentication = context.settings.get(
+        &#34;intermediary.igrantio_authentication&#34;
+    )
 
-    if not config_org_id:
+    if not config_igrantio_authentication or &#34;webhook&#34; in request.path:
         # Intermediary config not available.
         return await handler(request)
 
@@ -77,7 +76,9 @@ async def authentication_middleware(
     authorization_header = request.headers.get(&#34;Authorization&#34;)
 
     # Fetch api key from authorization header.
-    header_api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    header_api_key = (
+        authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    )
 
     if not header_api_key:
         raise web.HTTPUnauthorized(reason=&#34;Missing Authorization header.&#34;)
@@ -88,7 +89,10 @@ async def authentication_middleware(
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
+                header_api_key,
+                config_api_key_secret,
+                algorithms=[&#34;HS256&#34;],
+                audience=&#34;dataverifier&#34;,
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason=&#34;Invalid API Key.&#34;)
@@ -120,7 +124,8 @@ def post_process_routes(app: web.Application):
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_AGREEMENT_CORE_FUNCTIONS)
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS)
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_JSONLD_FUNCTIONS)
-    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_CONTROLLER_FUNCTIONS)</code></pre>
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_CONTROLLER_FUNCTIONS)
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_SUBJECT_FUNCTIONS)</code></pre>
 </details>
 </section>
 <section>
@@ -131,7 +136,7 @@ def post_process_routes(app: web.Application):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="mydata_did.v1_0.routes.routes.authentication_middleware"><code class="name flex">
-<span>async def <span class="ident">authentication_middleware</span></span>(<span>request: aiohttp.web_request.BaseRequest, handler: Coroutine[+T_co, -T_contra, +V_co])</span>
+<span>async def <span class="ident">authentication_middleware</span></span>(<span>request: aiohttp.web_request.BaseRequest, handler: Coroutine)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Authentication middleware.</p>
@@ -156,10 +161,14 @@ async def authentication_middleware(
     context = request.app[&#34;request_context&#34;]
 
     # Fetch iGrant.io config from os environment.
-    config_org_id = context.settings.get(&#34;intermediary.igrantio_org_id&#34;)
-    config_api_key_secret = context.settings.get(&#34;intermediary.igrantio_org_api_key_secret&#34;)
+    config_api_key_secret = context.settings.get(
+        &#34;intermediary.igrantio_org_api_key_secret&#34;
+    )
+    config_igrantio_authentication = context.settings.get(
+        &#34;intermediary.igrantio_authentication&#34;
+    )
 
-    if not config_org_id:
+    if not config_igrantio_authentication or &#34;webhook&#34; in request.path:
         # Intermediary config not available.
         return await handler(request)
 
@@ -167,7 +176,9 @@ async def authentication_middleware(
     authorization_header = request.headers.get(&#34;Authorization&#34;)
 
     # Fetch api key from authorization header.
-    header_api_key = authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    header_api_key = (
+        authorization_header.split(&#34;ApiKey &#34;)[1] if authorization_header else None
+    )
 
     if not header_api_key:
         raise web.HTTPUnauthorized(reason=&#34;Missing Authorization header.&#34;)
@@ -178,7 +189,10 @@ async def authentication_middleware(
     except jwt.exceptions.InvalidTokenError:
         try:
             jwt.decode(
-                header_api_key, config_api_key_secret, algorithms=[&#34;HS256&#34;], audience=&#34;dataverifier&#34;
+                header_api_key,
+                config_api_key_secret,
+                algorithms=[&#34;HS256&#34;],
+                audience=&#34;dataverifier&#34;,
             )
         except jwt.exceptions.InvalidTokenError:
             raise web.HTTPUnauthorized(reason=&#34;Invalid API Key.&#34;)
@@ -210,7 +224,8 @@ async def authentication_middleware(
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_AGREEMENT_CORE_FUNCTIONS)
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS)
     app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_JSONLD_FUNCTIONS)
-    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_CONTROLLER_FUNCTIONS)</code></pre>
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_CONTROLLER_FUNCTIONS)
+    app._state[&#34;swagger_dict&#34;][&#34;tags&#34;].append(TAGS_DATA_SUBJECT_FUNCTIONS)</code></pre>
 </details>
 </dd>
 <dt id="mydata_did.v1_0.routes.routes.register"><code class="name flex">
