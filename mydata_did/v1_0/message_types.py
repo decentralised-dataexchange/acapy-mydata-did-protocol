@@ -25,6 +25,16 @@ DATA_AGREEMENT_NEGOTIATION_PROBLEM_REPORT = (
     f"data-agreement-negotiation/1.0/problem-report"
 )
 
+THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES = (
+    f"third-party-data-sharing/1.0/fetch-preferences"
+)
+THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES_RESPONSE = (
+    f"third-party-data-sharing/1.0/fetch-preferences-response"
+)
+THIRDPARTY_DATA_SHARING_UPDATE_PREFERENCES = (
+    f"third-party-data-sharing/1.0/update-preferences"
+)
+
 DA_PERMISSIONS = f"data-agreement/1.0/permissions"
 
 # Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
@@ -118,6 +128,12 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         DA_PERMISSIONS: (
             f"{PROTOCOL_PACKAGE}.messages.da_permissions.DAPermissionsMessage"
+        ),
+        THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES: (
+            f"{PROTOCOL_PACKAGE}.messages.fetch_preferences.FetchPreferencesMessage"
+        ),
+        THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES_RESPONSE: (
+            f"{PROTOCOL_PACKAGE}.messages.fetch_preferences_response.FetchPreferencesResponseMessage"
         ),
     },
 )

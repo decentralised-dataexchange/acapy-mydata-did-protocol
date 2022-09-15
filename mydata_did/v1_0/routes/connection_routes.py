@@ -10,12 +10,22 @@ from aiohttp_apispec import (
     request_schema,
     response_schema,
 )
-from aries_cloudagent.connections.models.connection_record import ConnectionRecord
+from aries_cloudagent.connections.models.connection_record import (
+    ConnectionRecord,
+    ConnectionRecordSchema,
+)
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.protocols.connections.v1_0.manager import (
     ConnectionManager,
     ConnectionManagerError,
 )
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
+    ConnectionInvitation,
+)
+from aries_cloudagent.protocols.connections.v1_0.routes import (
+    ReceiveInvitationQueryStringSchema,
+)
+from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
 from mydata_did.v1_0.manager import ADAManagerError
@@ -30,6 +40,7 @@ from mydata_did.v1_0.routes.openapi.schemas import (
     SendExistingConnectionsMessageHandlerRequestSchema,
     V2CreateInvitationQueryStringSchema,
     V2InvitationResultSchema,
+    V2ReceiveConnectionInvitationRequestSchema,
 )
 from mydata_did.v1_0.utils.util import str_to_bool
 
@@ -295,3 +306,45 @@ async def connections_list_v2(request: web.BaseRequest):
     )
 
     return web.json_response(pagination_result._asdict())
+
+
+@docs(
+    tags=["connection"],
+    summary="Receive a new connection invitation",
+)
+@querystring_schema(ReceiveInvitationQueryStringSchema())
+@request_schema(V2ReceiveConnectionInvitationRequestSchema())
+@response_schema(ConnectionRecordSchema(), 200)
+async def v2_connections_receive_invitation(request: web.BaseRequest):
+    """
+    Request handler for receiving a new connection invitation.
+
+    Args:
+        request: aiohttp request object
+
+    Returns:
+        The resulting connection record details
+
+    """
+    context = request.app["request_context"]
+    if context.settings.get("admin.no_receive_invites"):
+        raise web.HTTPForbidden(
+            reason="Configuration does not allow receipt of invitations"
+        )
+    connection_mgr = ConnectionManager(context)
+
+    body = await request.json()
+    connection_url = body.get("connection_url")
+
+    try:
+        invitation = ConnectionInvitation.from_url(connection_url)
+        auto_accept = json.loads(request.query.get("auto_accept", "null"))
+        alias = request.query.get("alias")
+        connection = await connection_mgr.receive_invitation(
+            invitation, auto_accept=auto_accept, alias=alias
+        )
+        result = connection.serialize()
+    except (ConnectionManagerError, StorageError, BaseModelError) as err:
+        raise web.HTTPBadRequest(reason=err.roll_up) from err
+
+    return web.json_response(result)

@@ -19,6 +19,7 @@ from mydata_did.v1_0.models.exchange_records.data_agreement_personal_data_record
 )
 from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL,
+    TAGS_DATA_SUBJECT_FUNCTIONS_LABEL,
 )
 from mydata_did.v1_0.routes.openapi.schemas import (
     ConfigureCustomerIdentificationDAMatchInfoSchema,
@@ -37,6 +38,7 @@ from mydata_did.v1_0.routes.openapi.schemas import (
     QueryDataAgreementQRCodeMetadataRecordsResponseSchema,
     RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema,
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
+    SendFetchPreferenceMessageQueryStringSchema,
     SetDAPermissionMatchInfoSchema,
     SetDAPermissionQueryStringSchema,
     UpdateDaPersonalDataInWalletMatchInfoSchema,
@@ -577,3 +579,30 @@ async def set_da_permission_handler(request: web.BaseRequest):
     await mgr.send_da_permissions_message(instance_id, state)
 
     return web.json_response({}, status=204)
+
+
+@docs(
+    tags=[TAGS_DATA_SUBJECT_FUNCTIONS_LABEL],
+    summary="Send fetch preference message.",
+)
+@querystring_schema(SendFetchPreferenceMessageQueryStringSchema())
+async def send_fetch_preference_message_handler(request: web.BaseRequest):
+    """Send fetch preference message handler.
+
+    Args:
+        request (web.BaseRequest): Request.
+    """
+
+    # Context
+    context = request.app["request_context"]
+
+    # Query string params.
+    connection_id = clean_and_get_field_from_dict(request.query, "connection_id")
+
+    # Initialise the manager
+    mgr = V2ADAManager(context)
+
+    # Call the function
+    res = await mgr.send_fetch_preference_message(connection_id)
+
+    return web.json_response(res.serialize())

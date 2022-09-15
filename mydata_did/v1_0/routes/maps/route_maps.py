@@ -5,6 +5,7 @@ from mydata_did.v1_0.routes.connection_routes import (
     get_existing_connections_handler,
     send_existing_connections_message_handler,
     v2_connections_create_invitation,
+    v2_connections_receive_invitation,
     wellknown_connection_handler,
 )
 from mydata_did.v1_0.routes.data_agreement_auditor_functions_routes import (
@@ -23,6 +24,7 @@ from mydata_did.v1_0.routes.data_agreement_core_functions_routes import (
     query_data_agreements_in_wallet,
     remove_data_agreement_qr_code_metadata_record_handler,
     send_data_agreements_qr_code_workflow_initiate_handler,
+    send_fetch_preference_message_handler,
     set_da_permission_handler,
     update_da_personal_data_in_wallet,
     update_data_agreement_in_wallet_v2,
@@ -121,6 +123,7 @@ ROUTES_ADA = [
         send_json_ld_didcomm_processed_data_message_handler,
     ),
     web.post("/v2/connections/create-invitation", v2_connections_create_invitation),
+    web.post("/v2/connections/receive-invitation", v2_connections_receive_invitation),
     web.post(
         "/v1/connections/{conn_id}/invitation/firebase",
         generate_firebase_dynamic_link_for_connection_invitation_handler,
@@ -143,5 +146,9 @@ ROUTES_ADA = [
     web.post(
         "/v1/data-agreements/instances/{instance_id}/permissions",
         set_da_permission_handler,
+    ),
+    web.post(
+        "/v1/data-subject/third-party-data-sharing/fetch-preferences",
+        send_fetch_preference_message_handler,
     ),
 ]

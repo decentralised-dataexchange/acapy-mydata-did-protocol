@@ -1,19 +1,29 @@
 from aries_cloudagent.connections.models.connection_record import (
-    ConnectionRecord, ConnectionRecordSchema)
+    ConnectionRecord,
+    ConnectionRecordSchema,
+)
 from aries_cloudagent.messaging.models.openapi import OpenAPISchema
-from aries_cloudagent.messaging.valid import (INDY_DID, INDY_RAW_PUBLIC_KEY,
-                                              UUID4, UUIDFour)
-from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import \
-    ConnectionInvitationSchema
-from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import \
-    DAInstancePermissionRecord
+from aries_cloudagent.messaging.valid import (
+    INDY_DID,
+    INDY_RAW_PUBLIC_KEY,
+    UUID4,
+    UUIDFour,
+)
+from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation import (
+    ConnectionInvitationSchema,
+)
+from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import (
+    DAInstancePermissionRecord,
+)
 from marshmallow import fields, validate, validates
 from marshmallow.exceptions import ValidationError
 from mydata_did.v1_0.models.diddoc_model import MyDataDIDDocSchema
-from mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record import \
-    DataAgreementCRUDDIDCommTransaction
-from mydata_did.v1_0.models.exchange_records.data_agreement_record import \
-    DataAgreementV1Record
+from mydata_did.v1_0.models.exchange_records.data_agreement_didcomm_transaction_record import (
+    DataAgreementCRUDDIDCommTransaction,
+)
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import (
+    DataAgreementV1Record,
+)
 from mydata_did.v1_0.utils.regex import MYDATA_DID
 
 
@@ -959,3 +969,21 @@ class SetDAPermissionQueryStringSchema(OpenAPISchema):
             ]
         ),
     )
+
+
+class V2ReceiveConnectionInvitationRequestSchema(OpenAPISchema):
+    """V2 receive connection invitation request schema"""
+
+    connection_url = fields.Str()
+
+
+class ListDUSForThirdpartySharingDAMatchInfoSchema(OpenAPISchema):
+    """List DUS for third party sharing DA match info schema."""
+
+    instance_id = fields.Str()
+
+
+class SendFetchPreferenceMessageQueryStringSchema(OpenAPISchema):
+    """Send fetch preference message query string schema"""
+
+    connection_id = fields.Str()

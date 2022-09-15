@@ -44,3 +44,9 @@ TAGS_DATA_CONTROLLER_FUNCTIONS = {
     "name": TAGS_DATA_CONTROLLER_FUNCTIONS_LABEL,
     "description": "Data Controller functions",
 }
+
+TAGS_DATA_SUBJECT_FUNCTIONS_LABEL = "Data Subject"
+TAGS_DATA_SUBJECT_FUNCTIONS = {
+    "name": TAGS_DATA_SUBJECT_FUNCTIONS_LABEL,
+    "description": "Data Subject functions",
+}

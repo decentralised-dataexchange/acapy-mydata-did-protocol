@@ -8,6 +8,7 @@ from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS,
     TAGS_DATA_AGREEMENT_CORE_FUNCTIONS,
     TAGS_DATA_CONTROLLER_FUNCTIONS,
+    TAGS_DATA_SUBJECT_FUNCTIONS,
     TAGS_JSONLD_FUNCTIONS,
     TAGS_MYDATA_DID_OPERATIONS,
 )
@@ -96,3 +97,4 @@ def post_process_routes(app: web.Application):
     app._state["swagger_dict"]["tags"].append(TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS)
     app._state["swagger_dict"]["tags"].append(TAGS_JSONLD_FUNCTIONS)
     app._state["swagger_dict"]["tags"].append(TAGS_DATA_CONTROLLER_FUNCTIONS)
+    app._state["swagger_dict"]["tags"].append(TAGS_DATA_SUBJECT_FUNCTIONS)
