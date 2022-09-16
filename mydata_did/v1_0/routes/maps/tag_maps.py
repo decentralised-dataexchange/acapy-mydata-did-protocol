@@ -3,7 +3,7 @@ from mydata_did.v1_0.message_types import SPEC_URI
 TAGS_MYDATA_DID_OPERATIONS_LABEL = "Data Agreement - MyData DID Operations"
 TAGS_MYDATA_DID_OPERATIONS = {
     "name": TAGS_MYDATA_DID_OPERATIONS_LABEL,
-    "description": "MyData DID Protocol 1.0 (ADA RFC 0001)",
+    "description": "MyData DID Protocol (ADA RFC 0001)",
     "externalDocs": {
         "description": "Specification",
         "url": SPEC_URI,
@@ -13,7 +13,7 @@ TAGS_MYDATA_DID_OPERATIONS = {
 TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL = "Data Agreement - Core Functions"
 TAGS_DATA_AGREEMENT_CORE_FUNCTIONS = {
     "name": TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL,
-    "description": "Data Agreement Protocol 1.0 (ADA RFC 0002)",
+    "description": "Data Agreement Protocol (ADA RFC 0002)",
     "externalDocs": {
         "description": "Specification",
         "url": SPEC_URI,
@@ -24,7 +24,7 @@ TAGS_DATA_AGREEMENT_CORE_FUNCTIONS = {
 TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS_LABEL = "Data Agreement - Auditor Functions"
 TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS = {
     "name": TAGS_DATA_AGREEMENT_AUDITOR_FUNCTIONS_LABEL,
-    "description": "Data Agreement Proofs Protocol 1.0 (ADA RFC 0004)",
+    "description": "Data Agreement Proofs Protocol (ADA RFC 0004)",
     "externalDocs": {
         "description": "Specification",
         "url": SPEC_URI,
