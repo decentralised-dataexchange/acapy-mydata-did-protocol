@@ -15,6 +15,9 @@ from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation 
 from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import (
     DAInstancePermissionRecord,
 )
+from dexa_sdk.agreements.da.v1_0.records.third_party_data_sharing_preferences_record import (
+    ThirdParyDAPreferenceRecord,
+)
 from marshmallow import fields, validate, validates
 from marshmallow.exceptions import ValidationError
 from mydata_did.v1_0.models.diddoc_model import MyDataDIDDocSchema
@@ -960,7 +963,7 @@ class SetDAPermissionQueryStringSchema(OpenAPISchema):
 
     state = fields.Str(
         description="Permission state",
-        required=False,
+        required=True,
         validate=validate.OneOf(
             [
                 getattr(DAInstancePermissionRecord, m)
@@ -987,3 +990,26 @@ class SendFetchPreferenceMessageQueryStringSchema(OpenAPISchema):
     """Send fetch preference message query string schema"""
 
     connection_id = fields.Str()
+
+
+class SendUpdatePreferencesMatchInfoSchema(OpenAPISchema):
+    """Send update preferences match info schema"""
+
+    dda_instance_id = fields.Str()
+    da_instance_id = fields.Str()
+
+
+class SendUpdatePreferencesQueryStringSchema(OpenAPISchema):
+    """Send update preference query string schema"""
+
+    state = fields.Str(
+        description="Permission state",
+        required=True,
+        validate=validate.OneOf(
+            [
+                getattr(ThirdParyDAPreferenceRecord, m)
+                for m in vars(ThirdParyDAPreferenceRecord)
+                if m.startswith("STATE_")
+            ]
+        ),
+    )

@@ -25,6 +25,7 @@ from mydata_did.v1_0.routes.data_agreement_core_functions_routes import (
     remove_data_agreement_qr_code_metadata_record_handler,
     send_data_agreements_qr_code_workflow_initiate_handler,
     send_fetch_preference_message_handler,
+    send_update_preferences_message_handler,
     set_da_permission_handler,
     update_da_personal_data_in_wallet,
     update_data_agreement_in_wallet_v2,
@@ -150,5 +151,9 @@ ROUTES_ADA = [
     web.post(
         "/v1/data-subject/third-party-data-sharing/fetch-preferences",
         send_fetch_preference_message_handler,
+    ),
+    web.post(
+        "/v1/data-subject/third-party-data-sharing/update-preferences/dda/{dda_instance_id}/da/{da_instance_id}",
+        send_update_preferences_message_handler,
     ),
 ]
