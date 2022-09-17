@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "acapy-mydata-did-protocol"
-version = "0.1.8"
+version = "0.1.9"
 description = "ACA-Py plugin for MyData DID DIDComm protcol"
 authors = ["George J Padayatti <george.padayatti@igrant.io>"]
 license = "License :: OSI Approved :: Apache Software License"
