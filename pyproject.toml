@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "acapy-mydata-did-protocol"
-version = "0.1.10"
+version = "0.1.11"
 description = "ACA-Py plugin for MyData DID DIDComm protcol"
 authors = ["George J Padayatti <george.padayatti@igrant.io>"]
 license = "License :: OSI Approved :: Apache Software License"
@@ -26,7 +26,7 @@ python3-indy = "^1.16.0"
 semver = "^2.13.0"
 py-multibase = "^1.0.3"
 py-solc-x = "^1.1.1"
-dexa-sdk = { path = "/Users/georgejpadayatti/decentralised-dataexchange/dexa-sdk", develop = true }
+dexa-sdk = "0.1.9"
 
 
 [tool.poetry.dev-dependencies]
