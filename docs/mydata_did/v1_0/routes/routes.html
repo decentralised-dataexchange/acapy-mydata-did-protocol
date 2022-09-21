@@ -68,7 +68,11 @@ async def authentication_middleware(
         &#34;intermediary.igrantio_authentication&#34;
     )
 
-    if not config_igrantio_authentication or &#34;webhook&#34; in request.path:
+    if (
+        not config_igrantio_authentication
+        or &#34;webhook&#34; in request.path
+        or &#34;.well-known&#34; in request.path
+    ):
         # Intermediary config not available.
         return await handler(request)
 
@@ -168,7 +172,11 @@ async def authentication_middleware(
         &#34;intermediary.igrantio_authentication&#34;
     )
 
-    if not config_igrantio_authentication or &#34;webhook&#34; in request.path:
+    if (
+        not config_igrantio_authentication
+        or &#34;webhook&#34; in request.path
+        or &#34;.well-known&#34; in request.path
+    ):
         # Intermediary config not available.
         return await handler(request)
 

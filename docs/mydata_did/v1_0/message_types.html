@@ -63,6 +63,7 @@ THIRDPARTY_DATA_SHARING_UPDATE_PREFERENCES = (
     f&#34;third-party-data-sharing/1.0/update-preferences&#34;
 )
 
+
 DA_PERMISSIONS = f&#34;data-agreement/1.0/permissions&#34;
 
 # Message types for ADA RFC 0005 - Data Agreement Termination Protocol 1.0
@@ -162,6 +163,9 @@ MESSAGE_TYPES = DIDCommPrefix.qualify_all(
         ),
         THIRDPARTY_DATA_SHARING_FETCH_PREFERENCES_RESPONSE: (
             f&#34;{PROTOCOL_PACKAGE}.messages.fetch_preferences_response.FetchPreferencesResponseMessage&#34;
+        ),
+        THIRDPARTY_DATA_SHARING_UPDATE_PREFERENCES: (
+            f&#34;{PROTOCOL_PACKAGE}.messages.update_preferences_message.UpdatePreferencesMessage&#34;
         ),
     },
 )</code></pre>

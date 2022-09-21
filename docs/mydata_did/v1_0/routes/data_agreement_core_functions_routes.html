@@ -29,32 +29,24 @@
 <pre><code class="python">import logging
 
 from aiohttp import web
-from aiohttp_apispec import (
-    docs,
-    match_info_schema,
-    querystring_schema,
-    request_schema,
-    response_schema,
-)
+from aiohttp_apispec import (docs, match_info_schema, querystring_schema,
+                             request_schema, response_schema)
 from aries_cloudagent.messaging.models.base import BaseModelError
 from aries_cloudagent.storage.error import StorageError
 from dexa_sdk.managers.ada_manager import V2ADAManager
 from dexa_sdk.managers.dexa_manager import DexaManager
 from dexa_sdk.utils import clean_and_get_field_from_dict
 from mydata_did.v1_0.manager import ADAManagerError
-from mydata_did.v1_0.models.exchange_records.data_agreement_personal_data_record import (
-    DataAgreementPersonalDataRecordSchema,
-)
+from mydata_did.v1_0.models.exchange_records.data_agreement_personal_data_record import \
+    DataAgreementPersonalDataRecordSchema
 from mydata_did.v1_0.routes.maps.tag_maps import (
     TAGS_DATA_AGREEMENT_CORE_FUNCTIONS_LABEL,
-    TAGS_DATA_SUBJECT_FUNCTIONS_LABEL,
-)
+    TAGS_DATA_SUBJECT_FUNCTIONS_LABEL)
 from mydata_did.v1_0.routes.openapi.schemas import (
     ConfigureCustomerIdentificationDAMatchInfoSchema,
     CreateOrUpdateDataAgreementInWalletQueryStringSchema,
     CreateOrUpdateDataAgreementInWalletRequestSchema,
-    DataAgreementQRCodeMatchInfoSchema,
-    DataAgreementQueryStringSchema,
+    DataAgreementQRCodeMatchInfoSchema, DataAgreementQueryStringSchema,
     DataAgreementV1RecordResponseSchema,
     DeleteDaPersonalDataInWalletMatchInfoSchema,
     DeleteDataAgreementMatchInfoSchema,
@@ -67,14 +59,14 @@ from mydata_did.v1_0.routes.openapi.schemas import (
     RemoveDataAgreementQrCodeMetadataRecordMatchInfoSchema,
     SendDataAgreementQrCodeWorkflowInitiateHandlerMatchInfoSchema,
     SendFetchPreferenceMessageQueryStringSchema,
-    SetDAPermissionMatchInfoSchema,
+    SendUpdatePreferencesMatchInfoSchema,
+    SendUpdatePreferencesQueryStringSchema, SetDAPermissionMatchInfoSchema,
     SetDAPermissionQueryStringSchema,
     UpdateDaPersonalDataInWalletMatchInfoSchema,
     UpdateDaPersonalDataInWalletRequestSchema,
     UpdateDaPersonalDataInWalletResponseSchema,
     UpdateDataAgreementMatchInfoSchema,
-    UpdateDataAgreementTemplateOpenAPISchema,
-)
+    UpdateDataAgreementTemplateOpenAPISchema)
 from mydata_did.v1_0.utils.util import str_to_bool
 
 LOGGER = logging.getLogger(__name__)
@@ -633,7 +625,39 @@ async def send_fetch_preference_message_handler(request: web.BaseRequest):
     # Call the function
     res = await mgr.send_fetch_preference_message(connection_id)
 
-    return web.json_response(res.serialize())</code></pre>
+    return web.json_response(res.serialize())
+
+
+@docs(
+    tags=[TAGS_DATA_SUBJECT_FUNCTIONS_LABEL],
+    summary=&#34;Send update preferences message.&#34;,
+)
+@match_info_schema(SendUpdatePreferencesMatchInfoSchema())
+@querystring_schema(SendUpdatePreferencesQueryStringSchema())
+async def send_update_preferences_message_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Send update preferences message handler.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Path parameters
+    dda_instance_id = request.match_info[&#34;dda_instance_id&#34;]
+    da_instance_id = request.match_info[&#34;da_instance_id&#34;]
+
+    # Query string parameters
+    state = clean_and_get_field_from_dict(request.query, &#34;state&#34;)
+
+    # Manager
+    mgr = V2ADAManager(context)
+
+    # Call the function
+    await mgr.send_update_preferences_message(dda_instance_id, da_instance_id, state)
+
+    return web.json_response({}, status=204)</code></pre>
 </details>
 </section>
 <section>
@@ -1216,6 +1240,52 @@ async def send_fetch_preference_message_handler(request: web.BaseRequest):
     return web.json_response(res.serialize())</code></pre>
 </details>
 </dd>
+<dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_update_preferences_message_handler"><code class="name flex">
+<span>async def <span class="ident">send_update_preferences_message_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send update preferences message handler.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>request</code></strong> :&ensp;<code>web.BaseRequest</code></dt>
+<dd>Request.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@docs(
+    tags=[TAGS_DATA_SUBJECT_FUNCTIONS_LABEL],
+    summary=&#34;Send update preferences message.&#34;,
+)
+@match_info_schema(SendUpdatePreferencesMatchInfoSchema())
+@querystring_schema(SendUpdatePreferencesQueryStringSchema())
+async def send_update_preferences_message_handler(request: web.BaseRequest):
+    &#34;&#34;&#34;Send update preferences message handler.
+
+    Args:
+        request (web.BaseRequest): Request.
+    &#34;&#34;&#34;
+
+    # Context
+    context = request.app[&#34;request_context&#34;]
+
+    # Path parameters
+    dda_instance_id = request.match_info[&#34;dda_instance_id&#34;]
+    da_instance_id = request.match_info[&#34;da_instance_id&#34;]
+
+    # Query string parameters
+    state = clean_and_get_field_from_dict(request.query, &#34;state&#34;)
+
+    # Manager
+    mgr = V2ADAManager(context)
+
+    # Call the function
+    await mgr.send_update_preferences_message(dda_instance_id, da_instance_id, state)
+
+    return web.json_response({}, status=204)</code></pre>
+</details>
+</dd>
 <dt id="mydata_did.v1_0.routes.data_agreement_core_functions_routes.set_da_permission_handler"><code class="name flex">
 <span>async def <span class="ident">set_da_permission_handler</span></span>(<span>request: aiohttp.web_request.BaseRequest)</span>
 </code></dt>
@@ -1392,6 +1462,7 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.remove_data_agreement_qr_code_metadata_record_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.remove_data_agreement_qr_code_metadata_record_handler">remove_data_agreement_qr_code_metadata_record_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_data_agreements_qr_code_workflow_initiate_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_data_agreements_qr_code_workflow_initiate_handler">send_data_agreements_qr_code_workflow_initiate_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_fetch_preference_message_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_fetch_preference_message_handler">send_fetch_preference_message_handler</a></code></li>
+<li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_update_preferences_message_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.send_update_preferences_message_handler">send_update_preferences_message_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.set_da_permission_handler" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.set_da_permission_handler">set_da_permission_handler</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_da_personal_data_in_wallet" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_da_personal_data_in_wallet">update_da_personal_data_in_wallet</a></code></li>
 <li><code><a title="mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_data_agreement_in_wallet_v2" href="#mydata_did.v1_0.routes.data_agreement_core_functions_routes.update_data_agreement_in_wallet_v2">update_data_agreement_in_wallet_v2</a></code></li>

@@ -43,6 +43,9 @@ from aries_cloudagent.protocols.connections.v1_0.messages.connection_invitation 
 from dexa_sdk.agreements.da.v1_0.records.da_instance_permission_record import (
     DAInstancePermissionRecord,
 )
+from dexa_sdk.agreements.da.v1_0.records.third_party_data_sharing_preferences_record import (
+    ThirdParyDAPreferenceRecord,
+)
 from marshmallow import fields, validate, validates
 from marshmallow.exceptions import ValidationError
 from mydata_did.v1_0.models.diddoc_model import MyDataDIDDocSchema
@@ -988,7 +991,7 @@ class SetDAPermissionQueryStringSchema(OpenAPISchema):
 
     state = fields.Str(
         description=&#34;Permission state&#34;,
-        required=False,
+        required=True,
         validate=validate.OneOf(
             [
                 getattr(DAInstancePermissionRecord, m)
@@ -1014,7 +1017,30 @@ class ListDUSForThirdpartySharingDAMatchInfoSchema(OpenAPISchema):
 class SendFetchPreferenceMessageQueryStringSchema(OpenAPISchema):
     &#34;&#34;&#34;Send fetch preference message query string schema&#34;&#34;&#34;
 
-    connection_id = fields.Str()</code></pre>
+    connection_id = fields.Str()
+
+
+class SendUpdatePreferencesMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send update preferences match info schema&#34;&#34;&#34;
+
+    dda_instance_id = fields.Str()
+    da_instance_id = fields.Str()
+
+
+class SendUpdatePreferencesQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send update preference query string schema&#34;&#34;&#34;
+
+    state = fields.Str(
+        description=&#34;Permission state&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                getattr(ThirdParyDAPreferenceRecord, m)
+                for m in vars(ThirdParyDAPreferenceRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -3230,6 +3256,75 @@ data agreement template message handler</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema"><code class="flex name class">
+<span>class <span class="ident">SendUpdatePreferencesMatchInfoSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send update preferences match info schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendUpdatePreferencesMatchInfoSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send update preferences match info schema&#34;&#34;&#34;
+
+    dda_instance_id = fields.Str()
+    da_instance_id = fields.Str()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema"><code class="flex name class">
+<span>class <span class="ident">SendUpdatePreferencesQueryStringSchema</span></span>
+<span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send update preference query string schema</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SendUpdatePreferencesQueryStringSchema(OpenAPISchema):
+    &#34;&#34;&#34;Send update preference query string schema&#34;&#34;&#34;
+
+    state = fields.Str(
+        description=&#34;Permission state&#34;,
+        required=True,
+        validate=validate.OneOf(
+            [
+                getattr(ThirdParyDAPreferenceRecord, m)
+                for m in vars(ThirdParyDAPreferenceRecord)
+                if m.startswith(&#34;STATE_&#34;)
+            ]
+        ),
+    )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>aries_cloudagent.messaging.models.openapi.OpenAPISchema</li>
+<li>marshmallow.schema.Schema</li>
+<li>marshmallow.base.SchemaABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema.opts"><code class="name">var <span class="ident">opts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="mydata_did.v1_0.routes.openapi.schemas.SetDAPermissionMatchInfoSchema"><code class="flex name class">
 <span>class <span class="ident">SetDAPermissionMatchInfoSchema</span></span>
 <span>(</span><span>*, only: Union[Sequence[str], Set[str]] = None, exclude: Union[Sequence[str], Set[str]] = (), many: bool = False, context: Dict = None, load_only: Union[Sequence[str], Set[str]] = (), dump_only: Union[Sequence[str], Set[str]] = (), partial: Union[bool, Sequence[str], Set[str]] = False, unknown: str = None)</span>
@@ -3274,7 +3369,7 @@ data agreement template message handler</p></div>
 
     state = fields.Str(
         description=&#34;Permission state&#34;,
-        required=False,
+        required=True,
         validate=validate.OneOf(
             [
                 getattr(DAInstancePermissionRecord, m)
@@ -3958,6 +4053,18 @@ data agreement template message handler</p></div>
 <h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema">SendReadDIDMessageMatchInfoSchema</a></code></h4>
 <ul class="">
 <li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendReadDIDMessageMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema">SendUpdatePreferencesMatchInfoSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesMatchInfoSchema.opts">opts</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema" href="#mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema">SendUpdatePreferencesQueryStringSchema</a></code></h4>
+<ul class="">
+<li><code><a title="mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema.opts" href="#mydata_did.v1_0.routes.openapi.schemas.SendUpdatePreferencesQueryStringSchema.opts">opts</a></code></li>
 </ul>
 </li>
 <li>
