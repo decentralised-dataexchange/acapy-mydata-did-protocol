@@ -101,96 +101,98 @@ class CredentialRequestHandler(BaseHandler):
                     await cred_ex_record.save(context)
 
 
-                    raise HandlerException(
-                        "Data agreement context decorator not found in request message")
+                    # raise HandlerException(
+                    #     "Data agreement context decorator not found in request message")
 
-                if isinstance(data_agreement_context_message, DataAgreementNegotiationAcceptMessage):
+                else:
 
-                    # Deserialise data agreement
-                    data_agreement_offer: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
-                        cred_ex_record.data_agreement
-                    )
+                    if isinstance(data_agreement_context_message, DataAgreementNegotiationAcceptMessage):
 
-                    # Construct data agreement with proof chain
-                    data_agreement_with_proof_chain = DataAgreementInstance(
-                        context=data_agreement_offer.context,
-                        data_agreement_id=data_agreement_offer.data_agreement_id,
-                        data_agreement_version=data_agreement_offer.data_agreement_version,
-                        data_agreement_template_id=data_agreement_offer.data_agreement_template_id,
-                        data_agreement_template_version=data_agreement_offer.data_agreement_template_version,
-                        pii_controller_name=data_agreement_offer.pii_controller_name,
-                        pii_controller_url=data_agreement_offer.pii_controller_url,
-                        usage_purpose=data_agreement_offer.usage_purpose,
-                        usage_purpose_description=data_agreement_offer.usage_purpose_description,
-                        legal_basis=data_agreement_offer.legal_basis,
-                        method_of_use=data_agreement_offer.method_of_use,
-                        data_policy=data_agreement_offer.data_policy,
-                        personal_data=data_agreement_offer.personal_data,
-                        dpia=data_agreement_offer.dpia,
-                        event=[
-                            data_agreement_offer.event[0],
-                            data_agreement_context_message.body.event
-                        ],
-                        proof_chain=[
-                            data_agreement_offer.proof,
-                            data_agreement_context_message.body.proof
-                        ],
-                        principle_did=data_agreement_offer.principle_did
-                    )
-
-                    # Principle MyData DID (Data Subject)
-                    principle_did = DIDMyData.from_did(
-                        data_agreement_context_message.body.proof.verification_method)
-
-                    # Controler MyData DID (Data Controller - Organisation)
-                    controller_did = DIDMyData.from_did(
-                        data_agreement_offer.proof.verification_method)
-
-                    # Verify signatures on data agreement
-                    valid = await verify_data_agreement_with_proof_chain(
-                        data_agreement_with_proof_chain.serialize(),
-                        [
-                            controller_did.public_key_b58,
-                            principle_did.public_key_b58
-                        ],
-                        wallet
-                    )
-
-                    if not valid:
-                        self._logger.error(
-                            "Data agreement accept verification failed"
+                        # Deserialise data agreement
+                        data_agreement_offer: DataAgreementNegotiationOfferBody = DataAgreementNegotiationOfferBodySchema().load(
+                            cred_ex_record.data_agreement
                         )
 
-                        # Send problem report
-                        problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
-                            connection_record=context.connection_record,
-                            data_agreement_id=cred_ex_record.data_agreement_id,
-                            problem_code=DataAgreementNegotiationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,
-                            explain="Data agreement accept signature verification failed"
+                        # Construct data agreement with proof chain
+                        data_agreement_with_proof_chain = DataAgreementInstance(
+                            context=data_agreement_offer.context,
+                            data_agreement_id=data_agreement_offer.data_agreement_id,
+                            data_agreement_version=data_agreement_offer.data_agreement_version,
+                            data_agreement_template_id=data_agreement_offer.data_agreement_template_id,
+                            data_agreement_template_version=data_agreement_offer.data_agreement_template_version,
+                            pii_controller_name=data_agreement_offer.pii_controller_name,
+                            pii_controller_url=data_agreement_offer.pii_controller_url,
+                            usage_purpose=data_agreement_offer.usage_purpose,
+                            usage_purpose_description=data_agreement_offer.usage_purpose_description,
+                            legal_basis=data_agreement_offer.legal_basis,
+                            method_of_use=data_agreement_offer.method_of_use,
+                            data_policy=data_agreement_offer.data_policy,
+                            personal_data=data_agreement_offer.personal_data,
+                            dpia=data_agreement_offer.dpia,
+                            event=[
+                                data_agreement_offer.event[0],
+                                data_agreement_context_message.body.event
+                            ],
+                            proof_chain=[
+                                data_agreement_offer.proof,
+                                data_agreement_context_message.body.proof
+                            ],
+                            principle_did=data_agreement_offer.principle_did
                         )
 
-                        await ada_manager.send_data_agreement_negotiation_problem_report_message(
-                            connection_record=context.connection_record,
-                            data_agreement_negotiation_problem_report_message=problem_report
+                        # Principle MyData DID (Data Subject)
+                        principle_did = DIDMyData.from_did(
+                            data_agreement_context_message.body.proof.verification_method)
+
+                        # Controler MyData DID (Data Controller - Organisation)
+                        controller_did = DIDMyData.from_did(
+                            data_agreement_offer.proof.verification_method)
+
+                        # Verify signatures on data agreement
+                        valid = await verify_data_agreement_with_proof_chain(
+                            data_agreement_with_proof_chain.serialize(),
+                            [
+                                controller_did.public_key_b58,
+                                principle_did.public_key_b58
+                            ],
+                            wallet
                         )
 
-                        cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_PROBLEM_REPORT
-                        cred_ex_record.data_agreement_problem_report = problem_report.serialize()
+                        if not valid:
+                            self._logger.error(
+                                "Data agreement accept verification failed"
+                            )
+
+                            # Send problem report
+                            problem_report = await ada_manager.construct_data_agreement_negotiation_problem_report_message(
+                                connection_record=context.connection_record,
+                                data_agreement_id=cred_ex_record.data_agreement_id,
+                                problem_code=DataAgreementNegotiationProblemReportReason.SIGNATURE_VERIFICATION_FAILED.value,
+                                explain="Data agreement accept signature verification failed"
+                            )
+
+                            await ada_manager.send_data_agreement_negotiation_problem_report_message(
+                                connection_record=context.connection_record,
+                                data_agreement_negotiation_problem_report_message=problem_report
+                            )
+
+                            cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_PROBLEM_REPORT
+                            cred_ex_record.data_agreement_problem_report = problem_report.serialize()
+                            await cred_ex_record.save(context)
+
+                            raise HandlerException(
+                                "Data agreement accept signature verification failed"
+                            )
+
+                        # Update credential exchange record with data agreement metadata
+                        cred_ex_record.data_agreement = data_agreement_with_proof_chain.serialize()
+                        cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_ACCEPT
+
                         await cred_ex_record.save(context)
 
-                        raise HandlerException(
-                            "Data agreement accept signature verification failed"
+                        self._logger.info(
+                            f"Data agreement negotiation accept context message: \n{json.dumps(data_agreement_context_message.serialize(), indent=4)}\n"
                         )
-
-                    # Update credential exchange record with data agreement metadata
-                    cred_ex_record.data_agreement = data_agreement_with_proof_chain.serialize()
-                    cred_ex_record.data_agreement_status = V10CredentialExchange.DATA_AGREEMENT_ACCEPT
-
-                    await cred_ex_record.save(context)
-
-                    self._logger.info(
-                        f"Data agreement negotiation accept context message: \n{json.dumps(data_agreement_context_message.serialize(), indent=4)}\n"
-                    )
 
         except ADAManagerError as err:
 
