@@ -3103,6 +3103,7 @@ async def v2_connections_create_invitation(request: web.BaseRequest):
     # Initialise MyData DID Manager.
     mydata_did_manager: ADAManager = ADAManager(context=context)
     try:
+        LOGGER.debug("line 3106")
         (connection, invitation) = await mydata_did_manager.create_invitation(
             auto_accept=auto_accept, public=public, multi_use=multi_use, alias=alias
         )

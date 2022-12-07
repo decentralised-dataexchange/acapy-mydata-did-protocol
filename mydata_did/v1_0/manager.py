@@ -3312,6 +3312,8 @@ class ADAManager:
 
         image_url = None
 
+        self._logger.debug("line 3315")
+
         try:
             # Fetch iGrant.io config
             igrantio_config = await self.fetch_igrantio_config_from_os_environ()
@@ -3328,15 +3330,21 @@ class ADAManager:
             async with aiohttp.ClientSession(headers=request_headers) as session:
                 async with session.get(igrantio_organisation_detail_url) as resp:
                     if resp.status == 200:
+                        self._logger.debug("line 3333")
                         jresp = await resp.json()
 
                         if "Organization" in jresp:
                             organization_details = jresp["Organization"]
                             my_label = organization_details["Name"]
                             image_url = organization_details["LogoImageURL"] + "/web"
+                    else:
+                        self._logger.debug("line 3341")
+                        tresp = await resp.text()
+                        self._logger.debug(f"Failed to fetch organisation details from iGrant.io: {tresp}")
 
         except ADAManagerError as err:
-            pass
+            self._logger.debug("line 3346")
+            self._logger.debug(err)
 
         wallet: BaseWallet = await self.context.inject(BaseWallet)
 
@@ -3399,6 +3407,8 @@ class ADAManager:
         # Create connection invitation message
         # Note: Need to split this into two stages to support inbound routing of invites
         # Would want to reuse create_did_document and convert the result
+        self._logger.debug("line 3410")
+        self._logger.debug(f"Image url: {image_url}")
         invitation = ConnectionInvitation(
             label=my_label, recipient_keys=[
                 connection_key.verkey], endpoint=my_endpoint, image_url=image_url
