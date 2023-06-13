@@ -53,6 +53,7 @@ from .models.data_agreement_instance_model import DataAgreementInstanceSchema, D
 from .utils.util import str_to_bool, bool_to_str, comma_separated_str_to_list, get_slices
 from .utils.regex import MYDATA_DID
 from .utils.jsonld.data_agreement import sign_data_agreement, verify_data_agreement, verify_data_agreement_with_proof_chain
+from .kafka_publisher import publish_event_to_data_agreement_topic, DataAgreementOperations
 
 
 LOGGER = logging.getLogger(__name__)
@@ -1572,6 +1573,16 @@ async def create_and_store_data_agreement_in_wallet_v2(request: web.BaseRequest)
 
         if not data_agreement_v2_record:
             raise web.HTTPBadRequest(reason="Data agreement not created")
+        
+        # Notify the iGrant.io backend about the creation of data agreement.
+
+        daObject = {
+            "data_agreement_id": data_agreement_v2_record.data_agreement_id,
+            "data_agreement": data_agreement_v2_record.data_agreement,
+            "publish_flag": data_agreement_v2_record.publish_flag,
+        }
+        key = DataAgreementOperations.DACREATE.value
+        await publish_event_to_data_agreement_topic(key, json.dumps(daObject), LOGGER)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -1624,6 +1635,15 @@ async def publish_data_agreement_handler(request: web.BaseRequest):
 
         if not data_agreement_v1_record:
             raise web.HTTPBadRequest(reason="Data agreement not published")
+        
+        # Notify the iGrant.io backend about the publish of data agreement.
+
+        daObject = {
+            "data_agreement_id": data_agreement_id,
+            "publish_flag": data_agreement_v1_record.publish_flag,
+        }
+        key = DataAgreementOperations.DAPUBLISH.value
+        await publish_event_to_data_agreement_topic(key, json.dumps(daObject), LOGGER)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -1773,6 +1793,17 @@ async def update_data_agreement_in_wallet_v2(request: web.BaseRequest):
             draft=draft
         )
 
+        # Notify the iGrant.io backend about the updation of data agreement.
+        
+        daObject = {
+            "data_agreement_id": data_agreement_v2_record.data_agreement_id,
+            "data_agreement": data_agreement_v2_record.data_agreement,
+            "publish_flag": data_agreement_v2_record.publish_flag,
+        }
+        key = DataAgreementOperations.DAUPDATE.value
+        await publish_event_to_data_agreement_topic(key, json.dumps(daObject), LOGGER)
+
+
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
 
@@ -1811,6 +1842,14 @@ async def delete_data_agreement_in_wallet(request: web.BaseRequest):
     try:
         # Delete data agreement in the wallet
         await mydata_did_manager.delete_data_agreement_in_wallet(data_agreement_id=data_agreement_id)
+
+        # Notify iGrant.io backend about data agreement deletion
+
+        daObject = {
+            "data_agreement_id": data_agreement_id
+        }
+        key = DataAgreementOperations.DADELETE.value
+        await publish_event_to_data_agreement_topic(key,json.dumps(daObject), LOGGER)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -2023,6 +2062,17 @@ async def update_da_personal_data_in_wallet(request: web.BaseRequest):
             updated_description=attribute_description
         )
 
+        # Notify the iGrant.io backend about the updation of data agreement personal data
+        daObject = {
+            "data_agreement_id": personal_data_dict['data_agreement']['data_agreement_id'],
+            "attribute_id": personal_data_dict["attribute_id"],
+            "attribute_name": personal_data_dict["attribute_name"],
+            "attribute_description": personal_data_dict["attribute_description"],
+        }
+        
+        key = DataAgreementOperations.DAPERSONALDATAUPDATE.value
+        await publish_event_to_data_agreement_topic(key, json.dumps(daObject), LOGGER)
+
     except ADAManagerError as err:
 
         raise web.HTTPBadRequest(reason=err.roll_up) from err
@@ -2065,9 +2115,18 @@ async def delete_da_personal_data_in_wallet(request: web.BaseRequest):
 
     try:
 
-        await ada_mgr.delete_da_personal_data_in_wallet(
+        data_agreement_id, attribute_name = await ada_mgr.delete_da_personal_data_in_wallet(
             personal_data_id=personal_data_id
         )
+        # Notify the iGrant.io backend about the deletion of data agreement personal data
+        
+        daObject = {
+            "data_agreement_id": data_agreement_id,
+            "attribute_name": attribute_name
+        }
+        
+        key = DataAgreementOperations.DAPERSONALDATADELETE.value
+        await publish_event_to_data_agreement_topic(key, json.dumps(daObject), LOGGER)
 
     except ADAManagerError as err:
         raise web.HTTPBadRequest(reason=err.roll_up) from err
