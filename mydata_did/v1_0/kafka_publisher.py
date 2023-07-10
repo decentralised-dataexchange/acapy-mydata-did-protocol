@@ -1,9 +1,12 @@
 from confluent_kafka import Producer
 import os
 import json
-from logging import Logger
+import logging
 from enum import Enum
-# from mydata_did.v1_0.manager import ADAManager
+from dataclasses import dataclass, asdict
+import typing
+
+LOGGER = logging.getLogger(__name__)
 
 class DataAgreementOperations(Enum):
     DACREATE = "DataAgreementCreate"
@@ -13,15 +16,24 @@ class DataAgreementOperations(Enum):
     DAPERSONALDATAUPDATE = "DataAgreementPersonalDataUpdate"
     DAPERSONALDATADELETE = "DataAgreementPersonalDataDelete"
 
-async def publish_event_to_kafka_topic(key: str, message: str, topic: str, logger: Logger):
-    kafka_server_address = os.environ.get("KAFKA_SERVER_ADDRESS", 'localhost:9092')
-    # Fetch iGrant.io config
-    # igrantio_config =await ada_manager.fetch_igrantio_config_from_os_environ()
-    igrantio_org_id = os.environ.get("IGRANTIO_ORG_ID")
-    data = json.loads(message)
-    data['igrantio_org_id'] = igrantio_org_id
 
-    message_with_org_id = json.dumps(data)
+@dataclass
+class KafkaMessage:
+    payload: str
+    org_id: str
+
+@dataclass
+class PublishEventToKafkaTopic:
+    key: str
+    message: str
+    topic: typing.Optional[str] = None
+
+async def publish_event_to_kafka_topic(publish_payload: PublishEventToKafkaTopic):
+    kafka_server_address = os.environ.get("KAFKA_SERVER_ADDRESS", 'localhost:9092')
+    igrantio_org_id = os.environ.get("IGRANTIO_ORG_ID")
+    
+    kafka_message = KafkaMessage(payload=publish_payload.message, org_id=igrantio_org_id)
+    kafka_message_str = json.dumps(asdict(kafka_message))
 
     kafka_producer_configuration = {
         'bootstrap.servers': kafka_server_address,
@@ -32,15 +44,15 @@ async def publish_event_to_kafka_topic(key: str, message: str, topic: str, logge
         if err is not None: 
             log_message = f"Message delivery failed: {err}"
         else: 
-            log_message = f'Message delivered to {msg.topic()} [{msg.partition()}] partition'
-        logger.debug(log_message)
+            log_message = f'Message delivered to {msg.topic()}'
+        LOGGER.debug(log_message)
 
     # Publish event to Kafka topic
-    kafka_producer.produce(topic,key=key, value=message_with_org_id, callback=kafka_event_delivery_callback_handler)
+    kafka_producer.produce(publish_payload.topic,key=publish_payload.key, value=kafka_message_str, callback=kafka_event_delivery_callback_handler)
 
-    # Wait for the message to be delivered
+    # Flush to ensure that the message is sent to the Kafka broker
     kafka_producer.flush()
 
-async def publish_event_to_data_agreement_topic(key: str, message: str, logger: Logger):
-    topic = "data_agreement"
-    await publish_event_to_kafka_topic(key, message, topic, logger)
+async def publish_event_to_data_agreement_topic(publish_payload: PublishEventToKafkaTopic):
+    publish_payload.topic = "data_agreement"
+    await publish_event_to_kafka_topic(publish_payload)
