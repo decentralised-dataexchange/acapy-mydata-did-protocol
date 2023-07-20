@@ -4055,7 +4055,15 @@ class ADAManager:
 
         return data_agreement_record_list if is_list else data_agreement_record_list[0]
 
-    async def create_data_agreement_and_personal_data_records(self, *, data_agreement: dict, existing_schema_id: str = None, draft: bool = False, existing_version: int = None, existing_data_agreement_id: str = None, update_ssi_payload: bool = True, existing_data_agreement_record: DataAgreementV1Record = None) -> typing.Tuple[DataAgreementV1Record, dict]:
+    async def create_data_agreement_and_personal_data_records(self, 
+                                                              *, 
+                                                              data_agreement: dict, 
+                                                              existing_schema_id: str = None, 
+                                                              draft: bool = False, 
+                                                              existing_version: int = None, 
+                                                              existing_data_agreement_id: str = None, 
+                                                              update_ssi_payload: bool = True, 
+                                                              existing_data_agreement_record: DataAgreementV1Record = None) -> typing.Tuple[DataAgreementV1Record, dict]:
         """
         Create data agreement and personal data records.
 
@@ -4526,7 +4534,7 @@ class ADAManager:
 
             if len(personal_data) != 0:
                 # Create new data agreement with incremented version
-                await self.create_data_agreement_and_personal_data_records(
+                (new_data_agreement_record, new_data_agreement_dict) = await self.create_data_agreement_and_personal_data_records(
                     data_agreement=data_agreement_dict.serialize(),
                     draft=data_agreement_record.is_draft,
                     existing_version=data_agreement_dict.data_agreement_template_version,
@@ -4537,6 +4545,8 @@ class ADAManager:
             data_agreement_record._delete_flag = True
             data_agreement_record._publish_flag = False
             await data_agreement_record.save(self.context)
+
+            return data_agreement_record.data_agreement_id, personal_data_record.attribute_name
 
         except StorageError as e:
             raise ADAManagerError(

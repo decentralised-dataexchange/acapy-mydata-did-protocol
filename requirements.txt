@@ -57,3 +57,4 @@ yarl==1.5.1
 py-multibase==1.0.3
 validators==0.18.2
 semver==2.13.0
+confluent-kafka==2.1.1
