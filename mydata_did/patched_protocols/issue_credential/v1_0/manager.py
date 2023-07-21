@@ -9,7 +9,10 @@ from typing import Mapping, Tuple
 
 from aries_cloudagent.connections.models.connection_record import ConnectionRecord
 
-from mydata_did.v1_0.models.exchange_records.data_agreement_record import DataAgreementV1Record
+from mydata_did.v1_0.models.exchange_records.data_agreement_record import (
+    DataAgreementV1Record,
+)
+from mydata_did.v1_0.manager import OperationalContext
 
 from .messages.credential_ack import CredentialAck
 from .messages.credential_issue import CredentialIssue
@@ -248,8 +251,12 @@ class CredentialManager:
         # vet attributes
         ledger: BaseLedger = await self.context.inject(BaseLedger)
         async with ledger:
-            schema_id = await ledger.credential_definition_id2schema_id(cred_def_id)
-            schema = await ledger.get_schema(schema_id)
+            schema_id = await ledger.credential_definition_id2schema_id(
+                cred_def_id, operational_context=OperationalContext.DATA_SOURCE
+            )
+            schema = await ledger.get_schema(
+                schema_id, operational_context=OperationalContext.DATA_SOURCE
+            )
         schema_attrs = {attr for attr in schema["attrNames"]}
         preview_attrs = {attr for attr in cred_preview.attr_dict()}
         if preview_attrs != schema_attrs:

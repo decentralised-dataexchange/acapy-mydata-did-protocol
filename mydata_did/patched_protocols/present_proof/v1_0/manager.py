@@ -4,6 +4,8 @@ import json
 import logging
 import time
 
+from mydata_did.v1_0.manager import OperationalContext
+
 from aries_cloudagent.revocation.models.revocation_registry import RevocationRegistry
 from aries_cloudagent.config.injection_context import InjectionContext
 from aries_cloudagent.core.error import BaseError
@@ -134,10 +136,8 @@ class PresentationManager:
             A tuple (updated presentation exchange record, presentation request message)
 
         """
-        indy_proof_request = await (
-            PresentationProposal.deserialize(
-                presentation_exchange_record.presentation_proposal_dict
-            )
+        indy_proof_request = await PresentationProposal.deserialize(
+            presentation_exchange_record.presentation_proposal_dict
         ).presentation_proposal.indy_proof_request(
             name=name,
             version=version,
@@ -399,7 +399,7 @@ class PresentationManager:
                 )
                 raise e
 
-        for (referent, precis) in requested_referents.items():
+        for referent, precis in requested_referents.items():
             if "timestamp" not in precis:
                 continue
             if referent in requested_credentials["requested_attributes"]:
@@ -475,7 +475,7 @@ class PresentationManager:
             presentation_preview = exchange_pres_proposal.presentation_proposal
 
             proof_req = presentation_exchange_record.presentation_request
-            for (reft, attr_spec) in presentation["requested_proof"][
+            for reft, attr_spec in presentation["requested_proof"][
                 "revealed_attrs"
             ].items():
                 name = proof_req["requested_attributes"][reft]["name"]
@@ -537,21 +537,26 @@ class PresentationManager:
                 # Build schemas for anoncreds
                 if identifier["schema_id"] not in schemas:
                     schemas[identifier["schema_id"]] = await ledger.get_schema(
-                        identifier["schema_id"]
+                        identifier["schema_id"],
+                        operational_context=OperationalContext.DATA_USING_SERVICE,
                     )
 
                 if identifier["cred_def_id"] not in credential_definitions:
                     credential_definitions[
                         identifier["cred_def_id"]
                     ] = await ledger.get_credential_definition(
-                        identifier["cred_def_id"]
+                        identifier["cred_def_id"],
+                        operational_context=OperationalContext.DATA_USING_SERVICE,
                     )
 
                 if identifier.get("rev_reg_id"):
                     if identifier["rev_reg_id"] not in rev_reg_defs:
                         rev_reg_defs[
                             identifier["rev_reg_id"]
-                        ] = await ledger.get_revoc_reg_def(identifier["rev_reg_id"])
+                        ] = await ledger.get_revoc_reg_def(
+                            identifier["rev_reg_id"],
+                            operational_context=OperationalContext.DATA_USING_SERVICE,
+                        )
 
                     if identifier.get("timestamp"):
                         rev_reg_entries.setdefault(identifier["rev_reg_id"], {})
@@ -564,7 +569,9 @@ class PresentationManager:
                                 found_rev_reg_entry,
                                 _found_timestamp,
                             ) = await ledger.get_revoc_reg_entry(
-                                identifier["rev_reg_id"], identifier["timestamp"]
+                                identifier["rev_reg_id"],
+                                identifier["timestamp"],
+                                operational_context=OperationalContext.DATA_USING_SERVICE,
                             )
                             rev_reg_entries[identifier["rev_reg_id"]][
                                 identifier["timestamp"]

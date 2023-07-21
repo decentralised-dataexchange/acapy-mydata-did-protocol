@@ -33,12 +33,16 @@ from mydata_did.v1_0.utils.did.mydata_did import DIDMyData
 from mydata_did.v1_0.utils.wallet.key_type import KeyType
 
 
+class OperationalContext:
+    DATA_SOURCE = "data-source"
+    DATA_USING_SERVICE = "data-using-service"
+
+
 class ADAManagerError(BaseError):
     """ADA manager error"""
 
 
 class ADAManager:
-
     # Record for storing data agreement instance metadata (client)
     RECORD_TYPE_DATA_AGREEMENT_INSTANCE_METADATA = "data_agreement_instance_metadata"
 
@@ -98,7 +102,6 @@ class ADAManager:
 
         mydata_did_registry_did_info_record = None
         try:
-
             # Fetch DID from wallet
             mydata_did_registry_did_info_record = await storage.search_records(
                 type_filter=ADAManager.RECORD_TYPE_MYDATA_DID_REGISTRY_DID_INFO,
