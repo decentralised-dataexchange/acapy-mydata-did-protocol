@@ -18,7 +18,6 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-acapy-patched = "0.5.6.dev1"
 validators = "^0.20.0"
 PyJWT = "^2.4.0"
 MarkupSafe = "2.0.1"
@@ -26,7 +25,6 @@ python3-indy = "^1.16.0"
 semver = "^2.13.0"
 py-multibase = "^1.0.3"
 py-solc-x = "^1.1.1"
-dexa-sdk = "0.1.12"
 
 
 [tool.poetry.dev-dependencies]
