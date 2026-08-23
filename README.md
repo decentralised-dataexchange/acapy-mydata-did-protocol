@@ -74,7 +74,7 @@ $ aca-py start \
 
 ## Licensing
 
-Copyright (c) 2021-23 iGrant Technologies AB (iGrant.io), Sweden
+Copyright (c) 2026 iGrant Technologies AB (iGrant.io), Sweden
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
